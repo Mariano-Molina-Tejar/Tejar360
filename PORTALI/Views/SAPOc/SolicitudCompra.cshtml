@@ -1,0 +1,262 @@
+﻿@model List<Entity.PortalSolicitudEncabezadoEntity>
+<head>
+    <style type="text/css">
+        .hm-gradient {
+            background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+        }
+
+        .darken-grey-text {
+            color: #2E2E2E;
+        }
+
+        .input-group.md-form.form-sm.form-2 input {
+            border: 1px solid #bdbdbd;
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+            .input-group.md-form.form-sm.form-2 input.purple-border {
+                border: 1px solid #9e9e9e;
+            }
+
+            .input-group.md-form.form-sm.form-2 input[type=text]:focus:not([readonly]).purple-border {
+                border: 1px solid #ba68c8;
+                box-shadow: none;
+            }
+
+        .form-2 .input-group-addon {
+            border: 1px solid #ba68c8;
+        }
+
+        .danger-text {
+            color: #ff3547;
+        }
+
+        .success-text {
+            color: #00C851;
+        }
+
+        .table-bordered.red-border, .table-bordered.red-border th, .table-bordered.red-border td {
+            border: 1px solid #ff3547 !important;
+        }
+
+        .table.table-bordered th {
+            text-align: center;
+        }
+
+        .label-custom {
+            display: inline-block;
+            padding: 0.2em 0.6em;
+            font-size: 75%;
+            font-weight: 700;
+            color: #fff;
+            background-color: #007bff; /* color azul estilo bootstrap */
+            border-radius: 0.25rem;
+        }
+
+            .label-custom.success {
+                background-color: #28a745; /* verde */
+            }
+
+            .label-custom.warning {
+                background-color: #ffc107; /* amarillo */
+            }
+
+            .label-custom.danger {
+                background-color: #dc3545; /* rojo */
+            }
+
+            .label-custom.info {
+                background-color: #4c7fb0; /* rojo */
+            }
+
+            .label-custom.SinOC {
+                background-color: #ff0000; /* rojo */
+            }
+
+        .table-hover tbody tr:hover {
+            background-color: #dddddd; /* Cambia este color al que prefieras */
+            /*color: blue;*/ /* También puedes cambiar el color del texto si es necesario */
+        }
+
+        #miTextarea {
+            border: none; /* Quitar el borde por defecto */
+            outline: none; /* Quitar el borde al hacer clic */
+            background-color: white;
+        }
+
+            /* Asegurarse de que no se remarca al recibir el foco */
+            #miTextarea:focus {
+                border: none;
+                outline: none;
+                background-color: white;
+            }
+
+
+        body {
+            margin: 0; /* Eliminar margen por defecto */
+            padding: 0; /* Eliminar padding por defecto */
+            font-family: Arial, sans-serif; /* Fuente más legible */
+        }
+
+        .tabla-con-scroll {
+            width: 100%; /* Ancho total de la ventana */
+            height: 100%; /* Altura del contenedor (ajusta según necesites) */
+            overflow-y: auto; /* Scroll vertical automático */
+            border: 0px solid #ccc; /* Borde alrededor de la tabla */
+
+            position: relative; /* Posicionamiento relativo */
+        }
+
+
+
+        th, td {
+            border: 1px solid black; /* Borde para celdas */
+            padding: 8px; /* Espacio interior */
+            text-align: left; /* Alinear texto a la izquierda */
+        }
+
+        /* Estilo para el encabezado de tabla */
+        thead th {
+            position: sticky; /* Fijar encabezado */
+            top: 0; /* Mantener en la parte superior al hacer scroll */
+            background-color: #f2f2f2; /* Fondo del encabezado */
+            z-index: 1; /* Mantener por encima del contenido */
+        }
+    </style>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+
+<body class="hm-gradient" style="background-color:white">
+    <div style="padding:25px">
+        <div class="row">
+            <!-- Grid column -->
+            <div class="col-md-12">
+                <div class="text-center darken-grey-text mb-4">
+                    <a class="btn btn-danger" href="@Url.Action("Oc", "SAPOc")">Nueva solicitud</a>
+                </div>
+            </div>
+            <!-- Grid column -->
+        </div>
+        <!-- Grid row -->
+        <!--Table-->
+        <div class="tabla-con-scroll">
+            <table class="table table-bordered table-hover tabla-con-scroll" id="tblSolicitudes">
+                <!--Table head-->
+                <thead class="thead-dark p-xl-5">
+                    <tr>
+                        <th style="width:25px">#</th>
+                        <th style="width:45px">Llave</th>
+                        <th style="width:60px">Temporal</th>
+                        <th>Creado</th>
+                        <th>Usuario</th>
+                        <th>Proveedor</th>
+                        <th>Comentarios</th>
+                        <th style="width:200px">Estado</th>
+                        <th style="width:105px">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model != null)
+                        {
+                            if (Model.Count == 0)
+                            {
+                                <td colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+                            }
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <th scope="row" style="vertical-align: middle">@item.Rw</th>
+                                    <th style="vertical-align: middle">@item.DocEntry</th>
+                                    <th style="vertical-align: middle">@item.DocNum</th>
+                                    <td style="vertical-align: middle">@item.DocDate.ToShortDateString()</td>
+                                    <td style="vertical-align: middle">@item.UserName</td>
+                                    <td style="vertical-align: middle">@item.CardName</td>
+                                    <td style="vertical-align: middle"><textarea id="miTextarea" class="form-control" style="height: 35px; font-size: 12px; background-color:white; border:none; outline:none" readonly>@item.Comentarios</textarea></td>
+                                    <td style="vertical-align: middle"><span class="label-custom @item.ColorEstado">@item.Estado</span></td>
+                                    <td class="p-1" style="text-align: center; vertical-align: middle">
+                                        <a id="btnEditar" class="btn btn-outline-primary fa fa-edit" onclick="Editar(this);"></a>
+                                        @if (item.IdEstado == "5")
+                                        {
+                                            <a class="btn btn-outline-warning fa fa-file-pdf-o" title="Orden de compra @item.DocNumOc"></a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else {
+                                <td colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+                            }
+                    }                        
+                </tbody>
+            </table>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center" id="pagination">
+                <!-- Los elementos de paginación se generarán aquí -->
+            </ul>
+        </nav>
+    </div>
+    @*<button id="btnVerReporte">Generar Reporte</button>
+    <div id="reporteContainer"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>*@
+
+    <script>
+         $(document).ready(function () {
+             $('#btnVerReporte').click(function (e) {
+             e.preventDefault();
+            $.ajax({
+                url: '@Url.Action("ReporteOc", "SAPOc")',
+                type: 'GET',
+                success: function (result) {
+                    // Insertar el resultado (visor del reporte) en el contenedor
+                    $('#reporteContainer').html(result);
+                    console.log(result)
+                },
+                error: function () {
+                    alert('Error al generar el reporte.');
+                }
+            });
+        });
+    });
+    </script>
+</body>
+<script>
+    $(document).ready(function () {
+        var itemsPerPage = 10;
+        var items = $("#tblSolicitudes tbody tr");
+        var numItems = items.length;
+        var numPages = Math.ceil(numItems / itemsPerPage);
+
+        // Ocultar todos los elementos, excepto los de la primera página
+        items.slice(itemsPerPage).hide();
+
+        // Generar elementos de paginación
+        for (var i = 1; i <= numPages; i++) {
+            $("#pagination").append("<li class='page-item'><a class='page-link' href='#'>" + i + "</a></li>");
+        }
+
+        // Manejar clics en la paginación
+        $("#pagination li:first-child").addClass("active");
+        $("#pagination li").on("click", function () {
+            var page = $(this).index();
+            $("#pagination li").removeClass("active");
+            $(this).addClass("active");
+
+            // Mostrar los elementos correspondientes a la página seleccionada
+            var start = page * itemsPerPage;
+            var end = start + itemsPerPage;
+            items.hide().slice(start, end).show();
+        });
+    });
+
+    function Editar(getValue) {
+        var row = getValue.parentNode.parentNode;
+        DocEntry = row.cells[1].innerText;
+        var url = '@Url.Action("Oc", "SAPOc", new { DocEntry = "__valor__" })';
+        url = url.replace("__valor__", DocEntry);
+        window.location.href = url;
+    }
+</script>

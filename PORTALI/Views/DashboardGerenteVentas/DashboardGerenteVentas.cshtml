@@ -1,0 +1,146 @@
+﻿@model Entity.PortalDashboardGtEntity
+<body>
+    <div class="main-content animated fadeIn">
+        <div class="container mt-7 mt-4">
+            <div class="card shadow" style="border-radius:10px; border-top-left-radius:10px; border-top-right-radius:10px">
+                <div class="card-header" style="background-color: #FAD803; border-top-left-radius: 10px; border-top-right-radius: 10px ">
+                    Tienda
+                </div>
+                <div class="card-body row col-xl-12">
+                    <div class="col-xl-6 pb-2">
+                        <canvas id="myPieChart"></canvas>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Datos generales
+                            </div>
+                            <div class="card-body">
+                                <div class="col-auto">
+                                    <label class="sr-only" for="inlineFormInputGroup">Meta</label>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" style="background-color: #FAD803; width:150px">Meta</div>
+                                        </div>
+                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("Q.{0:#,##0.00}", @Model.MetaTienda)">
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <label class="sr-only" for="inlineFormInputGroup">Venta</label>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" style="background-color: #FAD803; width:150px">Venta</div>
+                                        </div>
+                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("Q.{0:#,##0.00}", @Model.VentaTienda)">
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <label class="sr-only" for="inlineFormInputGroup">Indice</label>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" style="background-color: #FAD803; width:150px">Indice</div>
+                                        </div>
+                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("{0:#,##0.00}", @Model.Indice)%">
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <label class="sr-only" for="inlineFormInputGroup">Venta Proyectada</label>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" style="background-color: #e59866; width: 150px ">Venta Proyectada</div>
+                                        </div>
+                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("Q.{0:#,##0.00}", @Model.VentaTiendaProy)">
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <label class="sr-only" for="inlineFormInputGroup">Indice Proyectado</label>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" style="background-color: #e59866; width: 150px ">Indice Proyectado</div>
+                                        </div>
+                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("{0:#,##0.00}", @Model.IndiceProyectado)%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-3">
+                <div class="col">
+                    <div class="card shadow">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush">
+                                <thead style="background-color: #FAD803;">
+                                    <tr>
+                                        <th scope="col">Nombre asesor</th>
+                                        <th scope="col">Meta</th>
+                                        <th scope="col">Venta</th>
+                                        <th scope="col">Indice</th>
+                                        <th scope="col">Peso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{if (Model != null)
+                                        {
+                                            for (int i = 0; i < Model.ListaAsesores.Count; i++)
+                                            {
+                                                <tr>
+                                                    <th scope="row">
+                                                        <div class="media align-items-center">
+                                                            <a href="#" class="avatar rounded-circle mr-3">
+                                                                <img alt="Image placeholder" src="~/ImgUp/imagen-no-disponible.png">
+                                                            </a>
+                                                            <div class="media-body">
+                                                                <span class="mb-0 text-sm">@Model.ListaAsesores[i].SlpName</span>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <td>
+                                                        @string.Format("Q.{0:#,##0.00}", @Model.ListaAsesores[i].MetaAsesor)
+                                                    </td>
+                                                    <td>
+                                                        @string.Format("Q.{0:#,##0.00}", @Model.ListaAsesores[i].VentaAsesor)
+                                                    </td>
+                                                    <td>
+                                                        @string.Format("{0:#,##0.00}", @Model.ListaAsesores[i].Indice)%
+                                                    </td>
+                                                    <td>
+                                                        @string.Format("{0:#,##0.00}", @Model.ListaAsesores[i].Peso)%
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+<script type="text/javascript">
+    $(function () {
+        var ctx = document.getElementById("myPieChart").getContext('2d');
+        var myPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: @Html.Raw(Json.Encode(Model.PieChartData)),
+            options: {
+                responsive: true,                
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Ventas sobre meta'
+                }
+            }            
+        });
+    });
+</script>

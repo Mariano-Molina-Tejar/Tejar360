@@ -1,0 +1,308 @@
+﻿@model Entity.RecepcionProductosModalDetalleEntity
+@{ string _Comments = ""; }
+<style>
+</style>
+
+<div class="col-xl-12">
+    <div class="form-row">
+        <div class="form-group col-xl-2">
+            <label for="inputState">Número orden de compra</label>
+            <input id="txtDocNum" type="text" class="form-control" value="@Model.DocNumOc" readonly style="background-color:white">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="inputState">Código</label>
+            <input type="text" class="form-control" id="txtCardCode" value="@Model.CardCode" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-9">
+            <label for="inputState">Proveedor</label>
+            <input type="text" class="form-control" id="txtCardName" value="@Model.CardName" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputState">Sucursal</label>
+            <input type="text" class="form-control" id="txtSucursal" value="@Model.Sucursal" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputState">Departamento</label>
+            <input type="text" class="form-control" id="txtDepto" value="@Model.Depto" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputState">Fecha documento</label>
+            <input type="date" class="form-control" id="txtDocDate" value="@Model.DocDateOc.ToString("yyyy-MM-dd")" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputState">Fecha necesaria</label>
+            <input type="date" class="form-control" id="txtDocDueDate" value="@Model.DocDateReq.ToString("yyyy-MM-dd")" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputState">Tienda</label>
+            <input type="text" class="form-control" id="txtTienda" value="@Model.Tienda" readonly style="background-color:white">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-xl-4">
+            <label for="inputState">Notas</label>
+            <textarea id="txtObservaciones" type="text" class="form-control" value="" maxlength="254" readonly style="background-color:white">@Model.Comments</textarea>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-xl-12">
+            <button id="attachButton" type="button" style="width:160px" class="btn btn-primary">Cargar archivos <span class="fa fa-upload"></span></button>
+            <input type="file" id="fileInput" multiple style="display: none;" />
+            <ul id="fileList" style="font-size: 13px; margin-top: 5px; list-style-type: none; "></ul>
+            <div id="message"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-md-10 col-xl-12 col-md-offset-1">
+        <table class="table table-hover">
+            <thead style="background-color:black; color:white">
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th class="text-center">Precio</th>
+                    <th class="text-center">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Detalle)
+                {
+                    <tr>
+                        <td class="col-sm-8 col-md-6">
+                            <div class="media">
+                                <a class="thumbnail pull-left" href="#"> <img class="media-object" src="http://icons.iconarchive.com/icons/custom-icon-design/flatastic-2/72/product-icon.png" style="width: 40px; height: 40px;"> </a>
+                                <div class="media-body">
+                                    <h4 class="media-heading"><a href="#">@item.ItemName</a></h4>
+                                    <h5 class="media-heading"><a href="#">@item.ItemCode</a></h5>
+                                    <span>Comentarios: </span><span class="text-success"><strong>@item.LineText</strong></span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-sm-1 col-md-1 text-center"><strong>@string.Format("{0:#,##0.00}", @item.Quantity)</strong></td>
+                        <td class="col-sm-1 col-md-1 text-center"><strong>Q.@string.Format("{0:#,##0.00}", @item.Price)</strong></td>
+                        <td class="col-sm-1 col-md-1 text-center"><strong>Q.@string.Format("{0:#,##0.00}", @item.Total)</strong></td>
+                    </tr>}
+                <tr>
+                    <td>   </td>
+                    <td>   </td>
+                    <td><h5>Subtotal</h5></td>
+                    <td class="text-right"><h5><strong>Q.@string.Format("{0:#,##0.00}", @Model.SubTotal)</strong></h5></td>
+                </tr>
+                <tr>
+                    <td>   </td>
+                    <td>   </td>
+                    <td><h5>Impuesto (IVA)</h5></td>
+                    <td class="text-right"><h5><strong>Q.@string.Format("{0:#,##0.00}", @Model.Impuesto)</strong></h5></td>
+                </tr>
+                <tr>
+                    <td>   </td>
+                    <td>   </td>
+                    <td><h3>Total</h3></td>
+                    <td class="text-right"><h3><strong>Q.@string.Format("{0:#,##0.00}", @Model.DocTotal)</strong></h3></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group col-md-4">
+                            <select id="lstEstatusRecep" class="form-control" style="background-color:white">
+                                <option value="0" selected>Seleccionar estatus...</option>
+                                @foreach (var lit in Model.ListaEstados)
+                                {
+                                    <option value="@lit.Id" @lit.Selected>@lit.Dscription</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <textarea id="txtNotas" class="form-control" style="width:100%;height:60px" placeholder="Escribe un comentario"></textarea>
+                        </div>
+                    </td>
+                    <td></td>
+                    <td>
+                    </td>
+                    <td>
+                        <button id="btnGuardarMerca" type="button" style="width:160px" class="btn btn-success">Aceptar mercaderia <span class="glyphicon glyphicon-play"></span></button>
+                        <button id="btnCancelar" type="button" style="width:160px;margin-top:2px" class="btn btn-danger">Rechazar mercaderia <span class="glyphicon glyphicon-play"></span></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="mdlCondicion" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header flex-column" style="text-align:center">
+                <img id="imgMsg" width="50" height="50" src="~/Img/Pregunta.png" />
+                <h4 class="modal-title w-100" id="txtTituloPregunta">Pregunta</h4>
+            </div>
+            <div class="modal-body">
+                <p id="txtCuerpoMsg">¿Esta seguro de recibir la mercaderia?</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button id="btnYes" type="button" class="btn btn-success" data-dismiss="modal">Si</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*------------------------------LOG------------------------------*@
+<div>
+    <div class="py-6">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-12">
+                <!-- Quité offset-lg-1 -->
+                <div class="mb-8">
+                    <!-- card -->
+                    <div class="card bg-gray-300 shadow-none mb-4">
+                        <!-- card body -->
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0">Log</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="card">                        
+                        <ul class="list-group list-group-flush">                            
+                            @foreach (var lg in Model.logRecepcion)
+                            {
+                                <li class="list-group-item p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">                                            
+                                            <div style="background-color:green; display: flex; justify-content: center; align-items: center; height: 30px; width: 30px;" class="avatar-sm rounded-circle">
+                                                <a style="color:white">@lg.Letra</a>
+                                            </div>
+                                            <div class="row ms-3" style="margin-left:5px">
+                                                <p class="mb-0 font-weight-medium">
+                                                    @lg.Texto <a style="color:blue">@lg.Estatus</a> <a style="color:red">@lg.Creado</a> <br />
+                                                    <a>Notas: </a>@lg.Notas
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var deleteBtn = document.createElement('span');
+    var selectedFiles = [];
+
+    document.getElementById('attachButton').addEventListener('click', function (event) {
+        event.preventDefault(); // Prevenir comportamiento por defecto
+        document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+        var files = event.target.files;
+
+        // Agregar los archivos seleccionados al array de selectedFiles
+        for (var i = 0; i < files.length; i++) {
+            selectedFiles.push(files[i]);
+        }
+
+        // Actualizar el listado de archivos
+        updateFileList();
+    });
+
+    /* CARGA LA IMAGEN AL LISTADO*/
+    function updateFileList() {
+        var fileList = document.getElementById('fileList');
+        fileList.innerHTML = '';
+
+        for (var i = 0; i < selectedFiles.length; i++) {
+            var li = document.createElement('li');
+
+            var deleteBtn = document.createElement('span');
+            var img = document.createElement('img');
+            img.src = '/Img/cancelar.png';
+            img.alt = 'Eliminar';
+            img.style.width = '16px';
+            img.style.cursor = 'pointer';
+            img.style.marginRight = '10px';
+
+            (function (index) {
+                img.addEventListener('click', function () {
+                    selectedFiles.splice(index, 1);
+                    updateFileList();
+                });
+            })(i);
+
+            deleteBtn.appendChild(img);
+            li.appendChild(deleteBtn);
+            li.appendChild(document.createTextNode(selectedFiles[i].name));
+            fileList.appendChild(li);
+        }
+    }
+
+    $(document).ready(function () {
+        $("#btnGuardarMerca").click(function () {
+            $("#mdlCondicion").modal('show');
+        });
+    });
+
+    $(document).ready(function () {
+        $("#btnYes").click(function () {
+            $("#globalLoading").show();
+            var jsonData = {
+                'DocEntry': '@Model.DocEntryOc',
+                'DocNum': '@Model.DocNumOc',
+                'IdEstado': $("#lstEstatusRecep").val(),
+                'Comments': document.getElementById('txtNotas').value
+            };
+
+            var formData = new FormData();
+            for (var i = 0; i < selectedFiles.length; i++) {
+                formData.append('files', selectedFiles[i]);
+            }
+
+            formData.append('jsonData', JSON.stringify(jsonData));
+            $.ajax({
+                url: '@Url.Action("AceptarMercaderia", "Delivery")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (respuesta) {
+                    if (respuesta.result == 1) {
+                        mensaje(respuesta.message, 1);
+                        $("#globalLoading").show();
+                        window.location.href = '@Url.Action("Recepcion", "Delivery")';
+                        $("#globalLoading").hide();
+                    } else if (respuesta.result <= 0) {
+                        $("#globalLoading").hide();
+                        mensaje(respuesta.message, 2);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#globalLoading").hide();
+                    mensaje("Error", 2);
+                }
+            });
+        });
+    });
+
+    function mensaje(message, tipo) {
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "4000",
+            "timeOut": "5000"
+        }
+        if (tipo == 1) {
+            toastr.success(message, 'Notificación');
+        } else if(tipo == 2)
+        {
+            toastr.error(message, 'Notificación');
+        }
+    }
+</script>

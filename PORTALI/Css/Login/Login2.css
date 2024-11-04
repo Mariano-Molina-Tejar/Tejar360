@@ -1,0 +1,19 @@
+﻿.container {
+    max-width: 100%; /* Asegura que el contenedor use el 100% del ancho disponible */
+    padding: 15px; /* Añade un poco de padding para que no esté pegado al borde */
+}
+
+.card {
+    border-radius: 10px; /* Ajusta la esquina de la tarjeta */
+}
+
+/* Aumenta el tamaño de fuente en pantallas pequeñas */
+body {
+    font-size: 1.2rem; /* Cambia esto según sea necesario */
+}
+
+@media (max-width: 576px) {
+    .card {
+        font-size: 1.5rem; /* Ajusta el tamaño de la fuente en móviles */
+    }
+}

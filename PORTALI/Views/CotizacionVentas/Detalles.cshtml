@@ -1,0 +1,48 @@
+﻿@model Entity.DetalleBusquedaProductosEntity
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Producto</title>
+    <link href="~/Css/styleCotizacionDetalle.css" rel="stylesheet" />
+    <style>
+    </style>
+</head>
+<body>
+    <div class="product-container">
+        <div class="product-image">
+            <img src="~/Img/imagen-no-disponible.png" alt="Producto" />
+        </div>
+        <div class="product-details">
+            <h1>@Model.Encabezado.ItemName</h1>
+            <div class="product-price">
+                <span class="price-label">Precio Normal: </span><span class="price">@string.Format("Q.{0:#,##0.00}", @Model.Encabezado.PrecioBeneficio)</span><br />
+                <span class="price-label">Precio Efectivo: </span><span class="price">@string.Format("Q.{0:#,##0.00}", @Model.Encabezado.PrecioVenta)</span>
+                <span class="price-label">Formato: </span><span>@Model.Encabezado.Formato</span>
+                <p class="stock"><strong>Stock Total:</strong> <a style="font-size:18px;color:darkslateblue"><strong>@Model.Encabezado.Stock</strong></a></p>
+            </div>
+            <div class="product-specs">
+                <h3>Disponibilidad por Tienda</h3>
+                <table id="tblBusqueda" class="table table-hover table-responsive">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="tienda-column">Tienda</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultadosBusqueda">
+                        @foreach (var item in Model.Tiendas)
+                        {
+                <tr>
+                    <td class="tienda-column">@item.WhsName</td>
+                    <td>@item.Stock</td>
+                </tr>}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

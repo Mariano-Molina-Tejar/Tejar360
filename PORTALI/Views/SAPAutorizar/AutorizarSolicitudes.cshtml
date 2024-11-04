@@ -1,0 +1,368 @@
+﻿@model Entity.PortalPresupuestoEntity
+ 
+@{
+    string tipoBoton = "";
+    string Observaciones = "";
+ }
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />   
+
+    <style type="text/css">
+        body {
+            background-color: white;
+        }
+
+        .hm-gradient {
+            background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+        }
+
+        .darken-grey-text {
+            color: #2E2E2E;
+        }
+
+        .input-group.md-form.form-sm.form-2 input {
+            border: 1px solid #bdbdbd;
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+            .input-group.md-form.form-sm.form-2 input.purple-border {
+                border: 1px solid #9e9e9e;
+            }
+
+            .input-group.md-form.form-sm.form-2 input[type=text]:focus:not([readonly]).purple-border {
+                border: 1px solid #ba68c8;
+                box-shadow: none;
+            }
+
+        .form-2 .input-group-addon {
+            border: 1px solid #ba68c8;
+        }
+
+        .danger-text {
+            color: #ff3547;
+        }
+
+        .success-text {
+            color: #00C851;
+        }
+
+        .table-bordered.red-border, .table-bordered.red-border th, .table-bordered.red-border td {
+            border: 1px solid #ff3547 !important;
+        }
+
+        .table.table-bordered th {
+            text-align: center;
+        }
+
+        .details-row {
+            display: none; /* Ocultamos las filas de detalles inicialmente */
+            background-color: #f9f9f9; /* Fondo ligeramente diferente */
+        }
+
+        .expand-btn {
+            cursor: pointer;
+            color: white;
+            background-color: #484aa3;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-card {
+            color: yellow;
+        }
+
+        .bg-c-blue {
+            background: linear-gradient(45deg,#4099ff,#73b4ff);
+        }
+
+        .bg-c-green {
+            background: linear-gradient(45deg,#2ed8b6,#59e0c5);
+        }
+
+        .bg-c-yellow {
+            background: linear-gradient(45deg,#FFB64D,#ffcb80);
+        }
+
+        .bg-c-pink {
+            background: linear-gradient(45deg,#FF5370,#ff869a);
+        }
+
+
+        .card {
+            border-radius: 3px;
+            -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+            box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+            border: none;
+            margin-bottom: 15px;
+            -webkit-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .card .card-block {
+                padding: 10px;
+            }
+
+        .order-card i {
+            font-size: 20px;
+        }
+
+        .f-left {
+            float: left;
+        }
+
+        .f-right {
+            float: right;
+        }
+
+        #tblSolicitudes th:nth-child(3) {
+            display: none;
+        }
+
+        .label-custom {
+            display: inline-block;
+            padding: 0.2em 0.6em;
+            font-size: 75%;
+            font-weight: 700;
+            color: #fff;
+            background-color: #007bff; /* color azul estilo bootstrap */
+            border-radius: 0.25rem;
+        }
+
+            .label-custom.success {
+                background-color: #28a745; /* verde */
+            }
+
+            .label-custom.warning {
+                background-color: #ffc107; /* amarillo */
+            }
+
+            .label-custom.danger {
+                background-color: #dc3545; /* rojo */
+            }
+    </style>
+</head>
+<body class="hm-gradient">
+    <div class="row col-12 container-fluid animated fadeIn pt-3" id="Principal">
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>        
+        <div class="col-xl-12">
+            <table class="table table-bordered table-hover tabla-con-scroll" id="tblSolicitudes" style="width:100%">
+                <thead class="thead-dark p-xl-5">
+                    <tr>
+                        <th style="width:20px"></th>
+                        <th style="width:25px">#</th>
+                        <th>DocEntry</th>
+                        <th style="width:110px">Documento</th>
+                        <th style="width:155px">Creado</th>
+                        <th style="width:250px">Usuario</th>
+                        <th style="width:150px">Estado</th>
+                        <th>Comentarios</th>
+                        <th style="width:100px">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaBody">
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center" id="pagination">
+                </ul>
+            </nav>
+        </div>
+    </div>
+    @*----------- MODAL DE CONFIRMACION -----------*@
+    <div id="mdlCondicion" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column" style="text-align:center">
+                    <img id="imgMsg" width="50" height="50" src="~/Img/Pregunta.png" />
+                    <h4 class="modal-title w-100" id="txtTituloPregunta"></h4>
+                </div>
+                <div class="modal-body">
+                    <p id="txtCuerpoMsg"></p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                    <button id="btnYes" type="button" class="btn btn-success" data-dismiss="modal">Si</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+    var expandedRowId = null;
+    function toggleDetails(button, rowId) {
+        // Cerrar la fila expandida actual, si existe
+        if (expandedRowId && expandedRowId !== rowId) {
+            $('#' + expandedRowId).hide();
+            $('[data-target="' + expandedRowId + '"]').text('+');
+        }
+
+        var row = document.getElementById(rowId);
+        var isExpanded = row.style.display === "table-row";
+
+        if (isExpanded) {
+            row.style.display = "none";
+            $(button).text('+');
+            expandedRowId = null;
+        } else {
+            row.style.display = "table-row";
+            $(button).text('-');
+            var _docentry = 164;
+
+            $.ajax({
+                url: '/controlador/GetDetalles', // URL de tu controlador para la tabla hija
+                type: 'GET',
+                data: { id: id }, // Enviar el ID de la fila padre
+                success: function (response) {
+                    // Crear una nueva fila para el detalle
+                    var detalle = `<tr class="detalle">
+                    <td colspan="3">
+                        <table>
+                            <thead>
+                                <tr><th>Detalle</th></tr>
+                            </thead>
+                            <tbody>`;
+
+                    // Suponiendo que response es una lista de detalles
+                    response.forEach(function (item) {
+                        detalle += `<tr><td>${item.detalle}</td></tr>`;
+                    });
+
+                    detalle += `</tbody></table></td></tr>`;
+
+                    // Insertar la fila de detalle justo después de la fila actual
+                    row.after(detalle);
+                },
+                error: function () {
+                    alert('Error al cargar los detalles.');
+                }
+            });
+        }
+    }
+
+    //LEVANTA EL MENSAJE CONDICIONANTE SI O NO
+    function MensajeSINO(getValue)
+    {
+        Observaciones = "";
+        var row = getValue.parentNode.parentNode;
+        tipoBoton = getValue.id;
+        DocEntry = row.cells[2].innerText; //Obtiene el DocEntry de cada fila
+
+        if (tipoBoton == "btnAutorizar") {
+            $("#txtTituloPregunta").text("¿Autorizar solicitud de compra?");
+            $("#txtCuerpoMsg").text("Se generará un documento válido en SAP ¿Continuar?");
+            let titulo = document.getElementById('txtTituloPregunta');
+            titulo.style.color = 'black';
+
+        } else {
+            $("#txtTituloPregunta").text("¿Rechazar solicitud de compra?");
+            $("#txtCuerpoMsg").text("Se cerrar el proceso de compra ¿Continuar?");
+            let titulo = document.getElementById('txtTituloPregunta');
+            titulo.style.color = 'red';
+        }
+        $("#mdlCondicion").modal('show');
+
+        let filaPadre = getValue.closest('tr');
+        let filaExpandida = filaPadre.nextElementSibling;
+        let textarea = filaExpandida.querySelector('#txtObs');
+
+        if (textarea) {
+            Observaciones = textarea.value;
+        }
+    }
+
+    /* GUARDA EL ESTADO DE LA SOLICITUD, SI ES RECHAZADA O AUTORIZADA */
+    $(document).ready(function () {
+        $("#btnYes").click(function () {
+            $("#globalLoading").show();
+            var parametrosEnviar = {
+                'DocEntry': DocEntry,
+                'Observaciones': Observaciones,
+                'TipoBoton': tipoBoton
+            };
+
+            $.ajax({
+                url: '@Url.Action("SaveData", "SAPAutorizar")',
+                type: 'POST',
+                data: JSON.stringify(parametrosEnviar),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (respuesta) {
+                    tipoBoton = '';
+                    CargaTbl();
+                    mensaje(respuesta.message);
+                    $("#globalLoading").hide();
+                },
+                error: function (xhr, status, error) {
+                    $("#globalLoading").hide();
+                    tipoBoton = '';
+                    alert("Error: " + error);
+                }
+            });
+        });
+    });
+
+    function mensaje(message, tipo) {
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "4000",
+            "timeOut": "5000"
+        }
+        toastr.success(message, 'Notificación');
+    }
+
+    $(document).ready(function () {
+        $("#btnTest").click(function () {
+            mensaje();
+        });
+    });
+
+    function mostrarNotificacion(titulo, mensaje, icono) {
+        if ("Notification" in window) {
+            Notification.requestPermission().then(function (result) {
+                if (result === "granted") {
+                    new Notification(titulo, {
+                        body: mensaje,
+                        icon: icono
+                    });
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        CargaTbl();
+    });
+
+    /* CARGA LA TABLA */
+    function CargaTbl() {
+        $.ajax({
+                url: '@Url.Action("CargarTabla", "SAPAutorizar")',
+                type: 'POST',
+                success: function (data) {
+                    // Actualizar el contenido del tbody con la nueva data
+                    $('#tablaBody').html(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+        });
+    }
+    </script>

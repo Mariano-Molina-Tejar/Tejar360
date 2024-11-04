@@ -1,0 +1,110 @@
+﻿@model List<Entity.PortalSolicitudEncabezadoEntity>
+@{
+    int index = 0;
+    int j = 0;
+    int DocEntry = 0;
+}
+
+@{
+    if (Model != null)
+    {
+        if (Model.Count == 0)
+        {
+            <td colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+        }
+        foreach (var item in Model)
+        {
+            j = 0;
+            <tr data-id="@item.DocEntry">
+                <td style="vertical-align:middle">
+                    @if (@Model[index].IdEstado == "BR")
+                    {
+                        <button class="expand-btn" onclick="toggleDetails(this, '@item.DocEntry')">+</button>
+                    }
+
+                </td>
+                <th scope="row" style="vertical-align:middle">@(index + 1)</th>
+                <th style="vertical-align:middle">@item.DocEntry</th>
+                <th style="vertical-align:middle">@item.DocNum</th>
+                <td style="vertical-align:middle">@item.DocDate.ToShortDateString()</td>
+                <td style="vertical-align:middle">@item.UserName</td>
+                <td style="vertical-align:middle">
+                    <span class="label-custom @item.ColorEstado">@item.Estado</span>
+                    @*<label style="background-color:@item.ColorEstado">@item.Estado</label>*@
+                </td>
+                <td style="vertical-align:middle"><textarea class="form-control" readonly style="height:45px;font-size:12px;background-color:white">@item.Comentarios</textarea></td>
+                <td style="vertical-align:middle">
+                    @if (@Model[index].IdEstado == "CZ" || @Model[index].IdEstado == "PC")
+                    {
+                        <button id="btnVer" type="button" class="btn btn-outline-success fa fa-eye" data-toggle="tooltip" data-placement="top" title="Ver" onclick="redirigir(this)"></button>
+                    }
+                    else
+                    {
+                        <button id="btnAutorizar" type="button" class="btn btn-outline-primary fa fa-check" data-toggle="tooltip" data-placement="top" title="Autorizar" onclick="MensajeSINO(this)"></button>
+                        <button id="btnRechazar" type="button" class="btn btn-outline-warning" data-toggle="tooltip" data-placement="top" title="Rechazar" onclick="MensajeSINO(this)">
+                            <img src="~/Img/cancel_16.png" width="12" height="12" />
+                        </button>
+                    }
+                </td>
+            </tr>
+            <tr id="@item.DocEntry" class="collapse" style="padding:5px">
+                <td colspan="10">
+                    <div>
+                        <div>
+                            <table id="tblDetalles" class="table table-bordered table-hover tabla-con-scroll" style="font-size:11px;">
+                                <thead style="text-align:center;height:5px; background-color:crimson;font-size:12px">
+                                    <tr>
+                                        <th scope="col" width="40px">#</th>
+                                        <th scope="col" width="40px">Código</th>
+                                        <th scope="col"></th>
+                                        <th scope="col" style="width:250px">Descripción del producto</th>
+                                        <th scope="col" style="width:200px">Notas</th>
+                                        <th scope="col" style="width:90px">Cantidad</th>
+                                        <th scope="col" style="width:90px">Precio</th>
+                                        <th scope="col" style="width:90px">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="background-color:white">
+                                    @if (@item.Detalle != null)
+                                    {
+                                        foreach (var det in item.Detalle)
+                                        {
+                                            <tr style="font-size:12px">
+                                                <td style="text-align:center;vertical-align:middle">@(j + 1)</td>
+                                                <td style="vertical-align: middle">@det.ItemCode</td>
+                                                <td style="vertical-align: middle">@det.Dscription</td>
+                                                <td><textarea class="form-control" style="font-size: 12px; height: 40px;background-color:white" readonly>@det.NotasLinea</textarea></td>
+                                                <td style="vertical-align: middle; text-align:right">@det.Quantity</td>
+                                                <td style="vertical-align: middle; text-align:right">@det.Price</td>
+                                                <td style="vertical-align: middle; text-align: right">@det.LineTotal</td>
+                                            </tr>
+                                            j++;
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div data-ng-init class="form-outline">
+                            <label class="form-label" for="textAreaExample">Observaciones</label>
+                            <textarea class="form-control w-50" id="txtObs" rows="3" style="height:50px"></textarea>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            index++;
+        }
+    }
+    else
+    {
+        <td colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+    }
+}
+
+<script>
+    function redirigir(boton) {
+        var fila = boton.closest('tr');
+        var valorColumna = fila.cells[2].innerText;
+        window.location.href = '/SAPAutorizar/AutorizarSolicitudesDetalle?DocEntry=' + valorColumna;
+    }
+</script>

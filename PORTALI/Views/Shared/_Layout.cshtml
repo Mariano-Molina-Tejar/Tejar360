@@ -1,0 +1,213 @@
+﻿@{
+    if (((Entity.SessionLoginEntity)Session["PropertiesEntity"]) == null)
+    {
+        return;
+    }
+    
+    var UserLogin = Session["PropertiesEntity"] as Entity.SessionLoginEntity;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="@Url.Content("~/Img/icono.ico")" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+    <title>- Portal tejar -</title>
+    <!-- Icons-->
+    <link href="~/lib/coreui/icons/css/coreui-icons.min.css" rel="stylesheet" />
+    <link href="~/lib/flag-icon-css/css/flag-icon.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="~/lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    @*<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>*@
+    <!-- Main styles for this application-->
+    <link href="~/css/style.css" rel="stylesheet">
+    <link href="~/vendors/pace-progress/css/pace.min.css" rel="stylesheet">
+    @*<link href="~/Css/bootstrap.min.css" rel="stylesheet" />*@
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <link href="~/js/Loading.css" rel="stylesheet" />
+
+    <style>
+        .nav-icon icon-sol_compra {
+            background-image: url('../../Img/solicitud_compra.png');
+        }
+        body{
+            
+        }
+    </style>
+</head>
+<body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <header class="app-header navbar fixed-top">
+        <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+            <img class="navbar-brand-full" src="~/Img/eltejarlogo.png" width="140" height="25" alt="El Tejar">
+            @*<img class="navbar-brand-minimized" src="images/brand/sygnet.svg" width="30" height="30" alt="CoreUI Logo">*@
+        </a>
+        <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="nav navbar-nav d-md-down-none">
+            @*AQUI PONER EL BOTON DE BUSCAR*@
+        </ul>
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item d-md-down-none">
+                <a class="nav-link" href="#">
+                    <i class="icon-bell"></i>
+                    <span class="badge badge-pill badge-danger">0</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    <img class="img-avatar" src="~/ImgUp/@UserLogin.UrlPic.ToString()" alt="@UserLogin.UserName.ToString()">
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <div class="dropdown-header text-center">
+                        <strong>@UserLogin.UserName.ToString()</strong>
+                    </div>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-tasks"></i> Tareas
+                        <span class="badge badge-danger">0</span>
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-comments"></i> Comentarios
+                        <span class="badge badge-warning">0</span>
+                    </a>
+                    <div class="dropdown-header text-center">
+                        <strong>Herramientas</strong>
+                    </div>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-user"></i> Perfil
+                    </a>
+                    <a class="dropdown-item" href="@Url.Action("LongOff", "CerrarSesion")">
+                        <i class="fa fa-lock"></i> Salir
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </header>
+    <div class="app-body">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@{
+                            if (@UserLogin.Nivel == 2)
+                            {
+                                @Url.Action("DashboardGerenteVentas","DashboardGerenteVentas")
+                            } else
+                            {
+                                @Url.Action("Index","Dashboard")
+                            }
+                        }">
+                            <i class="nav-icon icon-speedometer"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-title">La Liga</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("ComisionLiga", "BilleteraComisionLiga")">
+                            <i class="nav-icon icon-calculator"></i> Mi billetera
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "GerenciaRankin")">
+                            <i class="nav-icon icon-graph"></i> Ranking trimestral
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Cotizacion", "CotizacionVentas")">
+                            <i class="nav-icon icon-puzzle"></i> Inventario
+                        </a>
+                    </li>
+
+                    <li class="nav-title">Operativo</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("SolicitudCompra", "SAPOc")">
+                            @*<img id="navIcon" src="~/Img/solicitud_compra.png" alt="Solicitud de compra" width="16" height="16">*@
+                            <i class="nav-icon icon-basket"></i>
+                            Solicitud de compra
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("AutorizarSolicitudes", "SAPAutorizar")">
+                            @*<img id="navIcon" src="~/Img/autorizacion_2.png" alt="Autorización" width="16" height="16">*@
+                            <i class="nav-icon icon-bell"></i>
+                            Autorizar solicitud
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Recepcion", "Delivery")">
+                            <i class="nav-icon icon-basket-loaded"></i>Recepción
+                        </a>
+                    </li>
+                    @*<li class="nav-item">
+            <a class="nav-link" href="@Url.Action("AutorizacionSuperior", "SAPAutorizaSuperior")">
+                <i class="nav-icon icon-basket-loaded"></i>Autorización superior
+            </a>
+        </li>*@
+                    <li class="divider"></li>
+                    <li class="nav-title">Herramientas</li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon icon-settings"></i> Configuración
+                        </a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Perfil", "Profile")" target="_top">
+                                    <i class="nav-icon icon-user"></i> Perfil
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="register.html" target="_top">
+                                    <i class="nav-icon icon-star"></i> Acerca de
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <button class="sidebar-minimizer brand-minimizer" type="button"></button>
+        </div>
+        <main class="main">
+            <div id="globalLoading" class="loading-overlay">
+                @*<img src="~/Img/tejar-ico.png" alt="Loading..." class="loading-image">*@
+                <img src="~/img/loading_circulo.gif" alt="loading..." class="loading-image">
+                @*<div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>*@
+            </div>
+            @RenderBody()
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $("#globalLoading").fadeOut("slow");
+                });
+
+                $(document).ajaxStart(function () {
+                    $("#globalLoading").fadeIn("fast");
+                }).ajaxStop(function () {
+                    $("#globalLoading").fadeOut("slow");
+                });
+            </script>
+        </main>
+    </div>
+    <footer class="app-footer fixed-bottom p-xl-2">
+        <div>
+            <span>&copy; 2024 Desarrollo ElTejar</span>
+        </div>
+    </footer>
+    <!-- Bootstrap and necessary plugins-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/popper.js/dist/umd/popper.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/pace-progress/pace.min.js"></script>
+    <script src="~/lib/perfect-scrollbar/dist/perfect-scrollbar.min.js"></script>
+    <script src="~/lib/coreui/coreui/dist/js/coreui.min.js"></script>
+    <!-- Plugins and scripts required by this view-->
+    <script src="~/lib/chart.js/dist/Chart.min.js"></script>
+    <script src="~/lib/coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js"></script>
+    <script src="~/js/main.js"></script>
+</body>
+</html>

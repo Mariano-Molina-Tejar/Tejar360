@@ -1,0 +1,15 @@
+﻿@model CrystalDecisions.CrystalReports.Engine.ReportDocument
+<div>
+    <a>prueba</a>    
+    <CR:CrystalReportViewer 
+                            ID="CrystalReportViewer1"
+                            runat="server"
+                            AutoDataBind="true"
+                            DisplayGroupTree="false"
+                            HasCrystalLogo="false"
+                            EnableDatabaseLogonPrompt="false"
+                            ReuseParameterValuesOnRefresh="true"
+                            ReportSource="@Model"
+                            Width="100%"
+                            Height="1000px" />
+</div>

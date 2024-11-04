@@ -1,0 +1,1201 @@
+﻿@model Entity.PortalMantSolicitudCompraEntity
+@{   
+    int suss = 0;
+    if (@Model == null)
+    {
+        return;
+    }
+    var reportDocument = ViewBag.ReportDocument as CrystalDecisions.CrystalReports.Engine.ReportDocument;
+}
+<head>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Css/font-awesome.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: white;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            height: 35px;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: Arial;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: cornflowerblue;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px
+        }
+
+        #btn-mas {
+            display: none;
+        }
+
+        .container {
+            width: 80px;
+            position: fixed;
+            bottom: 37px;
+            right: 10px;
+        }
+
+        .redes a, .btn-mas label {
+            display: block;
+            text-decoration: none;
+            background: cornflowerblue;
+            color: #fff;
+            width: 55px;
+            height: 55px;
+            line-height: 55px;
+            text-align: center;
+            border-radius: 50%;
+            box-shadow: 0px 1px 10px rgba(0,0,0,0.4);
+            transition: all 800ms ease;
+        }
+
+            .redes a:hover {
+                background: #fff;
+                color: cornflowerblue;
+            }
+
+        .redes a {
+            margin-bottom: -15px;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #btn-mas:checked ~ .redes a {
+            margin-bottom: 5px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .btn-mas label {
+            cursor: pointer;
+            background: cornflowerblue;
+            font-size: 23px;
+        }
+
+        #btn-mas:checked ~ .btn-mas label {
+            transform: rotate(135deg);
+            font-size: 25px;
+        }
+
+        .CampoTexto {
+            width: 100%;
+            height: 35px;
+        }
+
+            .CampoTexto::placeholder {
+                color: #999;
+                font-style: italic;
+                font-size: 12px;
+            }
+
+        .modal-confirm {
+            color: #636363;
+            width: 400px;
+        }
+
+            .modal-confirm .modal-content {
+                padding: 20px;
+                border-radius: 5px;
+                border: none;
+                text-align: center;
+                font-size: 14px;
+            }
+
+            .modal-confirm .modal-header {
+                border-bottom: none;
+                position: relative;
+            }
+
+            .modal-confirm h4 {
+                text-align: center;
+                font-size: 26px;
+                margin: 30px 0 -10px;
+            }
+
+            .modal-confirm .close {
+                position: absolute;
+                top: -5px;
+                right: -2px;
+            }
+
+            .modal-confirm .modal-body {
+                color: #999;
+            }
+
+            .modal-confirm .modal-footer {
+                border: none;
+                text-align: center;
+                border-radius: 5px;
+                font-size: 13px;
+                padding: 10px 15px 25px;
+            }
+
+                .modal-confirm .modal-footer a {
+                    color: #999;
+                }
+
+            .modal-confirm .icon-box {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto;
+                border-radius: 50%;
+                z-index: 9;
+                text-align: center;
+                border: 3px solid #f15e5e;
+            }
+
+                .modal-confirm .icon-box i {
+                    color: #f15e5e;
+                    font-size: 46px;
+                    display: inline-block;
+                    margin-top: 13px;
+                }
+
+            .modal-confirm .btn, .modal-confirm .btn:active {
+                color: #fff;
+                border-radius: 4px;
+                background: #60c7c1;
+                text-decoration: none;
+                transition: all 0.4s;
+                line-height: normal;
+                min-width: 120px;
+                border: none;
+                min-height: 40px;
+                border-radius: 3px;
+                margin: 0 5px;
+            }
+
+            .modal-confirm .btn-secondary {
+                background: #c1c1c1;
+            }
+
+                .modal-confirm .btn-secondary:hover, .modal-confirm .btn-secondary:focus {
+                    background: #a8a8a8;
+                }
+
+            .modal-confirm .btn-danger {
+                background: #f15e5e;
+            }
+
+                .modal-confirm .btn-danger:hover, .modal-confirm .btn-danger:focus {
+                    background: #ee3535;
+                }
+
+        ul#listError li {
+            text-align: left; /* Alinea el contenido de cada elemento */
+            list-style-image: url('../../Img/cancel_16.png');
+        }
+
+        .select-blanco {
+            background-color: white; /* Fondo blanco */
+            color: black; /* Texto negro, o puedes ajustar según prefieras */
+        }
+
+        .estilo {
+            text-align: right;
+            border: none;
+        }
+
+        .estiloDinamico {
+            vertical-align: middle;
+        }
+
+        #tablaAgrupada {
+            border-radius: 5px;
+            overflow: hidden; /* Importante para que el border-radius se aplique correctamente */
+            border-collapse: separate; /* Para evitar problemas con el border-radius */
+        }
+
+            /* Aplicar border-radius a las esquinas del encabezado */
+            #tablaAgrupada thead th:first-child {
+                border-top-left-radius: 5px;
+            }
+
+            #tablaAgrupada thead th:last-child {
+                border-top-right-radius: 5px;
+            }
+
+            /* Aplicar border-radius a las esquinas inferiores */
+            #tablaAgrupada tbody td:first-child {
+                border-bottom-left-radius: 5px;
+            }
+
+            #tablaAgrupada tbody td:last-child {
+                border-bottom-right-radius: 5px;
+            }
+
+        #attachButton {
+            text-transform: none !important;
+        }
+
+        #vistaBuscar .modal-dialog {
+            max-width: 50%; /* Ajusta el porcentaje según el ancho deseado */
+        }
+
+        #vistaBuscar .modal-content {
+            max-height: 90vh; /* Ajusta el porcentaje según tus necesidades */
+            overflow: hidden; /* Evita el desbordamiento del contenido */
+        }
+
+        /* Permite el scroll solo en el área de la tabla */
+        #vistaBuscar .modal-body {
+            overflow-y: auto;
+            max-height: 90vh; /* Ajusta el tamaño de la tabla dentro del modal */
+        }
+
+        #tblBusqueda {
+            width: 100%;
+            table-layout: auto; /* Ajusta el ancho de las columnas según el contenido */
+            border: 1px solid #ddd;
+        }
+
+            /* Bordes y estilo de celdas */
+            #tblBusqueda th, #tblBusqueda td {
+                border: 1px solid #ddd;
+                padding: 8px;                
+            }
+
+            /* Estilo para el encabezado de la tabla */
+            #tblBusqueda thead {
+                background-color: #f2f2f2;
+            }
+
+        /* Personalización del botón de búsqueda */
+        #btnBuscar .input-group-text {
+            background-color: #FF8C00; /* Color naranja */
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Input con bordes redondeados a la izquierda */
+        #txtBuscar {
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+            /* Quitar borde del input cuando el botón está dentro */
+            #txtBuscar:focus {
+                box-shadow: none;
+            }
+
+        /* Input más alto */
+        .input-group .form-control {
+            height: 45px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content animated fadeIn">
+        <div class="" style="padding:20px" id="contentArea">
+            <form>
+                <div class="row">
+                    <div class="col-xl-7">
+                        <div class="card shadow" style="border-radius:5px; border-top-left-radius:5px; border-top-right-radius:5px">
+                            <div class="card-header">Datos Generales</div>
+                            <div class="card-body">
+                                <div class="col-xl-12">
+                                    <div class="form-row">
+                                        <div class="form-group col-xl-2">
+                                            <label for="inputState">Número solicitud</label>
+                                            <input id="txtDocNum" type="text" class="form-control" value="" readonly style="background-color:white">
+                                        </div>
+                                        <div class="form-group col-xl-2">
+                                            <label for="inputState">Llave</label>
+                                            <input id="txtDocEntry" type="text" class="form-control" value="" readonly style="background-color:white">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-3">
+                                            <label for="inputState">Sucursal</label>
+                                            <select id="lstSucursal" class="form-control" style="background-color:white">
+                                                <option value="0" selected>Seleccionar...</option>
+                                                @{
+                                                    if (Model != null)
+                                                    {
+                                                        if (Model.ListaSucursales != null)
+                                                        {
+                                                            for (int i = 0; i < Model.ListaSucursales.Count; i++)
+                                                            {
+                                                                <option value="@Model.ListaSucursales[i].IdSucursal">@Model.ListaSucursales[i].Name</option>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="inputState">Departamento</label>
+                                            <select id="lstDepto" class="form-control" style="background-color:white">
+                                                <option value="0" selected>Seleccionar...</option>
+                                                @{
+                                                    if (@Model != null)
+                                                    {
+                                                        if (@Model.ListadoDeptos != null)
+                                                        {
+                                                            for (int i = 0; i < @Model.ListadoDeptos.Count; i++)
+                                                            {
+                                                                <option value="@Model.ListadoDeptos[i].IdDepto" @Model.ListadoDeptos[i].Selected>@Model.ListadoDeptos[i].Depto</option>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="inputState">Fecha documento</label>
+                                            <input type="date" class="form-control" id="txtDocDate" value="@Model.FechaHoy.ToString("yyyy-MM-dd")" style="background-color:white">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="inputState">Fecha necesaria</label>
+                                            <input type="date" class="form-control" id="txtDocDueDate" value="">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="inputState">Centro de costo</label>
+                                            <select id="lstTienda" class="form-control" style="background-color:white">
+                                                <option selected>Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label for="inputState">Correo</label>
+                                            <input id="txtCorreo" type="email" class="form-control" value="">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-xl-6">
+                                            <label for="inputState">Notas</label>
+                                            <textarea id="txtObservaciones" type="text" class="form-control" value="" maxlength="254"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-xl-12">
+                                            <input type="file" id="fileInput" multiple style="display: none;" />
+                                            <ul id="fileList" style="font-size: 12px; margin-top: 5px; list-style-type: none; "></ul>
+                                            <div id="message"></div>                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-5">
+                        <div class="card shadow" style="border-radius:5px; border-top-left-radius:5px; border-top-right-radius:5px; height:95%">
+                            <div class="card-header">Tabla de presupuesto</div>
+                            <div class="card-body">
+                                <div class="col-xl-12">
+                                    <div class="table-responsive col-xl-12">
+                                        <table id="tablaAgrupada" class="table table-bordered">
+                                            <thead class="" style="text-align:center; background-color:gray;color:white">
+                                                <tr>
+                                                    <th scope="col" style="width:200px">Cuenta</th>
+                                                    <th scope="col" style="width:120px">Presupuesto</th>
+                                                    <th scope="col" style="width:110px">Gasto</th>
+                                                    <th scope="col" style="width:110px">Saldo</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <td colspan="4" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card shadow" style="border-radius:5px; border-top-left-radius:5px; border-top-right-radius:5px">
+                            <div class="card-header">Detalle</div>
+                            <div class="card-body col-xl-12">
+                                <div class="row">
+                                    <div class="table-responsive col-xl-12">
+                                        <table id="tblDetalles" class="table table-bordered">
+                                            <thead class="thead-dark" style="text-align:center">
+                                                <tr>
+                                                    <th scope="col" style="width:50px">#</th>
+                                                    <th scope="col" style="width:90px">Código</th>
+                                                    <th scope="col">Descripción del producto</th>
+                                                    <th scope="col">Notas</th>
+                                                    <th scope="col">Cuenta</th>
+                                                    <th scope="col" style="display:none">Pepto</th>
+                                                    <th scope="col" style="width:100px">Cantidad</th>
+                                                    <th scope="col" style="width:120px">Precio</th>
+                                                    <th scope="col" style="width:120px">Total</th>
+                                                    <th scope="col" style="width:80px">Opciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <td colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="file" id="inputSeleccionarDocumento" style="display: none;" accept=".xls, .xlsx" />
+                <input type="text" id="isTableCleared" value="false" style="display:none" />
+                <p id="nombreArchivo"></p>
+                @*Lista de botones*@
+                <div class="container">
+                    <input type="checkbox" id="btn-mas">
+                    <div class="redes">
+                        <a href="#" class="fa fa-paperclip" id="attachButton" data-toggle="tooltip" data-placement="left" title="Adjuntar documentos"></a>
+                        <a href="#" class="fa-solid fa-file-import" id="btnSeleccionarDocumento" data-toggle="tooltip" data-placement="left" title="Importar datos"></a>
+                        <a href="#vistaCondicion" class="fa fa-save trigger-btn" data-toggle="modal" data-placement="left" title="Guardar solicitud" id="btnGuardar"></a>
+                        <a href="" class="fa-sharp fa-solid fa-magnifying-glass-plus" data-toggle="modal" data-placement="left" id="btnModalBuscar" title="Buscar producto"></a>
+                        @*<a href="" class="fa-sharp fa-solid fa-magnifying-glass-plus" data-toggle="modal" data-placement="left" data-target=".bd-example-modal-lg" id="btnModalBuscar" title="Buscar producto"></a>*@
+                    </div>
+                    <div class="btn-mas">
+                        <label for="btn-mas" class="fa fa-plus"></label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*MODAL BUSQUEDA DE PRODUCTOS*@
+    <div id="vistaBuscar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" role="document">
+                    <h5 class="modal-title" id="exampleModalLabel">Buscar producto</h5>
+                    <button type="button" class="close" onclick="$('#vistaBuscar').modal('hide')" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-content">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="row justify-content-center">
+                                        <div class="col-xl-8">
+                                            <div class="input-group">
+                                                <input id="txtBuscar" autocomplete="off" type="text" class="form-control text-uppercase" placeholder="Buscar producto..." />
+                                                <div id="btnBuscar" class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-search"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table id="tblBusqueda" class="table table-hover table-responsive" style="width:100%">
+                                        <thead class="thead-dark" style="text-align:center; width:100%">
+                                            <tr>
+                                                <th style="width:110px">Código</th>
+                                                <th style="width:50%">Descripcion del producto</th>
+                                                <th style="width:350px">Cuenta</th>
+                                                <th style="width:110px">Cantidad</th>
+                                                <th style="width:80px;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="resultadosBusqueda">
+                                            <td id="titulo2" colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px">
+                                                <i>No hay datos</i>
+                                            </td>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="vistaCondicion" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="material-icons">&#xE8FD;</i>
+                    </div>
+                    <h4 class="modal-title w-100" id="tituloCompra">¿Crear solicitud de compra?</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="tituloBody">Este documento necesita una autorización del jefe del departamento<br />¿Continuar?</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                    <button id="btnSalvar" type="button" class="btn btn-success" data-dismiss="modal">Si</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="vistaResultado" class="modal fade" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-center align-items-center">
+                    <img id="imgMsg" width="50" height="50" />
+                </div>
+                <div class="modal-body">
+                    <p class="text-center" id="txtMensaje"></p>
+                    <ul id="listError"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-block" data-dismiss="modal" onclick="btnCerrarMsg()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+    var deleteBtn = document.createElement('span');
+    var selectedFiles = [];
+
+    document.getElementById('attachButton').addEventListener('click', function (event) {
+        event.preventDefault(); // Prevenir comportamiento por defecto
+        document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+        var files = event.target.files;
+
+        // Agregar los archivos seleccionados al array de selectedFiles
+        for (var i = 0; i < files.length; i++) {
+            selectedFiles.push(files[i]);
+        }
+
+        // Actualizar el listado de archivos
+        updateFileList();
+    });
+
+    /* CARGA LA IMAGEN AL LISTADO*/
+    function updateFileList() {
+        var fileList = document.getElementById('fileList');
+        fileList.innerHTML = '';
+
+        for (var i = 0; i < selectedFiles.length; i++) {
+            var li = document.createElement('li');
+
+            var deleteBtn = document.createElement('span');
+            var img = document.createElement('img');
+            img.src = '/Img/cancelar.png';
+            img.alt = 'Eliminar';
+            img.style.width = '16px';
+            img.style.cursor = 'pointer';
+            img.style.marginRight = '10px';
+
+            (function (index) {
+                img.addEventListener('click', function () {
+                    selectedFiles.splice(index, 1);
+                    updateFileList();
+                });
+            })(i);
+
+            deleteBtn.appendChild(img);
+            li.appendChild(deleteBtn);
+            li.appendChild(document.createTextNode(selectedFiles[i].name));
+            fileList.appendChild(li);
+        }
+    }
+
+    function uploadFiles() {
+        if (selectedFiles.length === 0) {
+            $("#message").text("No hay archivos adjuntos");
+            return;
+        }
+
+        var formData = new FormData();
+        for (var i = 0; i < selectedFiles.length; i++) {
+            formData.append('files', selectedFiles[i]);
+        }
+
+        $.ajax({
+            url: '@Url.Action("SubirData", "SAPOc")',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $("#message").text("Archivos subidos correctamente.");
+                //selectedFiles = [];
+                //updateFileList();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $("#message").text("Error al cargar los archivos adjuntos.");
+            }
+        });
+    }
+
+    /*---------------------------------------------------------------------------------------*/
+
+    let isTableCleared = false;
+    document.getElementById('btnSeleccionarDocumento').addEventListener('click', function () {
+        document.getElementById('inputSeleccionarDocumento').click();
+    });
+
+    /* CARGA DE DATA DESDE EXCEL */
+    document.getElementById('inputSeleccionarDocumento').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Leer la primera hoja del archivo Excel
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+
+                // Convertir la hoja a JSON
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                const headers = jsonData[0];
+
+                const result = jsonData.slice(1).map(row => {
+                    let obj = {};
+                    headers.forEach((header, index) => {
+                        obj[header] = row[index] || null;
+                    });
+                    return obj;
+                });
+
+                $.ajax({
+                    url: '@Url.Action("CargaDataExcel", "SAPOc")',
+                    type: 'POST',
+                    data: { DataExcelJson: JSON.stringify(result)},
+                    success: function (respuesta) {
+                        var rows = '';
+                        var rows2 = '';
+                        $.each(respuesta.ListaUno, function (index, item) {
+                            rows += '<tr>' +
+                                '<td style="vertical-align:middle; text-align:center">' + item.Rw + '</td>' +
+                                '<td style="vertical-align:middle;">' + item.ItemCode + '</td>' +
+                                '<td style="vertical-align:middle;">' + item.Dscription + '</td>' +
+                                '<td style="vertical-align:middle;"><textarea id="txtObservaciones" placeholder="Puedes detallar mas agregando una nota" type="text" class="form-control CampoTexto" value="" maxlength="254" style="border:none; outline:none">' + item.NotasLine + '</textarea></td>' +
+                                '<td style="vertical-align:middle;">' + item.NombreCuenta + '</td>' +
+                                '<td style="vertical-align:middle; display:none;">' + item.Prespuesto + '</td>' +
+                                '<td style="vertical-align:middle; text-align:right"><input type="number" Id="cantidad" class="form-control estilo" autocomplete="off" value="' + item.Quantity.toFixed(2) + '" /></td>' +
+                                '<td style="vertical-align:middle; text-align:right"><input type="text" Id="precio" class="form-control estilo" autocomplete="off" value="' + item.Price.toFixed(2) + '" /></td>' +
+                                '<td style="vertical-align:middle; text-align:right" Id="Total">' + Number(item.LineTotal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td>' +
+                                '<td style="vertical-align:middle; text-align:center"><a href="#vistaCondicion" class="btn btn-outline-primary fa fa-trash"></a></td>' +
+                                '</tr>';
+                        });
+                        $('#tblDetalles tbody').html(rows);
+
+                        $('#tblDetalles tbody').find('input[type="number"]').each(function () {
+                            var filaActual = $(this).closest('tr'); // Obtener la fila actual
+                            this.addEventListener('input', function () {
+                                var valorsh = this.value;
+                                var idElemento = this.id; // Obtener el ID del elemento
+                                if (idElemento.startsWith('cantidad')) {
+                                    var iprecio = parseFloat(filaActual.find('input[id^="precio"]').val()) || 0;
+                                    var _total = valorsh * iprecio;
+                                    filaActual.children('td').eq(8).text(Number(_total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                                    ObtenerPepto();
+                                }
+                            });
+                        });
+
+                        $('#tblDetalles tbody').find('input[type="text"]').each(function () {
+                            var filaActual = $(this).closest('tr'); // Obtener la fila actual
+                            this.addEventListener('input', function () {
+                                var valorsh = this.value;
+                                var idElemento = this.id; // Obtener el ID del elemento
+                                if (idElemento.startsWith('precio')) {
+                                    var iprecio = parseFloat(filaActual.find('input[id^="cantidad"]').val()) || 0;
+                                    var _total = valorsh * iprecio;
+                                    filaActual.children('td').eq(8).text(Number(_total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                                    ObtenerPepto();
+                                }
+                            });
+                        });
+
+                        $.each(respuesta.ListaDos, function (index, item) {
+                            rows2 += '<tr>' +
+                                '<td style="font-size:10px; width:200px;">' + item.Nombre + '</td>' +
+                                '<td style="font-size:10px; text-align:right; width:120px">' + 'Q.' + Number(item.Presupuesto).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })  + '</td>' +
+                                '<td style="font-size:10px; text-align:right; width:110px">' + 'Q.' + Number(item.Gasto).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })  + '</td>' +
+                                '<td style="font-size:10px; text-align:right; width:110px">' + 'Q.' + Number(item.Saldo).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })  + '</td>';
+                        });
+                        $('#tablaAgrupada tbody').html(rows2);
+                        document.getElementById('isTableCleared').value = "true";
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    $(document).ready(function () {
+        $('#btnGuardar').on('click', function () {
+            if (parseInt(document.getElementById("txtDocEntry").value) > 0)
+            {
+                $('#tituloCompra').text("¿Actualizar la solicitud de compra?");
+                $('#tituloBody').text("Se actualizaran las filas y reenviara de nuevo el correo.");
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        var DocEntry = urlParams.get('DocEntry');
+
+        $.ajax({
+            url: '@Url.Action("EditSolicitud", "SAPOc")',
+            type: 'POST',
+            data: { DocEntry: DocEntry},
+            success: function (respuesta) {
+                document.getElementById('txtDocNum').value = respuesta.DocNum;
+                document.getElementById('txtDocEntry').value = respuesta.DocEntry;
+                document.getElementById('lstDepto').value = respuesta.IdDepto;
+                document.getElementById('lstSucursal').value = respuesta.IdSucursal;
+                document.getElementById('txtCorreo').value = respuesta.Email;
+                document.getElementById('lstSucursal').value = respuesta.IdSucursal;
+                document.getElementById('txtDocDueDate').value = (new Date(parseInt(respuesta.DocDueDate.match(/\d+/)[0]))).toISOString().slice(0, 10);
+                document.getElementById('txtDocDate').value = (new Date(parseInt(respuesta.DocDate.match(/\d+/)[0]))).toISOString().slice(0, 10);
+                CargarTiendas(respuesta.IdSucursal, respuesta.DetalleTabla[0].WhsCode);
+                document.getElementById('txtObservaciones').value = respuesta.Observaciones;
+                document.getElementById("lstDepto").disabled = true;
+                document.getElementById("lstSucursal").disabled = true;
+                document.getElementById("txtDocDate").disabled = true;
+                document.getElementById("lstTienda").disabled = true;
+
+                var rows = '';
+                $.each(respuesta.DetalleTabla, function (index, item) {
+                    rows += '<tr>' +
+                        '<td>' + 1 + '</td>' +
+                        '<td>' + item.ItemCode + '</td>' +
+                        '<td>' + item.Dscription + '</td>' +
+                        '<td><textarea id="txtObservaciones" type="text" class="form-control CampoTexto" value="" maxlength="254">' + item.NotasLine + '</textarea></td>' +
+                        '<td>0.00</td>' +
+                        '<td>0.00</td>' +
+                        '<td><input type="number" class="form-control" value="' + item.Quantity + '" /></td>' +
+                        '<td>' + 0.00 + '</td>' +
+                        '<td>' + 0.00 + '</td>' +
+                        '<td><a href="#vistaCondicion" class="btn btn-outline-primary fa fa-trash"></a></td>' +
+                        '</tr>';
+                });
+                $('#tblDetalles tbody').html(rows);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    });
+
+    /* BOTON DE GUARDAR SOLICITUD DE COMPRA*/
+    $(document).ready(function () {
+        $("#btnSalvar").click(function () {
+            var tablaDatos = [];
+
+            $("#tblDetalles tbody tr").each(function () {
+                var valor = '';
+                var valorCant = '';
+                var valorPrice = '';
+                var celda = $(this).find("td:eq(3)");
+                var celdaCantidad = $(this).find("td:eq(6)");
+                var celdaPrice = $(this).find("td:eq(7)");
+
+                var textarea = celda.find("textarea");
+                var textCant = celdaCantidad.find("input");
+                var textPrice = celdaPrice.find("input");
+                var WhsCode = $("#lstTienda").val();
+
+                if (textarea.length > 0) {
+                     valor = textarea.val();
+                }
+
+                if (textCant.length > 0) {
+                    valorCant = textCant.val();
+                }
+
+                if (textPrice.length > 0) {
+                    valorPrice = textPrice.val();
+                }
+
+                var fila = {
+                    ItemCode: $(this).find("td:eq(1)").text(),
+                    Quantity: valorCant,
+                    Price: valorPrice,
+                    LineNum: 0,
+                    WhsCode: WhsCode,
+                    NotasLine: valor
+                };
+                tablaDatos.push(fila);
+            });
+
+            var formData = new FormData();
+            for (var i = 0; i < selectedFiles.length; i++) {
+                formData.append('files', selectedFiles[i]);
+            }
+
+            $("#globalLoading").show();
+            var jsonData = {
+                DocEntry: (document.getElementById('txtDocEntry').value == "" ? 0 : document.getElementById('txtDocEntry').value),
+                DocNum: 0,
+                IdSucursal: $("#lstSucursal").val(),
+                IdDepto: $("#lstDepto").val(),
+                DocDate: document.getElementById("txtDocDate").value,
+                DocDueDate: document.getElementById("txtDocDueDate").value,
+                Email: $("#txtCorreo").val(),
+                Observaciones: $("#txtObservaciones").val(),
+                UserCode: '@(Model?.UserCode ?? "")',
+                DetalleTabla: (tablaDatos.length == 0 ? null : tablaDatos)
+            };
+
+            formData.append('jsonData', JSON.stringify(jsonData));
+            $.ajax({
+                url: '@Url.Action("AddSolicitud", "SAPOc")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (respuesta) {
+                    $("#globalLoading").hide();
+                    $("#vistaResultado").modal('show');
+                    $("#txtMensaje").text(respuesta.message);
+                    $('#listError').empty();
+
+                    if (respuesta.result == 1) {
+                        suss = 1;
+                        document.getElementById('imgMsg').src = '@Url.Content("~/Img/check_512.png")';
+                    } else if (respuesta.result == 101) {
+                        suss = 0;
+                        console.log(respuesta);
+                        $('#listError').empty();
+                        document.getElementById('imgMsg').src = '@Url.Content("~/Img/cancel_512.png")';
+                        respuesta.data.forEach(function (elemento) {
+                            $('#listError').append('<li>' + elemento + '</li>');
+                        });
+                    } else {
+                        suss = 0;
+                        document.getElementById('imgMsg').src = '@Url.Content("~/Img/cancel_512.png")';
+                    }
+                },
+                error: function (xhr, status, error) {
+                    suss = 0;
+                    $("#globalLoading").hide();
+                    document.getElementById('imgMsg').src = '@Url.Content("~/Img/cancel_512.png")';
+                    $("#vistaResultado").modal('show');
+                    $("#txtMensaje").text(error);
+                }
+            });
+        });
+    });
+
+    /*BOTON BUSCAR PRODUCTO*/
+    $(document).ready(function () {
+        $("#btnBuscar").click(function () {
+            BuscarProducto();
+        });
+    });
+
+    function btnCerrarMsg() {
+        $("#vistaResultado").modal('hide');
+        if (suss == 1)
+        {
+            window.location.href = '@Url.Action("SolicitudCompra", "SAPOc")';
+        }
+    }
+
+    function BuscarProducto()
+    {
+        var textBuscar = $("#txtBuscar").val();
+        $.ajax({
+            url: '@Url.Action("BuscarProducto", "SAPOc")',
+            data: { textBuscar: textBuscar },
+            success: function (data) {
+                $("#resultadosBusqueda").html(data);
+                $("#txtBuscar").focus();
+            }
+        });
+    }
+
+    /* CAPTURA EL PRODUCTO DE LA BUSQUEDA DEL MODAL */
+    function getValues(button) {
+        var row = button.parentNode.parentNode;
+        var itemCode = row.cells[0].innerText;
+        var Dscription = row.cells[1].innerText;
+        var Quantity = row.cells[3].querySelector("input").value;
+        var Cuenta = row.cells[2].innerText;
+        var Prespuesto = row.cells[4].innerText.replace("Q.", "").replace(",", "");
+
+        var table = document.getElementById("tblDetalles").getElementsByTagName('tbody')[0];
+        if (document.getElementById('isTableCleared').value == "false") {
+            table.innerHTML = '';
+            document.getElementById('isTableCleared').value = "true";
+        }
+
+        var newRow = table.insertRow();
+        var cell0 = newRow.insertCell(0); //Numero
+        cell0.style.textAlign = "center";
+        cell0.style.verticalAlign = "middle"
+        var cell1 = newRow.insertCell(1); //ItemCode
+        cell1.style.verticalAlign = "middle"
+        var cell2 = newRow.insertCell(2); //ItemName
+        cell2.style.verticalAlign = "middle"
+        var cell3 = newRow.insertCell(3); //Notas
+        cell3.style.verticalAlign = "middle"
+        var cell4 = newRow.insertCell(4); //Cuenta
+        cell4.style.verticalAlign = "middle"
+        var cell5 = newRow.insertCell(5); //Presupuesto
+        cell5.style.verticalAlign = "middle"
+        cell5.style.textAlign = "right";
+        cell5.style.display = "none";
+        var cell6 = newRow.insertCell(6); //Cantidad
+        var cell7 = newRow.insertCell(7); //Precio
+        var cell8 = newRow.insertCell(8); //Total
+        cell8.style.verticalAlign = "middle"
+        cell8.id = "Total";
+        cell8.style.textAlign = "right";
+        var cell10 = newRow.insertCell(9); //Opciones
+        cell10.style.textAlign = "center";
+        cell10.style.verticalAlign = "middle"
+
+        cell0.innerText = 1;
+        cell1.innerText = itemCode;
+        cell2.innerText = Dscription;
+        cell4.innerHTML = Cuenta;
+        cell5.innerHTML = Prespuesto;
+
+        var _txtNotas = document.createElement('textarea');
+        _txtNotas.className = 'form-control CampoTexto';
+        _txtNotas.style.border = "none";
+        _txtNotas.placeholder = "Puedes detallar mas agregando una nota";
+        cell3.appendChild(_txtNotas);
+
+        var _txtCantidad = document.createElement('input');
+        _txtCantidad.type = "number";
+        _txtCantidad.className = 'form-control estilo';
+        _txtCantidad.id = "cantidad";
+        _txtCantidad.min = 1;
+        _txtCantidad.value = Number(Quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        cell6.appendChild(_txtCantidad);
+
+        _txtCantidad.addEventListener('input', function () {
+            if (_txtCantidad.value < 1) {
+                _txtCantidad.value = 1;
+            }
+        });
+
+        var _txtPrecio = document.createElement('input');
+        _txtPrecio.type = "decimal";
+        _txtPrecio.id = "precio";
+        _txtPrecio.className = 'form-control estilo';
+        _txtPrecio.value = 0.00;
+        cell7.appendChild(_txtPrecio);
+        calcularTotal(newRow);
+        ObtenerPepto();
+
+        _txtPrecio.addEventListener('input', function () {
+            calcularTotal(newRow);
+            ObtenerPepto();
+        });
+
+        _txtCantidad.addEventListener('input', function () {
+            calcularTotal(newRow);
+            ObtenerPepto();
+        });
+
+        var btnEliminar = document.createElement('button');
+        btnEliminar.className = 'btn btn-outline-primary fa fa-trash';
+        cell10.appendChild(btnEliminar);
+
+        btnEliminar.addEventListener('click', function () {
+
+        });
+
+        var table = document.getElementById("tblBusqueda").getElementsByTagName('tbody')[0];
+        table.innerHTML = "<tr><td colspan='10' style='text-align: center; height: 100px; color: gray; vertical-align: middle; font-size: 12px'><i>No hay datos</i></td></tr>";
+        document.getElementById("txtBuscar").value = "";
+        $("#txtBuscar").focus();
+        var myModal = new bootstrap.Modal(document.getElementById('vistaBuscar'));
+        myModal.hide();
+    }
+
+    $(document).ready(function () {
+        $('#txtBuscar').on('keydown', function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                BuscarProducto();
+            }
+        });
+    });
+
+    /*BUSCA EL CORRELATIVO DE SOLICITUD*/
+    $(document).ready(function () {
+        $('#lstSucursal').change(function () {
+            var selectedValue = $(this).val();
+            var idata;
+            type: 'POST',
+                $.ajax({
+                url: '@Url.Action("getDocNum", "SAPOc")',
+                    data: { IdBP: selectedValue },
+                    success: function (entidad) {
+                        document.getElementById("txtDocNum").value = entidad.DocNum;
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+            });
+        });
+    });
+
+    $(document).ready(function () {        
+        $.ajax({
+            url: '@Url.Action("getCentroCostos", "SAPOc")',
+            type: 'GET',
+            data: { IdSucursal: 0 },
+            dataType: 'json',
+            success: function (response) {
+                $('#lstTienda').empty();
+                $('#lstTienda').append('<option value="">Seleccionar...</option>');
+                $.each(response, function (index, opcion) {
+                    $('#lstTienda').append('<option value="' + opcion.WhsCode + '">' + opcion.WhsName + '</option>');
+                });
+                if (iDefault != null)
+                {
+                    $('#lstTienda').val(iDefault);
+                }
+            },
+            error: function (xhr, status, error) {
+                $('#lstTienda').empty();
+                $('#lstTienda').append('<option value="">Seleccionar...</option>');
+            }
+        });
+    });
+
+    function calcularTotal(fila) {
+        var cantidad = parseFloat(fila.querySelector('#cantidad').value) || 0;
+        var precio = parseFloat(fila.querySelector('#precio').value) || 0;
+        var total = precio * cantidad;
+        fila.querySelector('#Total').innerHTML = Number(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    //LISTA DE PRESPUESTO
+    function ObtenerPepto() {
+        const filas = document.querySelectorAll('#tblDetalles tbody tr');
+        // Creamos un objeto para almacenar los totales agrupados
+        const agrupados = {};
+
+        // Recorremos cada fila de la tabla
+        filas.forEach((fila) => {
+            // Obtenemos el valor de la columna "Producto"
+            const NombrePepto = fila.querySelector('td:nth-child(5)').textContent;
+
+            // Obtenemos los valores de las columnas "Presupuesto", "Saldo" y "Total"
+            const presupuesto = fila.querySelector('td:nth-child(6)').textContent;
+            const total = parseFloat(fila.querySelector('#Total').textContent.replace("Q.","").replace(",",""));
+            const saldo = parseFloat("0.00");
+
+            // Si el producto ya existe en el objeto 'agrupados', solo sumamos 'saldo' y 'total'
+            if (agrupados[NombrePepto]) {
+                agrupados[NombrePepto].total += total;
+                agrupados[NombrePepto].saldo = saldo;
+            } else {
+                // Si no existe, lo inicializamos con los valores actuales, incluyendo el presupuesto solo una vez
+                agrupados[NombrePepto] = {
+                    presupuesto: presupuesto, // El presupuesto solo se captura una vez
+                    saldo: saldo,
+                    total: total
+                };
+            }
+        });
+
+        // Obtenemos el cuerpo de la tabla donde se mostrarán los totales agrupados
+        const tbodyAgrupado = document.querySelector('#tablaAgrupada tbody');
+
+        // Limpiamos el contenido actual de la tabla de resultados agrupados
+        tbodyAgrupado.innerHTML = '';
+
+        // Iteramos sobre los productos agrupados y agregamos filas a la tabla
+        for (const producto in agrupados) {
+            // Creamos una nueva fila
+            const fila = document.createElement('tr');
+            // Creamos las celdas para el producto, presupuesto, saldo y total agrupado
+            const celdaProducto = document.createElement('td');
+            celdaProducto.textContent = producto;
+            celdaProducto.style.fontSize = "10px";
+            celdaProducto.style.width = "200px";
+
+            const celdaPresupuesto = document.createElement('td');
+            /*celdaPresupuesto.textContent = agrupados[producto].presupuesto;*/
+            celdaPresupuesto.textContent = "Q." + Number(agrupados[producto].presupuesto).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            celdaPresupuesto.style.fontSize = "10px";
+            celdaPresupuesto.style.textAlign = "right";
+
+            const celdaTotal = document.createElement('td');
+            celdaTotal.textContent = 'Q.' + agrupados[producto].total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            celdaTotal.style.fontSize = "10px";
+            celdaTotal.style.textAlign = "right";
+
+            const _saldo = celdaPresupuesto.textContent.replace("Q.", "").replace(",", "") - celdaTotal.textContent.replace("Q.", "").replace(",", "");
+            const celdaSaldo = document.createElement('td');
+            celdaSaldo.textContent = 'Q.' + _saldo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            celdaSaldo.style.fontSize = "10px";
+            celdaSaldo.style.textAlign = "right";
+
+            // Agregamos las celdas a la fila
+            fila.appendChild(celdaProducto);
+            fila.appendChild(celdaPresupuesto);
+            fila.appendChild(celdaTotal);
+            fila.appendChild(celdaSaldo);
+
+            // Agregamos la fila al cuerpo de la tabla
+            console.log(fila);
+            tbodyAgrupado.appendChild(fila);
+        }
+    }
+
+    function CargarTiendas(valorSeleccionado, iDefault) {
+        
+    }
+
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $(document).ready(function () {
+        // Inicializar los tooltips
+        $('#btnGuardar').tooltip({
+            placement: 'left' // Define que el tooltip se muestre a la izquierda
+        });
+
+        $('#btnModalBuscar').tooltip({
+            placement: 'left' // Define que el tooltip se muestre a la izquierda
+        });
+    });
+
+    $(document).ready(function () {
+        $("#btnModalBuscar").click(function () {
+            $("#vistaBuscar").modal('show');
+        });
+
+        $('#vistaBuscar').on('shown.bs.modal', function () {
+            $("#txtBuscar").focus();
+        });
+    });
+</script>

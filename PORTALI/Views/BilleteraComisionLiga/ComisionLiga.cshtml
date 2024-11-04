@@ -1,0 +1,521 @@
+﻿@model Entity.PortalComisionAsesoresEntity
+
+@{
+    ViewBag.Title = "Comision Liga";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Entity.PortalComisionAsesoresEntity BonoLiga = new Entity.PortalComisionAsesoresEntity();
+    if (Session["BonoComisionEntity"] != null)
+    {
+        BonoLiga = Session["BonoComisionEntity"] as Entity.PortalComisionAsesoresEntity;
+    }
+    else
+    {
+        return;
+    }
+}
+<head>
+    <title>- Comisión liga -</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="~/Css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Css/ionicons.min.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <style type="text/css">
+        body {
+            background-color: #FBB104;
+        }
+
+        .ColorPlata {
+            background-color: #cccccc;
+        }
+
+        .ColorBronce {
+            background-color: #cd7f32;
+        }
+
+        .ColorMensual {
+            background-color: #FBB104;
+        }
+
+        .ColorVentaTienda {
+            background-color: #7aab2f;
+        }
+
+        .iconoTotal {
+        }
+
+        .info-box {
+            display: block;
+            min-height: 90px;
+            background: #fff;
+            width: 100%;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+            margin-bottom: 15px;
+        }
+
+            .info-box small {
+                font-size: 14px;
+            }
+
+            .info-box .progress {
+                background: rgba(0, 0, 0, 0.2);
+                margin: 5px -10px 5px -10px;
+                height: 2px;
+            }
+
+                .info-box .progress,
+                .info-box .progress .progress-bar {
+                    border-radius: 0;
+                }
+
+                    .info-box .progress .progress-bar {
+                        background: #fff;
+                    }
+
+        .info-box-icon {
+            border-top-left-radius: 2px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 2px;
+            display: block;
+            float: left;
+            height: 90px;
+            width: 90px;
+            text-align: center;
+            font-size: 45px;
+            line-height: 90px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+            .info-box-icon > img {
+                max-width: 100%;
+            }
+
+        .info-box-content {
+            padding: 5px 10px;
+            margin-left: 90px;
+        }
+
+        .info-box-number {
+            display: block;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .progress-description,
+        .info-box-text {
+            display: block;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .info-box-text {
+            text-transform: uppercase;
+        }
+
+        .info-box-more {
+            display: block;
+        }
+
+        .small-box {
+            border-radius: 2px;
+            position: relative;
+            display: block;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+            .small-box > .inner {
+                padding: 10px;
+            }
+
+            .small-box > .small-box-footer {
+                position: relative;
+                text-align: center;
+                padding: 3px 0;
+                color: #fff;
+                color: rgba(255, 255, 255, 0.8);
+                display: block;
+                z-index: 10;
+                background: rgba(0, 0, 0, 0.1);
+                text-decoration: none;
+            }
+
+                .small-box > .small-box-footer:hover {
+                    color: #fff;
+                    background: rgba(0, 0, 0, 0.15);
+                }
+
+            .small-box h3 {
+                font-size: 38px;
+                font-weight: bold;
+                margin: 0 0 10px 0;
+                white-space: nowrap;
+                padding: 0;
+            }
+
+            .small-box p {
+                font-size: 15px;
+            }
+
+                .small-box p > small {
+                    display: block;
+                    color: #f9f9f9;
+                    font-size: 13px;
+                    margin-top: 5px;
+                }
+
+            .small-box h3,
+            .small-box p {
+                z-index: 5;
+            }
+
+            .small-box .icon {
+                -webkit-transition: all 0.3s linear;
+                -o-transition: all 0.3s linear;
+                transition: all 0.3s linear;
+                position: absolute;
+                top: -10px;
+                right: 10px;
+                z-index: 0;
+                font-size: 90px;
+                color: rgba(0, 0, 0, 0.15);
+            }
+
+            .small-box:hover {
+                text-decoration: none;
+                color: #f9f9f9;
+            }
+
+                .small-box:hover .icon {
+                    font-size: 95px;
+                }
+
+        .box {
+            position: relative;
+            border-radius: 3px;
+            background: #ffffff;
+            border-top: 3px solid #d2d6de;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-col {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<!-- Breadcrumb-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">Mi billetera</li>
+    <li class="breadcrumb-item">
+        <a href="#">Comisión Liga</a>
+    </li>
+    @*<li class="breadcrumb-item active">Comision Liga</li>*@
+</ol>
+<body>
+    @using (Html.BeginForm("ComisionLiga", "BilleteraComisionLiga", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="container-fluid">
+            <div class="animated fadeIn">
+                <div class="row border border-danger" style="padding: 9px; border-radius: 5px;">
+                    <div class="col-xl-1 col-xs-2 col-lg-2 col-sm-2" style="padding:4px">
+                        <select class="form-control" aria-label="Año" id="lstAnio" name="lstAnio">
+                            <option value="@DateTime.Now.Year.ToString()"> @DateTime.Now.Year.ToString() </option>
+                            <option value="@DateTime.Now.AddYears(-1).Year.ToString()"> @DateTime.Now.AddYears(-1).Year.ToString() </option>
+                        </select>
+                    </div>
+                    <div class="col-xl-2 col-xs-6 col-lg-3 col-sm-6" style="padding:4px">
+                        @Html.DropDownListFor(m => m.ListaMeses, new SelectList(BonoLiga.ListaMeses, "IdMes", "Mes", BonoLiga.MesActual, ""), new { @class = "form-control"})
+                    </div>
+                    <div class="col-xl-2 col-xs-6 col-lg-3 col-sm-6" style="padding:4px">
+                        @Html.DropDownListFor(m => m.ListadoAsesores, new SelectList(BonoLiga.ListadoAsesores, "SlpCode", "SlpName", BonoLiga.SlpCode, ""), new { @class = "form-control"})
+                    </div>
+                    <div class="col-xl-1 col-xs-6 col-lg-3 col-sm-6" style="padding:4px">
+                        <button class="btn btn-success profile-button" type="submit">Filtrar</button>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    @{
+                        if (BonoLiga.ListaBonos != null)
+                        {
+                            for (int i = 0; i < BonoLiga.ListaBonos.Count; i++)
+                            {
+                                <div class="col-6 col-sm-6 col-lg-3 col-md-6 col-xl col-md">
+                                    <div class="card text-white @BonoLiga.ListaBonos[i].Color shadow-lg">
+                                        <div class="card-body pb-lg-1 px-lg-2 px-md-1 pt-xl-2 pt-md-3 ">
+                                            <div class="text-value">@BonoLiga.ListaBonos[i].Escala <img class="chart" src="~/Img/check.png" height="15" width="16" style="Visibility: @BonoLiga.ListaBonos[i].Oculto" /></div>
+                                            <div class="row">
+                                                <div class="col-sm-6 col-xl-6">
+                                                    <div>Escala</div><div>@string.Format("Q.{0:#,##0.00}", @BonoLiga.ListaBonos[i].Meta)</div>
+                                                </div>
+
+                                                <div class="col-sm-5 col-xl-6">
+
+                                                    <div>Bono</div><div>@string.Format("Q.{0:#,##0.00}", @BonoLiga.ListaBonos[i].Bono)</div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-wrapper mt-3 mx-3" style="height:30px;">
+                                                <img class="chart" src="~/Img/@BonoLiga.ListaBonos[i].Icono" height="25" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="brand-card">
+                            <div class="brand-card-header ColorMensual" style="height:70px">
+                                <i class="fa">Meta personal</i>
+                                <div class="chart-wrapper">
+                                    <canvas id="social-box-chart-1"></canvas>
+                                </div>
+                            </div>
+                            <div class="brand-card-body">
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.MetaAsesor)
+                                    </div>
+                                    <div class="text-muted small">Meta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaAsesor)
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaAsesorPro)</div>
+                                    <div class="text-muted small">Venta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("{0:#,##0.00}", BonoLiga.IndiceAsesor)%
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("{0:#,##0.00}", BonoLiga.IndiceAsesorPro)%</div>
+                                    <div class="text-muted small">Indice</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-xl-6">
+                        <div class="brand-card">
+                            <div class="brand-card-header ColorVentaTienda" style="height:70px">
+                                <i class="fa">Meta Tienda</i>
+                                <div class="chart-wrapper">
+                                    <canvas id="social-box-chart-2"></canvas>
+                                </div>
+                            </div>
+                            <div class="brand-card-body">
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.MetaTienda)
+                                    </div>
+                                    <div class="text-muted small">Meta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaTienda)
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaTiendaPro)</div>
+                                    <div class="text-muted small">Venta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("{0:#,##0.00}", BonoLiga.IndiceTienda)%
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("{0:#,##0.00}", BonoLiga.IndiceTiendaPro)%</div>
+                                    <div class="text-muted small">Indice</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 col-lg-6">
+                        <div class="brand-card">
+                            <div class="brand-card-header bg-facebook">
+                                <i class="fa ">
+                                    Baño
+                                </i>
+                                <div class="chart-wrapper">
+                                    <canvas id="social-box-chart-4" height="90"></canvas>
+                                </div>
+                            </div>
+                            <div class="brand-card-body">
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.MetaBanio)
+                                    </div>
+                                    <div class="text-muted small">Meta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaBanio)
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaBanioPro)</div>
+                                    <div class="text-muted small">Venta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("{0:#,##0.00}", BonoLiga.IndiceBanio)%
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("{0:#,##0.00}", BonoLiga.IndiceBanioPro)%</div>
+                                    <div class="text-muted small">Venta</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-6">
+                        <div class="brand-card">
+                            <div class="brand-card-header bg-linkedin">
+                                <i class="fa ">
+                                    Cocina y Construcción
+                                </i>
+                                <div class="chart-wrapper">
+                                    <canvas id="social-box-chart-3" height="90"></canvas>
+                                </div>
+                            </div>
+                            <div class="brand-card-body">
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.MetaCcp)
+                                    </div>
+                                    <div class="text-muted small">Meta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaCcp)
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("Q.{0:#,##0.00}", BonoLiga.VentaCcpPro)</div>
+                                    <div class="text-muted small">Venta</div>
+                                </div>
+                                <div>
+                                    <div class="text-value">
+                                        @string.Format("{0:#,##0.00}", BonoLiga.IndiceCcp)%
+                                    </div>
+                                    <div class="text-muted small">Proyectada: @string.Format("{0:#,##0.00}", BonoLiga.IndiceCcpPro)%</div>
+                                    <div class="text-muted small">Venta</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row text-center">
+                        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                            <div class="text-muted">Comisión Base</div>
+                            <strong>
+                                @string.Format("Q.{0:#,##0.00}", BonoLiga.ComisionBase)
+                            </strong>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar bg-success" role="progressbar" style="width:100%" + aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                            <div class="text-muted">Comisión Plus</div>
+                            <strong>
+                                @string.Format("Q.{0:#,##0.00}", BonoLiga.ComisionPlus)
+                            </strong>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar bg-blue" role="progressbar" style="width:100%" + aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="card-footer">
+                    <div class="row text-center">
+                        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                            <div class="text-muted">Bono Base</div>
+                            <strong>
+                                @string.Format("Q.{0:#,##0.00}", BonoLiga.BonoBase)
+                            </strong>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar bg-success" role="progressbar" style="width:100%" + aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                            <div class="text-muted">Bono Meta Personal</div>
+                            <strong>
+                                @string.Format("Q.{0:#,##0.00}", BonoLiga.BonoPersonal)
+                            </strong>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar bg-yellow" role="progressbar" style="width:100%" + aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                            <div class="text-muted">Bono Meta Tienda</div>
+                            <strong>
+                                @string.Format("Q.{0:#,##0.00}", BonoLiga.BonoTienda)
+                            </strong>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar bg-red" role="progressbar" style="width:100%" + aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                            <div class="text-muted">Bono Meta Baño</div>
+                            <strong>
+                                @string.Format("Q.{0:#,##0.00}", BonoLiga.BonoBanio)
+                            </strong>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar bg-gray" role="progressbar" style="width:100%" + aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                            <div class="text-muted">Bono Meta CCP</div>
+                            <strong>
+                                @string.Format("Q.{0:#,##0.00}", BonoLiga.BonoCcp)
+                            </strong>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar bg-orange" role="progressbar" style="width:100%" + aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="col-md-4" style="margin-bottom:35px">
+                    <div class="bg-green">
+                        <span class="info-box-icon"><i><img src="~/Img/dinero_en_mano.png" width="50" /></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text"><strong>Total a recibir</strong></span>
+                            <span class="info-box-number">
+                                <strong style="color:white">
+                                    @string.Format("Q.{0:#,##0.00}", BonoLiga.TotalRecibir)
+                                </strong>
+                            </span>
+                            <div class="progress progress-xs mt-2">
+                                <div class="progress-bar" style="width: 100%"></div>
+                            </div>
+                            <span class="progress-description">
+                                _
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+    }
+
+<script>
+    $("document").ready(function () {
+        $('#ListadoAsesores').val(@BonoLiga.SlpCode);
+    });
+
+    $("document").ready(function () {
+        $('#ListaMeses').val(@BonoLiga.MesActual);
+    });
+
+    $("document").ready(function () {
+        $('#lstAnio').val(@BonoLiga.AnioActual);
+    });
+</script>
+</body>

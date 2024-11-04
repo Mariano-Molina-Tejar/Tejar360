@@ -1,0 +1,26 @@
+﻿@model List<Entity.BusquedaDetalleProductoEntity>
+
+@if (Model != null)
+{
+    if(Model.Count == 0) 
+    {
+        <td id="titulo2" colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+        return;
+    }
+
+    foreach (var item in Model)
+    {
+         <tr>
+             <td style="width:110px">@item.ItemCode</td>
+             <td style="width:50%">@item.Dscription</td>
+             <td style="width:350px">@item.NombreCuenta</td>
+             <td style="width:110px"><input class="form-control" type="number" value="1" style="text-align:right" /></td>             
+             <td style="display:none">@string.Format("Q.{0:#,##0.00}", @item.Prespuesto)</td>
+             <td style="width:80px;"><button type="button" class="btn btn-outline-primary fa fa-plus-circle" onclick="getValues(this)"></button></td>
+         </tr>
+    }
+}
+else 
+{
+    <td id="titulo2" colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>
+}

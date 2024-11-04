@@ -1,0 +1,224 @@
+﻿@model Entity.CotizacionCompraEntity
+    @{ int j = 1;
+        if(Model.DocNumCoti > 0)
+        {
+            <script>
+                window.location.href = '/SAPAutorizar/AutorizarSolicitudes'
+            </script>
+            return;
+        }
+}
+<div class="card-body p-2"> 
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card rounded-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0" style="color: black"><strong>DATOS DEL PROVEEDOR</strong></h5>
+                    </div>
+
+                    <form class="mt-4">
+                        <div class="row col-lg-12">
+                            <div data-mdb-input-init class="col-lg-3">
+                                <label class="form-label" for="typeName">Número de solicitud</label>
+                                <input type="text" id="typeName" class="form-control form-control-lg" siez="17" placeholder="" value="@Model.DocNumSolC" readonly style="background-color:white" />
+                            </div>
+                            <div data-mdb-input-init class="col-lg-9">
+                                <label class="form-label" for="typeName">Nombre del proveedor</label>
+                                <input type="text" id="typeName" class="form-control form-control-lg" siez="17" placeholder="" value="@Model.CardName" readonly style="background-color:white" />
+                            </div>
+                        </div>
+                        <div class="row col-lg-12" style="margin-top:5px">
+                            <div data-mdb-input-init class="col-lg-3">
+                                <label class="form-label" for="typeText">Correo electronico</label>
+                                <input type="text" id="typeText" class="form-control form-control-lg" siez="17" value="@Model.Email" readonly style="background-color:white" placeholder="" />
+                            </div>
+                            <div data-mdb-input-init class="col-lg-3">
+                                <label class="form-label" for="typeText">Fecha requerida</label>
+                                <input type="date" class="form-control form-control-lg" id="txtDocDate" value="@Model.FechaEntrega.ToString("yyyy-MM-dd")" readonly style="background-color:white">
+                            </div>
+
+                            <div data-mdb-input-init class="col-lg-3">
+                                <label class="form-label" for="typeText">Fecha entrega</label>
+                                <input type="date" class="form-control form-control-lg" id="txtDocDate" value="@Model.FechaEntrega.ToString("yyyy-MM-dd")" readonly style="background-color:white">
+                            </div>
+
+                            <div data-mdb-input-init class="col-lg-3">
+                                <label class="form-label" for="typeText">Forma de pago</label>
+                                <input type="text" id="typeText" class="form-control form-control-lg" siez="17" value="@Model.FormaPago" readonly style="background-color:white"
+                                       placeholder="" minlength="19" maxlength="19" />
+
+                            </div>
+                        </div>
+                        <div data-mdb-input-init class="col-lg-6">
+                            <label class="form-label" for="typeText">Observaciones</label>
+                            <div data-mdb-input-init class="form-outline form-white mb-1">
+                                <textarea type="text" id="typeText" class="form-control form-control-lg" siez="17" readonly style="background-color:white">@Model.ComentariosCoti</textarea>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card text-white rounded-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0" style="color: black"><strong>PRESUPUESTO</strong></h5>
+                    </div>
+                    <form class="mt-4">
+                        @foreach (var item in Model.DetallePresupuesto)
+                        {
+                            <div class="card shadow-lg col-lg-12" style="background-color: #c3c3c3; color: white">
+                                <div class="card-body pb-lg-1 px-lg-2 px-md-1 pt-xl-2 pt-md-3">
+                                    <div class="row">
+                                        <div><strong>@item.AcctName</strong></div>
+                                    </div>
+                                    <div class="row" style="display: flex; justify-content: space-between;">
+                                        <div>Presupuesto</div>
+                                        <strong class="label-custom primary" style="text-align:right">Q.@string.Format("{0:#,##0.00}", @item.Saldo)</strong>
+                                    </div>
+                                    <div class="row" style="display: flex; justify-content: space-between;">
+                                        <div>Cotización</div><strong class="label-custom" style="background-color:peru">-Q.@string.Format("{0:#,##0.00}", @item.GastoActual)</strong>
+                                    </div>
+                                    <div class="row" style="display: flex; justify-content: space-between;">
+                                        <div>Saldo</div><strong class="label-custom" style="background-color:teal">Q.@string.Format("{0:#,##0.00}", @item.SaldoActual)</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="card rounded-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0" style="color: black"><strong>LISTADO DE ARTÍCULOS</strong></h5>
+                    </div>
+                    <form class="mt-4">
+                        <div style="height: 300px; overflow-y: auto;">
+                            @{
+                                if (@Model.Detalle != null)
+                                {
+                                    foreach (var item in Model.Detalle)
+                                    {
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="d-flex flex-row align-items-center">
+                                                        <div>
+                                                            <img src="~/Img/imagen-no-disponible.png" class="img-fluid rounded-3" alt="Shopping item" style="width: 65px;">
+                                                        </div>
+                                                        <div class="ms-3">
+                                                            <h5>@item.Dscription</h5>
+                                                            <p class="small mb-0">@item.LineText</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-row align-items-center">
+                                                        <div style="width: 70px;">
+                                                            <h5 class="fw-normal mb-0">@string.Format("{0:#,##0.00}", @item.Quantity)</h5>
+                                                        </div>
+                                                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                                            <div style="width: 150px; text-align: right">
+                                                                <span class="label-custom success"><h5 class="mb-0">Pu: @string.Format("Q.{0:#,##0.00}", @item.Price)</h5></span>
+                                                            </div>
+                                                            <div style="width: 150px; text-align:right">
+                                                                <span class="label-custom primary"><h5 class="mb-0" style="font-size: 12px;">Total: @string.Format("Q.{0:#,##0.00}", @item.LineTotal)</h5></span>
+                                                            </div>
+                                                            <div style="width: 150px; text-align:right">
+                                                                <span class="label-custom warning"><h5 class="mb-0" style="font-size: 9px;">@item.NombreCuenta</h5></span>
+                                                            </div>
+                                                        </div>
+                                                        <a href="" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        j++;
+                                    }
+                                }
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12" style="padding:10px;border-radius:5px">
+            <div id="totales" class="card rounded-3 col-lg-3" style="float: right; padding:15px">
+                <div class="d-flex justify-content-between">
+                    <p class="mb-2">Subtotal</p>
+                    <p class="mb-2"><strong>@string.Format("Q.{0:#,##0.00}", @Model.SubTotal)</strong></p>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <p class="mb-2">Iva</p>
+                    <p class="mb-2"><strong>@string.Format("Q.{0:#,##0.00}", @Model.Iva)</strong></p>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4">
+                    <p class="mb-2">Total compra</p>
+                    <p class="mb-2"><strong>@string.Format("Q.{0:#,##0.00}", @Model.Total)</strong></p>
+                </div>
+
+                @if (Model.CountCoti > 0)
+                {
+                    @*<button id="btnCotizacion" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg" href="#vistaCondicion" data-toggle="modal" value="@Model.DocEntrySolC">
+                        <div class="d-flex justify-content-between">
+                            <span>@string.Format("Q.{0:#,##0.00}", @Model.Total)</span>
+                            <span>Autorizar cotización<i class="fas fa-long-arrow-alt-right ms-2"></i></span>
+                        </div>
+                    </button>*@
+                    <button id="btnAutoCoti" type="button" class="btn btn-info btn-block btn-lg" value="@Model.DocEntrySolC">
+                        <div class="d-flex justify-content-between">
+                            <span>@string.Format("Q.{0:#,##0.00}", @Model.Total)</span>
+                            <span>Autorizar cotización<i class="fas fa-long-arrow-alt-right ms-2"></i></span>
+                        </div>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#btnAutoCoti').on('click', function () {
+            $('#globalLoading').show();
+
+            var parametrosEnviar = {
+                'DocEntry': @Model.DocEntry,
+                'DocEntrySol': @Model.DocEntrySolC
+            };
+
+            $.ajax({
+                url: '@Url.Action("ValidaAutorizacion", "SAPAutorizar")',
+                type: 'POST',
+                data: JSON.stringify(parametrosEnviar),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (respuesta) {                    
+                    if (respuesta.result == 300) {
+                        $("#globalLoading").hide();
+                        document.getElementById("tituloEncabezado").innerText = "Autorización supervisada";
+                        document.getElementById("tituloPregunta").innerText = "Esta cotización necesita una autorización superior \n¿Desea contiuar?";
+                        $('#vistaCondicion').modal('show');
+                    }
+                    else if (respuesta.result == 100 || respuesta.result == 0) {
+                        $("#globalLoading").hide();
+                        document.getElementById("tituloEncabezado").innerText = "¿Desea autorizar la cotización?";
+                        document.getElementById("tituloPregunta").innerText = "Este proceso asociará la solicitud con la cotización y generará una order de compra\n¿Continuar?";
+                        $('#vistaCondicion').modal('show');
+                    }else if (respuesta.result == -100)
+                    {
+                        window.location.href = '/SAPAutorizar/AutorizarSolicitudes'
+                    }
+            },
+            error: function (xhr, status, error) {                
+                $("#globalLoading").hide();
+                }
+            });
+        });
+    });
+</script>

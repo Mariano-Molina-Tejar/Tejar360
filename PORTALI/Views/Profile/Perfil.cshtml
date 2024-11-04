@@ -1,0 +1,131 @@
+﻿@model Entity.PortalPerfilEntity
+
+
+<style type="text/css">
+    form img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 1px solid;
+    }
+</style>
+<link href="~/Css/Profile.css" rel="stylesheet" />
+<div class="container rounded bg-white mt-5 mb-5 animated fadeIn">
+    @using (Html.BeginForm("Perfil", "Profile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row">
+            <div class="col-md-3 border-right">
+                <div class="row d-flex flex-column align-items-center text-center py-4">
+                    <div>
+                        <div class="d-flex flex-column align-items-center text-center">
+                            <img id="imgpreview" class="border border-primary mt-2 m-4" src="~/ImgUp/@Model.NombrePic"><span class="font-weight-bold">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row d-flex flex-column align-items-center text-center py-0">
+                    <div class="col-xl-12">
+                        <div class="col-xl-12">
+                            <input type="file" id="file" name="file" onchange="previewImg(event)" class="form-control-file" style="display: none;" />
+                            <input type="button" class="btn btn-success profile-button" value="Buscar" onclick="document.getElementById('file').click();" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 border-right">
+                <div class="p-3 py-2">
+                    <div class="row mt-2">
+                        <div class="row mt-1 p-3">
+                            <div class="col-md-12"><label class="labels">Código</label>@Html.TextBoxFor(m => m.UserId, null, new { @class = "form-control", @readonly = "readonly", Style = "background:#FFFFFF;" })</div>
+                        </div>
+                        <div class="col-md-12"><label class="labels">Nombres y apellidos</label>@Html.TextBoxFor(m => m.UserName, null, new { @class = "form-control", @placeholder = "Juan Perez", @readonly = "readonly", Style = "background:#FFFFFF;" })</div>
+                        <div class="col-md-12"><label class="labels">Usuario</label>@Html.TextBoxFor(m => m.UserCode, null, new { @class = " form-control", @readonly = "readonly", Style = "background:#FFFFFF;" })</div>
+                        <div class="col-md-12"><label class="labels">Correo</label>@Html.TextBoxFor(m => m.Email, null, new { @class = " form-control", @readonly = "readonly", Style = "background:#FFFFFF;" })</div>
+                        <div class="col-md-4">
+                            <label class="labels">Contraseña actual</label>
+                            <div id="p1" class="input-container">
+                                @Html.TextBoxFor(m => m.OldPassword, null, new { @class = " form-control", @type = "password" })
+                                <i class="material-icons visibility">visibility_off</i>
+                            </div>
+                            @Html.ValidationMessage("OldPassword", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="labels">Nueva contraseña</label>
+                            <div id="p2" class="input-container">
+                                @Html.TextBoxFor(m => m.Password, null, new { @class = " form-control", @type = "password" })
+                                <i class="material-icons visibility2">visibility_off</i>
+                            </div>
+                            @Html.ValidationMessage("Password", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="labels">Confirmar contraseña</label>
+                            <div id="p3" class="input-container">
+                                @Html.TextBoxFor(m => m.ConfirmPassword, null, new { @class = " form-control", @type = "password" })
+                                <i class="material-icons visibility3">visibility_off</i>
+                            </div>
+                            @Html.ValidationMessage("ConfirmPassword", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Guardar</button></div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.min.js'></script>
+<script type="text/javascript">
+
+    const visibilityToggle1 = document.querySelector(".visibility");
+    const visibilityToggle2 = document.querySelector(".visibility2");
+    const visibilityToggle3 = document.querySelector(".visibility3");
+    const input = document.querySelector("#p1 input");
+    const input2 = document.querySelector("#p2 input");
+    const input3 = document.querySelector("#p3 input");
+
+    var password1 = true;
+    visibilityToggle1.addEventListener('click', function () {
+        if (password1) {
+            input.setAttribute('type', 'text');
+            visibilityToggle1.innerHTML = "visibility";
+        } else {
+            input.setAttribute('type', 'password');
+            visibilityToggle1.innerHTML = "visibility_off";
+        }
+        password1 = !password1;
+    });
+
+    var password2 = true;
+    visibilityToggle2.addEventListener('click', function () {
+        if (password2) {
+            input2.setAttribute('type', 'text');
+            visibilityToggle2.innerHTML = "visibility";
+        } else {
+            input2.setAttribute('type', 'password');
+            visibilityToggle2.innerHTML = "visibility_off";
+        }
+        password2 = !password2;
+    });
+
+    var password3 = true;
+    visibilityToggle3.addEventListener('click', function () {
+        if (password3) {
+            input3.setAttribute('type', 'text');
+            visibilityToggle3.innerHTML = "visibility";
+        } else {
+            input3.setAttribute('type', 'password');
+            visibilityToggle3.innerHTML = "visibility_off";
+        }
+        password3 = !password3;
+    });
+
+    var previewImg = function (event) {
+        var result = document.getElementById("imgpreview");
+        result.src = URL.createObjectURL(event.target.files[0]);
+    };
+</script>

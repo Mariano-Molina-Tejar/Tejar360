@@ -1,0 +1,220 @@
+﻿@model Entity.CotizacionHeadEntity
+@{
+    int j = 1;
+    int _DocEntryCoti = 0;
+}
+<style>
+    .label-custom {
+        display: inline-block;
+        padding: 0.2em 0.6em;
+        font-size: 75%;
+        font-weight: 700;
+        color: #fff;
+        background-color: #007bff; /* color azul estilo bootstrap */
+        border-radius: 0.25rem;
+    }
+
+        .label-custom.success {
+            background-color: #28a745; /* verde */
+        }
+
+        .label-custom.warning {
+            background-color: #ffc107; /* amarillo */
+        }
+
+        .label-custom.danger {
+            background-color: #dc3545; /* rojo */
+        }
+        .label-custom.primary {
+            background-color: #210b0b; /*  */
+        }  
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<head>
+    <style>
+        .selected {
+            background-color: #4CAF50; /* Color del botón cuando está seleccionado */
+            color: white;
+        }
+    </style>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <section style="background-color: #fff;">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <div class="container-fluid py-2" style="background-color:white">
+            <div class="row d-flex justify-content-center align-items-center">
+                <div class="col">
+                    <div class="card">
+                        <div id="listaBotones" style="padding:10px;background-color:aliceblue;">         
+                            @if(Model.totalCotizaciones.Count == 0) 
+                            {
+                                <a>No hay cotizaciónes aún</a>
+                            }
+                            @foreach (var btn in Model.totalCotizaciones)
+                            {
+                                if (btn.DocEntryCoti > 0)
+                                {
+                                    <script>
+                                        window.location.href = '/SAPAutorizar/AutorizarSolicitudes'
+                                    </script>
+                                    return;
+                                }
+                                <button id="btnCotizacion" type="button" class="btn btn-outline-primary fa invoice" data-toggle="tooltip" data-placement="top" style="font-family:Arial;height:40px" title="Cotización" value="@btn.DocEntry" onclick="obtenerValor(this)">Cotización No. @btn.DocEntry</button>
+                            }
+                        </div>
+                        <div id="dvProductos" class="dvProductos"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="vistaCondicion" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column" style="text-align:center">
+                    <div class="icon-box">
+                        <img id="imgMsg" width="50" height="50" src="~/Img/Pregunta.png" />
+                    </div>
+                    <h4 id="tituloEncabezado" class="modal-title w-100">¿Desea autorizar la cotización?</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="tituloPregunta">Este proceso asociará la solicitud con la cotización y generará una order de compra<br />¿Continuar?</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                    <button id="btnSalvar" type="button" class="btn btn-success" data-dismiss="modal" onclick="Guardar()">Si</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $(document).ready(function () {
+        const boton = document.getElementById('btnCotizacion');
+        if (boton) {
+            boton.click(); // Simula el clic al botón automáticamente
+        } else {
+            $('#globalLoading').show();
+            $.ajax({
+                url: '@Url.Action("SinCotizar", "SAPAutorizar")',
+                type: 'POST',
+                data: { 'DocEntry': '@Model.DocEntrySol', 'Depto': '@Model.Depto' },
+                beforeSend: function () {
+                    $('#globalLoading').show();
+                },
+                success: function (respuesta) {
+                    $('#dvProductos').html(respuesta);
+                    $("#globalLoading").hide();
+                },
+                complete: function () {
+                    // Ocultar el loading cuando la solicitud termine
+                    $('#globalLoading').hide();
+                },
+                error: function (xhr, status, error) {
+                    $("#globalLoading").hide();
+                }
+            });
+        }
+    });
+
+    function obtenerValor(resp) {
+        $("#globalLoading").show();
+        _DocEntryCoti = resp.value;
+
+        var parametrosEnviar = {
+            'DocEntryCoti': resp.value
+        };
+
+        $.ajax({
+            url: '@Url.Action("BuscarDetalleBoton", "SAPAutorizar")',
+            type: 'POST',
+            data: { 'DocEntryCoti': resp.value },
+            beforeSend: function () {
+                $('#globalLoading').show();
+            },
+            success: function (respuesta) {
+                $('#dvProductos').html(respuesta);
+                $("#globalLoading").hide();
+            },
+            complete: function () {
+                $('#globalLoading').hide();
+            },
+            error: function (xhr, status, error) {
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    function Guardar() {
+        if (_DocEntryCoti == 0) {
+            mensaje("No hay cotización seleccionada", 2);
+            return;
+        }
+
+        $("#globalLoading").show();
+        var parametrosEnviar = {
+            'DocEntry': _DocEntryCoti,
+            'DocEntrySc': '@Model.DocEntrySol'
+        };
+
+        $.ajax({
+            url: '@Url.Action("AutorizaCotizacion", "SAPAutorizar")',
+            type: 'POST',
+            data: JSON.stringify(parametrosEnviar),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (respuesta) {
+                $("#globalLoading").hide();
+
+                if (respuesta.result == 1) {
+                    mensaje(respuesta.message, 1);
+                    window.location.href = '@Url.Action("AutorizarSolicitudes", "SAPAutorizar")';
+                } else
+                {
+                    mensaje(respuesta.message, 2);
+                }
+
+            },
+            error: function (xhr, status, error) {
+                alert("Error al ejecutar el proceso.")
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    document.querySelectorAll('#listaBotones .btn').forEach(button => {
+        button.addEventListener('click', function () {
+            // Eliminar la clase 'selected' de todos los botones
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('selected'));
+
+            // Añadir la clase 'selected' solo al botón clickeado
+            this.classList.add('selected');
+        });
+    });
+
+    function mensaje(msg, tipo) {
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "4000",
+            "timeOut": "5000"
+        }
+        if (tipo == 1) {
+            toastr.success(msg, 'Notificación');
+        } else if (tipo == 2) {
+            toastr.error(msg, 'Notificación');
+        }
+    }
+    </script>
+</body>
