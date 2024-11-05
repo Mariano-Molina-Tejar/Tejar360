@@ -217,7 +217,7 @@ namespace DAL
                 OleDbCommand iCommand = null;
                 iCommand = new OleDbCommand("sp_portal_listado_cotizaciones_detalle_productos", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
-                iCommand.Parameters.AddWithValue("@DocEntry", DocEntry);                
+                iCommand.Parameters.AddWithValue("@DocEntry", DocEntry);
 
                 try
                 {
@@ -433,7 +433,7 @@ namespace DAL
                 }
                 catch (Exception ex)
                 {
-                    return new List< PortalSolicitudDetalleEntity>();
+                    return new List< PortalSolicitudDetalleEntity>();  
                 }
             }
         }

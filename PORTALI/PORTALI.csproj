@@ -306,6 +306,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BilleteraComisionLigaController.cs" />
     <Compile Include="Controllers\CerrarSesionController.cs" />
+    <Compile Include="Controllers\ContratosController.cs" />
     <Compile Include="Controllers\CotizacionVentasController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DeliveryController.cs" />
@@ -1045,6 +1046,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Attchments\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Contratos\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
