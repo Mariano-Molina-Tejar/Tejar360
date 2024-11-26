@@ -37,7 +37,7 @@ namespace PORTALI.Controllers
             }
 
             if(data2 != null)
-            {                
+            {
                 dataFinal.AddRange(data2);
             }
             return PartialView("CargarTabla", dataFinal);
@@ -51,7 +51,7 @@ namespace PORTALI.Controllers
             cotizacionCompra.totalCotizaciones = DALPortalSolicitudCompra.TotalCotizacionesSolicitudCompra(DocEntry, sessions.Depto.ToString());
             cotizacionCompra.HeadDetail = new CotizacionCompraEntity();
             cotizacionCompra.HeadDetail.CountCoti = cotizacionCompra.totalCotizaciones.Count();
-            cotizacionCompra.HeadDetail.Detalle = new List<DetalleCompraEntity>();            
+            cotizacionCompra.HeadDetail.Detalle = new List<DetalleCompraEntity>();
             cotizacionCompra.Depto = sessions.Depto;
             cotizacionCompra.DocEntrySol = DocEntry;
             return View(cotizacionCompra);
@@ -96,40 +96,11 @@ namespace PORTALI.Controllers
         }
 
         [HttpPost]
-        public ActionResult ValidaAutorizacion(int DocEntry, int DocEntrySol)
+        public ActionResult ValidaAutorizacion(int DocEntry, int DocEntrySol)//NUEVA VERSION V2
         {
-            Reply datos = new Reply();
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
-            AutorizarCotizacionEntity autorizarCotizacionEntity = DALPortalCotizaciones.ValidarTablaAutorizaciones(sessions.Depto, DocEntry, sessions.CodeEmpleado, DocEntrySol);
-            if(autorizarCotizacionEntity.IdEstado > 0 && autorizarCotizacionEntity.EstadoAuto == "N")
-            {
-                if(autorizarCotizacionEntity.UserId1 == sessions.CodeEmpleado || autorizarCotizacionEntity.UserId2 == sessions.CodeEmpleado)
-                {
-                    datos.result = 100;
-                    //PUEDE AUTORIZAR
-                }
-                else 
-                {
-                    datos.result = -100;
-                    //PUEDE AUTORIZAR Y REGRESA AL LISTADO YA ACTUALIZADO
-                }
-            }
-            else if(autorizarCotizacionEntity.IdEstado > 0 && autorizarCotizacionEntity.EstadoAuto == "Y")
-            {
-                datos.result = -100;// YA ESTA AUTORIZADO Y DEBE REGRESAR AL LISTADO.
-            }
-            else
-            {
-                if (autorizarCotizacionEntity.UserId1 == sessions.CodeEmpleado || autorizarCotizacionEntity.UserId2 == sessions.CodeEmpleado)
-                {
-                    datos.result = 100;
-                    //PUEDE AUTORIZAR
-                }
-                else if (autorizarCotizacionEntity.UserId1 > 0)
-                {
-                    datos.result = 300;// SOLICITA UNA AUTORIZACION PARA QUE PUEDA SER APROBADO SUPERVISADO
-                }
-            }
+            SimpleEntity datos = new SimpleEntity();
+            datos = DALPortalCotizaciones.ValidacionesCotizacionesCompras(sessions.Depto, DocEntry, sessions.CodeEmpleado, DocEntrySol);
             return Json(datos, JsonRequestBehavior.AllowGet);
         }
 

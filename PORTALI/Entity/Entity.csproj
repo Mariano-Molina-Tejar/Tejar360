@@ -86,6 +86,7 @@
     <Compile Include="PortalGerencialRankingTrimestralEntity.cs" />
     <Compile Include="PortalListadoAsesoresEntity.cs" />
     <Compile Include="PortalListadoDeptosEntity.cs" />
+    <Compile Include="PortalListadoGeneralEntity.cs" />
     <Compile Include="PortalMantSolicitudCompraEntity.cs" />
     <Compile Include="PortalMetaVentaTiendaEntity.cs" />
     <Compile Include="PortalPerfilEntity.cs" />
@@ -102,8 +103,11 @@
     <Compile Include="RecepcionProductosEntity.cs" />
     <Compile Include="RecepcionProductosModalDetalleEntity.cs" />
     <Compile Include="Reply.cs" />
+    <Compile Include="ReporteDetalleProductoMargenEntity.cs" />
+    <Compile Include="ReporteMargenEntity.cs" />
     <Compile Include="SessionEntity.cs" />
     <Compile Include="SessionLoginEntity.cs" />
+    <Compile Include="SimpleEntity.cs" />
     <Compile Include="SolicitudCompraEncabezadoEntity.cs" />
     <Compile Include="SystemDateTimeEntity.cs" />
   </ItemGroup>

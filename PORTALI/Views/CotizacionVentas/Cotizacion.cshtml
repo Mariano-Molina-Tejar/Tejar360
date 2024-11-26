@@ -3,8 +3,17 @@
 <link href="~/Css/styleCotizacionVentas.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="~/Scripts/bootstrap.min.js"></script>
 <link href="~/Css/font-awesome.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 <style>
     body {
         background-color: white;
@@ -17,10 +26,17 @@
         cursor: pointer;
     }
 
+    #btnFiltro .input-group-text {
+        background-color: #171ac2; /* Color naranja */
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
     /* Input con bordes redondeados a la izquierda */
     #txtBuscar {
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
     }
 
         /* Quitar borde del input cuando el botón está dentro */
@@ -31,6 +47,91 @@
     .input-group .form-control {
         height: 45px;
     }
+
+    #btn-mas {
+        display: none;
+    }
+
+    .container {
+        width: 80px;
+        position: fixed;
+        bottom: 37px;
+        right: 10px;
+    }
+
+    .redes a, .btn-mas label {
+        display: block;
+        text-decoration: none;
+        background: cornflowerblue;
+        color: #fff;
+        width: 55px;
+        height: 55px;
+        line-height: 55px;
+        text-align: center;
+        border-radius: 50%;
+        box-shadow: 0px 1px 10px rgba(0,0,0,0.4);
+        transition: all 800ms ease;
+    }
+
+        .redes a:hover {
+            background: #fff;
+            color: cornflowerblue;
+        }
+
+    .redes a {
+        margin-bottom: -15px;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    #btn-mas:checked ~ .redes a {
+        margin-bottom: 5px;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .btn-mas label {
+        cursor: pointer;
+        background: cornflowerblue;
+        font-size: 23px;
+    }
+
+    #btn-mas:checked ~ .btn-mas label {
+        transform: rotate(135deg);
+        font-size: 25px;
+    }
+
+    #qr-reader {
+        width: 100%;
+        height: 300px;
+        display: none;
+        background-color: #f3f3f3;
+    }
+
+    /* Estilos para la ventanita de filtro */
+    .filtro-box {
+        display: none; /* Oculto inicialmente */
+        position: absolute;
+        top: 100%; /* Justo debajo del botón */
+        left: 0;
+        z-index: 10;
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        width: 300px; /* Ancho fijo */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        /* Estilo para los formularios dentro del filtro */
+        .filtro-box .form-group {
+            margin-bottom: 10px;
+        }
+
+        /* Botón de aplicar dentro del filtro */
+        .filtro-box button {
+            margin-top: 10px;
+        }
 </style>
 <div>
     <div class="row">
@@ -38,8 +139,57 @@
             <div class="row justify-content-center">
                 <div class="col-xl-8">
                     <div class="input-group">
+                        <!-- Botón de Filtro -->
+                        <div id="btnFiltro" class="input-group-append" style="cursor: pointer; position: relative;">
+                            <span class="input-group-text">
+                                <i class="fa fa-filter"></i>
+                            </span>
+                            <!-- Ventana de Filtro -->
+                            <div id="ventanaFiltro" class="filtro-box">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="categoria">Categoría</label>
+                                        <select id="categoria" class="form-control">
+                                            <option value="">Seleccione una categoría</option>
+                                            <option value="electronica">Electrónica</option>
+                                            <option value="ropa">Ropa</option>
+                                            <option value="hogar">Hogar</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoria">Sub-Categoría</label>
+                                        <select id="categoria" class="form-control">
+                                            <option value="">Seleccione una sub-categoría</option>
+                                            <option value="electronica">Electrónica</option>
+                                            <option value="ropa">Ropa</option>
+                                            <option value="hogar">Hogar</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoria">Formato</label>
+                                        <select id="categoria" class="form-control">
+                                            <option value="">Seleccione un formato</option>
+                                            <option value="electronica">Electrónica</option>
+                                            <option value="ropa">Ropa</option>
+                                            <option value="hogar">Hogar</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="precioMin">Precio mínimo</label>
+                                        <input type="number" id="precioMin" class="form-control" placeholder="Ej: 100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="precioMax">Precio máximo</label>
+                                        <input type="number" id="precioMax" class="form-control" placeholder="Ej: 1000">
+                                    </div>
+                                    <button type="button" id="aplicarFiltro" class="btn btn-primary btn-block">Aplicar</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Input de búsqueda -->
                         <input id="txtBuscar" autocomplete="off" type="text" class="form-control text-uppercase" placeholder="Buscar producto..." />
-                        <div id="btnBuscar" class="input-group-append">
+                        <!-- Botón de buscar -->
+                        <div id="btnBuscar" class="input-group-append" style="cursor: pointer;">
                             <span class="input-group-text">
                                 <i class="fa fa-search"></i>
                             </span>
@@ -50,8 +200,20 @@
         </div>
     </div>
 </div>
+<div id="qr-reader"></div>
+<p id="resultado"></p>
+
+<div class="container">
+    <input type="checkbox" id="btn-mas">
+    <div class="redes">
+        <a href="javascript:void(0);" class="fa-sharp fa-solid fa-qrcode" data-toggle="tooltip" data-placement="left" id="btnEscanear" title="Escanear"></a>
+    </div>
+    <div class="btn-mas">
+        <label for="btn-mas" class="fa fa-plus"></label>
+    </div>
+</div>
+
 <div id="resultadosBusqueda"></div>
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <script>
     $(document).ready(function () {
         $('#txtBuscar').on('keydown', function (event) {
@@ -82,4 +244,134 @@
         });
         $("#globalLoading").hide();
     }
+
+    $(document).ready(function () {
+        let qrReader;  // Variable para el lector QR
+
+        // Verificamos si el dispositivo es móvil
+        function isMobileDevice() {
+            return /Mobi|Android/i.test(navigator.userAgent);
+        }
+
+        // Función para iniciar el escaneo
+        function startQRScanner() {
+            const qrContainer = $("#qr-reader");
+
+            // Verificar si el dispositivo es móvil
+            if (!isMobileDevice()) {
+                alert("Este escaneo solo está disponible en dispositivos móviles.");
+                return;
+            }
+
+            // Si aún no se ha creado el lector, lo inicializamos
+            if (!qrReader) {
+                qrReader = new Html5Qrcode("qr-reader");
+            }
+
+            qrContainer.show();  // Mostrar el contenedor del lector QR
+
+            // Iniciar el escaneo con la cámara del dispositivo
+            qrReader.start(
+                { facingMode: "environment" },  // Usar la cámara trasera del móvil
+                {
+                    fps: 10,  // Velocidad de fotogramas para el escaneo
+                    qrbox: { width: 250, height: 250 }  // Tamaño del cuadro de escaneo
+                },
+                qrCodeMessage => {
+                    // Procesamos el mensaje QR escaneado
+                    alert("Código escaneado: " + qrCodeMessage);
+                    // Detener el lector y ocultar el contenedor después de escanear
+                    qrReader.stop().then(() => {
+                        qrContainer.hide();
+                    }).catch(err => {
+                        console.error("Error al detener el lector QR:", err);
+                    });
+                },
+                errorMessage => {
+                    // Muestra los errores de escaneo
+                    console.warn("Error de escaneo: ", errorMessage);
+                }
+            ).catch(err => {
+                console.error("Error al iniciar el lector QR: ", err);
+                alert("No se pudo acceder a la cámara. Verifica los permisos y vuelve a intentar.");
+            });
+        }
+
+        // Al hacer clic en el botón de escanear
+        $("#btnEscanear").click(function (event) {
+            event.preventDefault();  // Evitar comportamiento predeterminado
+
+            startQRScanner();  // Iniciar el escaneo
+        });
+    });
+    
+
+    $(document).ready(function () {
+        let scannedData = "";
+        let lastKeyTime = Date.now();
+
+        $(document).on("keypress", function (event) {
+            const currentTime = Date.now();
+            const timeDifference = currentTime - lastKeyTime;
+
+            // Si la diferencia de tiempo es muy corta, consideramos que es un escaneo
+            if (timeDifference < 50) {
+                scannedData += event.key;
+            } else {
+                // Reinicia la acumulación si el tiempo entre teclas fue largo (posiblemente manual)
+                scannedData = event.key;
+            }
+
+            // Actualiza el último tiempo de tecla
+            lastKeyTime = currentTime;
+
+            // Al final de un escaneo, los lectores envían "Enter"
+            if (event.key === "Enter") {
+                handleScannedCode(scannedData);
+                scannedData = "";  // Resetea para el próximo escaneo
+            }
+        });
+
+        function handleScannedCode(qrCodeMessage) {
+            if (qrCodeMessage) {
+                window.location.href = '@Url.Action("Detalles", "CotizacionVentas")?ItemCode=' + encodeURIComponent(qrCodeMessage).replace("'", "-").replace("Enter", "");
+            }
+        }
+    });
+
+    document.getElementById('btnFiltro').addEventListener('click', function () {
+        const filtroBox = document.getElementById('ventanaFiltro');
+        // Alternar la visibilidad del filtro
+        filtroBox.style.display = filtroBox.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Cerrar el filtro si se hace clic fuera de él
+    document.addEventListener('click', function (event) {
+        const filtroBox = document.getElementById('ventanaFiltro');
+        const btnFiltro = document.getElementById('btnFiltro');
+        if (!btnFiltro.contains(event.target) && !filtroBox.contains(event.target)) {
+            filtroBox.style.display = 'none';
+        }
+    });
+
+    // Evitar que el clic en la ventana de filtro se propague y cierre la ventana
+    document.getElementById('ventanaFiltro').addEventListener('click', function (event) {
+        event.stopPropagation();  // Esto evita que el clic se propague y active el cierre
+    });
+
+    // Acción al presionar el botón "Aplicar"
+    document.getElementById('aplicarFiltro').addEventListener('click', function () {
+        const categoria = document.getElementById('categoria').value;
+        const precioMin = document.getElementById('precioMin').value;
+        const precioMax = document.getElementById('precioMax').value;
+
+        console.log('Filtros aplicados:', { categoria, precioMin, precioMax });
+        alert('Filtros aplicados. ¡Revise la consola!');
+
+        // Ocultar la ventanita después de aplicar los filtros
+        document.getElementById('ventanaFiltro').style.display = 'none';
+    });
+
+
+
 </script>

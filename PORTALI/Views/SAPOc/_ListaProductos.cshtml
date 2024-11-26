@@ -16,6 +16,8 @@
              <td style="width:350px">@item.NombreCuenta</td>
              <td style="width:110px"><input class="form-control" type="number" value="1" style="text-align:right" /></td>             
              <td style="display:none">@string.Format("Q.{0:#,##0.00}", @item.Prespuesto)</td>
+             <td style="width:350px">@item.CardName</td>
+             <td style="display:none">@item.CardCode</td>
              <td style="width:80px;"><button type="button" class="btn btn-outline-primary fa fa-plus-circle" onclick="getValues(this)"></button></td>
          </tr>
     }

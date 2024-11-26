@@ -21,6 +21,8 @@ namespace Entity
         public double Price { get; set; }
         public double LineTotal { get; set; }
         public string NotasLine { get; set; }
+        public string CardCode { get; set; }
+        public string CardName { get; set; }
     }
 
     public class GetAllProductsEntity 

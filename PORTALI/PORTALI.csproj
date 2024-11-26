@@ -309,9 +309,11 @@
     <Compile Include="Controllers\ContratosController.cs" />
     <Compile Include="Controllers\CotizacionVentasController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\DashboardGerenteVentasController.cs" />
     <Compile Include="Controllers\DeliveryController.cs" />
     <Compile Include="Controllers\GerenciaRankinController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MargenController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\SAPAutorizarController.cs" />
     <Compile Include="Controllers\SAPAutorizaSuperiorController.cs" />
@@ -1041,6 +1043,9 @@
     <Content Include="Views\CotizacionVentas\Cotizacion.cshtml" />
     <Content Include="Views\CotizacionVentas\_listadoProductos.cshtml" />
     <Content Include="Views\CotizacionVentas\Detalles.cshtml" />
+    <Content Include="Views\Margen\Margen.cshtml" />
+    <Content Include="Views\Margen\_TablaMargenes.cshtml" />
+    <Content Include="Views\Margen\DetalleProductos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1101,7 +1106,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>53491</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44312/</IISUrl>
+          <IISUrl>http://localhost:44312/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

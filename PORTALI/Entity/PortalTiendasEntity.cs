@@ -10,5 +10,6 @@ namespace Entity
     {
         public string WhsCode { get; set; }
         public string WhsName { get; set; }
+        public string Selected { get; set; }
     }
 }

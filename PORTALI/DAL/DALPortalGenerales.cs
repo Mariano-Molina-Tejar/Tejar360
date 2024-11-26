@@ -44,6 +44,47 @@ namespace DAL
                 
             }
         }
+
+        public static List<PortalTiendasEntity> getAllTiendas(string WhsCode, string UserCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<PortalTiendasEntity> ListadoTiendas = new List<PortalTiendasEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_portal_get_tiendas_v2", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@UserCode", UserCode);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        ListadoTiendas = (from row in dt.AsEnumerable()
+                                          select new PortalTiendasEntity()
+                                          {
+                                              WhsCode = row["WhsCode"].ToString(),
+                                              WhsName = row["WhsName"].ToString(),
+                                              Selected = (row["WhsCode"].ToString() == WhsCode ? "Selected" : "")
+                                          }).ToList();
+                        return ListadoTiendas;
+                    }
+
+                    return ListadoTiendas;
+                }
+                catch (Exception ex)
+                {
+                    return ListadoTiendas;
+                }
+            }
+        }
+
         public static List<PortalTiendasEntity> getAlmacenes(int IdSucursal)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
@@ -264,7 +305,7 @@ namespace DAL
                 }
             }
         }
-        public static List<BusquedaDetalleProductoEntity> BusquedaDetalleProducto(string Dscription, int Depto)
+        public static List<BusquedaDetalleProductoEntity> BusquedaDetalleProducto(string Dscription, int Depto, string CardCode = null)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
             using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
@@ -274,6 +315,7 @@ namespace DAL
                 iCommand.CommandType = CommandType.StoredProcedure;
                 iCommand.Parameters.AddWithValue("@ItemName", Dscription);
                 iCommand.Parameters.AddWithValue("@Depto", Depto);
+                iCommand.Parameters.AddWithValue("@CardCode", (CardCode == "" ? null : CardCode));
 
                 try
                 {
@@ -290,7 +332,9 @@ namespace DAL
                                     Dscription = row["ItemName"].ToString(),
                                     Cuenta = row["Cuenta"].ToString(),
                                     NombreCuenta = row["AcctName"].ToString(),
-                                    Prespuesto = double.Parse(row["Prespuesto"].ToString())
+                                    Prespuesto = double.Parse(row["Prespuesto"].ToString()),
+                                    CardCode = row["CardCode"].ToString(),
+                                    CardName = row["CardName"].ToString()
 
                                 }).ToList();
                     return bono;

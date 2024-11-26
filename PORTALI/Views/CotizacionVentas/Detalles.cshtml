@@ -1,4 +1,5 @@
-﻿@model Entity.DetalleBusquedaProductosEntity
+﻿@{ var imageUrl = string.IsNullOrEmpty(Model.Encabezado.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : Model.Encabezado.Imagen; }
+@model Entity.DetalleBusquedaProductosEntity
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,12 +8,255 @@
     <title>Detalle de Producto</title>
     <link href="~/Css/styleCotizacionDetalle.css" rel="stylesheet" />
     <style>
+        .container {
+          margin-top:30px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Source Sans Pro';
+          font-weight:700;
+        }
+
+        .fancyTab {
+	        text-align: center;
+          padding:15px 0;
+          background-color: #eee;
+	        box-shadow: 0 0 0 1px #ddd;
+	        top:15px;
+          transition: top .2s;
+        }
+
+        .fancyTab.active {
+          top:0;
+          transition:top .2s;
+        }
+
+        .whiteBlock {
+          display:none;
+        }
+
+        .fancyTab.active .whiteBlock {
+          display:block;
+          height:2px;
+          bottom:-2px;
+          background-color:#fff;
+          width:99%;
+          position:absolute;
+          z-index:1;
+        }
+
+        .fancyTab a {
+	        font-family: 'Source Sans Pro';
+	        font-size:1.65em;
+	        font-weight:300;
+          transition:.2s;
+          color:#333;
+        }
+
+        .fancyTab .hidden-xs {
+          white-space:nowrap;
+        }
+
+        .fancyTabs {
+	        border-bottom:2px solid #ddd;
+          margin: 15px 0 0;
+        }
+
+        li.fancyTab a {
+          padding-top: 15px;
+          top:-15px;
+          padding-bottom:0;
+        }
+
+        li.fancyTab.active a {
+          padding-top: inherit;
+        }
+
+        .fancyTab .fa {
+          font-size: 40px;
+	        width:100%;
+	        padding: 15px 0 5px;
+          color:#666;
+        }
+
+        .fancyTab.active .fa {
+          color: #cfb87c;
+        }
+
+        .fancyTab a:focus {
+	        outline:none;
+        }
+
+        .fancyTabContent {
+          border-color: transparent;
+          box-shadow: 0 -2px 0 -1px #fff, 0 0 0 1px #ddd;
+          padding: 30px 15px 15px;
+          position:relative;
+          background-color:#fff;
+        }
+
+        .nav-tabs > li.fancyTab.active > a,
+        .nav-tabs > li.fancyTab.active > a:focus,
+        .nav-tabs > li.fancyTab.active > a:hover {
+	        border-width:0;
+        }
+
+        .nav-tabs > li.fancyTab:hover {
+	        background-color:#f9f9f9;
+	        box-shadow: 0 0 0 1px #ddd;
+        }
+
+        .nav-tabs > li.fancyTab.active:hover {
+          background-color:#fff;
+          box-shadow: 1px 1px 0 1px #fff, 0 0px 0 1px #ddd, -1px 1px 0 0px #ddd inset;
+        }
+
+        .nav-tabs > li.fancyTab:hover a {
+	        border-color:transparent;
+        }
+
+        .nav.nav-tabs .fancyTab a[data-toggle="tab"] {
+          background-color:transparent;
+          border-bottom:0;
+        }
+
+        .nav-tabs > li.fancyTab:hover a {
+          border-right: 1px solid transparent;
+        }
+
+        .nav-tabs > li.fancyTab > a {
+	        margin-right:0;
+	        border-top:0;
+          padding-bottom: 30px;
+          margin-bottom: -30px;
+        }
+
+        .nav-tabs > li.fancyTab {
+	        margin-right:0;
+	        margin-bottom:0;
+        }
+
+        .nav-tabs > li.fancyTab:last-child a {
+          border-right: 1px solid transparent;
+        }
+
+        .nav-tabs > li.fancyTab.active:last-child {
+          border-right: 0px solid #ddd;
+	        box-shadow: 0px 2px 0 0px #fff, 0px 0px 0 1px #ddd;
+        }
+
+        .fancyTab:last-child {
+          box-shadow: 0 0 0 1px #ddd;
+        }
+
+        .tabs .nav-tabs li.fancyTab.active a {
+	        box-shadow:none;
+          top:0;
+        }
+
+
+        .fancyTab.active {
+          background: #fff;
+	        box-shadow: 1px 1px 0 1px #fff, 0 0px 0 1px #ddd, -1px 1px 0 0px #ddd inset;
+          padding-bottom:30px;
+        }
+
+        .arrow-down {
+	        display:none;
+          width: 0;
+          height: 0;
+          border-left: 20px solid transparent;
+          border-right: 20px solid transparent;
+          border-top: 22px solid #ddd;
+          position: absolute;
+          top: -1px;
+          left: calc(50% - 20px);
+        }
+
+        .arrow-down-inner {
+          width: 0;
+          height: 0;
+          border-left: 18px solid transparent;
+          border-right: 18px solid transparent;
+          border-top: 12px solid #fff;
+          position: absolute;
+          top: -22px;
+          left: -18px;
+        }
+
+        .fancyTab.active .arrow-down {
+          display: block;
+        }
+
+        .product-card {
+            max-width: 400px;
+            margin: 0 auto;
+            border: 1px solid #000;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-image {
+            width: 100%;
+            height: auto;
+            border: 5px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .horizontal-scroll {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap; /* Permite que las tarjetas se ajusten en filas si no caben horizontalmente */
+        }
+
+        .product-card {
+            display: flex;
+            flex-direction: column; /* Asegura que los elementos dentro estén en columna */
+            align-items: center; /* Centra los elementos (imagen, texto) horizontalmente */
+            text-align: center;
+            width: 150px; /* Ajusta el ancho de la tarjeta */
+            padding: 10px;
+            border: 1px solid #ddd; /* Opcional: Agrega un borde para mayor claridad */
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para estética */
+            background-color: #fff; /* Fondo blanco */
+        }
+
+            .product-card img.card-img-top {
+                width: 100%; /* Imagen responsiva */
+                height: auto; /* Mantiene la proporción */
+                max-height: 100px; /* Opcional: límite de altura para la imagen */
+                object-fit: contain; /* Ajusta la imagen sin distorsión */
+            }
+
+        .card-info {
+            display: flex;
+            flex-direction: column; /* Asegura que ItemName y ItemCode estén en filas */
+            gap: 5px; /* Espacio entre los textos */
+            margin-top: 10px; /* Separación de la imagen */
+        }
+
+        .item-name, .item-code {
+            font-size: 12px; /* Tamaño pequeño del texto */
+            color: #333; /* Color de texto */
+            text-decoration: none; /* Sin subrayado */
+            word-wrap: break-word; /* Asegura que el texto no se desborde */
+        }
+
+            .item-name:hover, .item-code:hover {
+                color: #007bff; /* Color al pasar el cursor */
+            }
+
+
     </style>
 </head>
 <body>
     <div class="product-container">
         <div class="product-image">
-            <img src="~/Img/imagen-no-disponible.png" alt="Producto" />
+            <img src="@imageUrl" alt="ElTejar" />
         </div>
         <div class="product-details">
             <h1>@Model.Encabezado.ItemName</h1>
@@ -20,29 +264,94 @@
                 <span class="price-label">Precio Normal: </span><span class="price">@string.Format("Q.{0:#,##0.00}", @Model.Encabezado.PrecioBeneficio)</span><br />
                 <span class="price-label">Precio Efectivo: </span><span class="price">@string.Format("Q.{0:#,##0.00}", @Model.Encabezado.PrecioVenta)</span>
                 <span class="price-label">Formato: </span><span>@Model.Encabezado.Formato</span>
-                <p class="stock"><strong>Stock Total:</strong> <a style="font-size:18px;color:darkslateblue"><strong>@Model.Encabezado.Stock</strong></a></p>
-            </div>
-            <div class="product-specs">
-                <h3>Disponibilidad por Tienda</h3>
-                <table id="tblBusqueda" class="table table-hover table-responsive">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th class="tienda-column">Tienda</th>
-                            <th>Stock</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultadosBusqueda">
-                        @foreach (var item in Model.Tiendas)
-                        {
-                <tr>
-                    <td class="tienda-column">@item.WhsName</td>
-                    <td>@item.Stock</td>
-                </tr>}
-                    </tbody>
-                </table>
+                <p class="stock"><strong>Existencia en mi tienda:</strong> <a style="font-size:18px;color:darkslateblue"><strong>@Model.Encabezado.Stock</strong></a></p>
+                <a class="btn btn-warning bold-btn">
+                    <i class="fa fa-shopping-cart" style="font-size: 16px; margin-right: 5px;"></i>
+                    <strong>Agregar al carrito</strong>
+                </a>
             </div>
         </div>
-    </div>
 
+        <div class="row col-lg-12" style="text-align: center;">
+            
+            @if(Model.Alternativos.Count == 0)
+            {
+            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+                <span class="price-label" style="font-size:15px; color:gray; font-style:italic;">No hay productos alternos</span>
+            </div>
+            }
+            else 
+            {
+                <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+                    <span class="price-label" style="font-size:18px;">Productos alternos</span>
+                </div>
+                <div class="horizontal-scroll" style="margin-top:10px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    @foreach (var item in Model.Alternativos)
+                    {
+                        <div class="product-card">
+                            <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" class="card-img-top" alt="@item.ItemName" />
+                            <div class="card-info">
+                                <a class="item-name" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })'>@item.ItemName</a>
+                                <a class="item-code" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })'>@item.ItemCode</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="row col-lg-12">
+            <div class="col-lg-6">
+                <div class="product-specs text-center">
+                    <span class="price-label" style="font-size:18px;">Disponibilidad por Tienda</span>
+                    <table id="tblBusqueda" class="table table-hover table-responsive">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th class="tienda-column">Tienda</th>
+                                <th>Existencia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultadosBusqueda">
+                            @foreach (var item in Model.Tiendas)
+                            {
+                                <tr>
+                                    <td class="tienda-column">@item.WhsName</td>
+                                    <td>@item.Stock</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @if(Model.VentaCruzada.Count == 0) 
+            {
+                <div class="product-specs">
+                    <span class="price-label" style="font-size:15px; color:gray; font-style:italic;">No hay datos configurados</span>
+                </div>                
+            }
+            else 
+            {
+                <div class="col-lg-6">
+                    <div class="product-specs">
+                        <!-- Asegura que el texto esté centrado -->
+                        <span class="price-label" style="font-size:18px; display:block; text-align:center;">Venta cruzada</span>
+                        <div class="horizontal-scroll" style="margin-top:10px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                            @foreach (var item in Model.VentaCruzada)
+                            {
+                                <div class="product-card" style="text-align: center;">
+                                    <!-- Centrar contenido dentro de cada tarjeta -->
+                                    <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" class="card-img-top" alt="@item.ItemName" />
+                                    <div class="card-info" style="margin-top: 5px;">
+                                        <a class="item-name" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })' style="display: block; font-size: 14px; font-weight: bold;">@item.ItemName</a>
+                                        <a class="item-code" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })' style="display: block; font-size: 12px; color: gray;">@item.ItemCode</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </body>
 </html>

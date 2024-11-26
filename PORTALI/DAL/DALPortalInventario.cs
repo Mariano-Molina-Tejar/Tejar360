@@ -12,6 +12,94 @@ namespace DAL
 {
     public class DALPortalInventario
     {
+        public static List<BuscarProductoEntity> ListaProductosVentaCruzada(string ItemName, string WhsCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<BuscarProductoEntity> listadoProductos = new List<BuscarProductoEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_buscar_productos_venta_cruzada", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@ItemName", ItemName);
+                iCommand.Parameters.AddWithValue("@WhsCode", WhsCode);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listadoProductos = (from row in dt.AsEnumerable()
+                                            select new BuscarProductoEntity()
+                                            {
+                                                ItemCode = row["ItemCode"].ToString(),
+                                                ItemName = row["ItemName"].ToString(),
+                                                WhsCode = row["WhsCode"].ToString(),
+                                                PrecioBeneficio = double.Parse(row["PrecioBeneficio"].ToString()),
+                                                PrecioVenta = double.Parse(row["PrecioVenta"].ToString()),
+                                                Stock = double.Parse(row["Stock"].ToString()),
+                                                Imagen = row["UrlImagen"].ToString()
+                                            }).ToList();
+                        return listadoProductos;
+                    }
+
+                    return listadoProductos;
+                }
+                catch (Exception ex)
+                {
+                    return new List<BuscarProductoEntity>();
+                }
+            }
+        }
+        public static List<BuscarProductoEntity> ListaProductosAltenativos(string ItemName, string WhsCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<BuscarProductoEntity> listadoProductos = new List<BuscarProductoEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_buscar_productos_alternativo", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@ItemName", ItemName);
+                iCommand.Parameters.AddWithValue("@WhsCode", WhsCode);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listadoProductos = (from row in dt.AsEnumerable()
+                                            select new BuscarProductoEntity()
+                                            {
+                                                ItemCode = row["ItemCode"].ToString(),
+                                                ItemName = row["ItemName"].ToString(),
+                                                WhsCode = row["WhsCode"].ToString(),
+                                                PrecioBeneficio = double.Parse(row["PrecioBeneficio"].ToString()),
+                                                PrecioVenta = double.Parse(row["PrecioVenta"].ToString()),
+                                                Stock = double.Parse(row["Stock"].ToString()),
+                                                Imagen = row["UrlImagen"].ToString()
+                                            }).ToList();
+                        return listadoProductos;
+                    }
+
+                    return listadoProductos;
+                }
+                catch (Exception ex)
+                {
+                    return new List<BuscarProductoEntity>();
+                }
+            }
+        }
         public static List<BusquedaDetalleTiendasEntity> ListadoProductosStockTiendas(string ItemCode, string WhsCode)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
@@ -81,6 +169,7 @@ namespace DAL
                         encabezado.PrecioVenta = double.Parse(dt.Rows[0]["PrecioVenta"].ToString());
                         encabezado.PrecioBeneficio = double.Parse(dt.Rows[0]["PrecioBeneficio"].ToString());
                         encabezado.Formato = dt.Rows[0]["Formato"].ToString();
+                        encabezado.Imagen = dt.Rows[0]["UrlImagen"].ToString();
                     }
 
                     return encabezado;
@@ -122,7 +211,7 @@ namespace DAL
                                                 PrecioBeneficio = double.Parse(row["PrecioBeneficio"].ToString()),
                                                 PrecioVenta = double.Parse(row["PrecioVenta"].ToString()),
                                                 Stock = double.Parse(row["Stock"].ToString()),
-                                                Imagen = ""
+                                                Imagen = row["UrlImagen"].ToString()
                                             }).ToList();
                         return listadoProductos;
                     }

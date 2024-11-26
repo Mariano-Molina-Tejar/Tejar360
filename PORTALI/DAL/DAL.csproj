@@ -168,6 +168,8 @@
     <Compile Include="DALPortalGenerales.cs" />
     <Compile Include="DALPortalInventario.cs" />
     <Compile Include="DALPortalLogin.cs" />
+    <Compile Include="DALPortalMantProductos.cs" />
+    <Compile Include="DALPortalMargenUtilidad.cs" />
     <Compile Include="DALPortalRankingTrimestral.cs" />
     <Compile Include="DALPortalRecepcionProductos.cs" />
     <Compile Include="DALPortalSolicitudCompra.cs" />

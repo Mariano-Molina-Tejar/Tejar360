@@ -29,12 +29,15 @@ namespace PORTALI.Controllers
             _listado = DALPortalInventario.ListadoProductos(NombreProducto, sessions.WhsCode);
             return PartialView("_listadoProductos", _listado);
         }
+
         public ActionResult Detalles(string ItemCode)
         {
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
             DetalleBusquedaProductosEntity detalle = new DetalleBusquedaProductosEntity();
-            detalle.Encabezado = DALPortalInventario.DetalleSingle(ItemCode, "FTR-TZ1");
-            detalle.Tiendas = DALPortalInventario.ListadoProductosStockTiendas(ItemCode, sessions.WhsCode);
+            detalle.Encabezado = DALPortalInventario.DetalleSingle(ItemCode.Replace("'","-").Replace("Enter",""), sessions.WhsCode);
+            detalle.Tiendas = DALPortalInventario.ListadoProductosStockTiendas(ItemCode.Replace("'", "-").Replace("Enter", ""), sessions.WhsCode);
+            detalle.Alternativos = DALPortalInventario.ListaProductosAltenativos(ItemCode.Replace("'", "-").Replace("Enter", ""), sessions.WhsCode);
+            detalle.VentaCruzada = DALPortalInventario.ListaProductosVentaCruzada(ItemCode.Replace("'", "-").Replace("Enter", ""), sessions.WhsCode);
             return View(detalle);
         }
     }

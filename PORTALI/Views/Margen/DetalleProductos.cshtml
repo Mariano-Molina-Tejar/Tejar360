@@ -1,0 +1,115 @@
+﻿@model List<Entity.ReporteDetalleProductoMargenEntity>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa; /* Color de fondo suave */
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-container {
+        background-color: #ffffff; /* Fondo blanco */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+        max-width: 90%; /* Ajusta el ancho máximo */
+        margin: 30px auto; /* Centrado */
+        padding: 0; /* Sin padding interno */
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 85vh; /* Ajusta el alto total del contenedor */
+    }
+
+    h2 {
+        text-align: center;
+        color: #333; /* Color del texto */
+        margin: 0;
+        padding: 10px;
+        background-color: #ffffff; /* Fondo blanco */
+        position: sticky; /* Fijo en la parte superior */
+        top: 0;
+        z-index: 200;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .table-container {
+        flex: 1;
+        overflow-y: auto; /* Scroll vertical para la tabla */
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 auto;
+    }
+
+        .styled-table th, .styled-table td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        .styled-table th {
+            background-color: #343a40;
+            color: white;
+            position: sticky; /* Encabezados fijos al hacer scroll */
+            top: 38px; /* Altura del título superior */
+            z-index: 100;
+        }
+
+        .styled-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .styled-table tr:hover {
+            background-color: #ddd;
+        }
+
+    #filterTienda {
+        max-width: 200px;
+        font-size: 0.9rem;
+        margin: 0 auto;
+    }
+
+    .form-container h2 {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .d-flex {
+        gap: 10px;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Margen de utilidad</h2>
+    <div class="table-container">
+        <table id="ventasTabla" class="table table-bordered table-hover text-center align-middle styled-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th width="80px"></th>
+                    <th>Tipo</th>
+                    <th width="100px">Fecha</th>
+                    <th width="140px">Código</th>
+                    <th>Nombre producto</th>
+                    <th>Margen</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center">
+                            <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" alt="@item.ItemCode" width="40" height="40" />
+                        </td>
+                        <td>@item.Tipo</td>
+                        <td>@item.DocDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.ItemCode</td>
+                        <td style="text-align:left">@item.Dscription</td>
+                        <td>@item.Margen</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

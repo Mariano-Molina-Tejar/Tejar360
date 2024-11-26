@@ -14,6 +14,37 @@ namespace DAL
 {
     public class DALPortalSolicitudCompra
     {
+        public static bool ValidarContratosItems(string ItemsCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_portal_validar_contratos_items", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@ItemsCode", ItemsCode);
+                iCommand.Parameters.AddWithValue("@Aplica", "N");
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+        }
         public static GetAllProductsEntity CargaExcelData(string DataExcelJson, int Depto)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();

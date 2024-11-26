@@ -26,6 +26,8 @@
     <link href="~/vendors/pace-progress/css/pace.min.css" rel="stylesheet">
     @*<link href="~/Css/bootstrap.min.css" rel="stylesheet" />*@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+
     <link href="~/js/Loading.css" rel="stylesheet" />
 
     <style>
@@ -56,6 +58,12 @@
             <li class="nav-item d-md-down-none">
                 <a class="nav-link" href="#">
                     <i class="icon-bell"></i>
+                    <span class="badge badge-pill badge-danger">0</span>
+                </a>
+            </li>
+            <li class="nav-item d-md-down-none">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-cart"></i>
                     <span class="badge badge-pill badge-danger">0</span>
                 </a>
             </li>
@@ -121,7 +129,11 @@
                             <i class="nav-icon icon-puzzle"></i> Inventario
                         </a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Margen", "Margen")">
+                            <i class="nav-icon icon-calculator"></i> Margen
+                        </a>
+                    </li>
                     <li class="nav-title">Operativo</li>
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("SolicitudCompra", "SAPOc")">

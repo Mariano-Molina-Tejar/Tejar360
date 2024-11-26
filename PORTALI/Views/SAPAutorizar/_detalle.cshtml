@@ -198,21 +198,23 @@
                 data: JSON.stringify(parametrosEnviar),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
-                success: function (respuesta) {                    
-                    if (respuesta.result == 300) {
+                success: function (respuesta) {
+                    console.log(respuesta);
+                    if (respuesta.Id == 1000) {
                         $("#globalLoading").hide();
                         document.getElementById("tituloEncabezado").innerText = "Autorización supervisada";
-                        document.getElementById("tituloPregunta").innerText = "Esta cotización necesita una autorización superior \n¿Desea contiuar?";
+                        document.getElementById("tituloPregunta").innerText = respuesta.Dscription;
                         $('#vistaCondicion').modal('show');
-                    }
-                    else if (respuesta.result == 100 || respuesta.result == 0) {
-                        $("#globalLoading").hide();
-                        document.getElementById("tituloEncabezado").innerText = "¿Desea autorizar la cotización?";
-                        document.getElementById("tituloPregunta").innerText = "Este proceso asociará la solicitud con la cotización y generará una order de compra\n¿Continuar?";
-                        $('#vistaCondicion').modal('show');
-                    }else if (respuesta.result == -100)
-                    {
+                    } else if (respuesta.data == "R") {
                         window.location.href = '/SAPAutorizar/AutorizarSolicitudes'
+                    } else if (respuesta.Id == 117) {
+                        $("#globalLoading").hide();
+                        document.getElementById("tituloEncabezado").innerText = "Autorización";
+                        document.getElementById("tituloPregunta").innerText = respuesta.Dscription;
+                        $('#vistaCondicion').modal('show');
+                    } else if (respuesta.Id == -118) {
+                        $("#globalLoading").hide();                        
+                        window.location.href = '/SAPAutorizar/AutorizarSolicitudes'                        
                     }
             },
             error: function (xhr, status, error) {                

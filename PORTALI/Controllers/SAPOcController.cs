@@ -56,14 +56,15 @@ namespace PORTALI.Controllers
             List<PortalSolicitudEncabezadoEntity> data = DALPortalSolicitudCompra.EncabezadoSolicitudCompra(sessions.Depto, "", "", 0);
             return View(data);
         }
+
         #region BUSCA EL PRODUCTO
-        public ActionResult BuscarProducto(string textBuscar)
+        public ActionResult BuscarProducto(string textBuscar, string CardCode = null)
         {
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
             List<BusquedaDetalleProductoEntity> listado = new List<BusquedaDetalleProductoEntity>();
             if (!string.IsNullOrEmpty(textBuscar))
             {
-                listado = DALPortalGenerales.BusquedaDetalleProducto(textBuscar, sessions.Depto);
+                listado = DALPortalGenerales.BusquedaDetalleProducto(textBuscar, sessions.Depto, CardCode);
             }
             return PartialView("_ListaProductos", listado);
         }
@@ -106,7 +107,7 @@ namespace PORTALI.Controllers
                     solicitudCompraEncabezadoEntity.Files = listaArchivos;
                 }
 
-                var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+                var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];                
                 string contenido = DALPortalSolicitudCompra.CrearSolicitud("SolicitudCompra/Add", solicitudCompraEncabezadoEntity);
                 Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
 
@@ -224,6 +225,14 @@ namespace PORTALI.Controllers
             //// Exportar el reporte a PDF
             //Stream stream = reportDocument.ExportToStream(ExportFormatType.PortableDocFormat);
             //return File(stream, "application/pdf", "Reporte.pdf");            
+        }
+
+        [HttpPost]
+        public ActionResult ValidarContratosMensaje(string ItemsCode)
+        {
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            bool validar = DALPortalSolicitudCompra.ValidarContratosItems(ItemsCode);
+            return Json(validar, JsonRequestBehavior.AllowGet);
         }
     }
 }

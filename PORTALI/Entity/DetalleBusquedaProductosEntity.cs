@@ -11,6 +11,8 @@ namespace Entity
         public BuscarProductoEntity Encabezado { get; set; }
         public List<BusquedaDetalleTiendasEntity> Tiendas { get; set; }
         public BusquedaDetallePromocionesEntity Promociones { get; set; }
+        public List<BuscarProductoEntity> Alternativos { get; set; }
+        public List<BuscarProductoEntity> VentaCruzada { get; set; }
     }
 
     public class BusquedaDetalleTiendasEntity
@@ -25,5 +27,5 @@ namespace Entity
         public string IdPromocion { get; set; }
         public string Tienda { get; set; }
         public double Precio { get; set; }
-    }
+    }    
 }

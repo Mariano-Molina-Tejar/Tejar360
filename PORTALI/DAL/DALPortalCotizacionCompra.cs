@@ -20,7 +20,7 @@ namespace DAL
                 OleDbCommand iCommand = null;
                 iCommand = new OleDbCommand("sp_portal_cotizaciones_compra_encabezado", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
-                iCommand.Parameters.AddWithValue("@DocEntryCot", DocEntryCot);                
+                iCommand.Parameters.AddWithValue("@DocEntryCot", DocEntryCot);
 
                 try
                 {

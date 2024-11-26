@@ -5,7 +5,7 @@
     {
         return;
     }
-    var reportDocument = ViewBag.ReportDocument as CrystalDecisions.CrystalReports.Engine.ReportDocument;
+    //var reportDocument = ViewBag.ReportDocument as CrystalDecisions.CrystalReports.Engine.ReportDocument;
 }
 <head>
     <script src="~/Scripts/bootstrap.min.js"></script>
@@ -388,7 +388,7 @@
                                         <div class="col-xl-12">
                                             <input type="file" id="fileInput" multiple style="display: none;" />
                                             <ul id="fileList" style="font-size: 12px; margin-top: 5px; list-style-type: none; "></ul>
-                                            <div id="message"></div>                                            
+                                            <div id="message"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -439,6 +439,8 @@
                                                     <th scope="col" style="width:100px">Cantidad</th>
                                                     <th scope="col" style="width:120px">Precio</th>
                                                     <th scope="col" style="width:120px">Total</th>
+                                                    <th scope="col" style="width:300px">Contrato</th>
+                                                    <th scope="col" style="display: none">CardCode</th>
                                                     <th scope="col" style="width:80px">Opciones</th>
                                                 </tr>
                                             </thead>
@@ -461,7 +463,7 @@
                     <div class="redes">
                         <a href="#" class="fa fa-paperclip" id="attachButton" data-toggle="tooltip" data-placement="left" title="Adjuntar documentos"></a>
                         <a href="#" class="fa-solid fa-file-import" id="btnSeleccionarDocumento" data-toggle="tooltip" data-placement="left" title="Importar datos"></a>
-                        <a href="#vistaCondicion" class="fa fa-save trigger-btn" data-toggle="modal" data-placement="left" title="Guardar solicitud" id="btnGuardar"></a>
+                        <a href="#vistaCondicion" class="fa fa-save trigger-btn" data-toggle="modal" data-placement="left" title="Guardar solicitud" id="btnGuardar" onclick="ValidarContratosMensaje()"></a>
                         <a href="" class="fa-sharp fa-solid fa-magnifying-glass-plus" data-toggle="modal" data-placement="left" id="btnModalBuscar" title="Buscar producto"></a>
                         @*<a href="" class="fa-sharp fa-solid fa-magnifying-glass-plus" data-toggle="modal" data-placement="left" data-target=".bd-example-modal-lg" id="btnModalBuscar" title="Buscar producto"></a>*@
                     </div>
@@ -511,13 +513,16 @@
                                                 <th style="width:50%">Descripcion del producto</th>
                                                 <th style="width:350px">Cuenta</th>
                                                 <th style="width:110px">Cantidad</th>
+                                                <th style="display:none">Presupuesto</th>
+                                                <th style="width:350px;">Contrato</th>
+                                                <th style="display:none">CardCode</th>
                                                 <th style="width:80px;"></th>
                                             </tr>
                                         </thead>
                                         <tbody id="resultadosBusqueda">
-                                            <td id="titulo2" colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px">
-                                                <i>No hay datos</i>
-                                            </td>
+                                        <td id="titulo2" colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px">
+                                            <i>No hay datos</i>
+                                        </td>
                                         </tbody>
                                     </table>
                                 </div>
@@ -564,9 +569,84 @@
             </div>
         </div>
     </div>
+    <!-- Modal de error -->
+    <div class="modal fade" id="statusErrorsModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center p-lg-4">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
+                        <circle class="path circle" fill="none" stroke="#db3646" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1" />
+                        <line class="path line" fill="none" stroke="#db3646" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3" />
+                        <line class="path line" fill="none" stroke="#db3646" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" x1="95.8" y1="38" x2="34.4" y2="92.2" />
+                    </svg>
+                    <h4 class="text-danger mt-3">Error!</h4>
+                    <p class="mt-3" id="modalMessage"></p>
+                    <button type="button" class="btn btn-sm mt-3 btn-danger" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<button id="btnSalvar" type="button" class="btn btn-success" data-dismiss="modal" onclick="ValidarContratosMensaje()">Test</button>*@
+
 </body>
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <script type="text/javascript">
+
+    function ValidarContratosMensaje() {
+        $("#globalLoading").show();
+        var tbody = document.getElementById("tblDetalles").getElementsByTagName('tbody')[0];
+        var _CardCode = "";
+        for (var i = 0; i < tbody.rows.length; i++) {
+            var celda = tbody.rows[i].cells[10];
+            if (celda && celda.textContent.trim() !== "") {
+                var primeraCelda = tbody.rows[i].cells[10];
+                if (primeraCelda) {
+                    _CardCode = primeraCelda.textContent.trim();
+                }
+                break;
+            }
+        }
+
+        if (_CardCode != "") {
+            var _ItemCodes = [];
+            for (var i = 0; i < tbody.rows.length; i++) {
+                var celda = tbody.rows[i].cells[1];
+                if (celda && celda.textContent.trim() !== "") {
+                    _ItemCodes.push(celda.textContent.trim());
+                }
+            }
+
+            $.ajax({
+                url: '@Url.Action("ValidarContratosMensaje", "SAPOc")',
+                type: 'POST',
+                data: { ItemsCode: _ItemCodes.join(",") },
+                success: function (data) {
+                    if (data == true) {
+                        $("#globalLoading").hide();
+                        $('#tituloBody').text("Esta solicitud no requiere autorización y procederá a completar el proceso en su totalidad");
+                        $("#vistaCondicion").modal('show');
+                    } else {
+                        $("#globalLoading").hide();
+                        $('#modalMessage').text("Esta solicitud tiene artículos con contrato vencido");
+                        $("#statusErrorsModal").modal('show');
+                    }                    
+                },
+                error: function (xhr, status, error) {
+                    $("#globalLoading").hide();
+                    console.error("Error:", error);
+                    alert("Hubo un error al validar los contratos: " + error);
+                }
+            });
+        } else {
+            $("#globalLoading").hide();
+            $('#tituloBody').text("Este documento necesita una autorización del jefe del departamento");
+            $("#vistaCondicion").modal('show');
+        }
+    }
+
+
+
     var deleteBtn = document.createElement('span');
     var selectedFiles = [];
 
@@ -923,10 +1003,24 @@
 
     function BuscarProducto()
     {
+        var _CardCode = null;
+        var tbody = document.getElementById("tblDetalles").getElementsByTagName('tbody')[0];
+
+        for (var i = 0; i < tbody.rows.length; i++) {
+            var celda = tbody.rows[i].cells[10];
+            if (celda && celda.textContent.trim() !== "") {
+                var primeraCelda = tbody.rows[i].cells[10];
+                if (primeraCelda) {
+                    _CardCode = primeraCelda.textContent.trim();
+                }
+                break;
+            }
+        }
+
         var textBuscar = $("#txtBuscar").val();
         $.ajax({
             url: '@Url.Action("BuscarProducto", "SAPOc")',
-            data: { textBuscar: textBuscar },
+            data: { textBuscar: textBuscar, CardCode: _CardCode },
             success: function (data) {
                 $("#resultadosBusqueda").html(data);
                 $("#txtBuscar").focus();
@@ -942,6 +1036,8 @@
         var Quantity = row.cells[3].querySelector("input").value;
         var Cuenta = row.cells[2].innerText;
         var Prespuesto = row.cells[4].innerText.replace("Q.", "").replace(",", "");
+        var CardCode = row.cells[6].innerText;
+        var CardName = row.cells[5].innerText;
 
         var table = document.getElementById("tblDetalles").getElementsByTagName('tbody')[0];
         if (document.getElementById('isTableCleared').value == "false") {
@@ -971,7 +1067,14 @@
         cell8.style.verticalAlign = "middle"
         cell8.id = "Total";
         cell8.style.textAlign = "right";
-        var cell10 = newRow.insertCell(9); //Opciones
+
+        cell11 = newRow.insertCell(9);
+        cell11.style.verticalAlign = "middle"
+
+        cell12 = newRow.insertCell(10);
+        cell12.style.display = "none";
+
+        var cell10 = newRow.insertCell(11); //Opciones
         cell10.style.textAlign = "center";
         cell10.style.verticalAlign = "middle"
 
@@ -980,6 +1083,8 @@
         cell2.innerText = Dscription;
         cell4.innerHTML = Cuenta;
         cell5.innerHTML = Prespuesto;
+        cell11.innerHTML = CardName;
+        cell12.innerHTML = CardCode;
 
         var _txtNotas = document.createElement('textarea');
         _txtNotas.className = 'form-control CampoTexto';
@@ -1064,7 +1169,7 @@
         });
     });
 
-    $(document).ready(function () {        
+    $(document).ready(function () {
         $.ajax({
             url: '@Url.Action("getCentroCostos", "SAPOc")',
             type: 'GET',
@@ -1171,7 +1276,7 @@
     }
 
     function CargarTiendas(valorSeleccionado, iDefault) {
-        
+
     }
 
     $(document).ready(function () {
