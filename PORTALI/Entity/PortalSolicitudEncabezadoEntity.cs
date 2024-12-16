@@ -12,6 +12,7 @@ namespace Entity
         public int DocEntry { get; set; }
         public int DocNum { get; set; }
         public int DocNumOc { get; set; }
+        public int DocEntryOc { get; set; }
         public DateTime DocDate { get; set; }
         public DateTime DocDueDate { get; set; }
         public DateTime ReqDate { get; set; }
@@ -38,5 +39,6 @@ namespace Entity
         public double Price { get; set; }
         public double LineTotal { get; set; }
         public string NotasLinea { get; set; }
+        public string Contrato { get; set; }
     }
 }

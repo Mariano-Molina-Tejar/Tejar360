@@ -104,6 +104,8 @@ namespace PORTALI.Controllers
             return Json(datos, JsonRequestBehavior.AllowGet);
         }
 
+
+        //AQUI MANDA LA COTIZACION A GUARDAR DESDE ESTE PUNTO YA SE ESTA AUTORIZADO.
         [HttpPost]
         public ActionResult AutorizaCotizacion(int DocEntry, int DocEntrySc)
         {

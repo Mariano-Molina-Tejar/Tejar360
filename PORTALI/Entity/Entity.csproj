@@ -74,6 +74,7 @@
     <Compile Include="DALEntity.cs" />
     <Compile Include="DetalleBusquedaProductosEntity.cs" />
     <Compile Include="DetallePresupuestoEntity.cs" />
+    <Compile Include="LaligaDashboardAsesoresEntity.cs" />
     <Compile Include="LoginEntity.cs" />
     <Compile Include="MesesEntity.cs" />
     <Compile Include="PortalBonificacionLigaEntity.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="PortalListadoGeneralEntity.cs" />
     <Compile Include="PortalMantSolicitudCompraEntity.cs" />
     <Compile Include="PortalMetaVentaTiendaEntity.cs" />
+    <Compile Include="PortalPdfOrdenCompraEntity.cs" />
     <Compile Include="PortalPerfilEntity.cs" />
     <Compile Include="PortalPresupuestoEntity.cs" />
     <Compile Include="PortalRecepcionEstadosEntity.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="SessionEntity.cs" />
     <Compile Include="SessionLoginEntity.cs" />
     <Compile Include="SimpleEntity.cs" />
+    <Compile Include="SocioNegocioEntity.cs" />
     <Compile Include="SolicitudCompraEncabezadoEntity.cs" />
     <Compile Include="SystemDateTimeEntity.cs" />
   </ItemGroup>

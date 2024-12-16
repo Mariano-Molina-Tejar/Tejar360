@@ -1,10 +1,199 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Compra</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .page {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh; /* Ajusta el alto de la página completa */
+        }
+
+        .container {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1; /* Se expande para llenar el espacio disponible */
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 1px solid black;
+            padding-bottom: 10px;
+        }
+
+            .header img {
+                width: 80px;
+                vertical-align: middle;
+            }
+
+            .header h1 {
+                display: inline-block;
+                font-size: 18px;
+                margin: 0;
+            }
+
+            .header h2 {
+                font-size: 16px;
+                margin: 5px 0;
+            }
+
+        .details {
+            margin-top: 10px;
+            border-bottom: 1px solid black;
+            padding-bottom: 10px;
+        }
+
+            .details .column {
+                float: left;
+                width: 50%;
+            }
+
+                .details .column p {
+                    margin: 3px 0;
+                }
+
+        .clearfix {
+            clear: both;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+            .table th, .table td {
+                border: 1px solid black;
+                padding: 5px;
+                text-align: left;
+            }
+
+            .table th {
+                background-color: #f2f2f2;
+            }
+
+            .table .right {
+                text-align: right;
+            }
+
+        .footer {
+            width: 100%;
+            font-size: 12px; /* Ajusta el tamaño de letra */
+            border-top: 1px solid black;
+            padding: 10px;
+            text-align: left; /* Asegura que el texto esté alineado correctamente */
+            background-color: white;
+            position: relative; /* Cambia si es necesario */
+        }
+
+            .footer p {
+                margin: 3px 0;
+            }
+
+        .notes {
+            font-size: 10px;
+            margin-top: 20px;
+        }
+
+            .notes ul {
+                margin: 0;
+                padding-left: 20px;
+            }
+
+            .notes li {
+                margin-bottom: 5px;
+            }
+    </style>
 </head>
 <body>
-    <div>ESta es una prueba</div>
+    <div class="container">
+
+        <div class="content">
+            <!-- Encabezado -->
+            <div class="header">
+                <img src="https://eltejar.gt/wp-content/uploads/2024/12/tejar-ico-removebg-preview.png" alt="Logo">
+                <div>
+                    <h1>EL TEJAR</h1>
+                    <h2>@Sucursal</h2>
+                    <h2>@NitSucursal</h2>
+                    <h3>ORDEN DE COMPRA</h3>
+                    <h3>Número: <strong style="font-size:15px">@DocNum</strong></h3>
+                </div>
+            </div>
+
+            <!-- Detalles -->
+            <div class="details">
+                <div class="column">
+                    <p><strong>Proveedor:</strong> @CardCode | @CardName</p>
+                    <p><strong>Condiciones de pago:</strong> @CondicionesPago</p>
+                    <p><strong>Teléfono:</strong> @Telefono </p>
+                    <p><strong>Dirección:</strong> @Direccion </p>
+                </div>
+                <div class="column">
+                    <p><strong>NIT:</strong> @Nit</p>
+                    <p><strong>Fecha de emisión:</strong> @Femision</p>
+                    <p><strong>Fecha de entrega:</strong> @Fentrega</p>
+                    <p><strong>Correo electronico:</strong> @Correo</p>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <!-- Tabla -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Almacén</th>
+                        <th>U. Medida</th>
+                        <th>Cantidad</th>
+                        <th>Precio U.</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @Detalle
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6" class="right"><strong></strong></td>
+                        <td class="right"><strong>@GTotal</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br>
+            <div style="border-bottom: 1px solid black;">
+                <br>
+                <a>
+                    <strong>Comentarios:</strong> @Comentarios
+                </a>
+                <br>
+                <br>
+                <a>
+                    <strong>DIRECCION ENTREGA:</strong> @Entrega
+                </a>
+                <br>
+                <br>
+                <a>
+                    Creado por: @Usuario
+                </a>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

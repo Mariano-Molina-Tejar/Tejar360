@@ -260,6 +260,21 @@
             max-height: 90vh; /* Ajusta el tamaño de la tabla dentro del modal */
         }
 
+        #mdlProveedores .modal-dialog {
+            max-width: 50%; /* Ajusta el porcentaje según el ancho deseado */
+        }
+
+        #mdlProveedores .modal-content {
+            max-height: 90vh; /* Ajusta el porcentaje según tus necesidades */
+            overflow: hidden; /* Evita el desbordamiento del contenido */
+        }
+
+        /* Permite el scroll solo en el área de la tabla */
+        #mdlProveedores .modal-body {
+            overflow-y: auto;
+            max-height: 90vh; /* Ajusta el tamaño de la tabla dentro del modal */
+        }
+
         #tblBusqueda {
             width: 100%;
             table-layout: auto; /* Ajusta el ancho de las columnas según el contenido */
@@ -276,6 +291,7 @@
             #tblBusqueda thead {
                 background-color: #f2f2f2;
             }
+
 
         /* Personalización del botón de búsqueda */
         #btnBuscar .input-group-text {
@@ -300,6 +316,22 @@
         .input-group .form-control {
             height: 45px;
         }
+        
+        /*#btnBuscarSocio {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: #007bff;*/ /* Color del ícono o texto */
+            /*font-size: 16px;
+            cursor: pointer;
+        }
+
+            #btnBuscarSocio:hover {
+                color: #0056b3;*/ /* Color al pasar el mouse */
+            /*}*/
     </style>
 </head>
 <body>
@@ -315,16 +347,43 @@
                                     <div class="form-row">
                                         <div class="form-group col-xl-2">
                                             <label for="inputState">Número solicitud</label>
-                                            <input id="txtDocNum" type="text" class="form-control" value="" readonly style="background-color:white">
+                                            <input id="txtDocNum" type="text" class="form-control" value="" readonly style="background-color: #e3e4e5">
                                         </div>
                                         <div class="form-group col-xl-2">
                                             <label for="inputState">Llave</label>
-                                            <input id="txtDocEntry" type="text" class="form-control" value="" readonly style="background-color:white">
+                                            <input id="txtDocEntry" type="text" class="form-control" value="" readonly style="background-color: #e3e4e5">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="inputState">
+                                                Tipo <span class="text-danger" style="color: red;">*</span>
+                                            </label>
+                                            <select id="lstTipo" class="form-control" style="background-color:white">
+                                                <option value="0" selected>Seleccionar...</option>
+                                                <option value="1">Insumos</option>
+                                                <option value="2">Inventario</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-xl-2">
+                                            <label for="inputState">Código</label>
+                                            <input id="txtCodigoSocioN" type="text" class="form-control" value="" readonly style="background-color:white">
+                                        </div>
+                                        <div class="form-group col-xl-10">
+                                            <label for="lblSocio">Socio de negocio</label>
+                                            <div style="position: relative;">
+                                                <input id="txtSocioNegocio" type="text" class="form-control" value="" readonly style="background-color:white; padding-right: 40px;">
+                                                <button id="btnBuscarSocio" type="button" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); border: none; background: none; cursor: pointer;">
+                                                    <i class="fas fa-search"></i> <!-- Ícono del botón -->
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-3">
-                                            <label for="inputState">Sucursal</label>
+                                            <label for="inputState">
+                                                Sucursal <span class="text-danger" style="color: red;">*</span>
+                                            </label>
                                             <select id="lstSucursal" class="form-control" style="background-color:white">
                                                 <option value="0" selected>Seleccionar...</option>
                                                 @{
@@ -342,7 +401,9 @@
                                             </select>
                                         </div>
                                         <div class="form-group col-md-3">
-                                            <label for="inputState">Departamento</label>
+                                            <label for="inputState">
+                                                Departamento <span class="text-danger" style="color: red;">*</span>
+                                            </label>                                            
                                             <select id="lstDepto" class="form-control" style="background-color:white">
                                                 <option value="0" selected>Seleccionar...</option>
                                                 @{
@@ -360,15 +421,21 @@
                                             </select>
                                         </div>
                                         <div class="form-group col-md-3">
-                                            <label for="inputState">Fecha documento</label>
+                                            <label for="inputState">
+                                                Fecha documento <span class="text-danger" style="color: red;">*</span>
+                                            </label>                                          
                                             <input type="date" class="form-control" id="txtDocDate" value="@Model.FechaHoy.ToString("yyyy-MM-dd")" style="background-color:white">
                                         </div>
                                         <div class="form-group col-md-3">
-                                            <label for="inputState">Fecha necesaria</label>
+                                            <label for="inputState">
+                                                Fecha necesaria <span class="text-danger" style="color: red;">*</span>
+                                            </label>                                          
                                             <input type="date" class="form-control" id="txtDocDueDate" value="">
                                         </div>
                                         <div class="form-group col-md-3">
-                                            <label for="inputState">Centro de costo</label>
+                                            <label for="inputState">
+                                                Centro de costos <span class="text-danger" style="color: red;">*</span>
+                                            </label>                                          
                                             <select id="lstTienda" class="form-control" style="background-color:white">
                                                 <option selected>Seleccionar...</option>
                                             </select>
@@ -586,12 +653,92 @@
             </div>
         </div>
     </div>
+    @*MODAL BUSQUEDA DE SOCIO DE NEGOCIO*@
+    <div id="mdlProveedores" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" role="document">
+                    <h5 class="modal-title" id="exampleModalLabel">Proveedores</h5>
+                    <button type="button" class="close" onclick="$('#mdlProveedores').modal('hide')" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-content">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="row justify-content-center">
+                                        <div class="col-xl-8">
+                                            <div class="input-group">
+                                                <input id="txtSearchLead" autocomplete="off" type="text" class="form-control text-uppercase" placeholder="Buscar proveedor..." />
+                                                <div id="btnSearchLead" class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-search"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table id="tblProveedores" class="table table-hover table-responsive" style="width:100%">
+                                        <thead class="thead-dark" style="text-align:center; width:100%">
+                                            <tr>
+                                                <th style="width:110px">Código</th>
+                                                <th style="width:85%">Socio de negocio</th>                                                
+                                                <th style="width:80px;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dtSocioNegocio">
+                                        <td id="titulo2" colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px">
+                                            <i>No hay datos</i>
+                                        </td>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @*<button id="btnSalvar" type="button" class="btn btn-success" data-dismiss="modal" onclick="ValidarContratosMensaje()">Test</button>*@
 
 </body>
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<script type="text/javascript">
+<script type="text/javascript">    
+    $(document).ready(function () {
+        $("#btnSearchLead").click(function () {
+            BuscarSocioNegocio();
+        });
+    });
+
+    function BuscarSocioNegocio()
+    {
+        var txtSeach = $("#txtSearchLead").val();        
+        $.ajax({            
+            url: '@Url.Action("BuscarSocioNegocio", "SAPOc")',
+            data: { NombreSocio: txtSeach },
+            success: function (data) {
+                $("#dtSocioNegocio").html(data);
+                $("#txtSearchLead").focus();
+            }
+        });
+    }
+
+    document.getElementById("txtSocioNegocio").addEventListener("click", function () {
+        $("#mdlProveedores").modal('show');
+    });
+
+    document.getElementById("btnBuscarSocio").addEventListener("click", function () {
+        $("#mdlProveedores").modal('show');
+    });
 
     function ValidarContratosMensaje() {
         $("#globalLoading").show();
@@ -630,7 +777,7 @@
                         $("#globalLoading").hide();
                         $('#modalMessage').text("Esta solicitud tiene artículos con contrato vencido");
                         $("#statusErrorsModal").modal('show');
-                    }                    
+                    }
                 },
                 error: function (xhr, status, error) {
                     $("#globalLoading").hide();
@@ -644,8 +791,6 @@
             $("#vistaCondicion").modal('show');
         }
     }
-
-
 
     var deleteBtn = document.createElement('span');
     var selectedFiles = [];
@@ -943,7 +1088,10 @@
                 Email: $("#txtCorreo").val(),
                 Observaciones: $("#txtObservaciones").val(),
                 UserCode: '@(Model?.UserCode ?? "")',
-                DetalleTabla: (tablaDatos.length == 0 ? null : tablaDatos)
+                DetalleTabla: (tablaDatos.length == 0 ? null : tablaDatos),
+                CardCode: document.getElementById("txtCodigoSocioN").value,
+                CardName: $("#txtSocioNegocio").val(),
+                IdTipo: document.getElementById("lstTipo").value
             };
 
             formData.append('jsonData', JSON.stringify(jsonData));
@@ -995,6 +1143,9 @@
 
     function btnCerrarMsg() {
         $("#vistaResultado").modal('hide');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+
         if (suss == 1)
         {
             window.location.href = '@Url.Action("SolicitudCompra", "SAPOc")';
@@ -1026,6 +1177,18 @@
                 $("#txtBuscar").focus();
             }
         });
+    }
+
+    function OtenerValorSocioNegocio(button) {
+        var row = button.parentNode.parentNode;
+        var CardCode = row.cells[0].innerHTML;
+        var CardName = row.cells[1].innerHTML;
+        document.getElementById("txtCodigoSocioN").value = CardCode;
+        document.getElementById("txtSocioNegocio").value = CardName;
+        $("#mdlProveedores").modal('hide');
+        var tbody = document.getElementById("dtSocioNegocio");
+        tbody.innerHTML = '<td id="titulo2" colspan="10" style="text-align:center;height:100px;color:gray;vertical-align:middle;font-size:12px"><i>No hay datos</i></td>';
+        document.getElementById("txtSearchLead").value = "";
     }
 
     /* CAPTURA EL PRODUCTO DE LA BUSQUEDA DEL MODAL */
@@ -1129,8 +1292,13 @@
         btnEliminar.className = 'btn btn-outline-primary fa fa-trash';
         cell10.appendChild(btnEliminar);
 
-        btnEliminar.addEventListener('click', function () {
-
+        btnEliminar.addEventListener('click', function (event) {
+            event.preventDefault();
+            var confirmacion = confirm("¿Está seguro de eliminar esta fila?");
+            if (confirmacion) {                
+                var fila = this.closest('tr');
+                fila.remove();                
+            }
         });
 
         var table = document.getElementById("tblBusqueda").getElementsByTagName('tbody')[0];
@@ -1146,6 +1314,13 @@
             if (event.key === "Enter") {
                 event.preventDefault();
                 BuscarProducto();
+            }
+        });
+
+        $('#txtSearchLead').on('keydown', function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                BuscarSocioNegocio();
             }
         });
     });
@@ -1275,10 +1450,6 @@
         }
     }
 
-    function CargarTiendas(valorSeleccionado, iDefault) {
-
-    }
-
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -1301,6 +1472,10 @@
 
         $('#vistaBuscar').on('shown.bs.modal', function () {
             $("#txtBuscar").focus();
+        });
+
+        $('#mdlProveedores').on('shown.bs.modal', function () {
+            $("#txtSearchLead").focus();
         });
     });
 </script>

@@ -533,6 +533,7 @@ namespace DAL
                                        DocEntry = int.Parse(row["DocEntryDraft"].ToString()),
                                        DocNum = int.Parse(row["DocNumDraft"].ToString()),
                                        DocNumOc = int.Parse(row["DocNumOc"].ToString()),
+                                       DocEntryOc = int.Parse(row["DocEntryOc"].ToString()),
                                        Estado = row["Estado"].ToString(),
                                        ReqDate = DateTime.Parse(row["ReqDate"].ToString()),
                                        UserCode = row["Requester"].ToString(),

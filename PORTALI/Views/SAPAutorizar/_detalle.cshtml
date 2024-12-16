@@ -8,15 +8,85 @@
             return;
         }
 }
+
+<style>
+    body {
+        font-size: 14px;
+    }
+    /* Estilos del panel */
+    .panel {
+        width: 98%;
+        margin: 20px auto;
+        border: 1px solid #dddddd;
+        border-radius: 6px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        overflow: hidden;
+    }
+
+    .panel-header {
+        background-color: #009879;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .panel-body {
+        padding: 20px;
+    }
+
+    /* Estilos de la tabla */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        margin: 20px 0;
+        background-color: #f3f3f3;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+        .styled-table thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .styled-table th, .styled-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+
+            .styled-table tbody tr:nth-child(even) {
+                background-color: #f3f3f3;
+            }
+
+            .styled-table tbody tr:hover {
+                background-color: #d1e7dd;
+            }
+
+        .styled-table tbody td {
+            color: #333333;
+        }
+</style>
+
+
 <div class="card-body p-2"> 
     <div class="row">
-        <div class="col-lg-9">
-            <div class="card rounded-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0" style="color: black"><strong>DATOS DEL PROVEEDOR</strong></h5>
-                    </div>
-
+        <div class="col-lg-8">
+            <div class="panel">
+                <div class="panel-header">
+                    Datos del proveedor
+                </div>
+                <div class="panel-body">
                     <form class="mt-4">
                         <div class="row col-lg-12">
                             <div data-mdb-input-init class="col-lg-3">
@@ -61,120 +131,120 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-3">
-            <div class="card text-white rounded-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="mb-0" style="color: black"><strong>PRESUPUESTO</strong></h5>
-                    </div>
+        <div class="col-lg-4">
+            <div class="panel">
+                <div class="panel-header">
+                    Presupuesto
+                </div>
+                <div class="panel-body">
                     <form class="mt-4">
-                        @foreach (var item in Model.DetallePresupuesto)
-                        {
-                            <div class="card shadow-lg col-lg-12" style="background-color: #c3c3c3; color: white">
-                                <div class="card-body pb-lg-1 px-lg-2 px-md-1 pt-xl-2 pt-md-3">
-                                    <div class="row">
-                                        <div><strong>@item.AcctName</strong></div>
-                                    </div>
-                                    <div class="row" style="display: flex; justify-content: space-between;">
-                                        <div>Presupuesto</div>
-                                        <strong class="label-custom primary" style="text-align:right">Q.@string.Format("{0:#,##0.00}", @item.Saldo)</strong>
-                                    </div>
-                                    <div class="row" style="display: flex; justify-content: space-between;">
-                                        <div>Cotización</div><strong class="label-custom" style="background-color:peru">-Q.@string.Format("{0:#,##0.00}", @item.GastoActual)</strong>
-                                    </div>
-                                    <div class="row" style="display: flex; justify-content: space-between;">
-                                        <div>Saldo</div><strong class="label-custom" style="background-color:teal">Q.@string.Format("{0:#,##0.00}", @item.SaldoActual)</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        }
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" style="background-color: #f7f7f7; color: #333; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                <thead class="thead-light">
+                                    <tr style="text-align: center; background-color: #4e73df; color: white;">
+                                        <th>Nombre de la Cuenta</th>
+                                        <th>Presupuesto</th>
+                                        <th>Cotización</th>
+                                        <th>Saldo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.DetallePresupuesto)
+                                    {
+                                        <tr style="text-align: center;">
+                                            <td>
+                                                <strong>@item.AcctName</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Q.@string.Format("{0:#,##0.00}", @item.Saldo)</strong>
+                                            </td>
+                                            <td>
+                                                <strong class="label-custom" style="background-color: #ff7043; color: white; padding: 5px 15px; border-radius: 5px;">
+                                                    -Q.@string.Format("{0:#,##0.00}", @item.GastoActual)
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                <strong class="label-custom" style="background-color: #008080; color: white; padding: 5px 15px; border-radius: 5px;">
+                                                    Q.@string.Format("{0:#,##0.00}", @item.SaldoActual)
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
         <div class="col-lg-12">
-            <div class="card rounded-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="mb-0" style="color: black"><strong>LISTADO DE ARTÍCULOS</strong></h5>
-                    </div>
-                    <form class="mt-4">
-                        <div style="height: 300px; overflow-y: auto;">
-                            @{
-                                if (@Model.Detalle != null)
+            <div class="panel">
+                <div class="panel-header">
+                    Detalle
+                </div>
+                <div class="panel-body">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre del producto</th>
+                                <th>Detalle</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Detalle.Count > 0)
+                            {
+                                foreach (var item in Model.Detalle)
                                 {
-                                    foreach (var item in Model.Detalle)
-                                    {
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between">
-                                                    <div class="d-flex flex-row align-items-center">
-                                                        <div>
-                                                            <img src="~/Img/imagen-no-disponible.png" class="img-fluid rounded-3" alt="Shopping item" style="width: 65px;">
-                                                        </div>
-                                                        <div class="ms-3">
-                                                            <h5>@item.Dscription</h5>
-                                                            <p class="small mb-0">@item.LineText</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex flex-row align-items-center">
-                                                        <div style="width: 70px;">
-                                                            <h5 class="fw-normal mb-0">@string.Format("{0:#,##0.00}", @item.Quantity)</h5>
-                                                        </div>
-                                                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                                                            <div style="width: 150px; text-align: right">
-                                                                <span class="label-custom success"><h5 class="mb-0">Pu: @string.Format("Q.{0:#,##0.00}", @item.Price)</h5></span>
-                                                            </div>
-                                                            <div style="width: 150px; text-align:right">
-                                                                <span class="label-custom primary"><h5 class="mb-0" style="font-size: 12px;">Total: @string.Format("Q.{0:#,##0.00}", @item.LineTotal)</h5></span>
-                                                            </div>
-                                                            <div style="width: 150px; text-align:right">
-                                                                <span class="label-custom warning"><h5 class="mb-0" style="font-size: 9px;">@item.NombreCuenta</h5></span>
-                                                            </div>
-                                                        </div>
-                                                        <a href="" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        j++;
-                                    }
+                                    <tr>
+                                        <td>@item.ItemCode</td>
+                                        <td>@item.Dscription</td>
+                                        <td>@item.LineText</td>
+                                        <td>@item.Quantity.ToString("N2")</td>
+                                        <td>@item.Price.ToString("N2")</td>
+                                        <td>@item.LineTotal.ToString("N2")</td>
+                                    </tr>
                                 }
                             }
-                        </div>
-                    </form>
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="no-data">No hay datos para mostrar</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <div class="col-lg-12" style="padding:10px;border-radius:5px">
-            <div id="totales" class="card rounded-3 col-lg-3" style="float: right; padding:15px">
-                <div class="d-flex justify-content-between">
-                    <p class="mb-2">Subtotal</p>
-                    <p class="mb-2"><strong>@string.Format("Q.{0:#,##0.00}", @Model.SubTotal)</strong></p>
+        <div class="col-lg-12 my-3">
+            <div id="totales" class="card shadow rounded-4 col-lg-3 ms-auto p-4" style="border-top: 5px solid #008037; float: right;">
+                <h5 class="text-center fw-bold mb-4" style="color: #008037;">Resumen de Totales</h5>
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-secondary">Subtotal:</span>
+                    <span class="fw-bold">@string.Format("Q.{0:#,##0.00}", @Model.SubTotal)</span>
                 </div>
 
-                <div class="d-flex justify-content-between">
-                    <p class="mb-2">Iva</p>
-                    <p class="mb-2"><strong>@string.Format("Q.{0:#,##0.00}", @Model.Iva)</strong></p>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-secondary">IVA:</span>
+                    <span class="fw-bold">@string.Format("Q.{0:#,##0.00}", @Model.Iva)</span>
                 </div>
 
-                <div class="d-flex justify-content-between mb-4">
-                    <p class="mb-2">Total compra</p>
-                    <p class="mb-2"><strong>@string.Format("Q.{0:#,##0.00}", @Model.Total)</strong></p>
+                <div class="d-flex justify-content-between mb-4 border-top pt-3">
+                    <span class="text-secondary">Total Compra:</span>
+                    <span class="fw-bold text-success fs-5">@string.Format("Q.{0:#,##0.00}", @Model.Total)</span>
                 </div>
 
                 @if (Model.CountCoti > 0)
                 {
-                    @*<button id="btnCotizacion" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg" href="#vistaCondicion" data-toggle="modal" value="@Model.DocEntrySolC">
-                        <div class="d-flex justify-content-between">
-                            <span>@string.Format("Q.{0:#,##0.00}", @Model.Total)</span>
-                            <span>Autorizar cotización<i class="fas fa-long-arrow-alt-right ms-2"></i></span>
-                        </div>
-                    </button>*@
-                    <button id="btnAutoCoti" type="button" class="btn btn-info btn-block btn-lg" value="@Model.DocEntrySolC">
-                        <div class="d-flex justify-content-between">
-                            <span>@string.Format("Q.{0:#,##0.00}", @Model.Total)</span>
-                            <span>Autorizar cotización<i class="fas fa-long-arrow-alt-right ms-2"></i></span>
+                    <button id="btnAutoCoti" type="button" class="btn btn-success btn-block btn-lg">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">@string.Format("Q.{0:#,##0.00}", @Model.Total)</span>
+                            <span>Autorizar Cotización <i class="fas fa-arrow-right ms-2"></i></span>
                         </div>
                     </button>
                 }

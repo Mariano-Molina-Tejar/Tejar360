@@ -167,6 +167,7 @@
     <Compile Include="DALPortalDashboardGt.cs" />
     <Compile Include="DALPortalGenerales.cs" />
     <Compile Include="DALPortalInventario.cs" />
+    <Compile Include="DALPortalLaLigaDashboardAsesor.cs" />
     <Compile Include="DALPortalLogin.cs" />
     <Compile Include="DALPortalMantProductos.cs" />
     <Compile Include="DALPortalMargenUtilidad.cs" />

@@ -29,8 +29,7 @@
                 <td style="vertical-align:middle">@item.DocDate.ToShortDateString()</td>
                 <td style="vertical-align:middle">@item.UserName</td>
                 <td style="vertical-align:middle">
-                    <span class="label-custom @item.ColorEstado">@item.Estado</span>
-                    @*<label style="background-color:@item.ColorEstado">@item.Estado</label>*@
+                    <span class="label-custom @item.ColorEstado">@item.Estado</span>                    
                 </td>
                 <td style="vertical-align:middle"><textarea class="form-control" readonly style="height:45px;font-size:12px;background-color:white">@item.Comentarios</textarea></td>
                 <td style="vertical-align:middle">
@@ -52,13 +51,15 @@
                     <div>
                         <div>
                             <table id="tblDetalles" class="table table-bordered table-hover tabla-con-scroll" style="font-size:11px;">
-                                <thead style="text-align:center;height:5px; background-color:crimson;font-size:12px">
+                                <thead style="text-align:center;height:5px; background-color:crimson;font-size:12px;color:white">
                                     <tr>
                                         <th scope="col" width="40px">#</th>
                                         <th scope="col" width="40px">Código</th>
                                         <th scope="col"></th>
                                         <th scope="col" style="width:250px">Descripción del producto</th>
                                         <th scope="col" style="width:200px">Notas</th>
+                                        <th scope="col" style="width:200px">Contrato</th>
+                                        <th scope="col" style="width:200px">Socio de negocio</th>
                                         <th scope="col" style="width:90px">Cantidad</th>
                                         <th scope="col" style="width:90px">Precio</th>
                                         <th scope="col" style="width:90px">Total</th>
@@ -74,9 +75,11 @@
                                                 <td style="vertical-align: middle">@det.ItemCode</td>
                                                 <td style="vertical-align: middle">@det.Dscription</td>
                                                 <td><textarea class="form-control" style="font-size: 12px; height: 40px;background-color:white" readonly>@det.NotasLinea</textarea></td>
-                                                <td style="vertical-align: middle; text-align:right">@det.Quantity</td>
-                                                <td style="vertical-align: middle; text-align:right">@det.Price</td>
-                                                <td style="vertical-align: middle; text-align: right">@det.LineTotal</td>
+                                                <td style="vertical-align: middle; text-align:center">@det.Contrato</td>
+                                                <td style="vertical-align: middle; text-align:left">@item.CardName</td>
+                                                <td style="vertical-align: middle; text-align:right">@det.Quantity.ToString("N2")</td>
+                                                <td style="vertical-align: middle; text-align:right">@det.Price.ToString("N2")</td>
+                                                <td style="vertical-align: middle; text-align: right">@det.LineTotal.ToString("N2")</td>
                                             </tr>
                                             j++;
                                         }

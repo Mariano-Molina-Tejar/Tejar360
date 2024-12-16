@@ -21,7 +21,10 @@ namespace Entity
         public string Email { get; set; }
         public double PreptoActual { get; set; }
         public string Observaciones { get; set; }
-        public string UserCode { get; set; }        
+        public string UserCode { get; set; }
+        public int IdTipo { get; set; }
+        public string CardCode { get; set; }
+        public string CardName { get; set; }
         public List<SolicitudCompraDetalleEntity> DetalleTabla { get; set; }
 
         [JsonIgnore]

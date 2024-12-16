@@ -14,6 +14,101 @@ namespace DAL
 {
     public class DALPortalGenerales
     {
+        public static PortalPdfOrdenCompraEntity DataPdfOrdenCompra(int DocEntry)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            PortalPdfOrdenCompraEntity DataOc = new PortalPdfOrdenCompraEntity();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("RPT_ORDEN_COMPRA", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@TransId", DocEntry);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        DataOc.CardCode = dt.Rows[0]["Codigo"].ToString();
+                        DataOc.NitSucursal = dt.Rows[0]["NITSUCURSAL"].ToString();
+                        DataOc.CardName = dt.Rows[0]["NombreProveedor"].ToString();
+                        DataOc.FechaEmision = DateTime.Parse(dt.Rows[0]["FechaContabilizacion"].ToString());
+                        DataOc.FechaEntrega = DateTime.Parse(dt.Rows[0]["FechaEntrega"].ToString());
+                        DataOc.DocNum = int.Parse(dt.Rows[0]["NoOrdenCompra"].ToString());
+                        DataOc.Nit = dt.Rows[0]["Nit"].ToString();
+                        DataOc.Email = dt.Rows[0]["CorreoElectronico"].ToString();
+                        DataOc.NombreGrupo = dt.Rows[0]["NombreGrupo"].ToString();
+                        DataOc.Sucursal = dt.Rows[0]["SUCURSAL"].ToString();
+                        DataOc.DirEntrega = dt.Rows[0]["DIRENTREGA"].ToString();
+                        DataOc.Comentario = dt.Rows[0]["Comentario"].ToString();
+                        DataOc.GranTotal = double.Parse(dt.Rows[0]["TotalDocumento"].ToString());
+                        DataOc.ElaboradoPor = dt.Rows[0]["Usuario"].ToString();
+                        DataOc.Telefono = dt.Rows[0]["Telefono1"].ToString() + " / " + dt.Rows[0]["Telefono2"].ToString();                        
+
+                        DataOc.Detalle = (from row in dt.AsEnumerable()
+                                          select new PortalPdfOrdenCompraDetalleEntity()
+                                          {
+                                              ItemCode = row["Codigo"].ToString(),
+                                              Dscription = row["Descripcion"].ToString(),
+                                              Umedida = row["UnidadMedida"].ToString(),
+                                              Almacen = row["Almacen"].ToString(),
+                                              Quantity = double.Parse(row["Cantidad"].ToString()),
+                                              Price = double.Parse(row["Precio"].ToString()),
+                                              LineTotal = double.Parse(row["TotalConIVA"].ToString())
+                                          }).ToList();
+                        return DataOc;
+                    }
+
+                    return DataOc;
+                }
+                catch (Exception ex)
+                {
+                    return DataOc;
+                }
+            }
+        }
+        public static List<SocioNegocioEntity> ListadoSocioNegocios(string SocioNegocio)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("SELECT UPPER(CardCode) As CardCode,UPPER(CardName) As CardName FROM OCRD WHERE CardType = 'S' AND CardName LIKE '%" + SocioNegocio + "%' ORDER BY CardName", iConnection);
+                iCommand.CommandType = CommandType.Text;
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        var listado = (from row in dt.AsEnumerable()
+                                       select new SocioNegocioEntity()
+                                       {
+                                           CardCode = row["CardCode"].ToString(),
+                                           CardName = row["CardName"].ToString()
+                                       }).ToList();
+                        return listado;
+                    }
+                    return new List<SocioNegocioEntity>();
+                }
+                catch (Exception ex)
+                {
+                    return new List<SocioNegocioEntity>();
+                }
+            }
+        }
+
         public static async Task EnviarCorreo(string subject, string ToCorreo, string Titulo, string _body, string attach, bool isHtml)
         {
             System.Net.Mail.MailMessage msg = new System.Net.Mail.MailMessage();

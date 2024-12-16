@@ -121,8 +121,8 @@
                     <td>
                     </td>
                     <td>
-                        <button id="btnGuardarMerca" type="button" style="width:160px" class="btn btn-success">Aceptar mercaderia <span class="glyphicon glyphicon-play"></span></button>
-                        <button id="btnCancelar" type="button" style="width:160px;margin-top:2px" class="btn btn-danger">Rechazar mercaderia <span class="glyphicon glyphicon-play"></span></button>
+                        <button id="btnGuardarMerca" type="button" style="width:160px" class="btn btn-success">Aceptar <span class="glyphicon glyphicon-play"></span></button>
+                        <button id="btnCancelar" type="button" style="width:160px;margin-top:2px" class="btn btn-danger">Rechazar <span class="glyphicon glyphicon-play"></span></button>
                     </td>
                 </tr>
             </tbody>
@@ -272,10 +272,12 @@
                 contentType: false,
                 success: function (respuesta) {
                     if (respuesta.result == 1) {
-                        mensaje(respuesta.message, 1);
-                        $("#globalLoading").show();
+                         $("#globalLoading").hide();
                         window.location.href = '@Url.Action("Recepcion", "Delivery")';
+                        @*mensaje(respuesta.message, 1);
                         $("#globalLoading").hide();
+                        window.location.href = '@Url.Action("Recepcion", "Delivery")';
+                        $("#globalLoading").hide();*@
                     } else if (respuesta.result <= 0) {
                         $("#globalLoading").hide();
                         mensaje(respuesta.message, 2);
