@@ -1,0 +1,130 @@
+﻿@model List<Entity.PortalListadoCotizacionesEntity>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Cotizaciones</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">    
+    <style>
+        body{
+            background-color:white;
+        }
+
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        th {
+            background-color: #007bff !important;
+            color: white;
+            text-align: center;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        .title-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-4">
+        <div class="title-header">📄 Cotizaciones por Autorizar</div>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Fecha</th>
+                        <th>Asesor</th>
+                        <th>NIT</th>
+                        <th>Cliente</th>
+                        <th>Monto Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.DocEntry</td>
+                            <td>@item.DocDate.ToString("dd/MM/yyyy")</td>
+                            <td>@item.SlpName</td>
+                            <td>@item.Nit</td>
+                            <td>@item.FacNombre</td>
+                            <td>Q @item.DocTotal</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewDocument(@item.DocEntry)">
+                                    <i class="fas fa-eye"></i> Ver
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="no-data-message" class="alert alert-warning text-center d-none">
+            <i class="fas fa-exclamation-triangle"></i> Sin cotizaciones por autorizar
+        </div>
+    </div>
+
+    <script>
+        //// Simulación de datos (puedes reemplazarlo con datos reales de tu backend)
+        //const cotizaciones = [
+        //    { DocNum: 1001, DocDate: "2024-02-06", SlpName: "Juan Pérez", Nit: "1234567-8", CardName: "Cliente A", DocTotal: 1500.50 },
+        //    { DocNum: 1002, DocDate: "2024-02-05", SlpName: "María López", Nit: "9876543-2", CardName: "Cliente B", DocTotal: 2300.75 }
+        //];
+
+        //const tableBody = document.getElementById("cotizaciones-body");
+        //const noDataMessage = document.getElementById("no-data-message");
+
+        //if (cotizaciones.length > 0) {
+        //    cotizaciones.forEach(item => {
+        //        const row = `
+        //            <tr>
+        //                <td>${item.DocNum}</td>
+        //                <td>${item.DocDate}</td>
+        //                <td>${item.SlpName}</td>
+        //                <td>${item.Nit}</td>
+        //                <td>${item.CardName}</td>
+        //                <td>Q${item.DocTotal.toFixed(2)}</td>
+        //                <td>
+        //                    <button class="btn btn-sm btn-primary" onclick="viewDocument(${item.DocNum})">
+        //                        <i class="fas fa-eye"></i> Ver
+        //                    </button>
+        //                </td>
+        //            </tr>
+        //        `;
+        //        tableBody.innerHTML += row;
+        //    });
+        //} else {
+        //    noDataMessage.classList.remove("d-none");
+        //}
+
+        //function viewDocument(docNum) {
+        //    alert("Ver detalles del documento: " + docNum);
+        //}
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+<script>
+    function viewDocument(DocEntry) {
+        window.location.href = `/CotizacionVentasAutoriza/Detalle?DocEntry=${DocEntry}`;
+    }
+</script>

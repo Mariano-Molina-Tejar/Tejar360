@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {            
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;            
+        }
+
+        .header {
+            background-color: #f7923a;
+            color: white;
+            padding: 10px;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+        .info {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+            .info p {
+                margin: 5px 0;
+            }
+
+        .section {
+            margin-top: 20px;
+        }
+
+            .section h3 {
+                border-bottom: 2px solid #f7923a;
+                padding-bottom: 5px;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+            table th, table td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: center;
+            }
+
+            table th {
+                background-color: #f7923a;
+                color: white;
+            }
+
+        .totales {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+            .totales p {
+                margin: 5px 0;
+            }
+
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .firmas {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .firmas div {
+                width: 45%;
+                text-align: center;
+                border-top: 1px solid black;
+                padding-top: 5px;
+            }
+
+        .footer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f7923a;
+            color: white;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="header">
+            <div class="encabezado" style="text-align: center; font-family: Arial, sans-serif;">
+                <h1 class="title" style="font-size: 32px; font-weight: bold; margin: 5px 0;">
+                    EL<span class="highlight" style="color: white; font-weight: bold;">TEJAR</span>
+                </h1>
+                <h2 class="address" style="font-size: 16px; color: white; font-weight: lighter; margin: 3px 0;">
+                    @DireccionTejar
+                </h2>
+                <h2 class="phone" style="font-size: 16px; color: white; margin: 3px 0;">
+                    Teléfonos:
+                </h2>
+            </div>
+
+            <div>
+                <p><strong>COTIZACIÓN #@DocNum</strong></p>
+                <p>Fecha: @FechaFactura</p>
+                <p>Válido hasta: @FechaValida</p>
+                <p>Código cliente: @CardCode</p>
+            </div>
+        </div>
+
+        <div class="info">
+            <p><strong>NIT: </strong> @Nit</p>
+            <p><strong>CLIENTE:</strong> @CardName</p>
+            <p><strong>DIRECCION:</strong> @Address</p>
+        </div>
+
+        <div class="section">
+            <h3>Comentarios</h3>
+            <p>@Notas</p>
+        </div>
+
+        <div class="section">
+            <h3>Detalles</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @Detalle
+                </tbody>
+            </table>
+        </div>
+
+        <div class="totales">
+            <p>Subtotal: @SubTotal</p>
+            <p>Impuestos: @Impuestos</p>
+            <p>Descuento: @Descuento</p>
+            <p class="total">Total: <strong>@Total</strong></p>
+        </div>
+
+        <!--<div class="section">
+            <h3>Términos y Condiciones</h3>
+            <ul>
+                <li>La información interior no es una factura y solo es una estimación de los productos/servicios.</li>
+                <li>El pago debe efectuarse antes de la entrega de los productos/servicios.</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center;">Confirma la aceptación de esta cotización:</p>
+
+        <div class="firmas">
+            <div>Firma sobre el nombre impreso</div>
+            <div>En fecha en que se firma</div>
+        </div>
+
+        <div class="footer">
+            <p>Si tienes alguna pregunta sobre este presupuesto, ponte en contacto con</p>
+            <p><strong>@SlpName</strong></p>
+            <p>¡Gracias por tu compra!</p>
+        </div>-->
+    </div>
+</body>
+</html>

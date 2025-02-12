@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        .ItemImg{
+            border: solid gray 1px;
+            width: 70px;        
+            height: 70px;
+        }
+        .page {
+            padding: 20px;
+            font-family: "Montserrat", serif;
+        }
+        .cotizacion-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            align-items: center;
+            gap: 20px;
+
+        }
+        .info {
+            display: flex;
+            flex-direction: column;
+        }
+        .info h1, .info h2 {
+            margin: 0;
+        }
+        .logo img {
+            max-width: 100%;
+            height: auto;
+        }
+        body {
+            margin: 20px;
+        }
+        .container {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .header {
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .header td {
+            padding: 15px;
+            border: 0;
+            background-color: #ededed;
+        }
+        .title {
+            background: black;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+
+        }
+        th {
+            background:#f9b114 ;
+            color: black;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+
+        }
+        .terms {
+            margin-top: 20px;
+            font-size: 12px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+        }
+        .containerImg{
+            display: flex;
+             align-items: center; /* Centra verticalmente */
+            justify-content: left; /* Opcional: centra horizontalmente */
+            gap: 15px;
+        }
+        .border-none td{
+            border: none;
+        }
+        .sombras{
+            -webkit-box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
+box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
+        }
+        .info_title{
+            font-size: 22px;
+            margin: 0px;
+        }
+        .info_detalle{
+            font-size: 20px;
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div style="display: grid; grid-template-columns: 1fr 2fr;align-items: center;gap: 20px;">
+            <div class="info">
+                <p class="info_title"><strong>Cotización:</strong></p>
+                <p class="info_detalle">No. @DocNum</p>
+                <p class="info_detalle">@Address</p>
+                <p class="info_detalle">Fecha: @FechaFactura</p>
+                <p class="info_detalle">Válido hasta: @FechaValida</p>
+            </div>
+            <div style="max-width: 100%; height: auto;">
+                <img src="https://eltejar.gt/wp-content/uploads/2025/02/ENCABEZADO-PAG1-06.png" />
+            </div>
+        </div>
+        <table class="header">
+            <tr>
+                <td>
+                    <strong>@CardName</strong><br>
+                    Correo: @Email_Cliente<br>
+                    Teléfono: @Teléfono_Cliente<br>
+                    Domicilio: @Direccion_Cliente
+                </td>
+                <td style=" text-align: right;align-items: end; justify-content: end;"><strong>Nit: @Nit</strong></td>
+            </tr>
+        </table>
+        
+        <div class="title"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!-- INICIO LISTADO DE ITEMS -->
+                @Detalle
+                <!--<tr>
+                    <td class= "containerImg">
+                        <img src="@URL_Imagen" title="URL_Imagen" class="ItemImg" />   
+                            <h5 style="display: inline;">  @ItemName
+                            </h5>  
+                    </td>
+                    <td>@Quantity</td>
+                    <td>@Pice</td>
+                    <td>@LineTotal</td>
+                </tr>-->
+               
+
+                <!-- FIN LISTADO DE ITEMS -->
+
+
+                <!-- TERMINOS Y CONDICIONES -->
+                 <!-- TOTALES -->
+                <tr style="background-color: #f9b114;">
+                    <td colspan="2" rowspan="2" style="background-color: white;" class="sombras">
+                        <div style="display: inline;">
+                            <strong>Términos y Condiciones: </strong>
+                        <ul>
+                            <li>La información anterior no es una factura y solo es una estimación de los productos/servicios.</li>
+                            <li>El pago debe facturarse antes de la entrega de los productos/servicios.</li>
+                        </ul>
+                        </div>                  
+                    </td>
+                    <td><strong>DESCUENTO</strong></td>
+                    <td>@Descuento</td>
+                </tr>
+                <tr style="background-color: #f9b114;">
+                    
+                    <td><strong>SUBTORAL</strong></td>
+                    <td>@SubTotal</td>
+                </tr>
+                <tr class="border-none">
+                    <td colspan="2"></td>
+                    <td><strong>IVA</strong><strong></strong></td>
+                    <td>@Iva</td>
+                </tr>
+                <tr style="border: 0px;" class="border-none">
+                    <td colspan="2"></td>
+                    <td><strong>TOTAL</strong></td>
+                    <td>@Total</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="logo" style="margin-top:  12px;">
+            <img src="/Img/PARTE-INFERIOR-PAG-1-08.png"/>
+        </div>
+        
+       
+    </div>
+</body>
+</html>

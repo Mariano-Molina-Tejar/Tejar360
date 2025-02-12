@@ -3978,6 +3978,19 @@ input[type="button"].btn-block {
   text-decoration: none;
 }
 
+.navbar {
+  display: flex;
+  justify-content: space-between; /* Asegura que el logo y los íconos estén distribuidos */
+  align-items: center; /* Centra verticalmente los elementos */
+}
+
+.navbar-nav.ml-auto {
+  display: flex;
+  gap: 10px; /* Asegura espaciado uniforme entre los íconos */
+  align-items: center;
+}
+
+
 .navbar-nav {
   display: -ms-flexbox;
   display: flex;

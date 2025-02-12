@@ -1,0 +1,532 @@
+﻿@model Entity.CarritoComprasEntity
+<style>
+    .counter {
+        display: flex;
+        align-items: center;
+        gap: 0px;
+        width: 210px
+    }
+
+        .counter button {
+            width: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            /*background-color: #007bff;*/
+            color: black;
+            border: none;
+            border-radius: 2px;
+            height: 40px;
+        }
+
+            .counter button:disabled {
+                background-color: #dcdcdc;
+                cursor: not-allowed;
+            }
+
+        .counter input {
+            width: 100px;
+            text-align: center;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 0px;
+            padding: 0px;
+            height: 40px;
+        }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="~/js/UpdateCarrito.js" defer></script>
+@foreach (var item in Model.Detalle)
+{
+    <div class="ibox-content">
+        <div class="table-responsive">
+            <table class="table shoping-cart-table">
+                <tbody>
+                    <tr>
+                        <td id="productImageContainer" width="125" style="padding: 0; margin: 0; text-align: center; vertical-align: middle;">
+                            <div id="productImageWrapper" style="width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #fff; margin: auto;">
+                                <img id="productImage" src="@(!string.IsNullOrEmpty(item.LinkImg) ? item.LinkImg : Url.Content("~/Img/imagen-no-disponible.png"))"
+                                     onerror="this.onerror=null; this.src='/Img/imagen-no-disponible.png';"
+                                     alt="Imagen del producto"
+                                     style="width: 100%; height: 100%; object-fit: cover;" />
+                            </div>
+                            <p id="ItemCode" class="small" style="text-align: center; margin: 5px 0;">
+                                @item.ItemCode
+                            </p>
+                            @if (item.EsPromo == 1)
+                            {
+                                <p class="small" style="text-align: center; font-weight: bold; color: white; background-color: #ec5353; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 5px;">
+                                    Promoción
+                                </p>
+                            }
+                        </td>
+                        <td id="productDescriptionContainer" class="desc">
+                            <h3>
+                                <a href="#" class="text-navy" onclick="cargarDescuentos('@Html.Raw(item.ItemCode)', '@Html.Raw(item.Identity)', '@Html.Raw(item.EsPromo)','@Html.Raw(item.Price)','@Html.Raw(item.Dscription)')">
+                                    @item.Dscription
+                                </a>
+                            </h3>
+                            <p id="LineId" style="display:none">
+                                @item.Identity
+                            </p>
+                            <p id="productUnitPrice" class="small" style="margin: 0; line-height: 1.5;">
+                                <strong>Precio Unitario: Q.@Convert.ToSingle(item.Price).ToString("F2")</strong>
+                            </p>
+                            <p id="iDscto" class="small" style="margin: 0; line-height: 1.5;">
+                                <strong>Descuento: Q.@Convert.ToSingle(item.Dscto).ToString("F2")</strong>
+                            </p>
+                            <p id="discountedPrice" class="small" style="margin: 0; line-height: 1.5;">
+                                <strong>
+                                    Precio con Descto: Q.@(Convert.ToSingle(item.Dscto) > 0 ? (Convert.ToSingle(item.Price) - Convert.ToSingle(item.Dscto)).ToString("F2") : "0.00")
+                                </strong>
+                            </p>
+                            @if (item.DescuentoLpr > 0)
+                            {
+                                <p>
+                                    <strong>
+                                        <a href="#" style="background-color: red; color: white; padding: 3px 8px; text-decoration: none; border-radius: 5px; font-size: 12px; display: inline-flex; align-items: center;">
+                                            ⚠️ Previo a autorización
+                                        </a>
+                                    </strong>
+                                </p>
+                            }
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div id="quantityCounter" class="counter" style="margin-top: 10px; border-radius: 15px; background-color: #eeeeee; padding: 5px;">
+                                        <button id="btnMinus" class="btn-minus btn-warning" style="border-radius: 0 50px 50px 0;padding: 10px 20px;border: 1px;
+                                        background-color: #eeeeee;color: black;cursor: pointer;outline: none;box-shadow: none;" type="button">
+                                            -
+                                        </button>
+                                        <input id="counterInput" type="number" value="@Convert.ToSingle(item.Quantity).ToString("F2")" min="1" style="border-radius: 3px;height:28px;">
+                                        <button id="btnPlus" class="btn-plus btn-warning" style="border-radius: 0 50px 50px 0;padding: 10px 20px;border: 1px;
+                                        background-color: #eeeeee;color: black;cursor: pointer;outline: none;box-shadow: none;" type="button">
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="removeProduct" class="m-t-sm">
+                                <a href="#" class="text-muted" onclick="mostrarAlerta(this)">
+                                    <i class="fa fa-trash"></i> Remover artículo
+                                </a>
+                            </div>
+                        </td>
+                        <td style="text-align: right; vertical-align: middle;">
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <h4 id="LineTotal" style="font-size: 18px; margin: 0;">
+                                    <strong>Q.@Convert.ToSingle(item.LineTotal).ToString("N2")</strong>
+                                </h4>
+                                <h4 id="TDescuento" style="font-size: 13px; margin: 2px 0 0; color:red;">
+                                    <strong>(Q.@Convert.ToSingle(item.DescuentoU).ToString("N2"))</strong>
+                                </h4>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="discountModalLabel">Calculadora de descuentos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="selected-price" class="form-label fw-bold text-primary">Nombre del producto</label>
+                    <div class="input-group">
+                        <input type="text" id="txtNombreProducto" class="form-control" readonly value="0.00" aria-describedby="basic-addon1" style="background-color:white; font-size: 1.2rem; color: black; text-align: left;">
+                    </div>
+                    <a id="txtLlave" style="display:none"></a>
+                </div>
+
+                <div class="mb-3">
+                    <label for="selected-price" class="form-label fw-bold text-primary">Precio seleccionado</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">Q</span>
+                        <input type="text" id="selected-price" class="form-control" readonly value="0.00" aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: #0056b3; text-align: right;">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="selected-price" class="form-label fw-bold text-primary">Aplicar descuento</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">%</span>
+                        <input type="number" min="0" id="txtPdecuento" class="form-control" value="" placeholder="0.00"
+                               aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: red; text-align: right;"
+                               oninput="CalcularDescuentos('P')" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="selected-price" class="form-label fw-bold text-primary">Descuento unitario</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">Q</span>
+                        <input type="number" min="0" id="txtQdescuento" class="form-control" value="" placeholder="0.00"
+                               aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: red; text-align: right;"
+                               oninput="CalcularDescuentos('Q')">
+                    </div>
+                </div>
+                <!-- Tabla -->
+                <table class="table table-striped table-hover table-bordered tblPrecios">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" style="display: none;">Id</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col" class="text-center">Precio inicial</th>
+                            <th scope="col" class="text-center">Precio final</th>
+                        </tr>
+                    </thead>
+                    <tbody id="discountTableBody">
+                    </tbody>
+                </table>
+                <a id="txtLP" style="display:none"></a>
+                <div class="mb-3">
+                    <label for="selected-price" class="form-label fw-bold text-primary">Precio unitario con descuento</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">Q</span>
+                        <input type="number" min="0" id="txtTotalDescuento" class="form-control" value="" readonly placeholder="0.00" aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: red; text-align: right;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cerrarModal()">Cancelar</button>
+                <script>
+                    function cerrarModal() {
+                        $('#discountModal').modal('hide');
+                    }
+                </script>
+
+                <button type="button" class="btn btn-primary" onclick="applyDiscount()">Aplicar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function applyDiscount() {        
+        $("#globalLoading").show();
+
+        const _llave = document.getElementById('txtLlave').textContent;
+        const _lp = document.getElementById('txtLP').textContent;
+        const _dsctoPor = parseFloat(document.getElementById('txtPdecuento').value) || 0;
+        const _dsctoQtz = parseFloat(document.getElementById('txtQdescuento').value) || 0;
+        let _dsctoNwp = parseFloat(document.getElementById('txtTotalDescuento').value) || 0; // Cambiado a let
+
+        const _iDescuentos = {
+            DescuentoLpr: _lp,
+            DescuentoNwp: _dsctoNwp,
+            DescuentoPor: _dsctoPor,
+            DescuentoQtz: _dsctoQtz
+        };
+
+        // Verificar si la función updateDescuentos es asíncrona
+        let resultado = updateDescuentos(_llave, _iDescuentos);
+
+        if (resultado instanceof Promise) {
+            resultado.then(() => {
+                $('#discountModal').modal('hide');
+                $("#globalLoading").hide();
+                location.reload();
+            }).catch(err => {
+                console.error("Error al actualizar descuentos:", err);
+                $("#globalLoading").hide();
+            });
+        } else {
+            $('#discountModal').modal('hide');
+            $("#globalLoading").hide();
+            location.reload();
+        }
+
+    }
+
+    //CARGA LA TABLA EN EL MODAL DE CALULO DE DESCUENTOS.
+    function cargarDescuentos(itemCode, llave, esPromo, price, Dscription) {
+        if (esPromo === "1") {
+            alert("No se puede aplicar descuento a un producto con promoción");
+            return;
+        }
+
+        document.getElementById('txtLlave').textContent = llave;
+        document.getElementById('txtNombreProducto').value = Dscription;
+        document.getElementById('selected-price').value = Number(price).toFixed(2);
+
+        $.ajax({
+            url: '/MiCarrito/TablaDescuentos', // Ajusta el nombre del controlador
+            type: 'GET',
+            data: { ItemCode: itemCode },
+            success: function (data) {
+                let tbody = $('#discountTableBody');
+                tbody.empty(); // Limpiar la tabla antes de agregar nuevas filas
+
+                if (data.length > 0) {
+                    data.forEach(function (item) {
+                        let row = `<tr>
+                        <td style="display: none;">${item.IdLista}</td>
+                        <td>${item.ListName}</td>
+                        <td class="text-end">Q ${item.Minimo.toLocaleString('es-GT', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-end">Q ${item.Maximo.toLocaleString('es-GT', { minimumFractionDigits: 2 })}</td>
+                    </tr>`;
+                        tbody.append(row);
+                    });
+
+                    let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+                    const cookieData = getCookie(cookieName);
+                    if (cookieData) {
+                        const parsedData = JSON.parse(cookieData);
+                        const producto = parsedData.productos.find(p => p.Identity.trim() === llave.trim());
+                        if (producto)
+                        {
+                            document.getElementById('txtLP').innerHTML = (producto.DescuentoLpr || 0).toFixed(2);
+                            document.getElementById('txtPdecuento').value = (producto.DescuentoPor || 0).toFixed(2);
+                            document.getElementById('txtQdescuento').value = (producto.DescuentoQtz || 0).toFixed(2);
+                            document.getElementById('txtTotalDescuento').value = (producto.DescuentoNwp || 0).toFixed(2);
+
+                            if (producto.DescuentoNwp > 0)
+                            {
+                                CalcularDescuentos("Q");
+                            }
+                        }
+                    }
+
+                    $('#discountModal').modal('show');
+
+                } else {
+                    tbody.append('<tr><td colspan="3" class="text-center">No hay descuentos disponibles</td></tr>');
+                    $('#discountModal').modal('show');
+                }
+            },
+            error: function () {
+                alert('Error al cargar los descuentos.');
+            }
+        });
+    }
+
+    //CALCULADOR DE DESCUENTOS
+    function CalcularDescuentos(tipo) {
+        const precioBase = parseFloat(document.getElementById("selected-price").value) || 0;
+        let dsctoPorcentaje = parseFloat(document.getElementById("txtPdecuento").value) || 0;
+        let dsctoCantidad = parseFloat(document.getElementById("txtQdescuento").value) || 0;
+        let granTotal = 0;
+
+        if (precioBase <= 0) {
+            alert("El precio base no es válido.");
+            return;
+        }
+
+        if (tipo === "P") {
+            dsctoCantidad = (precioBase * dsctoPorcentaje) / 100;
+            granTotal = precioBase - dsctoCantidad;
+            document.getElementById("txtQdescuento").value = dsctoCantidad.toFixed(2);
+        } else if (tipo === "Q") {
+            if (dsctoCantidad > precioBase) {
+                alert("El descuento no puede ser mayor al precio base.");
+                return;
+            }
+            dsctoPorcentaje = (dsctoCantidad / precioBase) * 100;
+            granTotal = precioBase - dsctoCantidad;
+            document.getElementById("txtPdecuento").value = dsctoPorcentaje.toFixed(2);
+        }
+
+        document.getElementById("txtTotalDescuento").value = granTotal.toFixed(2);
+        const tabla = document.querySelector("#discountTableBody");
+
+        if (!tabla) {
+            console.error("No se encontró el tbody.");
+            return;
+        }
+
+        let idListaSeleccionado = null; // Variable para almacenar el IdListaP seleccionado
+
+        tabla.querySelectorAll("tr").forEach((fila, index) => {
+            const celdas = fila.querySelectorAll("td"); // Obtener todas las celdas de la fila
+
+            if (celdas.length < 4) {
+                console.warn(`Fila ${index + 1} no tiene suficientes celdas. Total de celdas: ${celdas.length}`);
+                return; // Saltar esta fila si no tiene suficientes columnas
+            }
+
+            const IdListaP = parseFloat(celdas[0].innerText.trim()) || 0;
+            const precioInicial = parseFloat(celdas[2].innerText.replace("Q", "").replace(",", "").trim()) || 0;
+            const precioFinal = parseFloat(celdas[3].innerText.replace("Q", "").replace(",", "").trim()) || 0;
+
+            if (granTotal >= precioInicial && granTotal <= precioFinal && idListaSeleccionado === null) {
+                fila.style.backgroundColor = "orange";
+                fila.style.color = "white";
+                idListaSeleccionado = IdListaP; // Guardar solo el primer IdListaP que cumple la condición
+            } else {
+                fila.style.backgroundColor = "";
+                fila.style.color = "";
+            }
+        });
+        txtLP.innerHTML = idListaSeleccionado;
+    }
+
+    function mostrarAlerta(elemento) {
+        if (confirm("¿Estás seguro de eliminar el artículo seleccionado?")) {
+            // Encuentra la fila contenedora del botón
+            const fila = elemento.closest("tr");
+
+            // Obtén los valores de ItemCode y LineId
+            const Identity = fila.querySelector("#LineId")?.textContent.trim(); // Asegúrate de que LineId esté disponible
+
+            $("#globalLoading").show();
+            // Llamar a la función de eliminación
+            eliminarFilaCotizacion(Identity);
+
+
+            // Espera un momento y recarga la página después de la eliminación
+            setTimeout(() => {
+                location.reload();
+            }, 500); // Espera 500ms para asegurar que la eliminación se complete
+        }
+    }
+
+    // Función para obtener una cookie
+    function getCookie(name) {
+        const cookieArr = document.cookie.split(";");
+        for (let i = 0; i < cookieArr.length; i++) {
+            const cookie = cookieArr[i].trim();
+            if (cookie.startsWith(name + "=")) {
+                return cookie.substring(name.length + 1);
+            }
+        }
+        return null;
+    }
+
+    document.getElementById('totalItems').innerHTML = "@Model.Detalle.Count()";
+
+    function calcularGranTotal() {
+        let granTotal = 0;
+        let totalDescuento = 0;
+
+        // Recorrer todas las filas de la tabla
+        document.querySelectorAll(".shoping-cart-table tbody tr").forEach(row => {
+            // Obtener LineTotal y convertirlo a número
+            let lineTotalElement = row.querySelector("#LineTotal strong");
+            let lineTotal = lineTotalElement ? parseFloat(lineTotalElement.textContent.replace("Q.", "").replace(",","").trim()) : 0;
+
+            // Obtener el descuento por unidad
+            let descuentoElement = row.querySelector("#iDscto strong");
+            let descuento = descuentoElement ? parseFloat(descuentoElement.textContent.replace("Descuento: Q.", "").replace(",", "").trim()) : 0;
+
+            // Obtener la cantidad ingresada
+            let cantidadElement = row.querySelector("#counterInput");
+            let cantidad = cantidadElement ? parseFloat(cantidadElement.value) : 1;
+
+            // Sumar al gran total
+            granTotal += lineTotal;
+
+            // Calcular el total de descuento
+            totalDescuento += (descuento * cantidad);
+        });
+
+        // Mostrar los resultados
+        document.getElementById("GranTotal").textContent = `Q.${granTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById("iDescuentoT").textContent = `Q.${totalDescuento.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    // Llama a la función una vez para inicializar el total
+    calcularGranTotal();
+
+    document.querySelectorAll('.btn-plus').forEach(btnPlus => {
+        btnPlus.addEventListener('click', function () {
+            const input = btnPlus.parentElement.querySelector('#counterInput'); // Capturar el input dentro del mismo contenedor
+            const btnMinus = btnPlus.parentElement.querySelector('.btn-minus'); // Capturar el botón de restar
+            const lineTotalElement = btnPlus.closest('tr').querySelector('#LineTotal'); // Capturar el elemento de LineTotal
+            const iDescuentoU = btnPlus.closest('tr').querySelector('#TDescuento'); // Capturar el elemento de Descuento
+
+            let currentValue = parseFloat(input.value); // Obtener el valor actual del input
+            currentValue = isNaN(currentValue) ? 0 : currentValue; // Asegurar que sea un número válido
+            input.value = (currentValue + 1).toFixed(2); // Incrementar el valor
+
+            btnMinus.disabled = false; // Habilitar el botón de restar siempre que el valor sea mayor a 1
+
+            // Obtener los valores de precio unitario y descuento
+            const unitPriceText = btnPlus.closest('tr').querySelector('#productUnitPrice').textContent;
+            const discountText = btnPlus.closest('tr').querySelector('#iDscto').textContent;
+            const discountedPriceText = btnPlus.closest('tr').querySelector('#discountedPrice').textContent;
+            const Identity = btnPlus.closest('tr').querySelector('#LineId').textContent;
+
+            const unitPrice = parseFloat(unitPriceText.replace("Precio Unitario: Q.", "").trim()) || 0;
+            const discount = parseFloat(discountText.replace("Descuento: Q.", "").trim()) || 0;
+            const discountedPrice = parseFloat(discountedPriceText.replace("Precio con Descto: Q.", "").trim()) || 0;
+
+            // Determinar el precio base a usar
+            let finalPrice = discountedPrice > 0 ? discountedPrice : unitPrice;
+
+            // Calcular el total
+            let total = (currentValue + 1) * finalPrice;
+            let DescuentoU = (currentValue + 1) * discount;
+
+            // Mostrar el total en LineTotal
+            lineTotalElement.innerHTML = `<h4 style="font-size:18px;margin:0"><strong>Q.${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></h4>`;
+            iDescuentoU.innerHTML = `<h4 style="font-size:13px;margin:0"><strong>(Q.${DescuentoU.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</strong></h4>`;
+            // Llamar a la función de actualización si es necesaria
+            ModificarCantidades(Identity, (currentValue + 1).toFixed(2), DescuentoU);
+            calcularGranTotal();
+        });
+    });
+
+    document.querySelectorAll('.btn-minus').forEach(btnMinus => {
+        btnMinus.addEventListener('click', function () {
+            const input = btnMinus.parentElement.querySelector('#counterInput'); // Capturar el input dentro del mismo contenedor
+            const btnPlus = btnMinus.parentElement.querySelector('.btn-plus'); // Capturar el botón de sumar
+            const lineTotalElement = btnMinus.closest('tr').querySelector('#LineTotal'); // Capturar el elemento de LineTotal
+            const iDescuentoU = btnPlus.closest('tr').querySelector('#TDescuento'); // Capturar el elemento de Descuento
+
+            let currentValue = parseFloat(input.value); // Obtener el valor actual del input
+            currentValue = isNaN(currentValue) ? 0 : currentValue; // Asegurar que sea un número válido
+
+            if (currentValue > 1) {
+                input.value = (currentValue - 1).toFixed(2); // Decrementar el valor
+            }
+
+            // Si el valor llega a 1, deshabilitar el botón de restar
+            btnMinus.disabled = parseFloat(input.value) <= 1;
+
+            // Obtener los valores de precio unitario y descuento
+            const unitPriceText = btnPlus.closest('tr').querySelector('#productUnitPrice').textContent;
+            const discountText = btnPlus.closest('tr').querySelector('#iDscto').textContent;
+            const discountedPriceText = btnPlus.closest('tr').querySelector('#discountedPrice').textContent;
+            const Identity = btnPlus.closest('tr').querySelector('#LineId').textContent;
+
+            const unitPrice = parseFloat(unitPriceText.replace("Precio Unitario: Q.", "").trim()) || 0;
+            const discount = parseFloat(discountText.replace("Descuento: Q.", "").trim()) || 0;
+            const discountedPrice = parseFloat(discountedPriceText.replace("Precio con Descto: Q.", "").trim()) || 0;
+
+            // Determinar el precio base a usar
+            let finalPrice = discountedPrice > 0 ? discountedPrice : unitPrice;
+
+            // Calcular el total
+            let total = parseFloat(input.value) * finalPrice;
+            let DescuentoU = parseFloat(input.value) * discount;
+
+            // Mostrar el total en LineTotal sin perder el formato
+            lineTotalElement.innerHTML = `<h4 style="font-size:18px;margin:0"><strong>Q.${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></h4>`;
+            iDescuentoU.innerHTML = `<h4 style="font-size:13px;margin:0"><strong>(Q.${DescuentoU.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</strong></h4>`;
+
+            // Llamar a la función de actualización si es necesaria
+            ModificarCantidades(Identity, (currentValue - 1).toFixed(2), DescuentoU);
+            calcularGranTotal();
+        });
+    });
+
+</script>

@@ -322,6 +322,5 @@ namespace PORTALI.Controllers
             var fileStream = System.IO.File.ReadAllBytes(outputPath);
             return File(fileStream, "application/pdf");
         }
-
     }
 }

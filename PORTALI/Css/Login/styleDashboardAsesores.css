@@ -1,0 +1,28 @@
+﻿/* Ícono transparente y ocupa todo el card para pantallas pequeñas */
+@media (max-width: 768px) { /* Tamaño para pantallas pequeñas */
+    .icon {
+        width: 100%; /* Ocupar todo el ancho del card */
+        height: 100%; /* Ocupar todo el alto del card */
+        top: 0;
+        right: 0;
+        transform: none; /* Sin transformaciones */
+        background-color: rgba(51, 51, 51, 0.3); /* Fondo semitransparente */
+        border-radius: 0; /* Quitar el borde circular */
+        box-shadow: none; /* Sin sombras */
+        justify-content: flex-start; /* Opcional: Cambiar alineación del ícono */
+        font-size: 18px; /* Tamaño más pequeño para pantallas pequeñas */
+    }
+
+        .icon i {
+            color: rgba(255, 255, 255, 0.7); /* Ícono más transparente */
+        }
+}
+
+/* Ícono más grande para pantallas grandes */
+@media (min-width: 1200px) { /* Pantallas grandes */
+    .icon {
+        width: 70px; /* Más grande */
+        height: 70px;
+        font-size: 30px;
+    }
+}

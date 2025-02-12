@@ -12,19 +12,20 @@
 <link href="~/Css/font-awesome.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
 <style>
     body {
         background-color: white;
     }
     /* Personalización del botón de búsqueda */
-    #btnBuscar .input-group-text {
-        background-color: #FF8C00; /* Color naranja */
-        color: white;
+    /*#btnBuscar .input-group-text {
+        background-color: #FF8C00;*/ /* Color naranja */
+        /*color: white;
         border: none;
         cursor: pointer;
-    }
+    }*/
 
     #btnFiltro .input-group-text {
         background-color: #171ac2; /* Color naranja */
@@ -108,6 +109,11 @@
         background-color: #f3f3f3;
     }
 
+    .bg-custom-green {
+        background-color: #28a745; /* Verde estándar de Bootstrap */
+        font-size: 15px;
+    }
+
     /* Estilos para la ventanita de filtro */
     .filtro-box {
         display: none; /* Oculto inicialmente */
@@ -189,10 +195,23 @@
                         <!-- Input de búsqueda -->
                         <input id="txtBuscar" autocomplete="off" type="text" class="form-control text-uppercase" placeholder="Buscar producto..." />
                         <!-- Botón de buscar -->
-                        <div id="btnBuscar" class="input-group-append" style="cursor: pointer;">
-                            <span class="input-group-text">
+                        <div class="input-group-append" style="cursor: pointer;">
+                            <!-- Botón con texto y icono (se oculta el texto en pantallas pequeñas) -->
+                            <div id="btnBuscar" class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center">
                                 <i class="fa fa-search"></i>
-                            </span>
+                                <span class="d-none d-md-inline">Buscar producto</span> <!-- El texto solo se muestra en pantallas grandes -->
+                            </div>
+
+                            <!-- Botón Código de Barra -->
+                            <button id="btnCodigoBarras" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalScanner">
+                                <i class="fas fa-barcode"></i>
+                                <span class="d-none d-md-inline">Código de Barra</span> <!-- El texto solo se muestra en pantallas grandes -->
+                            </button>
+                        </div>
+
+
+                        <div>
+                            <label id="txtMetodoPago"></label>
                         </div>
                     </div>
                 </div>
@@ -200,10 +219,122 @@
         </div>
     </div>
 </div>
-<div id="qr-reader"></div>
-<p id="resultado"></p>
 
-<div class="container">
+<!-- Botón para abrir el modal -->
+@*<button id="btnCodigoBarras" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalScanner">
+    <i class="fas fa-barcode"></i> Código de Barra
+</button>*@
+
+<!-- Modal -->
+<div class="modal fade" id="modalScanner" tabindex="-1" aria-labelledby="modalScannerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalScannerLabel">Escanear Código de Barras</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-center">
+                <!-- El video ocupará toda la pantalla del modal -->
+                <video id="video" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                <input type="text" id="codigoBarras" class="form-control mt-3" placeholder="Código escaneado" readonly>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let video = document.getElementById("video");
+        let inputCodigo = document.getElementById("codigoBarras");
+        let stream = null;
+        let quaggaInitialized = false;
+
+        // Al abrir el modal
+        document.getElementById("modalScanner").addEventListener("shown.bs.modal", async function () {
+            try {
+                // Detener cualquier flujo anterior
+                if (stream) {
+                    let tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+
+                // Accedemos a la cámara
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                video.srcObject = stream;
+                video.style.display = "block"; // Aseguramos que el video se muestre
+                video.play();
+
+                // Si Quagga no se ha inicializado previamente, lo inicializamos
+                if (!quaggaInitialized) {
+                    Quagga.init({
+                        inputStream: {
+                            type: "LiveStream",
+                            target: video,
+                            constraints: {
+                                facingMode: "environment", // Usar la cámara trasera si es posible
+                                width: { ideal: 1280 },    // Ajusta la resolución de la cámara
+                                height: { ideal: 720 }
+                            }
+                        },
+                        decoder: {
+                            readers: ["ean_reader", "code_128_reader"],  // Limitar a los tipos que necesitas
+                            multiple: false  // Para que lea solo un código a la vez
+                        },
+                        locator: {
+                            patchSize: "medium", // Tamanho de los parches de la imagen
+                            halfSample: true     // Utiliza una resolución más baja para mejorar el rendimiento
+                        }
+                    }, function (err) {
+                        if (!err) {
+                            Quagga.start();
+                        } else {
+                            console.error("Error en Quagga:", err);
+                        }
+                    });
+
+                    // Evento para cuando se detecta un código
+                    Quagga.onDetected(function (result) {
+                        let scannedCode = result.codeResult.code;
+
+                        // Filtrar caracteres no válidos
+                        scannedCode = scannedCode.replace(/[^a-zA-Z0-9-]/g, ""); // Mantener los caracteres alfanuméricos y el guion
+
+                        inputCodigo.value = scannedCode; // Establecer el código limpio en el input
+
+                        Quagga.stop(); // Detener el escaneo
+                        let tracks = stream.getTracks();
+                        tracks.forEach(track => track.stop()); // Detener la cámara
+                        video.style.display = "none"; // Ocultar el video
+
+                        // Redirigir o realizar otras acciones
+                        window.location.href = "/CotizacionVentas/Detalles?ItemCode=" + scannedCode;
+                    });
+
+
+                }
+            } catch (err) {
+                console.error("Error al acceder a la cámara: ", err);
+            }
+        });
+
+        // Al cerrar el modal
+        document.getElementById("modalScanner").addEventListener("hidden.bs.modal", function () {
+            // Detenemos la cámara y liberamos los recursos cuando se cierra el modal
+            if (stream) {
+                let tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+            // Reiniciar la variable que marca si Quagga fue inicializado
+            quaggaInitialized = false;
+        });
+    });
+</script>
+
+@*<div class="container">
     <input type="checkbox" id="btn-mas">
     <div class="redes">
         <a href="javascript:void(0);" class="fa-sharp fa-solid fa-qrcode" data-toggle="tooltip" data-placement="left" id="btnEscanear" title="Escanear"></a>
@@ -211,10 +342,104 @@
     <div class="btn-mas">
         <label for="btn-mas" class="fa fa-plus"></label>
     </div>
-</div>
+</div>*@
 
 <div id="resultadosBusqueda"></div>
+<div class="modal fade" id="miModal" tabindex="-1" role="dialog" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="miModalLabel">Nueva venta</h5>
+                <!-- Botón de cierre oculto -->
+                <button type="button" class="close" aria-label="Close" style="display: none;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formDatosCliente">
+                    <div class="form-group">
+                        <label for="inputNitDpi">NIT o DPI:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="inputNitDpi" placeholder="Ingrese su NIT o DPI">
+                            <button type="button" class="btn btn-primary" id="btnBuscarNitDpi">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputNombreCliente">Nombre del Cliente:</label>
+                        <input type="text" class="form-control" id="inputNombreCliente" placeholder="Ingrese el nombre del cliente">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDireccion">Dirección:</label>
+                        <input type="text" class="form-control" id="inputDireccion" placeholder="Ingrese la dirección">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputTelefono">Teléfono:</label>
+                        <input type="text" class="form-control" id="inputTelefono" placeholder="Ingrese el número de teléfono">
+                    </div>
+                </form>
+                <p>Por favor, elija cómo desea proceder con el pago.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnEfectivo">Efectivo</button>
+                <button type="button" class="btn btn-primary" id="btnTarjeta">Tarjeta</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
+    function buscarProductoEnCotizacion() {
+        const existingCotizacion = getCookie('Cotizacion_A1'); // Obtenemos la cookie
+
+        if (existingCotizacion) {
+            const cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto
+            console.log(cotizacion);
+            // Verificamos si hay productos en la cotización
+            if (cotizacion.productos && cotizacion.productos.length > 0) {
+                const primerListPrice = cotizacion.productos[0]["ListPrice"]; // Obtenemos el primer ListPrice
+                $('#txtMetodoPago').text(primerListPrice);
+                return primerListPrice;
+            } else {
+                return 0;
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    $('#btnEfectivo').click(function () {
+        $('#txtMetodoPago').text('1');
+        $('#miModal').modal('hide');
+    });
+
+    $('#btnTarjeta').click(function () {
+        $('#txtMetodoPago').text('9');
+        $('#miModal').modal('hide');
+    });
+
+    $(document).ready(function () {
+        CargarPromociones();
+        function CargarPromociones() {
+            $.ajax({
+                url: '@Url.Action("BuscarProductos", "CotizacionVentas")',
+                type: "GET",
+                async: false,
+                data: { Promos: true },
+                success: function (data) {
+                    $("#resultadosBusqueda").html(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar las promociones:", error);
+                },
+                complete: function () {
+                    $("#globalLoading").hide(); // Oculta el indicador de carga
+                }
+            });
+        }
+    });
+
     $(document).ready(function () {
         $('#txtBuscar').on('keydown', function (event) {
             if (event.key === "Enter") {
@@ -235,7 +460,7 @@
         $("#globalLoading").show();
         $.ajax({
             url: '@Url.Action("BuscarProductos", "CotizacionVentas")',
-            data: { NombreProducto: textBuscar },
+            data: { NombreProducto: textBuscar, Promos: false },
             success: function (data) {
                 $("#resultadosBusqueda").html(data);
                 $("#txtBuscar").focus();
@@ -304,7 +529,7 @@
             startQRScanner();  // Iniciar el escaneo
         });
     });
-    
+
 
     $(document).ready(function () {
         let scannedData = "";
@@ -372,6 +597,17 @@
         document.getElementById('ventanaFiltro').style.display = 'none';
     });
 
-
-
+    const mensaje = localStorage.getItem('mensaje');
+    if (mensaje) {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: mensaje,
+            timer: 3000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+        localStorage.removeItem('mensaje');
+    }
 </script>

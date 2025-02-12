@@ -1,4 +1,9 @@
-﻿@model List<Entity.BuscarProductoEntity>
+﻿<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+@model List<Entity.BuscarProductoEntity>
+@{
+    bool tienePromocion = Model != null && Model.Any(item => item.EsPromo == 1); 
+}
+
 <div class="container-fluid bg-transparent my-4 p-3">
     @if (Model != null)
     {
@@ -6,26 +11,62 @@
             @foreach (var item in Model)
             {
                 <div class="col mt-3">
-                    <!-- Aquí agregamos un margen superior -->
-                    <div class="card h-100 shadow-sm" style="max-width: 250px; margin: auto;">
-                        <a href="#">
-                            <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" class="card-img-top" alt="@item.ItemName" />
+                    <div class="card h-100 shadow-sm" style="max-width: 250px; margin: auto; cursor: pointer" onclick="VerDetalles('@item.ItemCode')">
+                        <a href="#" style="">
+                            <div class="contenidorsh">
+                                @if (item.EsPromo == 1)
+                                {
+                                    <div class="corner-ribbon">Promoción</div>
+                                }
+                                <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" class="card-img-top" alt="@item.ItemName" onerror="this.onerror=null; this.src='/Img/imagen-no-disponible.png';" />
+                            </div>                            
+                            <style>
+                                .contenidorsh {
+                                    position: relative;
+                                }
 
+                                .corner-ribbon {
+                                    position: absolute;
+                                    top: 25px;
+                                    left: 15px;
+                                    background-color: red;
+                                    color: white;
+                                    padding: 5px 10px;
+                                    font-size: 11px;
+                                    font-weight: bold;
+                                    text-transform: uppercase;                                    
+                                    z-index: 10;
+                                    border-radius:5px;
+                                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                                }
+
+                            </style>
                         </a>
                         <div class="label-top shadow-sm">
-                            <a class="text-white" href="#">SKU: @item.ItemCode</a>
+                            <a class="text-white" href="#">
+                                SKU: @item.ItemCode
+                            </a>
                         </div>
                         <div class="card-body">
+                            <h5 class="card-title" style="font-size:15px">
+                                <a href="#">@item.ItemName</a>
+                            </h5>
                             <div class="clearfix mb-3">
                                 <span class="float-start badge rounded-pill bg-success">Normal: @string.Format("Q.{0:#,##0.00}", @item.PrecioBeneficio)</span>
                                 <span class="float-end badge rounded-pill bg-success">Efectivo: @string.Format("Q.{0:#,##0.00}", @item.PrecioVenta)</span>
+                                @if (@item.PrecioPromocion > 0)
+                                {
+                                    <span class="float-end badge rounded-pill bg-custom-green">Promoción: @string.Format("Q.{0:#,##0.00}", @item.PrecioPromocion)</span>
+                                }
+                                else
+                                {
+                                    <span class="float-end badge rounded-pill bg-success"></span>
+                                }
                             </div>
-                            <h5 class="card-title">
-                                <a href="#">@item.ItemName</a>
-                            </h5>
-                            <div class="d-grid gap-2 my-4">
-                                <a href="@Url.Action("Detalles", "CotizacionVentas", new { ItemCode = item.ItemCode })" class="btn btn-warning bold-btn">Ver detalles</a>
-                            </div>
+                            @*<div class="d-grid gap-2 my-4">
+                                <a href="#" id="btnDetalles" class="btn btn-warning bold-btn" onclick="VerDetalles('@item.ItemCode')">Ver detalles</a>
+                            </div>*@
+                            <a style="font-style: italic; font-size: 9px; color: gray; margin-top: -2px; display: inline-block;">@item.DetallePromo</a>
                         </div>
                     </div>
                 </div>
@@ -33,3 +74,13 @@
         </div>
     }
 </div>
+
+<script>
+    function VerDetalles(itemCode) {
+        const valorDiv = $('#txtMetodoPago').text();
+        const baseUrl = '@Url.Action("Detalles", "CotizacionVentas")';
+        const urlConParametro = `${baseUrl}?ItemCode=${itemCode}&Pl=${valorDiv}`;
+
+        window.location.href = urlConParametro;
+    }
+</script>

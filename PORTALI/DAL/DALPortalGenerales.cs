@@ -1,10 +1,13 @@
 ﻿using Entity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +17,79 @@ namespace DAL
 {
     public class DALPortalGenerales
     {
+        public static ClienteSATEntity ConsultarNIT(string nit)
+        {
+            // URL del servicio de la SAT
+            string url = ConfigurationManager.AppSettings["SAT_URL"].ToString();
+
+            // Crear el objeto con los datos que se enviarán en la solicitud
+            var requestData = new
+            {
+                emisor_codigo = ConfigurationManager.AppSettings["SAT_CODIGO_EMISOR"].ToString(),
+                emisor_clave = ConfigurationManager.AppSettings["SAT_LLAVE"].ToString(),
+                nit_consulta = nit
+            };
+
+            // Convertir el objeto a JSON
+            string jsonData = JsonConvert.SerializeObject(requestData);
+
+            // Crear una solicitud HTTP
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+
+            try
+            {
+                // Escribir el JSON en el cuerpo de la solicitud
+                using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
+                {
+                    writer.Write(jsonData);
+                    writer.Flush();
+                    writer.Close();
+                }
+
+                // Obtener la respuesta del servidor
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    // Leer la respuesta del servicio web
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        string jsonResponse = reader.ReadToEnd();
+
+                        // Deserializar la respuesta JSON en un objeto ClienteSATEntity
+                        ClienteSATEntity cliente = JsonConvert.DeserializeObject<ClienteSATEntity>(jsonResponse);
+
+                        // Retornar los datos deserializados
+                        return cliente;
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                // Manejo de errores si la consulta falla
+                if (ex.Response != null)
+                {
+                    using (StreamReader reader = new StreamReader(ex.Response.GetResponseStream()))
+                    {
+                        string errorResponse = reader.ReadToEnd();
+                        Console.WriteLine("Error al realizar la consulta: " + errorResponse);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error al realizar la consulta: " + ex.Message);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Manejo de excepciones generales
+                Console.WriteLine("Error inesperado: " + ex.Message);
+                return null;
+            }
+        }
+
+
         public static PortalPdfOrdenCompraEntity DataPdfOrdenCompra(int DocEntry)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();

@@ -1,0 +1,331 @@
+﻿<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script src="~/js/UpdateCarrito.js"></script>
+<link href="~/Css/SocioNegocioCarrito.css" rel="stylesheet" />
+
+<div class="form-container">
+    <h2 class="form-title">Datos del Cliente</h2>
+    <p class="form-subtitle">Por favor, ingrese los datos del cliente para buscar o crear un nuevo registro.</p>
+    <form id="search-form" action="#" method="get">
+        <div class="container">
+            <!-- Sección Izquierda: Datos del Cliente -->
+            <div class="form-section">
+                <h4>Datos del Cliente</h4>
+
+                <div class="form-group">
+                    <label for="">NIT o DPI:</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="text" id="nit-dpi" name="nit_dpi" placeholder="Ingrese NIT o DPI" required
+                               style="flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0; height: 38px; text-transform:uppercase"
+                               oninput="syncNitDpi()" onkeypress="AplicarNit()">
+                        <button type="button" id="btn-buscar" class="btn btn-primary"
+                                style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center; border-radius: 0;"
+                                onclick="BuscarCliente()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardCode">Código del Socio:</label>
+                    <input type="text" id="cardCode" name="cardCode" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardName">Nombre del Socio:</label>
+                    <input type="text" id="cardName" name="cardName" readonly style="text-transform:uppercase" oninput="syncNombre()">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Dirección:</label>
+                    <input type="text" id="address" name="address" readonly style="text-transform:uppercase">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" readonly style="text-transform:lowercase">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Teléfono:</label>
+                    <input type="text" id="phone" name="phone" readonly style="text-transform:uppercase">
+                </div>
+            </div>
+
+            <!-- Sección Derecha: Datos de Facturación -->
+            <div class="form-section p-3 border rounded">
+                <h4 class="mb-3">Datos de Facturación</h4>
+                @*<div class="form-group mb-3">
+                    <label for="">NIT:</label>
+                    <input type="text" id="billingNit" name="billingNit" class="form-control">
+                </div>*@
+
+                <div class="form-group">
+                    <label for="">NIT o DPI:</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="text" id="billingNit" name="billingNit" placeholder="Ingrese NIT o DPI" required
+                               style="flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0; height: 38px; text-transform:uppercase">
+                        <button type="button" id="btBuscarNit" class="btn btn-primary"
+                                style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center; border-radius: 0;"
+                                onclick="BuscarNit()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="billingName">Nombre:</label>
+                    <input type="text" id="billingName" name="billingName" class="form-control" style="text-transform:uppercase">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="billingAddress">Dirección:</label>
+                    <input type="text" id="billingAddress" name="billingAddress" class="form-control" style="text-transform:uppercase">
+                </div>
+
+                <div class="form-group mb-3 d-flex flex-column">
+                    <label class="mt-2">Consumidor Final:</label>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary" id="btnSi" onclick="seleccionarConsumidorFinal(true)">Sí</button>
+                            <button type="button" class="btn btn-outline-secondary" id="btnNo" onclick="seleccionarConsumidorFinal(false)">No</button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary ms-2" onclick="copiarDatos()">Copiar Datos</button>
+                    </div>
+                </div>
+                <div style="display:none">
+                    <a id="estadoSeleccion" class="d-block mt-2" style="display: none;"></a>
+                </div>
+            </div>
+            <script>
+                function seleccionarConsumidorFinal(esConsumidorFinal) {
+                    document.getElementById("billingNit").value = esConsumidorFinal ? "CF" : "";
+                    document.getElementById("billingName").value = esConsumidorFinal ? "CONSUMIDOR FINAL" : "";
+                    document.getElementById("billingAddress").value = esConsumidorFinal ? "CIUDAD" : "";
+
+                    // Resalta el botón seleccionado
+                    document.getElementById("btnSi").classList.toggle("btn-primary", esConsumidorFinal);
+                    document.getElementById("btnSi").classList.toggle("btn-outline-primary", !esConsumidorFinal);
+                    document.getElementById("btnNo").classList.toggle("btn-secondary", !esConsumidorFinal);
+                    document.getElementById("btnNo").classList.toggle("btn-outline-secondary", esConsumidorFinal);
+
+                    // Muestra el <a> y actualiza su texto
+                    let estadoSeleccion = document.getElementById("estadoSeleccion");
+                    estadoSeleccion.style.display = "block"; // Se asegura de que se muestre
+                    estadoSeleccion.innerText = esConsumidorFinal ? "Y" : "N";
+                }
+            </script>
+        </div>
+
+        <!-- Botones de Navegación -->
+        <div class="button-container">
+            <button type="button" class="btn btn-secondary" style="flex: 1; text-align: left;" onclick="loadStep(-1)">
+                Atrás
+            </button>
+            <button type="button" class="btn btn-primary" style="flex: 1; text-align: right;" onclick="Siguiente()">
+                Siguiente
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function BuscarNit() {        
+        const Nit = document.getElementById('billingNit').value.trim();        
+        $.ajax({
+            url: '/MiCarrito/BuscarNitClientes', // Asegúrate de que esta URL sea la correcta
+            type: 'GET',
+            data: { Nit: Nit },
+            success: function (data) {
+                if (data) {
+                    $("#globalLoading").hide();
+                    // Si se encuentran los datos, los llenamos en los campos correspondientes
+                    document.getElementById('billingNit').value = data.Nit;
+                    document.getElementById('billingName').value = data.Nombre;
+                    document.getElementById('billingAddress').value = data.Direccion;
+
+                } else {
+                    $("#globalLoading").hide();                                        
+                    document.getElementById('billingNit').value = '';
+                    document.getElementById('billingName').value = '';
+                    document.getElementById('billingAddress').value = '';
+                }
+            },
+            error: function (xhr, status, error) {
+                $("#globalLoading").hide();
+                alert('Hubo un error al realizar la búsqueda.');
+            }
+        });
+    }
+
+
+    function copiarDatos() {
+        let nit = document.getElementById("nit-dpi").value;
+        let nombre = document.getElementById("cardName").value;
+        let direccion = document.getElementById("address").value;
+
+        document.getElementById("billingNit").value = nit;
+        document.getElementById("billingName").value = nombre;
+        document.getElementById("billingAddress").value = direccion;
+        
+    }
+
+    function syncNitDpi() {
+        document.getElementById("billingNit").value = document.getElementById("nit-dpi").value;
+    }
+
+    function syncNombre() {
+        document.getElementById("billingName").value = document.getElementById("cardName").value;
+    }
+
+    function Siguiente() {
+        $("#globalLoading").show();
+        const cardCode = document.getElementById('cardCode').value.trim();
+        const nitDpi = document.getElementById('nit-dpi').value.trim();
+        const cardName = document.getElementById('cardName').value.trim();
+        const address = document.getElementById('address').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const FacturaNit = document.getElementById('billingNit').value;
+        const FacturaName = document.getElementById('billingName').value;
+        const FacturaDireccion = document.getElementById('billingAddress').value;
+        const EsCF = document.getElementById('estadoSeleccion').innerHTML;
+
+        if (cardCode === "") {
+            if (nitDpi === "") {
+                $("#globalLoading").hide();
+                alert("Ingrese un NIT válido.");
+            } else if (cardName === "") {
+                $("#globalLoading").hide();
+                alert("Ingrese el nombre del cliente.");
+            } else {
+                $("#globalLoading").hide();
+                processSocioNegocio(address, cardCode, cardName, email, phone, nitDpi, FacturaNit, FacturaName, FacturaDireccion, EsCF);
+            }
+        } else {
+            $("#globalLoading").hide();
+            processSocioNegocio(address, cardCode, cardName, email, phone, nitDpi, FacturaNit, FacturaName, FacturaDireccion, EsCF);
+        }
+    }
+
+    function processSocioNegocio(address, cardCode, cardName, email, phone, nitDpi, facturarNit, facturarNombre, facturarDireccion, esCF) {
+        
+        const socioNegocio = {
+            Address: address.toUpperCase(),
+            CardCode: cardCode.toUpperCase(),
+            CardName: cardName.toUpperCase(),
+            Email: email.toLowerCase(),
+            LicTradNum: nitDpi,
+            Phone: phone,
+            FacturarDireccion: facturarDireccion.toUpperCase(),
+            FacturarNit: facturarNit.toUpperCase(),
+            FacturarNombre: facturarNombre.toUpperCase(),
+            EsCF: esCF
+        };
+
+        updateSocioNegocio(socioNegocio);
+        loadStep(1);
+    }
+
+
+    function BuscarCliente() {
+        $("#globalLoading").show();
+        const nitDpi = document.getElementById('nit-dpi').value;
+        if (nitDpi.trim() === '') {
+            $("#globalLoading").hide();
+            alert('Por favor ingrese un NIT o DPI antes de buscar.');
+        } else {
+            $.ajax({
+                url: '/MiCarrito/BuscarSocioNegocio', // Asegúrate de que esta URL sea la correcta
+                type: 'GET',
+                data: { Nit: nitDpi },
+                success: function (data) {
+                    if (data && data.CardCode) {
+                        $("#globalLoading").hide();                        
+                        // Si se encuentran los datos, los llenamos en los campos correspondientes
+                        document.getElementById('cardCode').value = data.CardCode;
+                        document.getElementById('cardName').value = data.CardName;
+                        document.getElementById('address').value = data.Address;
+                        document.getElementById('email').value = data.Email;
+                        document.getElementById('phone').value = data.Phone;
+
+                        document.getElementById('billingNit').value = data.FacturarNit;
+                        document.getElementById('billingName').value = data.FacturarNombre;
+                        document.getElementById('billingAddress').value = data.FacturarDireccion;
+
+                        document.getElementById('cardName').removeAttribute('readonly');
+                        document.getElementById('address').removeAttribute('readonly');
+                        document.getElementById('email').removeAttribute('readonly');
+                        document.getElementById('phone').removeAttribute('readonly');
+
+                        //ENVIO LA DATA ACTUALIZADA DEL SOCIO DE NEGOCIO A LA COOKIE
+                        const socioNegocio = {
+                            Address: data.Address,
+                            CardCode: data.CardCode,
+                            CardName: data.CardName,
+                            Email: data.Email,
+                            LicTradNum: data.LicTradNum,
+                            Phone: data.Phone,
+                            FacturarNit: data.FacturarNit,
+                            FacturarNombre: data.FacturarNombre,
+                            FacturarDireccion: data.FacturarDireccion
+                        };
+
+                        updateSocioNegocio(socioNegocio);
+
+                    } else {
+                        $("#globalLoading").hide();
+                        // Hacer los campos editables
+                        document.getElementById('cardName').value = data.CardName;
+                        document.getElementById('billingNit').value = data.FacturarNit;
+                        document.getElementById('billingName').value = data.FacturarNombre;
+                        document.getElementById('billingAddress').value = data.FacturarDireccion;
+
+                        document.getElementById('cardName').removeAttribute('readonly');
+                        document.getElementById('address').removeAttribute('readonly');
+                        document.getElementById('email').removeAttribute('readonly');
+                        document.getElementById('phone').removeAttribute('readonly');
+                        // Limpiar los campos para permitir editar
+                        document.getElementById('cardCode').value = '';                        
+                        document.getElementById('address').value = '';
+                        document.getElementById('email').value = '';
+                        document.getElementById('phone').value = '';
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#globalLoading").hide();
+                    alert('Hubo un error al realizar la búsqueda.');
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $("#globalLoading").show();
+        // Llama a la función para obtener los datos filtrados.
+        const socioNegocio = getSocioNegocio();
+        console.log("Capturo mi socio de negocio",socioNegocio);
+        // Verifica si el objeto tiene datos válidos.
+        if (socioNegocio) {
+            $("#globalLoading").hide();
+            document.getElementById('nit-dpi').value = socioNegocio.LicTradNum;
+            document.getElementById('cardCode').value = socioNegocio.CardCode;
+            document.getElementById('cardName').value = socioNegocio.CardName;
+            document.getElementById('address').value = socioNegocio.Address;
+            document.getElementById('email').value = socioNegocio.Email;
+            document.getElementById('phone').value = socioNegocio.Phone;
+
+            document.getElementById('billingNit').value = socioNegocio.FacturarNit;
+            document.getElementById('billingName').value = socioNegocio.FacturarNombre;
+            document.getElementById('billingAddress').value = socioNegocio.FacturarDireccion;
+            document.getElementById('estadoSeleccion').innerHTML = socioNegocio.EsCF;
+
+            document.getElementById('cardName').removeAttribute('readonly');
+            document.getElementById('address').removeAttribute('readonly');
+            document.getElementById('email').removeAttribute('readonly');
+            document.getElementById('phone').removeAttribute('readonly');
+        } else {
+            $("#globalLoading").hide();
+            console.log("No se encontró la cookie o está vacía.");
+        }
+    });
+</script>

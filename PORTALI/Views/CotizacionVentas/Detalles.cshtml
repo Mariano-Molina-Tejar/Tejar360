@@ -7,185 +7,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle de Producto</title>
     <link href="~/Css/styleCotizacionDetalle.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="/js/UpdateCarrito.js" defer></script>
+    <link href="~/Css/DetallesCarrito.css" rel="stylesheet" />
     <style>
-        .container {
-          margin-top:30px;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-          font-family: 'Source Sans Pro';
-          font-weight:700;
-        }
-
-        .fancyTab {
-	        text-align: center;
-          padding:15px 0;
-          background-color: #eee;
-	        box-shadow: 0 0 0 1px #ddd;
-	        top:15px;
-          transition: top .2s;
-        }
-
-        .fancyTab.active {
-          top:0;
-          transition:top .2s;
-        }
-
-        .whiteBlock {
-          display:none;
-        }
-
-        .fancyTab.active .whiteBlock {
-          display:block;
-          height:2px;
-          bottom:-2px;
-          background-color:#fff;
-          width:99%;
-          position:absolute;
-          z-index:1;
-        }
-
-        .fancyTab a {
-	        font-family: 'Source Sans Pro';
-	        font-size:1.65em;
-	        font-weight:300;
-          transition:.2s;
-          color:#333;
-        }
-
-        .fancyTab .hidden-xs {
-          white-space:nowrap;
-        }
-
-        .fancyTabs {
-	        border-bottom:2px solid #ddd;
-          margin: 15px 0 0;
-        }
-
-        li.fancyTab a {
-          padding-top: 15px;
-          top:-15px;
-          padding-bottom:0;
-        }
-
-        li.fancyTab.active a {
-          padding-top: inherit;
-        }
-
-        .fancyTab .fa {
-          font-size: 40px;
-	        width:100%;
-	        padding: 15px 0 5px;
-          color:#666;
-        }
-
-        .fancyTab.active .fa {
-          color: #cfb87c;
-        }
-
-        .fancyTab a:focus {
-	        outline:none;
-        }
-
-        .fancyTabContent {
-          border-color: transparent;
-          box-shadow: 0 -2px 0 -1px #fff, 0 0 0 1px #ddd;
-          padding: 30px 15px 15px;
-          position:relative;
-          background-color:#fff;
-        }
-
-        .nav-tabs > li.fancyTab.active > a,
-        .nav-tabs > li.fancyTab.active > a:focus,
-        .nav-tabs > li.fancyTab.active > a:hover {
-	        border-width:0;
-        }
-
-        .nav-tabs > li.fancyTab:hover {
-	        background-color:#f9f9f9;
-	        box-shadow: 0 0 0 1px #ddd;
-        }
-
-        .nav-tabs > li.fancyTab.active:hover {
-          background-color:#fff;
-          box-shadow: 1px 1px 0 1px #fff, 0 0px 0 1px #ddd, -1px 1px 0 0px #ddd inset;
-        }
-
-        .nav-tabs > li.fancyTab:hover a {
-	        border-color:transparent;
-        }
-
-        .nav.nav-tabs .fancyTab a[data-toggle="tab"] {
-          background-color:transparent;
-          border-bottom:0;
-        }
-
-        .nav-tabs > li.fancyTab:hover a {
-          border-right: 1px solid transparent;
-        }
-
-        .nav-tabs > li.fancyTab > a {
-	        margin-right:0;
-	        border-top:0;
-          padding-bottom: 30px;
-          margin-bottom: -30px;
-        }
-
-        .nav-tabs > li.fancyTab {
-	        margin-right:0;
-	        margin-bottom:0;
-        }
-
-        .nav-tabs > li.fancyTab:last-child a {
-          border-right: 1px solid transparent;
-        }
-
-        .nav-tabs > li.fancyTab.active:last-child {
-          border-right: 0px solid #ddd;
-	        box-shadow: 0px 2px 0 0px #fff, 0px 0px 0 1px #ddd;
-        }
-
-        .fancyTab:last-child {
-          box-shadow: 0 0 0 1px #ddd;
-        }
-
-        .tabs .nav-tabs li.fancyTab.active a {
-	        box-shadow:none;
-          top:0;
-        }
-
-
-        .fancyTab.active {
-          background: #fff;
-	        box-shadow: 1px 1px 0 1px #fff, 0 0px 0 1px #ddd, -1px 1px 0 0px #ddd inset;
-          padding-bottom:30px;
+        body {
+            background-color: #f5f5f5;
         }
 
         .arrow-down {
-	        display:none;
-          width: 0;
-          height: 0;
-          border-left: 20px solid transparent;
-          border-right: 20px solid transparent;
-          border-top: 22px solid #ddd;
-          position: absolute;
-          top: -1px;
-          left: calc(50% - 20px);
+            display: none;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 22px solid #ddd;
+            position: absolute;
+            top: -1px;
+            left: calc(50% - 20px);
         }
 
         .arrow-down-inner {
-          width: 0;
-          height: 0;
-          border-left: 18px solid transparent;
-          border-right: 18px solid transparent;
-          border-top: 12px solid #fff;
-          position: absolute;
-          top: -22px;
-          left: -18px;
+            width: 0;
+            height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 12px solid #fff;
+            position: absolute;
+            top: -22px;
+            left: -18px;
         }
 
         .fancyTab.active .arrow-down {
-          display: block;
+            display: block;
         }
 
         .product-card {
@@ -250,108 +104,1188 @@
                 color: #007bff; /* Color al pasar el cursor */
             }
 
+        /* Contenedor para alinear los dos select y hacer que se vean bien juntos */
+        .stock-precios-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Espacio entre los select */
+            width: 100%;
+        }
 
-    </style>
+        /* Estilos para los selects */
+        .styled-select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+            /* Efecto de hover para los selects */
+            .styled-select:hover {
+                border-color: #007bff;
+                background-color: #e9ecef;
+            }
+
+        /* Estilos adicionales para los elementos <strong> */
+        .stock strong, .precios strong {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        /* Mejorar la apariencia de las etiquetas */
+        p {
+            margin: 0;
+        }
+
+        /* Agregar un margen superior si lo prefieres en los selects */
+        .stock, .precios {
+            margin-top: 10px;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 0px;
+            width: 210px
+        }
+
+            .counter button {
+                width: 50px;
+                font-size: 16px;
+                cursor: pointer;
+                /*background-color: #007bff;*/
+                color: black;
+                border: none;
+                border-radius: 2px;
+                height: 40px;
+            }
+
+                .counter button:disabled {
+                    background-color: #dcdcdc;
+                    cursor: not-allowed;
+                }
+
+            .counter input {
+                width: 100px;
+                text-align: center;
+                font-size: 16px;
+                border: 1px solid #ddd;
+                border-radius: 0px;
+                padding: 0px;
+                height: 40px;
+            }
+
+        .pricing-box {
+            background-color: #f9f9f9; /* Fondo claro */
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+            display: flex; /* Activar flexbox */
+            justify-content: space-between; /* Espaciar los elementos */
+            align-items: center; /* Centrar verticalmente */
+            gap: 20px; /* Espacio entre elementos */
+        }
+
+        .price-section {
+            flex: 1; /* Ajusta el tamaño de cada sección proporcionalmente */
+            text-align: center; /* Centrar el contenido dentro de cada sección */
+            position: relative; /* Necesario para la línea divisora */
+            cursor: pointer; /* Aparece como botón */
+            padding: 10px;
+            background-color: #ffffff;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+            .price-section.active {
+                background-color: #007bff;
+                color: #fff;
+                border-color: #007bff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .price-section:hover {
+                /*background-color: green;
+                color: #fff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                border-color: #007bff;*/
+            }
+
+            .price-section.no-hover:hover {
+                /* No aplicar estilos */
+                background: none;
+                color: inherit;
+                cursor: default;
+            }
+
+            .price-section:not(:last-child)::after {
+                content: "";
+                position: absolute;
+                top: 10%; /* Margen desde arriba */
+                right: -10px; /* Ubicado al borde derecho */
+                height: 80%; /* Altura de la línea */
+                width: 1px; /* Grosor de la línea */
+                background-color: #ddd; /* Color de la línea */
+            }
+
+        .price-label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+        }
+
+            .price-label.special {
+                color: #ff6600; /* Naranja */
+                font-weight: bold;
+            }
+
+        .price-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+            .price-value.special {
+                color: #ff6600; /* Naranja */
+            }
+
+        .price-footer {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+            flex-basis: 100%; /* Hace que esta sección ocupe toda la fila */
+        }
+    </style>    
 </head>
 <body>
-    <div class="product-container">
-        <div class="product-image">
-            <img src="@imageUrl" alt="ElTejar" />
-        </div>
-        <div class="product-details">
-            <h1>@Model.Encabezado.ItemName</h1>
-            <div class="product-price">
-                <span class="price-label">Precio Normal: </span><span class="price">@string.Format("Q.{0:#,##0.00}", @Model.Encabezado.PrecioBeneficio)</span><br />
-                <span class="price-label">Precio Efectivo: </span><span class="price">@string.Format("Q.{0:#,##0.00}", @Model.Encabezado.PrecioVenta)</span>
-                <span class="price-label">Formato: </span><span>@Model.Encabezado.Formato</span>
-                <p class="stock"><strong>Existencia en mi tienda:</strong> <a style="font-size:18px;color:darkslateblue"><strong>@Model.Encabezado.Stock</strong></a></p>
-                <a class="btn btn-warning bold-btn">
-                    <i class="fa fa-shopping-cart" style="font-size: 16px; margin-right: 5px;"></i>
-                    <strong>Agregar al carrito</strong>
-                </a>
-            </div>
-        </div>
+    <div class="col-lg-11" style="">
+        <div class="col-lg-10" style="margin: 0 auto;">
+            <div class="container-fluid" style="padding: 1px; overflow: hidden;">
+                <div class="row">
+                    <div class="col-lg-8" style="padding:1px">
+                        <div class="product-container" style="margin-right:2px;">
+                            <div class="product-image" style="cursor:pointer" title="Presionar doble click para mostrar ambiente" ondblclick="OpenData()">
+                                <div class="contenidorsh">
+                                    @if (Model.Encabezado.EsPromo == 1)
+                                    {
+                                        <div class="corner-ribbon">Promoción</div>
+                                    }
+                                    <img src="@imageUrl" alt="ElTejar" onerror="this.onerror=null; this.src='/Img/imagen-no-disponible.png';" />
+                                </div>
+                                <style>
+                                    .contenidorsh {
+                                        position: relative;
+                                    }
 
-        <div class="row col-lg-12" style="text-align: center;">
-            
-            @if(Model.Alternativos.Count == 0)
-            {
-            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-                <span class="price-label" style="font-size:15px; color:gray; font-style:italic;">No hay productos alternos</span>
-            </div>
-            }
-            else 
-            {
-                <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-                    <span class="price-label" style="font-size:18px;">Productos alternos</span>
-                </div>
-                <div class="horizontal-scroll" style="margin-top:10px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                    @foreach (var item in Model.Alternativos)
-                    {
-                        <div class="product-card">
-                            <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" class="card-img-top" alt="@item.ItemName" />
-                            <div class="card-info">
-                                <a class="item-name" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })'>@item.ItemName</a>
-                                <a class="item-code" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })'>@item.ItemCode</a>
+                                    .corner-ribbon {
+                                        position: absolute;
+                                        top: 30px;
+                                        left: -1px;
+                                        background-color: red;
+                                        color: white;
+                                        padding: 5px 10px;
+                                        font-size: 12px;
+                                        font-weight: bold;
+                                        text-transform: uppercase;
+                                        transform: rotate(-45deg);
+                                        z-index: 10;
+                                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                                    }
+                                </style>
+                                <div style="margin-top:10px">
+                                    <a>@(string.IsNullOrEmpty(Model.Encabezado.Ambiente) ? "--" : Model.Encabezado.Ambiente)</a>
+                                </div>
+                                <ul style="list-style: none; padding-left: 0; font-size:12px">
+                                    <li style="display: flex; align-items: center; color: #B0B0B0;">
+                                        <i class="fas fa-file-alt" style="color: #B0B0B0; margin-right: 8px;"></i>
+                                        <span>Formato: @Model.Encabezado.Formato</span>
+                                    </li>
+                                    <li style="display: flex; align-items: center; color: #B0B0B0;">
+                                        <i class="fas fa-ruler" style="color: #B0B0B0; margin-right: 8px;"></i>
+                                        <span>Metraje: @Model.Encabezado.Metraje</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="product-details">
+                                <h1 id="productName" style="font-size:25px">@Model.Encabezado.ItemName</h1>
+                                <div class="pricing-box" style="border: none;padding:5px;">
+                                    @if (Model.Encabezado.TipoPromo != "PU")
+                                    {
+                                        <div class="price-section" style="border: none;padding:3px; background-color:transparent" data-priceList="9" data-price="@Model.Encabezado.PrecioBeneficio">
+                                            <div class="price-part" style="background-color:white">
+                                                <span class="price-label">Normal</span>
+                                                <span class="price-value">@string.Format("Q{0:#,##0.00}", @Model.Encabezado.PrecioBeneficio)</span>
+                                            </div>
+                                            <div class="total-part">
+                                                <span class="total-label">Total</span>
+                                                <span class="total-value" id="txtNormalNormal">@string.Format("Q{0:#,##0.00}", 0.00)</span>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="price-section" data-priceList="1" style="border: none; background-color:transparent" data-price="@Model.Encabezado.PrecioVenta">
+                                        <div class="price-part" style="background-color: white">
+                                            <span class="price-label special">
+                                                @(Model.Encabezado.TipoPromo == "PU" ? "Oferta" : "Efectivo")
+                                            </span>
+                                            <span class="price-value special">@string.Format("Q{0:#,##0.00}", @Model.Encabezado.PrecioVenta)</span>
+                                            @if (Model.Encabezado.TipoPromo == "PU")
+                                            {
+                                                <span class="price-value special" style="font-size:15px;">
+                                                    Antes
+                                                    <span class="price-value special" style="text-decoration: line-through;font-size:15px" id="txtNormalEfectivo">
+                                                        @string.Format("Q{0:#,##0.00}", @Model.Encabezado.PrecioBeneficio)
+                                                    </span>
+                                                </span>
+                                            }
+                                        </div>
+                                        <div class="total-part">
+                                            <span class="total-label">Total</span>
+                                            <span class="total-value">@string.Format("Q{0:#,##0.00}", 0.00)</span>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                <span id="txtPrecio" style="display: none;"></span>
+                                <span id="txtListPrice" style="display: none;"></span>
+                                <div onclick="borrarCotizacion('A1')" style="cursor: pointer;">borrar cookie</div>
+                            <div class="product-price">
+                                <div style="display: flex; gap: 20px; justify-content: center;">
+                                    <!-- Primer contador -->
+                                    <div class="counter" style="border-radius: 6px; background-color: #f5f5f5; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                                        <a style="font-size: 14px; font-weight: bold; color: #ff9800; margin-bottom: 10px;">
+                                            @if (Model.Encabezado.IdGrupo == 1)
+                                            {
+                                                @:Cajas
+                                            }
+                                            else
+                                            {
+                                                @:Unidades
+                                            }
+                                        </a>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <button class="btn-minus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularTotales()">-</button>
+                                            <input type="number" id="counterInput" value="1" min="1" style="border-radius: 5px; border: 1px solid #ddd; padding: 8px; font-size: 16px; text-align: center;width: 70px;" onchange="CalcularTotales()">
+                                            <button class="btn-plus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularTotales()">+</button>
+                                        </div>
+                                    </div>
+                                    @if (Model.Encabezado.IdGrupo == 1)
+                                    {
+                                        <div class="counter" style="border-radius: 6px; background-color: #f5f5f5; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                                            <a style="font-size: 14px; font-weight: bold; color: #ff9800; margin-bottom: 10px;">Metros</a>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <button class="btnMetrosMinus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularMetros()">-</button>
+                                                <input type="number" id="txtTotalMetros" value="1" min="1" style="border-radius: 5px; border: 1px solid #ddd; padding: 8px; font-size: 16px; text-align: center; width: 70px;" onchange="CalcularMetros()">
+                                                <button class="btnMetrosPlus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularMetros()">+</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <script>
+                                    //CALCULA LOS TOTALES EN PRECIO
+                                    function CalcularTotales() {
+                                        const cantidad = parseInt(document.getElementById('counterInput').value, 10);
+                                        const priceSections = document.querySelectorAll('.price-section');
+
+                                        priceSections.forEach(section => {
+                                            const precio = parseFloat(section.getAttribute('data-price'));
+                                            const total = precio * cantidad;
+                                            const totalValueElement = section.querySelector('.total-value');
+
+                                            if (totalValueElement) {
+                                                totalValueElement.textContent = `Q${total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+                                            }
+                                        });
+
+                                        var Tipo = "@Model.Encabezado.IdGrupo"; // Esto es una cadena
+                                        var Metraje = parseFloat("@Model.Encabezado.Metraje"); // Convierte a número
+
+                                        // Validar que Metraje sea un número válido
+                                        if (isNaN(Metraje)) {
+                                            console.error("Metraje no es un número válido.");
+                                            return;
+                                        }
+
+                                        // Comparar Tipo como cadena o convertirlo a número
+                                        if (Tipo === "1") { // Comparación como cadena
+                                            var resultado = Metraje * cantidad;
+                                            document.getElementById('txtTotalMetros').value = resultado.toFixed(2);
+                                        }
+                                    }
+                                    document.getElementById('counterInput').addEventListener('input', CalcularTotales);
+
+                                    //CALCULA LOS METROS
+                                    function CalcularMetros() {
+                                        const cantidadMetros = parseFloat(document.getElementById('txtTotalMetros').value); // Usa parseFloat para decimales
+                                        var Tipo = "@Model.Encabezado.IdGrupo"; // Esto es una cadena
+                                        var Metraje = parseFloat("@Model.Encabezado.Metraje"); // Convierte a número
+
+                                        // Validar que cantidadMetros y Metraje sean números válidos
+                                        if (isNaN(cantidadMetros) || isNaN(Metraje)) {
+                                            console.error("Los valores no son números válidos.");
+                                            return;
+                                        }
+
+                                        if (Tipo === "1") { // Comparación como cadena
+                                            var resultado = Math.ceil(cantidadMetros / Metraje); // Redondea hacia arriba
+                                            document.getElementById('counterInput').value = resultado; // Asigna el valor sin toFixed
+                                        }
+
+
+                                        const cantidad = parseInt(document.getElementById('counterInput').value, 10);
+                                        const priceSections = document.querySelectorAll('.price-section');
+
+                                        priceSections.forEach(section => {
+                                            const precio = parseFloat(section.getAttribute('data-price'));
+                                            const total = precio * cantidad;
+                                            const totalValueElement = section.querySelector('.total-value');
+
+                                            if (totalValueElement) {
+                                                totalValueElement.textContent = `Q${total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+                                            }
+                                        });
+                                    }
+
+                                    // Asocia el evento input a la función correcta
+                                    document.getElementById('txtTotalMetros').addEventListener('input', CalcularMetros);
+                                </script>
+
+                                <style>
+                                    /* Estilos para el input de tipo número */
+                                    input[type="number"]::-webkit-inner-spin-button,
+                                    input[type="number"]::-webkit-outer-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                    }
+
+                                    input[type="number"] {
+                                        -moz-appearance: textfield;
+                                        appearance: textfield;
+                                        width: 50px;
+                                        text-align: center;
+                                        border: 1px solid #ddd;
+                                        border-radius: 5px;
+                                        padding: 8px;
+                                        font-size: 16px;
+                                        color: #333;
+                                        outline: none;
+                                        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+                                    }
+
+                                        input[type="number"]:focus {
+                                            border-color: #ff9800;
+                                        }
+                                </style>                                
+                                <div style="display: flex; flex-direction: row; gap: 5px; justify-content: center; align-items: center; max-width: 100%; text-align: center; padding: 15px;">
+                                    <div style="text-align:center; margin-top:15px;width:50%;padding-top:40px">
+                                        <a class="btn btn-warning bold-btn" style="width:100%;height:45px" onclick="agregarProductoDesdeVista()">
+                                            <i class="fa fa-shopping-cart" style="font-size: 22px; margin-right: 5px; margin-top:4px"></i>
+                                            <strong>Agregar al carrito</strong>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                             </div>
                         </div>
-                    }
+                    </div>
+                    @*LISTADO DE STOCK EN OTRAS TIENDAS*@
+                    <div class="col-lg-4" style="padding: 1px;">
+                        <div class="product-container" style="margin-left:1px;">
+                            <div class="product-specs">
+                                <div style="display: flex; align-items: center; font-family: 'Arial', sans-serif; background-color: #f8f9fa;border: 1px solid #dee2e6; border-radius: 8px; padding: 10px 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                                    <span style="font-size: 18px; font-weight: bold; color: #495057; margin-right: 10px;">
+                                        Stock en mi tienda:
+                                    </span>
+                                    <strong style="font-size: 20px; color: @(Model.Encabezado.Stock == 0 ? "red" : "blue"); margin-right: 10px;">
+                                        @Model.Encabezado.Stock
+                                    </strong>
+                                    @Html.Raw(Model.Encabezado.Stock == 0 ? "<i class='fas fa-exclamation-circle' style='color:red; font-size:18px;'></i>" : "<i class='fas fa-check-circle' style='color:blue; font-size:18px;'></i>")
+                                </div>
+                                <style>
+                                    #tblBusqueda {
+                                        border-collapse: collapse;
+                                        border: none;
+                                        color: gray;
+                                        width: 100%;
+                                    }
+
+                                        #tblBusqueda td,
+                                        #tblBusqueda th {
+                                            border: none;
+                                        }
+
+                                        #tblBusqueda tr {
+                                            border: none;
+                                        }
+
+                                    .scroll-container {
+                                        max-height: 435px;
+                                        overflow-y: auto;
+                                        padding-right: 10px;
+                                    }
+                                </style>
+                                <div class="scroll-container">
+                                    <table id="tblBusqueda" class="table table-hover table-responsive">
+                                        <tbody id="resultadosBusqueda">
+                                            @foreach (var item in Model.Tiendas)
+                                            {
+                                <tr>
+                                    <td style="color:gray" class="tienda-column">
+                                        @item.WhsName.ToUpper() <br />
+                                        <a style="font-size: 12px; color: #ccc">@item.Direccion.ToString()</a>
+                                    </td>
+                                    <td>@item.Stock</td>
+                                </tr>}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
-            }
+            </div>
         </div>
-        <div class="row col-lg-12">
-            <div class="col-lg-6">
-                <div class="product-specs text-center">
-                    <span class="price-label" style="font-size:18px;">Disponibilidad por Tienda</span>
-                    <table id="tblBusqueda" class="table table-hover table-responsive">
-                        <thead class="thead-dark">
+    </div>
+
+    <style>
+        .items-container {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .item {
+            width: 200px;
+            text-align: center;
+            border: 0px solid #ccc;
+            border-radius: 8px;
+            padding: 8px;
+            background-color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+            .item img {
+                width: 130px;
+                aspect-ratio: 1 / 1;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            .item h3 {
+                font-size: 10px;
+                margin: 5px 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .item .price {
+                font-size: 12px;
+                font-weight: bold;
+                color: #333;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .item .promotion {
+                color: red;
+                font-size: 10px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        /* Estilo de los botones de navegación */
+        .scroll-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 2rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+            .scroll-btn.prev {
+                left: 0;
+            }
+
+            .scroll-btn.next {
+                right: 0;
+            }
+    </style>
+
+    <div class="col-lg-12">
+        <div class="col-lg-10" style="margin: 0 auto;">
+            <div class="container-fluid">
+                <p style="font-size: 1.2em; color: #333; font-weight: bold; text-align: center; margin: 20px 0; padding: 10px; background: linear-gradient(45deg, #f8f9fa, #e9ecef); border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    Otros productos que pueden interesar
+                </p>
+                <div class="items-container">
+                    @foreach (var item in Model.VentaCruzada)
+                    {
+        <div class="item">
+            <img src="@(string.IsNullOrEmpty(item.Imagen) ? "/Img/imagen-no-disponible.png" : item.Imagen)" alt="@item.ItemName.ToUpper()">
+            <h3>@item.ItemName.ToUpper()</h3>
+            <h3>@item.ItemCode</h3>
+            <p class="price">Precio: <strong style="color: #007bff;">Q @item.PrecioVenta.ToString("N2")</strong></p>
+            <p class="promotion">En promoción</p>
+        </div>}
+                </div>               
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="discountModalLabel">Calculadora de descuentos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="selected-price" class="form-label fw-bold text-primary">Precio seleccionado</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">Q</span>
+                            <input type="text" id="selected-price" class="form-control" readonly value="0.00" aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: #0056b3; text-align: right;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="selected-price" class="form-label fw-bold text-primary">Aplicar descuento</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">%</span>
+                            <input type="number" min="0" id="txtPdecuento" class="form-control" value="" placeholder="0.00"
+                                   aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: red; text-align: right;"
+                                   oninput="CalcularDescuentos('P')" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="selected-price" class="form-label fw-bold text-primary">Descuento unitario</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">Q</span>
+                            <input type="number" min="0" id="txtQdescuento" class="form-control" value="" placeholder="0.00"
+                                   aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: red; text-align: right;"
+                                   oninput="CalcularDescuentos('Q')">
+                        </div>
+                    </div>
+                    <!-- Tabla -->
+                    <table class="table table-striped table-hover table-bordered tblPrecios">
+                        <thead class="table-dark">
                             <tr>
-                                <th class="tienda-column">Tienda</th>
-                                <th>Existencia</th>
+                                <th scope="col" style="display: none;">Id</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col" class="text-center">Precio inicial</th>
+                                <th scope="col" class="text-center">Precio final</th>
                             </tr>
                         </thead>
-                        <tbody id="resultadosBusqueda">
-                            @foreach (var item in Model.Tiendas)
+                        <tbody>
+                            @foreach (var item in Model.ListPrecios)
                             {
                                 <tr>
-                                    <td class="tienda-column">@item.WhsName</td>
-                                    <td>@item.Stock</td>
+                                    <td style="display: none;">@item.IdLista</td>
+                                    <td>@item.ListName</td>
+                                    <td class="text-end">Q @string.Format("{0:#,##0.00}", item.Minimo)</td>
+                                    <td class="text-end">Q @string.Format("{0:#,##0.00}", item.Maximo)</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            @if(Model.VentaCruzada.Count == 0) 
-            {
-                <div class="product-specs">
-                    <span class="price-label" style="font-size:15px; color:gray; font-style:italic;">No hay datos configurados</span>
-                </div>                
-            }
-            else 
-            {
-                <div class="col-lg-6">
-                    <div class="product-specs">
-                        <!-- Asegura que el texto esté centrado -->
-                        <span class="price-label" style="font-size:18px; display:block; text-align:center;">Venta cruzada</span>
-                        <div class="horizontal-scroll" style="margin-top:10px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                            @foreach (var item in Model.VentaCruzada)
-                            {
-                                <div class="product-card" style="text-align: center;">
-                                    <!-- Centrar contenido dentro de cada tarjeta -->
-                                    <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" class="card-img-top" alt="@item.ItemName" />
-                                    <div class="card-info" style="margin-top: 5px;">
-                                        <a class="item-name" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })' style="display: block; font-size: 14px; font-weight: bold;">@item.ItemName</a>
-                                        <a class="item-code" href='@Url.Action("Detalles","CotizacionVentas", new { ItemCode = item.ItemCode })' style="display: block; font-size: 12px; color: gray;">@item.ItemCode</a>
-                                    </div>
-                                </div>
-                            }
+                    <div class="mb-3">
+                        <label for="selected-price" class="form-label fw-bold text-primary">Precio unitario con descuento</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1" style="background-color: #f1f1f1; color: #333;">Q</span>
+                            <input type="number" min="0" id="txtTotalDescuento" class="form-control" value="" readonly placeholder="0.00" aria-describedby="basic-addon1" style="font-size: 1.2rem; font-weight: bold; color: red; text-align: right;">
                         </div>
                     </div>
                 </div>
-            }
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="applyDiscount()">Aplicar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="txtMetodoPago"></div>
+    <div class="modal fade" id="authorizationModal" tabindex="-1" aria-labelledby="authorizationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authorizationModalLabel">Autorización Requerida</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color:red"><strong>Se necesita una autorización de su supervisor para aplicar este descuento</strong></p><br />
+                    <div class="mb-3">
+                        <textarea class="form-control" id="authorization-reason" placeholder="Ingrese el motivo de la autorización"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="sendAuthorization()">Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Calculadora" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="discountModalLabel">Ingresar cantidad de metros</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Metros disponibles
+                    <strong id="">@string.Format("{0:#,##0.00}", @Model.Encabezado.MetrosDisp)</strong>
+                    <br />
+                    <div class="mb-3">
+                        <input type="number" class="form-control" id="CantNecesita" placeholder="Ingrese el descuento" min="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnAplicar" class="btn btn-primary" onclick="ApplicarCalculo()">Aplicar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+         /* Estilo del modal específico */
+    #modalTejar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    #modalTejar.active {
+        display: flex;
+    }
+
+    .modal-content {
+        position: relative;
+        width: 90%; /* Ajusta el ancho al 90% del contenedor */
+        max-width: 1200px; /* Ancho máximo en pantallas grandes */
+    }
+
+    .modal-content img {
+        width: 100%; /* Hace que la imagen ocupe todo el ancho disponible */
+        height: auto; /* Mantiene las proporciones de la imagen */
+        border-radius: 10px; /* Bordes redondeados */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombra alrededor de la imagen */
+    }
+
+    /* Botones de navegación */
+    .modal-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        color: #000;
+        font-size: 30px; /* Aumenta el tamaño del texto del botón */
+        padding: 15px; /* Botones más grandes */
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 10;
+    }
+
+    .modal-btn.prev {
+        left: -60px;
+    }
+
+    .modal-btn.next {
+        right: -60px;
+    }
+
+    /* Botón de cierre */
+    .modal-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background: rgba(255, 0, 0, 0.8);
+        border: none;
+        color: #fff;
+        font-size: 20px; /* Aumenta el tamaño del texto */
+        padding: 10px 15px; /* Botón más grande */
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    @*/* Responsividad */
+    @media (max-width: 768px) {
+        .modal-btn {
+            font-size: 24px; /* Botones más pequeños en pantallas pequeñas */
+            padding: 10px;
+        }
+
+        .modal-close {
+            top: -30px;
+            font-size: 18px;
+            padding: 8px 12px;
+        }
+    }*@
+    </style>
+    <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content p-4 text-center" style="max-width: 380px; margin: auto;">
+                <div class="modal-body">
+                    <!-- Ícono animado -->
+                    <div id="checkIcon" class="mb-3">
+                        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="#27ae60" stroke-width="2" fill="none" />
+                            <path d="M7 12l3 3 6-6" stroke="#27ae60" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+
+                    <!-- Texto mejorado -->
+                    <p style="font-size: 18px; font-weight: normal; color: #2ecc71; margin-top: 20px;">Producto añadido al carrito</p>
+
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button class="btn px-3" style="background-color: #e67e22; color: white; margin-right:5px;" onclick="AbrirVentana(1)">
+                            Ir a mi carrito
+                        </button>
+                        <button class="btn px-3" style="background-color: #27ae60; color: white;" onclick="AbrirVentana(2)">
+                            Seguir comprando
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modalTejar">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal()">Cerrar</button>
+            <button class="modal-btn prev" onclick="changeSlide(-1)">&#10094;</button>
+            <img id="modalImage" src="https://tarkettlatam.com/blog/wp-content/uploads/2022/07/living-piso-vinilico-amadeirado-claro-medio-escuro.jpg" alt="Imagen 1">
+            <button class="modal-btn next" onclick="changeSlide(1)">&#10095;</button>
         </div>
     </div>
 </body>
 </html>
+
+
+<script>
+    function AbrirVentana(valor) {
+        // Cierra todos los modales abiertos
+        $('.modal').modal('hide'); // Cierra los modales de Bootstrap
+        $('.modal-backdrop').remove(); // Elimina el fondo oscuro de los modales
+
+        // Muestra el loading
+        $("#globalLoading").show();
+
+        // Redirige según el valor
+        if (valor === 1) {
+            window.location.href = '/MiCarrito/ListadoCarrito';
+            $("#globalLoading").hide();
+        } else if (valor === 2) {
+            window.location.href = '/CotizacionVentas/Cotizacion';
+            $("#globalLoading").hide();
+        }
+    }
+
+    $(document).ready(function () {
+        CalcularTotales();
+    });
+
+    function buscarProductoEnCotizacion() {
+        const existingCotizacion = getCookie('Cotizacion_A1'); // Obtenemos la cookie
+
+        if (existingCotizacion) {
+            const cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto
+            console.log(cotizacion);
+
+            // Verificamos si hay productos en la cotización
+            if (cotizacion.productos && cotizacion.productos.length > 0) {
+                const primerListPrice = cotizacion.productos[0]["ListPrice"]; // Obtenemos el primer ListPrice
+                return primerListPrice;
+            } else {
+                return 0; // Si no hay productos, retornamos 0
+            }
+        } else {
+            return 0; // Si no existe la cookie, retornamos 0
+        }
+    }
+
+    // Imágenes de la galería
+    const images = [
+        "https://www.mndelgolfo.com/blog/wp-content/uploads/2021/09/Sabes-como-crear-ambientes-unicos-con-pisos-porcelanicos-de-gran-formato-Daltile2-1024x576.jpg",
+        "https://pewenpisosvinilicos.com.ar/wp-content/uploads/pewen-pisos-vinilicos-click-1.jpg",
+        "https://cdn1.infocasas.com.uy/web/66154e6e434a5_pisos.jpg#hasTH",
+        "https://st.hzcdn.com/simgs/pictures/living-rooms/sloane-avenue-studio-laroya-and-co-img~57d15c5806c60a93_14-0217-1-a5bbb15.jpg"
+    ];
+    let currentIndex = 0;
+
+    // Función para abrir el modal
+    function OpenData() {
+        document.getElementById('modalTejar').classList.add('active');
+        updateImage();
+    }
+
+    // Función para cerrar el modal
+    function cerrarModal() {
+        document.getElementById('modalTejar').classList.remove('active');
+    }
+
+    // Función para cambiar de imagen
+    function changeSlide(direction) {
+        currentIndex = (currentIndex + direction + images.length) % images.length;
+        updateImage();
+    }
+
+    // Actualizar la imagen mostrada
+    function updateImage() {
+        document.getElementById('modalImage').src = images[currentIndex];
+    }
+    function LevantarPop() {
+        $("#myCustomModal").modal('show');
+    }
+
+    document.getElementById("CantNecesita").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("btnAplicar").click();
+        }
+    });
+
+    function CalcularDescuentos(tipo) {
+        const precioBase = parseFloat(document.getElementById("selected-price").value) || 0;
+        let dsctoPorcentaje = parseFloat(document.getElementById("txtPdecuento").value) || 0;
+        let dsctoCantidad = parseFloat(document.getElementById("txtQdescuento").value) || 0;
+        let granTotal = 0;
+
+        if (precioBase <= 0) {
+            alert("El precio base no es válido.");
+            return;
+        }
+
+        if (tipo === "P") {
+            dsctoCantidad = (precioBase * dsctoPorcentaje) / 100;
+            granTotal = precioBase - dsctoCantidad;
+            document.getElementById("txtQdescuento").value = dsctoCantidad.toFixed(2);
+        } else if (tipo === "Q") {
+            if (dsctoCantidad > precioBase) {
+                alert("El descuento no puede ser mayor al precio base.");
+                return;
+            }
+            dsctoPorcentaje = (dsctoCantidad / precioBase) * 100;
+            granTotal = precioBase - dsctoCantidad;
+            document.getElementById("txtPdecuento").value = dsctoPorcentaje.toFixed(2);
+        }
+
+        document.getElementById("txtTotalDescuento").value = granTotal.toFixed(2);
+
+        const tabla = document.querySelector(".tblPrecios tbody");
+        if (!tabla) {
+            console.error("No se encontró la tabla.");
+            return;
+        }
+
+        tabla.querySelectorAll("tr").forEach((fila, index) => {
+            const celdas = fila.cells;
+            if (celdas.length < 4) {
+                console.warn(`Fila ${index} no tiene suficientes celdas.`);
+                return;
+            }
+            const precioInicial = parseFloat(celdas[2].innerText.replace("Q", "").replace(",", "").trim()) || 0;
+            const precioFinal = parseFloat(celdas[3].innerText.replace("Q", "").replace(",", "").trim()) || 0;
+
+            if (granTotal >= precioInicial && granTotal <= precioFinal) {
+                fila.style.backgroundColor = "orange"; // Verde claro
+                fila.style.color = "white"; // Texto verde oscuro
+            } else {
+                fila.style.backgroundColor = "";
+                fila.style.color = "";
+            }
+        });
+    }
+
+    function ApplicarCalculo() {
+        let CantNecesita = document.getElementById("CantNecesita").value;
+        let Metraje = parseFloat("@Model.Encabezado.Metraje");
+
+        if (Metraje > 0) {
+            let resultado = Math.ceil(CantNecesita / Metraje);
+            document.getElementById("counterInput").value = resultado;
+            document.getElementById('iMetrosTotal').textContent = "Total metros de piso: " + (resultado * Metraje).toFixed(2);
+
+            $("#Calculadora").modal('hide');
+        } else {
+            alert("No se puede calcular los metros necesarios por la falta de configuración en el metraje, comuníquese con el departamento de categorías.");
+        }
+    }
+
+    function Calculadora() {
+        $("#Calculadora").modal('show');
+    }
+
+    function CalculoTotales() {
+        let Ahorro = 0.00;
+        let Cantidad = parseFloat(document.getElementById('counterInput').value) || 0;
+        let Descuento = parseFloat(document.getElementById('txtDescuento').textContent.replace("%", "")) || 0;
+        let Precio = parseFloat(document.getElementById('txtPrecio').textContent) || 0;
+        let Metraje = "@Model.Encabezado.Metraje";
+        let TotalMetros = 0.00;
+
+        let Total = (Precio * Cantidad) - (((Precio * Cantidad) * Descuento) / 100);
+        Ahorro = (((Precio * Cantidad) * Descuento) / 100);
+
+        document.getElementById('totalOutput').textContent = Total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('txtAhorro').textContent = Ahorro.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        if ("@Model.Encabezado.IdGrupo == 1") {
+            TotalMetros = Metraje * Cantidad;
+        }
+        document.getElementById('iMetrosTotal').textContent = "Total metros de piso: " + TotalMetros.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function openModal() {
+        if ("@Model.Encabezado.TipoPromo" == "PU")
+        {
+            alert("Un producto con precio de promocion no aplica a descuento");
+            return;
+        }
+
+        let price = document.getElementById('txtPrecio').textContent.trim();
+        if (price === '' || price === "0.00") {
+            alert("Seleccione un precio");
+            return;
+        }
+
+        price = parseFloat(price);
+        if (isNaN(price)) {
+            alert("El precio no es válido");
+            return;
+        }
+
+        $("#discountModal").modal('show');
+        document.getElementById('selected-price').value = price.toFixed(2);
+    }
+
+    function applyDiscount() {
+        const discountP = document.getElementById('txtPdecuento').value;
+        const discountQ = document.getElementById('txtQdescuento').value;
+        const priceBefore = document.getElementById('selected-price').value;
+        const priceNew = document.getElementById('txtTotalDescuento').value;
+        document.getElementById('txtDescuento').textContent = parseFloat(discountP).toFixed(2) + "%";
+        document.getElementById('txtAhorro').textContent = parseFloat(discountQ).toFixed(2);
+        document.getElementById('txtAhorro').textContent = parseFloat(discountQ).toFixed(2);
+        document.getElementById('totalOutput').textContent = parseFloat(priceNew).toFixed(2);
+        $("#discountModal").modal('hide');
+    }
+
+    function sendAuthorization() {
+        const reason = document.getElementById('authorization-reason').value;
+        if (reason.trim() === "") {
+            alert('Debe ingresar un motivo para la autorización.');
+            return;
+        }
+        alert('Se ha enviado una solicitud para la autorización de descuento');
+        $("#authorizationModal").modal('hide');
+        $("#discountModal").modal('hide');
+    }
+
+    function closeModal() {
+        $("#discountModal").modal('hide');
+    }
+
+    function scrollItems(direction) {
+        const container = document.querySelector('.items-container');
+        const scrollAmount = 200;
+
+        container.scrollBy({
+            left: direction * scrollAmount,
+            behavior: 'smooth'
+        });
+    }
+
+    function borrarCotizacion(clienteId) {
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");        
+        borrarCookie(cookieName);
+
+        actualizarCarritoBadge(0);
+        alert("Carrito borrado exitosamente.");
+    }
+
+    function borrarCookie(cookieName) {
+        // Establecer la cookie con una fecha de expiración pasada
+        document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        console.log(`Cookie ${cookieName} eliminada.`);
+    }
+
+    function agregarProductoDesdeVista() {        
+        $("#globalLoading").show();
+        const precioNo = "@Model.Encabezado.PrecioVenta";
+        const precioOf = "@Model.Encabezado.PrecioBeneficio";
+        const clienteId = 'A1';
+        const itemCode = "@Model.Encabezado.ItemCode";
+        const itemName = "@Model.Encabezado.ItemName";
+        const quantity = parseFloat(document.getElementById('counterInput').value);
+        const price = "@Model.Encabezado.PrecioFinal";
+        const dscto = "0.00";
+        const savings = "0.00";
+        const descuentoU = parseFloat(precioOf - precioNo).toFixed(2);
+        const listPrice = "@Model.Encabezado.PLFinal";
+        const lineTotal = parseFloat((price * quantity).toFixed(2)) - parseFloat(savings).toFixed(2);
+        const elemento = document.getElementById('iMetrosTotal');
+        const cantidadMetros = elemento ? elemento.textContent.replace("Total metros de piso:", "").trim() : "0";
+        const linkImg = "@Model.Encabezado.Imagen";
+        const EsPromo = "@Model.Encabezado.EsPromo";
+        let lineId = regresarId();
+
+        const producto = {
+            Identity: crypto.randomUUID(),
+            LineId: lineId,
+            ItemCode: itemCode,
+            Dscription: itemName.replace("Ñ", "N"),
+            Quantity: quantity,
+            ListPrice: listPrice,
+            Price: price,
+            DescuentoU: descuentoU,
+            Dscto: dscto.replace("%", ""),
+            Saving: savings,
+            LineTotal: lineTotal,
+            CantidadMetros: cantidadMetros,
+            LinkImg: linkImg,
+            EsPromo: EsPromo,
+            DescuentoLpr: 0,
+            DescuentoPor: 0.00,
+            DescuentoQtz: 0.00,
+            DescuentoNwp: 0.00
+        };
+        
+        if (CrearCotizacionCookie(clienteId, producto) === true) {
+            $('#miModal').modal('show').addClass('fade-in');
+            $("#globalLoading").hide();
+        }
+    }
+
+    function regresarId() {
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+        const cookieData = getCookie(cookieName);
+        let lineId = 1; // Valor inicial en caso de que no exista la cookie
+
+        if (cookieData) {
+            try {
+                const cotizacion = JSON.parse(cookieData);
+                // Acceder al array de productos
+                if (Array.isArray(cotizacion.productos) && cotizacion.productos.length > 0) {
+                    // Obtener el último producto en la lista
+                    const ultimoProducto = cotizacion.productos[cotizacion.productos.length - 1];
+
+                    // Obtener el último LineId y sumar 1
+                    return (ultimoProducto.LineId || 0) + 1;
+                }
+            } catch (error) {
+                console.error('Error al parsear la cookie:', error);
+                return -1
+            }
+        }
+        return 1;
+    }
+
+    // Función para generar un número de cotización aleatorio (o secuencial si prefieres)
+    function generarNumeroCotizacion() {
+        return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
+    }
+
+    // Función para obtener el valor de una cookie
+    function getCookie(name) {
+        const cookies = document.cookie.split("; ");
+        for (const cookie of cookies) {
+            const [key, value] = cookie.split("=");
+            if (key === name) return value;
+        }
+        return null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('counterInput');
+        const btnMinus = document.querySelector('.btn-minus');
+        const btnPlus = document.querySelector('.btn-plus');
+
+        btnPlus.addEventListener('click', function () {
+            input.value = parseInt(input.value) + 1;
+            CalcularTotales();
+            btnMinus.disabled = false;
+        });
+
+        btnMinus.addEventListener('click', function () {
+            if (input.value > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+            if (input.value <= 1) {
+                btnMinus.disabled = true;
+            }
+            CalcularTotales();
+        });
+
+        if (parseInt(input.value) === 1) {
+            btnMinus.disabled = true;
+        }
+
+        /* METROS */
+        const inputMetros = document.getElementById('txtTotalMetros');
+        const btnMetrosMinus = document.querySelector('.btnMetrosMinus');
+        const btnMetrosPlus = document.querySelector('.btnMetrosPlus');
+
+        btnMetrosPlus.addEventListener('click', function () {
+            inputMetros.value = parseInt(inputMetros.value) + 1;
+            /*CalcularTotales();*/
+            btnMetrosMinus.disabled = false;
+        });
+
+        btnMetrosMinus.addEventListener('click', function () {
+            if (inputMetros.value > 1) {
+                inputMetros.value = parseInt(inputMetros.value) - 1;
+            }
+            if (inputMetros.value <= 1) {
+                btnMetrosMinus.disabled = true;
+            }
+            /*CalcularTotales();*/
+        });
+
+
+        if (parseInt(inputMetros.value) === 1) {
+            btnMetrosMinus.disabled = true;
+        }
+    });
+
+    function selectPriceSection(element) {
+        document.querySelectorAll('.price-section').forEach((section) => {
+            section.classList.remove('active');
+        });
+
+        element.classList.add('active');
+        const _precio = element.getAttribute('data-price');
+        document.getElementById('txtPrecio').innerHTML = _precio;
+
+        const _listPrice = element.getAttribute('data-priceList');
+        document.getElementById('txtListPrice').innerHTML = _listPrice;
+        CalculoTotales();
+    }
+</script>

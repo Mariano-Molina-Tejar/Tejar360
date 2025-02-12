@@ -21,5 +21,6 @@ namespace Entity
         public int Depto { get; set; }
         public string DeptoName { get; set; }
         public int CodeEmpleado { get; set; }
+        public double Descto { get; set; }
     }
 }

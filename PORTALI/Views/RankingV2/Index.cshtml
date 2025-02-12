@@ -1,0 +1,308 @@
+﻿@model List<Entity.RankingV2Entity>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    .ranking-container {
+        max-width: 800px;
+        margin: 40px auto;
+        text-align: center;
+        padding: 20px;
+        background: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+        .ranking-container h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+    .ranking-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .ranking-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        background: #f0f4f7;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .ranking-card:hover {
+            transform: scale(1.05);
+        }
+
+        .ranking-card img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #fff;
+        }
+
+    .ranking-info {
+        flex-grow: 1;
+        text-align: left;
+        margin-left: 20px;
+    }
+
+        .ranking-info h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .ranking-info p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+    .ranking-score {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #fb8304;
+    }
+
+    .ranking-card.current {
+        background: #fb8304;
+        color: white;
+    }
+
+        .ranking-card.current img {
+            border-color: white;
+        }
+
+        /* Contenedor del encabezado */
+    .ranking-header {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #f39c12, #e74c3c);
+        color: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
+
+    /* Título principal */
+    .ranking-header h1 {
+        font-family: 'Impact', sans-serif;
+        font-size: 3rem;
+        letter-spacing: 2px;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Subtítulo */
+    .ranking-header .subtitle {
+        font-family: 'Arial', sans-serif;
+        font-size: 1.2rem;
+        margin-top: 10px;
+        font-weight: 300;
+        color: #fce4d6;
+    }
+
+    /* Agregar emojis animados (opcional) */
+    .ranking-header h1:before,
+    .ranking-header h1:after {
+        content: "🏆";
+        animation: bounce 1.5s infinite alternate;
+        display: inline-block;
+    }
+
+    .ranking-position {
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+
+    .medal {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: bold;
+        color: #fff;
+        background: linear-gradient(45deg, #f7b42c, #fc575e); /* Degradado para la medalla */
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 2px solid #f0f0f0;
+    }
+
+        /* Personaliza los colores según la posición */
+        .medal:nth-child(1) {
+            background: linear-gradient(45deg, #fbc531, #e1b12c); /* Oro */
+        }
+
+        .medal:nth-child(2) {
+            background: linear-gradient(45deg, #c0c0c0, #bdc3c7); /* Plata */
+        }
+
+        .medal:nth-child(3) {
+            background: linear-gradient(45deg, #cd7f32, #a5673f); /* Bronce */
+        }
+
+        /* Para posiciones mayores a 3 */
+        .medal:nth-child(n+4) {
+            background: linear-gradient(45deg, #7f8c8d, #95a5a6); /* Neutro */
+        }
+
+    /* Estilo para el nombre del asesor */
+    .advisor-name {
+        font-size: 1.5rem; /* Tamaño grande */
+        font-weight: bold; /* Negrita */
+        color: #2a5298; /* Azul elegante */
+        text-transform: uppercase; /* Todo en mayúsculas */
+        margin: 5px 0;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Sombra sutil para resaltar */
+        letter-spacing: 1px; /* Espaciado entre letras */
+        border-bottom: 2px solid #f7b42c; /* Línea decorativa */
+        display: inline-block;
+        padding-bottom: 5px;
+    }
+
+    /* Estilo para la información adicional */
+    .advisor-whs {
+        font-size: 1.2rem; /* Tamaño mediano */
+        font-weight: 400; /* Peso regular */
+        color: #f7b42c; /* Amarillo dorado */
+        margin: 5px 0;
+        text-transform: capitalize; /* Solo la primera letra en mayúscula */
+        font-style: italic; /* Texto en cursiva para diferenciarlo */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra ligera */
+    }
+
+    /* Botón en la parte superior */
+    .go-to-current-btn {
+        background-color: #4caf50; /* Verde agradable */
+        color: #fff; /* Texto blanco */
+        font-size: 1rem; /* Tamaño de texto */
+        padding: 10px 20px; /* Espaciado interno */
+        margin: 10px 0; /* Separación con otros elementos */
+        border: none; /* Sin bordes */
+        border-radius: 5px; /* Bordes redondeados */
+        cursor: pointer; /* Cursor de mano */
+        text-transform: uppercase; /* Texto en mayúsculas */
+        font-weight: bold; /* Texto en negrita */
+        transition: all 0.3s ease; /* Animación al pasar el mouse */
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Sombra ligera */
+    }
+
+        /* Efecto hover */
+        .go-to-current-btn:hover {
+            background-color: #388e3c; /* Verde más oscuro */
+            transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
+        }
+
+    .highlight {
+        border: 3px solid #FFD700; /* Resaltado dorado */
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.7); /* Sombra dorada */
+    }
+
+</style>
+<link href="~/Css/style_ranking.css" rel="stylesheet" />
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Asesores</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ranking-container">
+        <div class="ranking-header">
+            <h1>🏆 Ranking 🏆</h1>
+            <p class="subtitle">¡Descubre quién lidera la competencia!</p>
+            <button class="go-to-current-btn" onclick="scrollToCurrent(26)">Ir a mi posición</button>
+        </div>
+        <div class="ranking-list">
+            <!-- Los asesores se generan dinámicamente -->
+        </div>
+    </div>
+    
+</body>
+</html>
+
+<script>
+    const rankingList = document.querySelector(".ranking-list");
+    async function loadRanking() {
+        try {
+            const response = await fetch("/RankingV2/GetRankingData"); // Cambia la ruta por tu API
+            const rankingData = await response.json();
+
+            let position = -1; // Variable para almacenar la posición
+
+            rankingData.forEach((advisor, index) => {
+                const card = document.createElement("div");
+                card.classList.add("ranking-card");
+
+                let stars = "";
+                if (index < 5) {
+                    stars = "★".repeat(5 - index);
+                }
+
+                card.innerHTML = `
+                <img src="../ImgUp/imagen-no-disponible.png" alt="${advisor.SlpName}">
+                <div class="ranking-info">
+                    <div class="ranking-position">
+                        <span class="medal">${index + 1}</span>
+                        <h2 class="advisor-name">${advisor.SlpName}</h2>
+                        <h3 class="advisor-whs">${advisor.WhsName}</h3>
+                    </div>                        
+                </div>
+                <div class="ranking-score">${stars}</div>
+            `;
+                rankingList.appendChild(card);
+
+                if (advisor.Me === "Y") {
+                    position = index + 1; // Guardamos la posición (se asume que la lista comienza en 1)
+                }
+            });
+
+            // Si se encuentra la posición, desplazarse hasta ella
+            if (position !== -1) {
+                scrollToCurrent(position);
+            } else {
+                console.log("No se encontró la posición");
+            }
+        } catch (error) {
+            console.error("Error cargando el ranking:", error);
+        }
+    }
+    loadRanking();
+
+    function scrollToCurrent(position) {
+        const cards = document.querySelectorAll('.ranking-card');
+        if (position >= 1 && position <= cards.length) {
+            const targetCard = cards[position - 1];
+
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            highlightCard(targetCard);
+            console.log('Te encuentras en la posición:', position);
+        } else {
+            console.log('La posición no es válida');
+        }
+    }
+
+    function highlightCard(card) {
+        card.classList.add('highlight');
+    }
+</script>

@@ -1,0 +1,95 @@
+﻿
+/*ESTA PARTE DE LOS BOTONES DE PRECIOS*/
+/* Estilos base */
+.price-section {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px; /* Espacio entre secciones */
+}
+
+.price-part {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.total-part {
+    background-color: #4CAF50;
+    padding: 10px;
+    text-align: center;
+    color: #ffffff;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.price-label, .total-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.price-value, .total-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .price-section {
+        flex-direction: row; /* Cambia a disposición horizontal en pantallas pequeñas */
+        border-radius: 10px; /* Mantener bordes redondeados */
+    }
+
+    .price-part, .total-part {
+        flex: 1; /* Ocupa el mismo espacio */
+        border-radius: 0; /* Eliminar bordes redondeados internos */
+    }
+
+    .price-part {
+        border-top-left-radius: 10px; /* Redondear esquina superior izquierda */
+        border-bottom-left-radius: 10px; /* Redondear esquina inferior izquierda */
+    }
+
+    .total-part {
+        border-top-right-radius: 10px; /* Redondear esquina superior derecha */
+        border-bottom-right-radius: 10px; /* Redondear esquina inferior derecha */
+    }
+
+    .price-label, .total-label {
+        font-size: 12px; /* Reducir tamaño de fuente en móviles */
+    }
+
+    .price-value, .total-value {
+        font-size: 14px; /* Reducir tamaño de fuente en móviles */
+    }
+}
+
+@media (max-width: 480px) {
+    .price-label, .total-label {
+        font-size: 10px; /* Tamaño de fuente aún más pequeño para móviles muy pequeños */
+    }
+
+    .price-value, .total-value {
+        font-size: 12px; /* Tamaño de fuente aún más pequeño para móviles muy pequeños */
+    }
+}
+
+/* ANIMACION DE MODAL*/
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}

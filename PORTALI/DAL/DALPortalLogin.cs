@@ -79,6 +79,7 @@ namespace DAL
                         sessionLoginEntity.DeptoName = dt.Rows[0]["DeptoName"].ToString();
                         sessionLoginEntity.CodeEmpleado = int.Parse(dt.Rows[0]["CodeEmpleado"].ToString());
                         sessionLoginEntity.UrlPic = DALPortalGenerales.ValidarExistenciaArchivo((path + dt.Rows[0]["Photo"].ToString()).ToString(), dt.Rows[0]["Photo"].ToString()).ToString();
+                        sessionLoginEntity.Descto = double.Parse(dt.Rows[0]["Descto"].ToString());
 
                         return sessionLoginEntity;
                     }

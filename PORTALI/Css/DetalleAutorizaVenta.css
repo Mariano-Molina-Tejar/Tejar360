@@ -1,0 +1,117 @@
+﻿/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;    
+}
+
+.header-section {
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table th {
+    background-color: #007bff !important;
+    color: white;
+    text-align: center;
+}
+
+.btn-custom {
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.btn-save {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-back {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Responsividad para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .header-section {
+        font-size: 1.1rem;
+        padding: 10px;
+    }
+
+    .card-header {
+        font-size: 1rem;
+    }
+
+    .table th {
+        font-size: 0.9rem;
+    }
+
+    .btn-custom {
+        font-size: 1rem;
+        padding: 8px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .col-md-6 {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Responsividad para pantallas más pequeñas que móviles */
+@media (max-width: 480px) {
+    .header-section {
+        font-size: 1rem;
+        padding: 8px;
+    }
+
+    .btn-custom {
+        font-size: 0.9rem;
+        padding: 7px;
+    }
+
+    .table th {
+        font-size: 0.8rem;
+    }
+
+    .table td {
+        font-size: 0.8rem;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
+}

@@ -11,6 +11,51 @@ namespace DAL
 {
     public class DALPortalRankingTrimestral
     {
+        public static List<RankingV2Entity> RankingV2(int SlpCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                if (SlpCode == -1)
+                {
+                    return new List<RankingV2Entity>();
+                }
+
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_ranking_v3", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@SlpCode", -1);
+
+                List<RankingV2Entity> lista = new List<RankingV2Entity>();
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    lista = (from row in dt.AsEnumerable()
+                             select new RankingV2Entity()
+                             {
+                                 SlpCode = int.Parse(row["SlpCode"].ToString()),
+                                 SlpName = row["SlpName"].ToString(),
+                                 Mes1 = double.Parse(row.ItemArray[2].ToString()),
+                                 Mes2 = double.Parse(row.ItemArray[3].ToString()),
+                                 Mes3 = double.Parse(row.ItemArray[4].ToString()),
+                                 Total = double.Parse(row["Total"].ToString()),
+                                 WhsName = row["WhsName"].ToString()
+                             }).ToList();
+
+                    return lista;
+                }
+                catch (Exception ex)
+                {
+                    return new List<RankingV2Entity>();
+                }
+            }
+        }
+
         public static List<PortalGerencialRankingTrimestralEntity> Ranking(int SlpCode)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();

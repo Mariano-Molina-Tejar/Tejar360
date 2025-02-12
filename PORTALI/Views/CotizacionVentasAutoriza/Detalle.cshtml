@@ -1,0 +1,139 @@
+﻿@model Entity.CarritoComprasPDFEntity
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Cotización</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">    
+    <link href="~/Css/DetalleAutorizaVenta.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="container mt-4">
+        <div class="header-section">📄 Detalle de Cotización</div>
+
+        <!-- Encabezado de la cotización -->
+        <div class="card mt-3">
+            <div class="card-header">📌 Información General</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6"><strong>NIT:</strong> <span id="nit">@Model.Encabezado.Nit</span></div>
+                    <div class="col-md-6"><strong>Fecha:</strong> <span id="fecha">@Model.Encabezado.DocDate.ToString("dd/MM/yyyy")</span></div>
+                    <div class="col-md-6"><strong>Cliente:</strong> <span id="cliente">@Model.Encabezado.CardName</span></div>
+                    <div class="col-md-6"><strong>No. Documento:</strong> <span id="docNum">@Model.Encabezado.DocEntry</span></div>
+                </div>
+            </div>
+        </div>
+        <a id="txtDocEntry" style="display:none">@Model.Encabezado.DocEntry</a>
+        <!-- Detalle de productos -->
+        <div class="card mt-3">
+            <div class="card-header">📦 Detalle de Productos</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Descuento</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalle-body">
+                            @foreach (var item in Model.Detalle)
+                            {
+                                <tr>
+                                    <td>@item.ItemCode</td>
+                                    <td>@item.Dscription</td>
+                                    <td>@item.Quantity</td>
+                                    <td>Q @item.Price</td>
+                                    <td>@item.Descuento</td>
+                                    <td>Q @item.LineTotal</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Autorización -->
+        <div class="card mt-3">
+            <div class="card-header">✅ Autorizar Cotización</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="status" class="form-label">Estado de Autorización:</label>
+                    <select id="status" class="form-select">
+                        <option value="A">Autorizado</option>
+                        <option value="R">Rechazado</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">Observaciones:</label>
+                    <textarea id="observaciones" class="form-control" rows="3" placeholder="Ingrese observaciones si es necesario..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <button class="btn btn-custom btn-save" onclick="guardarAutorizacion()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-custom btn-back" onclick="regresarLista()">
+                    <i class="fas fa-arrow-left"></i> Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>       
+        function guardarAutorizacion() {
+            $("#globalLoading").show();
+            const estado = document.getElementById("status").value;
+            const observaciones = document.getElementById("observaciones").value;
+            const docEntry = document.getElementById("txtDocEntry").textContent;
+            const confirmar = confirm(`¿Está seguro de ${estado == "R" ? "rechazar" : "autorizar"} la cotización?`);
+
+            if (confirmar) {
+                // Realizando la solicitud AJAX
+                $.ajax({
+                    url: '/CotizacionVentasAutoriza/EnviarAutorizacionSAP/', // Asegúrate de que esta ruta esté correcta
+                    type: 'POST',
+                    data: {
+                        DocEntry: docEntry
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $("#globalLoading").hide();
+                            window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
+                        } else {
+                            $("#globalLoading").hide();
+                            window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $("#globalLoading").hide();
+                        alert("Error al realizar la solicitud: " + error);
+                    }
+                });
+
+            } else {
+                $("#globalLoading").hide();
+                alert("Operación cancelada.");
+            }
+        }
+
+        function regresarLista() {
+            window.history.back(); // Simula regresar a la lista anterior
+        }
+    </script>
+
+</body>
+</html>

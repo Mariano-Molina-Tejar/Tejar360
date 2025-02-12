@@ -68,12 +68,19 @@
     <Compile Include="AutorizarCotizacionEntity.cs" />
     <Compile Include="BuscarProductoEntity.cs" />
     <Compile Include="BusquedaDetalleProductoEntity.cs" />
+    <Compile Include="CarritoComprasEntity.cs" />
+    <Compile Include="CarritoComprasSocioEntity.cs" />
+    <Compile Include="CarritoTempEntity.cs" />
+    <Compile Include="ClienteSATEntity.cs" />
     <Compile Include="ConnectionEntity.cs" />
     <Compile Include="CotizacionCompraEntity.cs" />
     <Compile Include="CotizacionHeadEntity.cs" />
+    <Compile Include="CotizacionSAP.cs" />
     <Compile Include="DALEntity.cs" />
+    <Compile Include="DashboardAsesorGraficoEntity.cs" />
     <Compile Include="DetalleBusquedaProductosEntity.cs" />
     <Compile Include="DetallePresupuestoEntity.cs" />
+    <Compile Include="ItemsCotizacionEntity.cs" />
     <Compile Include="LaligaDashboardAsesoresEntity.cs" />
     <Compile Include="LoginEntity.cs" />
     <Compile Include="MesesEntity.cs" />
@@ -86,6 +93,7 @@
     <Compile Include="PortalDashboardGtEntity.cs" />
     <Compile Include="PortalGerencialRankingTrimestralEntity.cs" />
     <Compile Include="PortalListadoAsesoresEntity.cs" />
+    <Compile Include="PortalListadoCotizacionesEntity.cs" />
     <Compile Include="PortalListadoDeptosEntity.cs" />
     <Compile Include="PortalListadoGeneralEntity.cs" />
     <Compile Include="PortalMantSolicitudCompraEntity.cs" />
@@ -101,6 +109,8 @@
     <Compile Include="PortaSucursalesEntity.cs" />
     <Compile Include="PropertiesEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RankingV2Entity.cs" />
+    <Compile Include="RankingViewModel.cs" />
     <Compile Include="RecepcionProductosDetalleEntity.cs" />
     <Compile Include="RecepcionProductosEntity.cs" />
     <Compile Include="RecepcionProductosModalDetalleEntity.cs" />

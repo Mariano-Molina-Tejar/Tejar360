@@ -1,0 +1,228 @@
+﻿<script src="/js/UpdateCarrito.js" defer></script>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg rounded-3">
+                <div class="card-body">
+                    <h2 class="text-center my-4">Resumen de la compra</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr class="ml-3">
+                                    <th></th>
+                                    <th class="text-left" width="40%">Producto</th>
+                                    <th class="text-center" width="20%">Cantidad</th>
+                                    <th class="text-center" width="20%">Precio U.</th>
+                                    <th class="text-center" width="20%">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productos-table">
+                                <!-- Productos se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <h2 class="text-center my-4">Datos de facturación</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <td width="35%" class="align-middle text-left">Nit/DPI</td>
+                                    <td class="text-left" id="nit"></td>
+                                </tr>
+                                <tr>
+                                    <td width="35%" class="align-middle text-left">Nombre</td>
+                                    <td class="text-left" id="nombre"></td>
+                                </tr>
+                                <tr>
+                                    <td class="align-middle text-left">Teléfono</td>
+                                    <td class="align-middle text-left" id="telefono"></td>
+                                </tr>
+                                <tr>
+                                    <td class="align-middle text-left">Correo</td>
+                                    <td class="align-middle text-left" id="correo"></td>
+                                </tr>
+                                <tr>
+                                    <td class="align-middle text-left">Dirección</td>
+                                    <td class="align-middle text-left" id="direccion"></td>
+                                </tr>
+                                <tr>
+                                    <td class="align-middle text-left">Forma de pago</td>
+                                    <td class="align-middle text-left" id="FormaDePago"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="comentarios" class="form-label fw-bold">Comentarios o instrucciones adicionales</label>
+                        <textarea id="txtComentarios" class="form-control" rows="4" placeholder="Escribe aquí cualquier comentario adicional..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between my-4">
+                        <button type="button" class="btn btn-secondary" style="flex: 1; text-align: left;" onclick="loadStep(-1)">
+                            Atrás
+                        </button>
+                        <button type="button" class="btn btn-primary" style="flex: 1; text-align: right;" onclick="FinalizarCompra()">
+                            Finalizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // Determinar el texto y el estilo según el valor de FormaDePago
+        let formaDePagoText = 'N/A';
+        let backgroundColor = '#f8f9fa';  // Color por defecto
+        let iconClass = '';
+
+        const socioNegocio = getAllCookieCotizacion();
+        console.log(socioNegocio);
+        // Llenar perfil del cliente
+        $('#nit').text(socioNegocio.FacturarNit || 'N/A');
+        $('#nombre').text(socioNegocio.FacturarNombre || 'N/A');
+        $('#telefono').text(socioNegocio.FacturarPhone || 'N/A');
+        $('#correo').text(socioNegocio.Email || 'N/A');
+        $('#direccion').text(socioNegocio.FacturarDireccion || 'N/A');
+
+        if (socioNegocio.PriceId === 1) {
+            formaDePagoText = 'Precio efectivo';
+            backgroundColor = '#28a745';  // Verde para precio efectivo
+            iconClass = 'fa fa-check-circle';  // Icono de "check-circle"
+        } else if (socioNegocio.PriceId === 9) {
+            formaDePagoText = 'Precio normal';
+            backgroundColor = '#ffc107';  // Amarillo para precio normal
+            iconClass = 'fa fa-dollar-sign';  // Icono de "dollar-sign"
+        }
+
+
+        $('#FormaDePago').html(`
+            <span class="d-inline-flex align-items-center" style="background-color: ${backgroundColor}; padding: 5px 10px; border-radius: 5px; color: white;">
+                <i class="${iconClass}" style="margin-right: 5px;"></i>
+                ${formaDePagoText}
+            </span>
+        `);
+
+        // Llenar tabla de productos
+        const productos = socioNegocio.productos || [];
+        const productosTable = $('#productos-table');
+        productos.forEach(producto => {
+            const row = `
+            <tr>
+                <td>
+                <img id="productImage" src="${producto.LinkImg || '/Img/imagen-no-disponible.png'}"
+                                     onerror="this.onerror=null; this.src='/Img/imagen-no-disponible.png';"
+                                     alt="Imagen del producto"
+                                     style="width: 50px; height: 50px; object-fit: cover;" />
+                </td>
+                <td class="align-middle text-left">${producto.Dscription || 'Producto'}</td>
+                <td class="align-middle text-center">${producto.Quantity || 0}</td>
+                <td class="align-middle text-center">Q${(parseFloat(producto.Price) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-right">Q${(producto.LineTotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+        `;
+            productosTable.append(row);
+        });
+
+        // Inicializamos las variables de descuento y total
+        let totalDescuento = 0;
+        let totalLineTotal = 0;
+
+        // Iteramos sobre los productos y calculamos las sumas de descuento y total
+        socioNegocio.productos.forEach(producto => {
+            totalDescuento += (parseFloat(producto.Dscto) || 0) * (parseFloat(producto.Quantity) || 0);  // Si Dscto no es un número válido, lo tratamos como 0
+            totalLineTotal += parseFloat(producto.LineTotal) || 0;  // Si LineTotal no es un número válido, lo tratamos como 0
+        });
+
+        // Ahora construimos las filas de descuento y total
+        const descuentoRow = `
+        <tr>
+            <td colspan="4" class="align-middle text-right" style="color:red">Descuento</td>
+            <td class="align-middle text-right" style="color:red">${totalDescuento.toFixed(2) || 0}</td>
+        </tr>`;
+
+            const totalRow = `
+        <tr>
+            <td colspan="4" class="align-middle text-right font-weight-bold">Total</td>
+            <td class="align-middle text-right font-weight-bold">${totalLineTotal.toFixed(2) || 0}</td>
+        </tr>`;
+
+        productosTable.append(descuentoRow);
+        productosTable.append(totalRow);
+    });
+
+    function FinalizarCompra() {
+        // Mostrar el mensaje de confirmación con un alert        
+        const confirmacion = confirm("¿Estás seguro de que deseas finalizar la compra?");
+        var _llave;
+        const comentario = document.getElementById("txtComentarios").value;
+
+        // Si el usuario confirma que sí
+        if (confirmacion) {
+            $("#globalLoading").show();
+            // Obtener los datos de la cookie
+            const socioNegocio = getAllCookieCotizacion();
+            if (socioNegocio) {
+                _llave = socioNegocio.Llave;
+                // Crear el objeto de CarritoComprasEntity en formato adecuado para enviarlo
+                const carrito = {
+                    NoCotizacionV: socioNegocio.NoCotizacion,  // Cotización número
+                    Nit: socioNegocio.LicTradNum,  // NIT
+                    CardCode: socioNegocio.CardCode,  // Código de cliente
+                    CardName: socioNegocio.CardName,  // Nombre de cliente
+                    Telefono: socioNegocio.Phone,  // Teléfono
+                    Correo: socioNegocio.Email,  // Correo
+                    Direccion: socioNegocio.Address,  // Dirección
+                    FormaPago: socioNegocio.PriceId.toString(),  // Forma de pago (Convertir a string si es necesario)
+                    SlpCode: socioNegocio.cliente,  // Código de vendedor
+                    PriceList: socioNegocio.PriceId,  // Lista de precios
+                    FacturarNit: socioNegocio.FacturarNit,
+                    FacturarNombre: socioNegocio.FacturarNombre,
+                    FacturarDireccion: socioNegocio.FacturarDireccion,
+                    Comentarios: comentario,
+                    Detalle: socioNegocio.productos.map(producto => ({
+                        LineId: producto.LineId,
+                        ItemCode: producto.ItemCode,
+                        Dscription: producto.Dscription,
+                        Quantity: producto.Quantity,
+                        Price: parseFloat(producto.Price),  // Convertir el precio a número
+                        Dscto: producto.Dscto,
+                        Saving: parseFloat(producto.Saving),  // Convertir ahorro a número
+                        CantMetros: parseFloat(producto.CantidadMetros.replace('Total en metros ', '')),  // Convertir a número
+                        LineTotal: producto.LineTotal,
+                        LinkImg: producto.LinkImg || '/Img/imagen-no-disponible.png',  // En caso de que no haya imagen
+                        EsPromo: parseInt(producto.EsPromo),  // Convertir EsPromo a número
+                        DescuentoLpr: parseFloat(producto.DescuentoLpr),
+                        DescuentoNwp: parseFloat(producto.DescuentoNwp),
+                        DescuentoPor: parseFloat(producto.DescuentoPor),
+                        DescuentoQtz: parseFloat(producto.DescuentoQtz)
+                    }))
+                };
+
+                // Enviar el objeto al servidor mediante AJAX
+                $.ajax({
+                    url: '/MiCarrito/EnviarCotizacionSAP',  // Ruta de tu acción
+                    type: 'POST',
+                    data: JSON.stringify(carrito),  // Convertir el objeto a JSON
+                    contentType: 'application/json',  // Tipo de contenido para enviar JSON
+                    success: function (response) {
+                        alert(response.message);
+                        if (response.result == 1) {
+                            EliminarCookie("T-OneCotizacion-" + _llave);
+                            $("#globalLoading").hide();
+                            window.location.href = "/Ventas/Listado";
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Aquí manejas los errores si los hay
+                        $("#globalLoading").hide();
+                        alert('Hubo un error al enviar la cotización.');
+                    }
+                });
+            }
+        }
+    }
+
+</script>

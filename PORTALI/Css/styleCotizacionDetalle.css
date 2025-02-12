@@ -3,13 +3,13 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    gap: 2rem;
+    gap: 5px; /* Reducido a 5px */
     padding: 2rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
+    background-color: white;
+    border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: 1200px;
+    margin: 15px auto;
 }
 
 .product-image img {
@@ -17,6 +17,7 @@
     max-width: 300px;
     height: auto;
     border-radius: 8px;
+    margin-right:20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -66,8 +67,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
-    font-size: 1rem;
-    text-align: center;
+    font-size: 1rem;    
 }
 
     .table thead {
@@ -90,17 +90,17 @@
 }
 
 .table th.tienda-column, .table td.tienda-column {
-    width: 90%; /* Ajusta este valor para controlar el ancho */
+    width: 90%;
     text-align: left;
 }
 
 .table th, .table td {
-    width: auto; /* Deja las demás columnas con un ancho automático */
+    width: auto;
 }
 
 
 @media (max-width: 768px) {
-    .product-container {
+    .product-container {        
         flex-direction: column;
         align-items: center;
     }

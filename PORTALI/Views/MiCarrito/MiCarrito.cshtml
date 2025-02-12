@@ -1,0 +1,424 @@
+﻿<script src="/js/UpdateCarrito.js" defer></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    h3 {
+        font-size: 16px;
+    }
+
+    .text-navy {
+        color: #1ab394;
+    }
+
+    .cart-product-imitation {
+        text-align: center;
+        padding-top: 30px;
+        height: 80px;
+        width: 80px;
+        background-color: #f8f8f9;
+    }
+
+    .product-imitation.xl {
+        padding: 120px 0;
+    }
+
+    .product-desc {
+        padding: 20px;
+        position: relative;
+    }
+
+    .ecommerce .tag-list {
+        padding: 0;
+    }
+
+    .ecommerce .fa-star {
+        color: #d1dade;
+    }
+
+        .ecommerce .fa-star.active {
+            color: #f8ac59;
+        }
+
+    .ecommerce .note-editor {
+        border: 1px solid #e7eaec;
+    }
+
+    table.shoping-cart-table {
+        margin-bottom: 0;
+    }
+
+        table.shoping-cart-table tr td {
+            border: none;
+            text-align: right;
+        }
+
+            table.shoping-cart-table tr td.desc,
+            table.shoping-cart-table tr td:first-child {
+                text-align: left;
+            }
+
+            table.shoping-cart-table tr td:last-child {
+                width: 80px;
+            }
+
+    .ibox {
+        clear: both;
+        margin-bottom: 25px;
+        margin-top: 0;
+        padding: 0;
+    }
+
+        .ibox.collapsed .ibox-content {
+            display: none;
+        }
+
+        .ibox:after,
+        .ibox:before {
+            display: table;
+        }
+
+    .ibox-title {
+        -moz-border-bottom-colors: none;
+        -moz-border-left-colors: none;
+        -moz-border-right-colors: none;
+        -moz-border-top-colors: none;
+        background-color: #ffffff;
+        border-color: #e7eaec;
+        border-image: none;
+        border-style: solid solid none;
+        border-width: 3px 0 0;
+        color: inherit;
+        margin-bottom: 0;
+        padding: 14px 15px 7px;
+        min-height: 48px;
+    }
+
+    .ibox-content {
+        background-color: #ffffff;
+        color: inherit;
+        padding: 15px 20px 20px 20px;
+        border-color: #e7eaec;
+        border-image: none;
+        border-style: solid solid none;
+        border-width: 1px 0;
+    }
+
+    .ibox-footer {
+        color: inherit;
+        border-top: 1px solid #e7eaec;
+        font-size: 90%;
+        background: #ffffff;
+        padding: 10px 15px;
+    }
+
+    .botones_pago .boton {
+        background-color: #f0f0f0; /* Color por defecto */
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .botones_pago .boton:hover {
+            background-color: red; /* Color al pasar el mouse */
+        }
+
+        .botones_pago .boton.active {
+            background-color: #007bff;  color cuando está seleccionado 
+            color: #fff;
+            border: 1px solid #0056b3;
+        }
+
+</style>
+
+<div class="container">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="metodoPago">
+            <h3>Método de pago</h3>
+            <div class="botones_pago">
+                <button class="boton" onclick="CargarData(9, this);">
+                    <span class="icon">💳</span> Precio Normal
+                </button>
+                <button class="boton" onclick="CargarData(1, this);">
+                    <span class="icon">💵</span> Precio Beneficio
+                </button>
+            </div>
+            <div id="pLista"></div>
+        </div>
+
+        <style>
+            .metodoPago {
+                background: linear-gradient(135deg, #ffffff, #f5f5f5);
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+
+                .metodoPago h3 {
+                    margin-bottom: 15px;
+                    font-size: 20px;
+                    color: #333;
+                    font-weight: bold;
+                }
+
+            botones_pago {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 7px;
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                transition: 0.3s;
+                font-weight: bold;
+            } 
+
+            .icon {
+                font-size: 20px;
+            }
+
+            #pLista {
+                display: none;
+            }
+        </style>
+
+        <br />
+        <div class="row">
+            <div class="col-md-8">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <span class="pull-right">(<strong><a id="totalItems"></a></strong>) items</span>
+                        <h5 style="font-size:20px">
+                            <i class="fa fa-shopping-cart"></i> Tu carrito
+                        </h5>
+                    </div>
+                    <div id="tbldetalle" class="tbldetalle"></div>
+                    <div class="ibox-content">
+                        <button class="btn btn-white" onclick="window.location.href='/CotizacionVentas/Cotizacion';">
+                            <i class="fa fa-arrow-left"></i> Continuar comprando
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>Resumen de compra</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div style="display: flex; align-items: center; font-size: 15px; color: red;">
+                            <strong style="margin-right: 5px;">Descuento: </strong>
+                            <h2 id="iDescuentoT" class="font-bold" style="font-size: 15px; margin: 0; color: red;">
+                                0.00
+                            </h2>
+                        </div>
+                        <br />
+                        <span style="font-size:15px">
+                            <strong style="font-size:20px">Total*</strong>
+                        </span>
+                        <h2 id="GranTotal" class="font-bold">
+                            0.00
+                        </h2>
+                    </div>
+                    <div class="ibox-title">
+                        <button type="submit" class="btn-buscar" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: #ff8c00; margin-bottom:10px;
+                                border: none; border-radius: 12px; cursor: pointer;" onclick="loadStep(1)">
+                            Continuar  &#8594;
+                        </button>                        
+                        <button type="submit" class="btn-buscar" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: green;
+                                border: none; border-radius: 12px; cursor: pointer;" onclick="GuardarBorrador()">
+                            Guardar como borrador
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro que deseas crear la cotización en SAP?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="confirmarAccion();">Sí</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function GuardarBorrador() {
+        const respuesta = confirm("¿Deseas guardar la cotización como borrador?");
+        if (respuesta) {
+            actualizarBorradorCookie();
+            window.location.href = '/CotizacionVentas/Cotizacion';
+        }
+    }
+
+    $(document).ready(function () {        
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+        console.log(cookieName);
+        // Si no hay cookies existentes, salir de la función
+        if (!cookieName) {
+            console.warn("No se encontró ninguna cookie de cotización.");
+            return;
+        }
+
+        const cookieData = getCookie(cookieName);        
+        precioLista = 0;
+        if (cookieData) {
+            const parsedData = JSON.parse(cookieData);
+            precioLista = parsedData.PriceId;            
+        }        
+        CargarData(precioLista);        
+    });
+
+    /* CAMBIA LOS PRECIOS DE LOS PRODUCTOS CON LA LISTA DE PRECIOS */
+    function CargarData(pList) {
+        $("#globalLoading").show();
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+        document.getElementById("pLista").innerHTML = pList;
+        const cookieData = getCookie(cookieName); // Leer la cookie
+
+        if (!cookieData) {
+            console.log('No se encontraron datos en la cookie.');
+            document.getElementById('mensaje').textContent = 'No se encontraron datos en la cookie.';
+            return; // Detener la ejecución si no hay datos
+        }
+
+        try {
+            const parsedData = JSON.parse(cookieData);
+            console.log("respuesta", parsedData);
+            // Verificar si "productos" existe y es un array
+            if (!parsedData.productos || !Array.isArray(parsedData.productos) || parsedData.productos.length === 0) {
+                console.log('No hay productos en la cookie.');
+                document.getElementById('mensaje').textContent = 'No hay productos en la cookie.';
+                return; // Detener la ejecución si no hay productos
+            }
+
+            const cartItems = parsedData.productos.map(item => ({
+                Identity: item.Identity,
+                LineId: item.LineId,
+                ItemCode: item.ItemCode,
+                Dscription: item.Dscription,
+                Quantity: item.Quantity,
+                Price: item.Price,
+                LineTotal: item.LineTotal,
+                ListPrice: item.ListPrice,
+                LinkImg: item.LinkImg,
+                Dscto: item.Dscto,
+                Saving: item.Saving,
+                CantidadMetros: item.CantidadMetros,
+                EsPromo: item.EsPromo,
+                DescuentoU: item.DescuentoU,
+                DescuentoLpr: item.DescuentoLpr,
+                DescuentoNwp: item.DescuentoNwp,
+                DescuentoPor: item.DescuentoPor,
+                DescuentoQtz: item.DescuentoQtz
+            }));
+
+            // Verificar que cartItems tenga elementos antes de hacer la petición AJAX
+            if (cartItems.length === 0) {
+                console.log('El carrito está vacío.');
+                document.getElementById('mensaje').textContent = 'El carrito está vacío.';
+                return; // No hacer la petición si no hay productos
+            }
+
+            // Enviar datos al backend
+            fetch('/MiCarrito/GuardarCarrito', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ Detalle: cartItems, PriceList: pList, Btn: 1 })
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data) {
+                        $('#tbldetalle').html(data);
+                        updateSoloQuantity(pList);
+                        $("#globalLoading").hide();
+                    } else {
+                        console.error('Error del backend:', data);
+                        document.getElementById('mensaje').textContent = 'Error en la respuesta del servidor.';
+                        $("#globalLoading").hide();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al enviar los datos:', error);
+                    document.getElementById('mensaje').textContent = 'Error al enviar los datos.';
+                    $("#globalLoading").hide();
+                });
+
+        } catch (error) {
+            console.error('Error al convertir la cookie a JSON:', error);
+            document.getElementById('mensaje').textContent = 'Error al leer los datos.';
+            $("#globalLoading").hide();
+        }
+    }
+
+    // Implementación de la función getCookie
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    $(document).ready(function () {
+        $('#buscarSocioBtn').click(function () {
+            const nit = $('#nit').val(); // Obtiene el valor del campo Nit
+
+            if (nit.trim() === "") {
+                alert("Por favor, ingrese un Nit.");
+                return;
+            }
+
+            $.ajax({
+                url: '/MiCarrito/BuscarSocioNegocio', // Cambia 'TuControlador' por el nombre de tu controlador
+                type: 'GET',
+                data: { Nit: nit }, // Envía el Nit al controlador
+                success: function (response) {
+                    if (response) {
+                        // Coloca los valores en los inputs
+                        $('#nombre').val(response.CardName);
+                        $('#direccion').val(response.Address);
+                        $('#telefono').val(response.Phone);
+                        $('#email').val(response.Email);
+                    } else {
+                        alert("No se encontraron datos para el Nit ingresado.");
+                    }
+                },
+                error: function () {
+                    alert("Hubo un error al buscar el socio de negocio. Intente amente.");
+                }
+            });
+        });
+    });
+
+    function mostrarModal() {
+        $('#confirmModal').modal('show');
+    }
+
+</script>

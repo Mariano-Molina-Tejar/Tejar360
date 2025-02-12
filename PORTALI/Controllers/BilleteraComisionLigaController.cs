@@ -20,10 +20,20 @@ namespace PORTALI.Controllers
                     return View();
                 }
                 var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
-                PortalComisionAsesoresEntity portalComisionAsesoresEntity = new PortalComisionAsesoresEntity(); 
+                PortalComisionAsesoresEntity portalComisionAsesoresEntity = new PortalComisionAsesoresEntity();
                 portalComisionAsesoresEntity = DALPortalBonoLiga.BonificacionLiga(0, 0, sessions.SlpCode, sessions.UserCode);
-                portalComisionAsesoresEntity.MesActual = int.Parse(DateTime.Now.Month.ToString());
-                portalComisionAsesoresEntity.AnioActual = int.Parse(DateTime.Now.Year.ToString());
+                if(portalComisionAsesoresEntity == null)
+                {
+                    portalComisionAsesoresEntity.ListaBonos = new List<ListaBonos>();
+                    portalComisionAsesoresEntity.ListadoAsesores = new List<PortalListadoAsesoresEntity>();
+                    portalComisionAsesoresEntity.ListaMeses = new List<MesesEntity>();
+                }
+                else
+                {
+                    portalComisionAsesoresEntity.MesActual = int.Parse(DateTime.Now.Month.ToString());
+                    portalComisionAsesoresEntity.AnioActual = int.Parse(DateTime.Now.Year.ToString());
+                }
+
                 Session["BonoComisionEntity"] = portalComisionAsesoresEntity;
                 return View(portalComisionAsesoresEntity);
             }

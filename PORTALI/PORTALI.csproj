@@ -314,6 +314,7 @@
     <Compile Include="Controllers\BilleteraComisionLigaController.cs" />
     <Compile Include="Controllers\CerrarSesionController.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
+    <Compile Include="Controllers\CotizacionVentasAutorizaController.cs" />
     <Compile Include="Controllers\CotizacionVentasController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DashboardGerenteVentasController.cs" />
@@ -321,11 +322,14 @@
     <Compile Include="Controllers\GerenciaRankinController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MargenController.cs" />
+    <Compile Include="Controllers\MiCarritoController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\RankingV2Controller.cs" />
     <Compile Include="Controllers\SAPAutorizarController.cs" />
     <Compile Include="Controllers\SAPAutorizaSuperiorController.cs" />
     <Compile Include="Controllers\SAPOcController.cs" />
     <Compile Include="Controllers\SAP_SC_Controller.cs" />
+    <Compile Include="Controllers\VentasController.cs" />
     <Compile Include="Filter\VerifySession.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -350,19 +354,29 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Css\bootstrap.min.css" />
     <Content Include="Css\Dashboard.css" />
+    <Content Include="Css\DetalleAutorizaVenta.css" />
+    <Content Include="Css\DetallesCarrito.css" />
     <Content Include="Css\font-awesome.min.css" />
     <Content Include="Css\ionicons.min.css" />
     <Content Include="Css\Login\Login2.css" />
     <Content Include="Css\Login\Style.css" />
+    <Content Include="Css\Login\styleDashboardAsesores.css" />
+    <Content Include="Css\nucleo-icons.css" />
+    <Content Include="Css\nucleo-svg.css" />
     <Content Include="Css\Profile.css" />
+    <Content Include="Css\SocioNegocioCarrito.css" />
     <Content Include="Css\style.css" />
     <Content Include="Css\style.min.css" />
     <Content Include="Css\styleCotizacionDetalle.css" />
     <Content Include="Css\styleCotizacionVentas.css" />
+    <Content Include="Css\style_ranking.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Html\cotizacionP1.html" />
+    <Content Include="Html\cotizacionP2.html" />
+    <Content Include="Html\CotizacionVenta.html" />
     <Content Include="Html\OrdenCompra.html" />
     <Content Include="Icons\ionicons.css" />
     <Content Include="Icons\ionicons.min.css" />
@@ -378,14 +392,21 @@
     <Content Include="Img\check_512.png" />
     <Content Include="Img\dinero_en_mano.png" />
     <Content Include="Img\eltejarlogo.png" />
+    <Content Include="Img\ENCABEZADO-PAG1-06.png" />
+    <Content Include="Img\ENCABEZADO-PAG2-03.png" />
     <Content Include="Img\fondo_ranking.png" />
     <Content Include="Img\Gold.png" />
     <Content Include="Img\head_ranking_profile.png" />
     <Content Include="Img\icono.ico" />
+    <Content Include="Img\imagen %281%29.png" />
+    <Content Include="Img\imagen logo.png" />
     <Content Include="Img\imagen-no-disponible.png" />
     <Content Include="Img\loading_circulo.gif" />
     <Content Include="Img\login_fondo.jpg" />
+    <Content Include="Img\MÉTODOS-DE-PAGO-PAG2-09.png" />
     <Content Include="Img\ojo.png" />
+    <Content Include="Img\PARTE-INFERIOR-PAG-1-08.png" />
+    <Content Include="Img\PARTE-INFERIOR-PAG2-05-05 %281%29.png" />
     <Content Include="Img\Plata.png" />
     <Content Include="Img\pregunta.png" />
     <Content Include="Img\quetzal_simbolo.png" />
@@ -398,6 +419,7 @@
     <Content Include="Img\Diamante.png" />
     <Content Include="Img\vendedor.png" />
     <Content Include="js\app.js" />
+    <Content Include="js\carrito.js" />
     <Content Include="js\charts.js" />
     <Content Include="js\colors.js" />
     <Content Include="js\Loading.css" />
@@ -412,6 +434,7 @@
     <Content Include="js\src\tooltips.js" />
     <Content Include="js\src\widgets.js" />
     <Content Include="js\tooltips.js" />
+    <Content Include="js\UpdateCarrito.js" />
     <Content Include="js\views\charts.js" />
     <Content Include="js\views\main.js" />
     <Content Include="js\views\widgets.js" />
@@ -1059,6 +1082,15 @@
     <Content Include="Views\Margen\_TablaMargenes.cshtml" />
     <Content Include="Views\Margen\DetalleProductos.cshtml" />
     <Content Include="Views\SAPOc\_SocioDeNegocio.cshtml" />
+    <Content Include="Views\RankingV2\Index.cshtml" />
+    <Content Include="Views\MiCarrito\ListadoCarrito.cshtml" />
+    <Content Include="Views\MiCarrito\_ModalDetalle.cshtml" />
+    <Content Include="Views\Ventas\Listado.cshtml" />
+    <Content Include="Views\MiCarrito\MiCarrito.cshtml" />
+    <Content Include="Views\MiCarrito\SocioNegocio.cshtml" />
+    <Content Include="Views\MiCarrito\Resumen.cshtml" />
+    <Content Include="Views\CotizacionVentasAutoriza\Autorizacion.cshtml" />
+    <Content Include="Views\CotizacionVentasAutoriza\Detalle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

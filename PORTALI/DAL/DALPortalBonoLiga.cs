@@ -19,7 +19,8 @@ namespace DAL
             using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
             {
                 OleDbCommand iCommand = null;
-                iCommand = new OleDbCommand("sp_portal_liga_asesor_main_v2", iConnection);
+                //iCommand = new OleDbCommand("sp_portal_liga_asesor_main_v2", iConnection);
+                iCommand = new OleDbCommand("sp_portal_liga_asesor_main_v5", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
                 iCommand.Parameters.AddWithValue("@Anio", Anio);
                 iCommand.Parameters.AddWithValue("@Mes", Mes);
