@@ -1,5 +1,4 @@
-﻿@*<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css'>*@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css" integrity="sha256-3sPp8BkKUE7QyPSl6VfBByBroQbKxKG7tsusY2mhbVY=" crossorigin="anonymous" />
+﻿<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css" integrity="sha256-3sPp8BkKUE7QyPSl6VfBByBroQbKxKG7tsusY2mhbVY=" crossorigin="anonymous" />
 <link href="~/Css/styleCotizacionVentas.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -19,14 +18,7 @@
     body {
         background-color: white;
     }
-    /* Personalización del botón de búsqueda */
-    /*#btnBuscar .input-group-text {
-        background-color: #FF8C00;*/ /* Color naranja */
-        /*color: white;
-        border: none;
-        cursor: pointer;
-    }*/
-
+    
     #btnFiltro .input-group-text {
         background-color: #171ac2; /* Color naranja */
         color: white;
@@ -193,7 +185,14 @@
                             </div>
                         </div>
                         <!-- Input de búsqueda -->
-                        <input id="txtBuscar" autocomplete="off" type="text" class="form-control text-uppercase" placeholder="Buscar producto..." />
+                        <input id="txtBuscar" autocomplete="off" type="text" class="form-control text-uppercase" placeholder="Escriba el nombre o sku del producto" />
+                        <style>
+                            #txtBuscar::placeholder {
+                                font-style: italic;
+                                text-transform: none !important;
+                            }
+
+                        </style>
                         <!-- Botón de buscar -->
                         <div class="input-group-append" style="cursor: pointer;">
                             <!-- Botón con texto y icono (se oculta el texto en pantallas pequeñas) -->
@@ -390,24 +389,10 @@
     </div>
 </div>
 <script>
-    function buscarProductoEnCotizacion() {
-        const existingCotizacion = getCookie('Cotizacion_A1'); // Obtenemos la cookie
+    $(document).ready(function () {
+        $("#txtBuscar").focus();
+    });
 
-        if (existingCotizacion) {
-            const cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto
-            console.log(cotizacion);
-            // Verificamos si hay productos en la cotización
-            if (cotizacion.productos && cotizacion.productos.length > 0) {
-                const primerListPrice = cotizacion.productos[0]["ListPrice"]; // Obtenemos el primer ListPrice
-                $('#txtMetodoPago').text(primerListPrice);
-                return primerListPrice;
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-    }
 
     $('#btnEfectivo').click(function () {
         $('#txtMetodoPago').text('1');
@@ -457,6 +442,11 @@
 
     function BuscarProducto() {
         var textBuscar = $("#txtBuscar").val();
+        if (textBuscar == "") {
+            alert("Escriba el nombre o codigo del producto")
+            return;
+        }
+
         $("#globalLoading").show();
         $.ajax({
             url: '@Url.Action("BuscarProductos", "CotizacionVentas")',
@@ -464,13 +454,18 @@
             success: function (data) {
                 $("#resultadosBusqueda").html(data);
                 $("#txtBuscar").focus();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud AJAX:", error);
+                $("#globalLoading").hide();
+            },
+            complete: function () {
                 $("#globalLoading").hide();
             }
         });
-        $("#globalLoading").hide();
     }
 
-    $(document).ready(function () {
+    $(document).ready(function () {        
         let qrReader;  // Variable para el lector QR
 
         // Verificamos si el dispositivo es móvil

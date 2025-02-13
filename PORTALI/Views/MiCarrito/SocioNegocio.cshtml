@@ -1,4 +1,8 @@
-﻿<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+﻿@{ 
+    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+    string _clienteCF = sessions.ClienteCf;
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <script src="~/js/UpdateCarrito.js"></script>
 <link href="~/Css/SocioNegocioCarrito.css" rel="stylesheet" />
 
@@ -7,9 +11,23 @@
     <p class="form-subtitle">Por favor, ingrese los datos del cliente para buscar o crear un nuevo registro.</p>
     <form id="search-form" action="#" method="get">
         <div class="container">
+            <input type="hidden" id="clienteCF" value="@_clienteCF" />
+
             <!-- Sección Izquierda: Datos del Cliente -->
             <div class="form-section">
                 <h4>Datos del Cliente</h4>
+                <div class="form-group mb-3 d-flex flex-column">
+                    <label class="mt-2">Consumidor Final:</label>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary" id="btnSi" onclick="seleccionarConsumidorFinal(true)">Sí</button>
+                            <button type="button" class="btn btn-outline-secondary" id="btnNo" onclick="seleccionarConsumidorFinal(false)">No</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:none">
+                    <a id="estadoSeleccion" class="d-block mt-2" style="display: none;"></a>
+                </div>
 
                 <div class="form-group">
                     <label for="">NIT o DPI:</label>
@@ -32,33 +50,28 @@
 
                 <div class="form-group">
                     <label for="cardName">Nombre del Socio:</label>
-                    <input type="text" id="cardName" name="cardName" readonly style="text-transform:uppercase" oninput="syncNombre()">
+                    <input type="text" id="cardName" name="cardName" readonly style="text-transform:uppercase" oninput="syncNombre()" autocomplete="off">
                 </div>
 
                 <div class="form-group">
                     <label for="address">Dirección:</label>
-                    <input type="text" id="address" name="address" readonly style="text-transform:uppercase">
+                    <input type="text" id="address" name="address" readonly style="text-transform:uppercase" autocomplete="off">
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="text" id="email" name="email" readonly style="text-transform:lowercase">
+                    <input type="text" id="email" name="email" readonly style="text-transform:lowercase" autocomplete="off">
                 </div>
 
                 <div class="form-group">
                     <label for="phone">Teléfono:</label>
-                    <input type="text" id="phone" name="phone" readonly style="text-transform:uppercase">
+                    <input type="text" id="phone" name="phone" readonly style="text-transform:uppercase" autocomplete="off">
                 </div>
             </div>
 
             <!-- Sección Derecha: Datos de Facturación -->
             <div class="form-section p-3 border rounded">
                 <h4 class="mb-3">Datos de Facturación</h4>
-                @*<div class="form-group mb-3">
-                    <label for="">NIT:</label>
-                    <input type="text" id="billingNit" name="billingNit" class="form-control">
-                </div>*@
-
                 <div class="form-group">
                     <label for="">NIT o DPI:</label>
                     <div style="display: flex; align-items: center;">
@@ -74,23 +87,12 @@
 
                 <div class="form-group mb-3">
                     <label for="billingName">Nombre:</label>
-                    <input type="text" id="billingName" name="billingName" class="form-control" style="text-transform:uppercase">
+                    <input type="text" id="billingName" name="billingName" class="form-control" style="text-transform:uppercase" autocomplete="off">
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="billingAddress">Dirección:</label>
-                    <input type="text" id="billingAddress" name="billingAddress" class="form-control" style="text-transform:uppercase">
-                </div>
-
-                <div class="form-group mb-3 d-flex flex-column">
-                    <label class="mt-2">Consumidor Final:</label>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-primary" id="btnSi" onclick="seleccionarConsumidorFinal(true)">Sí</button>
-                            <button type="button" class="btn btn-outline-secondary" id="btnNo" onclick="seleccionarConsumidorFinal(false)">No</button>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-secondary ms-2" onclick="copiarDatos()">Copiar Datos</button>
-                    </div>
+                    <input type="text" id="billingAddress" name="billingAddress" class="form-control" style="text-transform:uppercase" autocomplete="off">
                 </div>
                 <div style="display:none">
                     <a id="estadoSeleccion" class="d-block mt-2" style="display: none;"></a>
@@ -98,9 +100,31 @@
             </div>
             <script>
                 function seleccionarConsumidorFinal(esConsumidorFinal) {
+                    document.getElementById("cardCode").value = "";
+                    document.getElementById("cardName").value = "";
+                    document.getElementById("address").value = "";
+                    document.getElementById("email").value = "";
+                    document.getElementById("phone").value = "";
+                    document.getElementById("nit-dpi").value = "";
+                    invalidar(esConsumidorFinal);
+
+                    var clienteCF = "@HttpUtility.JavaScriptStringEncode(_clienteCF)";
+
+                    document.getElementById("cardCode").value = esConsumidorFinal ? clienteCF : "";
+                    document.getElementById("cardName").value = esConsumidorFinal ? "CONSUMIDOR FINAL" : "";
                     document.getElementById("billingNit").value = esConsumidorFinal ? "CF" : "";
-                    document.getElementById("billingName").value = esConsumidorFinal ? "CONSUMIDOR FINAL" : "";
+                    document.getElementById("billingName").value = esConsumidorFinal ? "" : "";
                     document.getElementById("billingAddress").value = esConsumidorFinal ? "CIUDAD" : "";
+                    document.getElementById("billingAddress").style.backgroundColor = "#ffffff";
+
+                    if (esConsumidorFinal) {
+                        document.getElementById("billingNit").readOnly = true;
+                        document.getElementById("billingAddress").readOnly = true;
+                    } else {
+                        document.getElementById("billingNit").readOnly = false;
+                        document.getElementById("billingAddress").readOnly = false;
+                        document.getElementById("billingAddress").style.backgroundColor = "#ffffff";
+                    }
 
                     // Resalta el botón seleccionado
                     document.getElementById("btnSi").classList.toggle("btn-primary", esConsumidorFinal);
@@ -110,9 +134,18 @@
 
                     // Muestra el <a> y actualiza su texto
                     let estadoSeleccion = document.getElementById("estadoSeleccion");
-                    estadoSeleccion.style.display = "block"; // Se asegura de que se muestre
+                    estadoSeleccion.style.display = "block";
                     estadoSeleccion.innerText = esConsumidorFinal ? "Y" : "N";
                 }
+
+                function invalidar(validacion) {
+                    document.getElementById("cardName").readOnly = validacion;
+                    document.getElementById("address").readOnly = validacion;
+                    document.getElementById("email").readOnly = validacion;
+                    document.getElementById("phone").readOnly = validacion;
+                    document.getElementById("nit-dpi").readOnly = validacion;
+                }
+
             </script>
         </div>
 
@@ -157,7 +190,6 @@
         });
     }
 
-
     function copiarDatos() {
         let nit = document.getElementById("nit-dpi").value;
         let nombre = document.getElementById("cardName").value;
@@ -165,8 +197,7 @@
 
         document.getElementById("billingNit").value = nit;
         document.getElementById("billingName").value = nombre;
-        document.getElementById("billingAddress").value = direccion;
-        
+        document.getElementById("billingAddress").value = direccion;        
     }
 
     function syncNitDpi() {
@@ -189,6 +220,13 @@
         const FacturaName = document.getElementById('billingName').value;
         const FacturaDireccion = document.getElementById('billingAddress').value;
         const EsCF = document.getElementById('estadoSeleccion').innerHTML;
+
+        if (FacturaName == "") {
+            $("#globalLoading").hide();
+            alert("Ingrese un nombre para la busquda en el sistema de facturacion");
+            document.getElementById('billingName').focus();
+            return;
+        }
 
         if (cardCode === "") {
             if (nitDpi === "") {
@@ -303,7 +341,8 @@
         $("#globalLoading").show();
         // Llama a la función para obtener los datos filtrados.
         const socioNegocio = getSocioNegocio();
-        console.log("Capturo mi socio de negocio",socioNegocio);
+        console.log("Capturo mi socio de negocio", socioNegocio);
+
         // Verifica si el objeto tiene datos válidos.
         if (socioNegocio) {
             $("#globalLoading").hide();
@@ -323,9 +362,30 @@
             document.getElementById('address').removeAttribute('readonly');
             document.getElementById('email').removeAttribute('readonly');
             document.getElementById('phone').removeAttribute('readonly');
+
+            if (socioNegocio.EsCF == "Y") {
+                document.getElementById("billingNit").readOnly = true;
+                document.getElementById("billingAddress").readOnly = true;
+                document.getElementById("billingAddress").style.backgroundColor = "#ffffff";
+                invalidar(true);
+
+                // **Mantener botón "Sí" seleccionado**
+                document.getElementById("btnSi").classList.add("btn-primary");
+                document.getElementById("btnSi").classList.remove("btn-outline-primary");
+                document.getElementById("btnNo").classList.add("btn-outline-secondary");
+                document.getElementById("btnNo").classList.remove("btn-secondary");
+            } else {
+                // **Mantener botón "No" seleccionado**
+                document.getElementById("btnSi").classList.remove("btn-primary");
+                document.getElementById("btnSi").classList.add("btn-outline-primary");
+                document.getElementById("btnNo").classList.remove("btn-outline-secondary");
+                document.getElementById("btnNo").classList.add("btn-secondary");
+            }
+
         } else {
             $("#globalLoading").hide();
             console.log("No se encontró la cookie o está vacía.");
         }
     });
+
 </script>

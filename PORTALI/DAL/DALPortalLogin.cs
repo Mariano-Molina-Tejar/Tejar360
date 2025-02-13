@@ -80,6 +80,8 @@ namespace DAL
                         sessionLoginEntity.CodeEmpleado = int.Parse(dt.Rows[0]["CodeEmpleado"].ToString());
                         sessionLoginEntity.UrlPic = DALPortalGenerales.ValidarExistenciaArchivo((path + dt.Rows[0]["Photo"].ToString()).ToString(), dt.Rows[0]["Photo"].ToString()).ToString();
                         sessionLoginEntity.Descto = double.Parse(dt.Rows[0]["Descto"].ToString());
+                        sessionLoginEntity.ClienteCf = dt.Rows[0]["ClienteCf"].ToString();
+                        sessionLoginEntity.Serie = int.Parse(dt.Rows[0]["Serie"].ToString());
 
                         return sessionLoginEntity;
                     }

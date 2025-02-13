@@ -25,6 +25,7 @@ namespace Entity
         public string FacturarNit { get; set; }
         public string FacturarNombre { get; set; }
         public string FacturarDireccion { get; set; }
+        public string EsCf { get; set; }
         public List<DetalleCarritoEntity> Detalle { get; set; }
     }
 
