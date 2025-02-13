@@ -33,7 +33,8 @@ namespace Entity
         public double DocTotal { get; set; }
         public string DireccionTejar { get; set; }
         public string Notas { get; set; }
-        public string IsCookie { get; set; }        
+        public string IsCookie { get; set; }
+        public string Comments { get; set; }
     }
 
     public class PortalCotizacionesDetalleEntity 

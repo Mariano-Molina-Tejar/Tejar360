@@ -20,44 +20,48 @@
             height: auto;
         }
         .containerMP{
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 5px;
+            display: flex;
+            flex-direction: row;
         }
         .containerMP p{
-            font-size: 23px;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .politicas p{
+            font-size: 14px;
+            text-align: justify;
         }
     </style>
 </head>
 <body>
     <div class="page">
         <div class="containerImgEn">
-            <img src="ENCABEZADO-PAG2-03.png">
+            <img src="https://eltejar.gt/wp-content/uploads/2025/02/ENCABEZADO-PAG2-03.png">
         </div>
         <div style="margin-bottom: 30px;">
-            <p style="font-size: 23px; margin-bottom: 0px;">Observaciones:</p>
-            <div style="border: 4px solid black; height: 200px;">
-            <p style="font-size: 26px; margin-left:12px">@Observaciones</p>
+            <p style="font-size: 15px; margin-bottom: 0px;">Observaciones:</p>
+            <div style="border: 2px solid black; height: 150px; border-radius: 4px;">
+            <p style="font-size: 14px; margin-left:12px">@Observaciones</p>
             </div>
         </div>
-        <div class="containerMP"">
-            <div style="background-color: #d9d9d9; text-align: center;">
-                <img src="imagen.png" style="height: 75%;"/>
+        <div class="containerMP">
+            <div style="background-color: #d9d9d9; text-align: center; flex: 1; align-content: center;">
+                <img src="https://eltejar.gt/wp-content/uploads/2025/02/imagen.png" style="height: 40%;"/>
                 <div>
                     <Div style="display: flex; vertical-align: middle; flex-direction: row; text-align: center;">
-                        <img src="imagen logo.png" style="width: 30%;">
+                        <img src="https://eltejar.gt/wp-content/uploads/2025/02/imagen-logo.png" style="width: 30%;">
                         <div style="text-align: start; align-content: center;">
-                            <h2 style="margin: 0px;">Asesor de ventas:</h2>
-                            <p style="font-size: 30px; margin: 0px;">@Asesor</p>
-                            <p style="font-size: 30px; margin: 0px;">Código: @Codigo</p>
+                            <h3 style="margin: 0px;">Asesor de ventas:</h3>
+                            <p style="font-size: 14px; margin: 0px;">@Asesor</p>
+                            <p style="font-size: 14px; margin: 0px;">Código: @Codigo</p>
                         </div>
                     </Div>
                 </div>
             </div>
-            <div style="display: flex; flex-direction: column; margin-left: 12px;">
-                <img src="MÉTODOS-DE-PAGO-PAG2-09.png" style="max-width: 90%; height: auto;"/>
+            <div style="display: flex; flex-direction: column; margin-left: 12px; flex: 2" class="politicas">
+                <img src="https://eltejar.gt/wp-content/uploads/2025/02/METODOS-DE-PAGO-PAG2-09.png" style="max-width: 100%; height: auto;"/>
 
-                <h1>Politica y condiciones:</h1>
+                <h4 style="margin: 0px;">Politica y condiciones:</h4>
                 <p>
                     Esta cotización es válida 15 días, te recordamos corroborar la existencia y precios de los productos pasado este tiempo.
                 </p>
@@ -84,9 +88,10 @@
         <div>
 
         </div>
-        <div style="margin-top: 25px;">
-            <img style="max-width: 100%; height: auto;" src="PARTE-INFERIOR-PAG2-05-05.png"/>
-        </div>
+       
+    </div>
+    <div style="margin: 65px 0px 0px 0px;">
+        <img style="max-width: 100%; height: auto;" src="https://eltejar.gt/wp-content/uploads/2025/02/PARTE-INFERIOR-PAG2-05-05-1-1.png"/>
     </div>
     
 </body>

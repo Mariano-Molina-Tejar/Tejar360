@@ -27,6 +27,7 @@
         .info {
             display: flex;
             flex-direction: column;
+            margin-right: 30px;
         }
         .info h1, .info h2 {
             margin: 0;
@@ -55,7 +56,7 @@
         .title {
             background: black;
             text-align: center;
-            padding: 15px;
+            padding: 15px;  
             font-size: 20px;
             font-weight: bold;
         }
@@ -98,28 +99,28 @@
 box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
         }
         .info_title{
-            font-size: 22px;
+            font-size: 16px;
             margin: 0px;
         }
         .info_detalle{
-            font-size: 20px;
+            font-size: 14px;
             margin: 0px;
         }
     </style>
 </head>
 <body>
     <div class="page">
-        <div style="display: grid; grid-template-columns: 1fr 2fr;align-items: center;gap: 20px;">
+        <div style="display: flex; flex-direction: row;align-items: center; justify-content: space-between;">
             <div class="info">
                 <p class="info_title"><strong>Cotización:</strong></p>
                 <p class="info_detalle">No. @DocNum</p>
-                <p class="info_detalle">@Address</p>
-                <p class="info_detalle">Fecha: @FechaFactura</p>
+                <p class="info_detalle">@Address</p>    
+                <p class="info_detalle">Fecha: @FechaFactura  @Hora</p>
                 <p class="info_detalle">Válido hasta: @FechaValida</p>
             </div>
-            <div style="max-width: 100%; height: auto;">
-                <img src="https://eltejar.gt/wp-content/uploads/2025/02/ENCABEZADO-PAG1-06.png" />
-            </div>
+            
+                <img src="https://eltejar.gt/wp-content/uploads/2025/02/ENCABEZADO-PAG1-06.png" width="75%"/>
+            
         </div>
         <table class="header">
             <tr>
@@ -168,7 +169,7 @@ box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
                     <td colspan="2" rowspan="2" style="background-color: white;" class="sombras">
                         <div style="display: inline;">
                             <strong>Términos y Condiciones: </strong>
-                        <ul>
+                        <ul style="font-size: 14px;">
                             <li>La información anterior no es una factura y solo es una estimación de los productos/servicios.</li>
                             <li>El pago debe facturarse antes de la entrega de los productos/servicios.</li>
                         </ul>
@@ -194,12 +195,6 @@ box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
                 </tr>
             </tbody>
         </table>
-
-        <div class="logo" style="margin-top:  12px;">
-            <img src="/Img/PARTE-INFERIOR-PAG-1-08.png"/>
-        </div>
-        
-       
     </div>
 </body>
 </html>
