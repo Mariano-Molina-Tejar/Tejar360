@@ -114,7 +114,7 @@ box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
             <div class="info">
                 <p class="info_title"><strong>Cotización:</strong></p>
                 <p class="info_detalle">No. @DocNum</p>
-                <p class="info_detalle">@Address</p>    
+                <p class="info_detalle">@DireccionTejar</p>    
                 <p class="info_detalle">Fecha: @FechaFactura  @Hora</p>
                 <p class="info_detalle">Válido hasta: @FechaValida</p>
             </div>
@@ -127,7 +127,7 @@ box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
                 <td>
                     <strong>@CardName</strong><br>
                     Correo: @Email_Cliente<br>
-                    Teléfono: @Teléfono_Cliente<br>
+                    Teléfono: @Telefono_Cliente<br>
                     Domicilio: @Direccion_Cliente
                 </td>
                 <td style=" text-align: right;align-items: end; justify-content: end;"><strong>Nit: @Nit</strong></td>
@@ -145,26 +145,8 @@ box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
                 </tr>
             </thead>
             <tbody>
-
                 <!-- INICIO LISTADO DE ITEMS -->
-                @Detalle
-                <!--<tr>
-                    <td class= "containerImg">
-                        <img src="@URL_Imagen" title="URL_Imagen" class="ItemImg" />   
-                            <h5 style="display: inline;">  @ItemName
-                            </h5>  
-                    </td>
-                    <td>@Quantity</td>
-                    <td>@Pice</td>
-                    <td>@LineTotal</td>
-                </tr>-->
-               
-
-                <!-- FIN LISTADO DE ITEMS -->
-
-
-                <!-- TERMINOS Y CONDICIONES -->
-                 <!-- TOTALES -->
+                @Detalle                
                 <tr style="background-color: #f9b114;">
                     <td colspan="2" rowspan="2" style="background-color: white;" class="sombras">
                         <div style="display: inline;">
@@ -180,13 +162,13 @@ box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
                 </tr>
                 <tr style="background-color: #f9b114;">
                     
-                    <td><strong>SUBTORAL</strong></td>
+                    <td><strong>SUBTOTAL</strong></td>
                     <td>@SubTotal</td>
                 </tr>
                 <tr class="border-none">
                     <td colspan="2"></td>
                     <td><strong>IVA</strong><strong></strong></td>
-                    <td>@Iva</td>
+                    <td>@Impuestos</td>
                 </tr>
                 <tr style="border: 0px;" class="border-none">
                     <td colspan="2"></td>

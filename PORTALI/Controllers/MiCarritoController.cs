@@ -26,12 +26,19 @@ namespace PORTALI.Controllers
         [System.Web.Http.HttpPost]
         public ActionResult GuardarCarrito([FromBody] CarritoComprasEntity carrito,int PriceList, int Btn)
         {
+            if (Session["PropertiesEntity"] == null)
+            {
+                return View();
+            }
+
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+
             if (carrito != null && carrito.Detalle.Any())
             {   
                 if(Btn == 1)
                 {
                     string data = string.Join(",", carrito.Detalle.Select(item => item.ItemCode));
-                    List<ItemsCotizacionEntity> _lista = DAL.DALPortalCarritoCompras.CambioPrecioCotizacion(PriceList, data, "FTR-TZ1");
+                    List<ItemsCotizacionEntity> _lista = DAL.DALPortalCarritoCompras.CambioPrecioCotizacion(PriceList, data, sessions.WhsCode);
 
                     foreach (var detalle in carrito.Detalle)
                     {

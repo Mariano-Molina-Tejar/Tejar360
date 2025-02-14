@@ -130,7 +130,7 @@ namespace DAL
                     iDAResult.Fill(dt);
 
                     if (dt.Rows.Count > 0)
-                    {                        
+                    {
                         PortalListadoCotizacionesEntity Enc = new PortalListadoCotizacionesEntity();
                         Enc.CardCode = dt.Rows[0]["CardCode"].ToString();
                         Enc.CardName = dt.Rows[0]["CardName"].ToString();
@@ -138,7 +138,7 @@ namespace DAL
                         Enc.DocEntry = int.Parse(dt.Rows[0]["DocEntry"].ToString());
                         Enc.FacNombre = dt.Rows[0]["FacNombre"].ToString();
                         Enc.Nit = dt.Rows[0]["Nit"].ToString();
-                        Enc.Address = dt.Rows[0]["Address"].ToString();
+                        Enc.Address = dt.Rows[0]["Direccion"].ToString();
                         Enc.SlpName = dt.Rows[0]["SlpName"].ToString();
                         Enc.DocDate = DateTime.Parse(dt.Rows[0]["DocDate"].ToString());
                         Enc.DocDueDate = DateTime.Parse(dt.Rows[0]["DocDueDate"].ToString());
@@ -148,6 +148,10 @@ namespace DAL
                         Enc.DocTotal = double.Parse(dt.Rows[0]["DocTotal"].ToString());
                         Enc.DireccionTejar = dt.Rows[0]["DireccionTejar"].ToString();
                         Enc.Notas = dt.Rows[0]["Notas"].ToString();
+                        Enc.CorreoCliente = dt.Rows[0]["Correo"].ToString();
+                        Enc.TelefonoCliente = dt.Rows[0]["Phone1"].ToString();
+                        Enc.Hora = dt.Rows[0]["Hora"].ToString();
+
 
                         var listado = (from row in dt.AsEnumerable()
                                        select new PortalCotizacionesDetalleEntity()
@@ -156,7 +160,8 @@ namespace DAL
                                            Dscription = row["Dscription"].ToString(),
                                            Quantity = double.Parse(row["Quantity"].ToString()),
                                            Price = double.Parse(row["Price"].ToString()),
-                                           LineTotal = double.Parse(row["LineTotal"].ToString())
+                                           LineTotal = double.Parse(row["LineTotal"].ToString()),                                           
+                                           ImagenUrl = row["Imagen"].ToString()
                                        }).ToList();
 
                         carritoComprasPDFEntity.Encabezado = Enc;

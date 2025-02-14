@@ -75,7 +75,7 @@ namespace PORTALI.Controllers
         {
             CarritoComprasPDFEntity DataPdfCarrito = DALPortalCarritoCompras.getDataCotizacionToPDF(docEntry);
 
-            string comentario = DataPdfCarrito.Encabezado.Comments?.ToString() ?? "";
+            string comentario = DataPdfCarrito.Encabezado.Notas?.ToString() ?? "";
             string asesor = GetAsesor(DataPdfCarrito.Encabezado.SlpName.ToString());
 
             //var htmlFilePath = Server.MapPath("~/Html/CotizacionVenta.html");
@@ -88,6 +88,7 @@ namespace PORTALI.Controllers
             htmlContent = htmlContent.Replace("@DocNum", DataPdfCarrito.Encabezado.DocNum.ToString());
             htmlContent = htmlContent.Replace("@Nit", DataPdfCarrito.Encabezado.Nit.ToString());
             htmlContent = htmlContent.Replace("@FechaFactura", DataPdfCarrito.Encabezado.DocDate.ToString("dd/MM/yyyy"));
+            htmlContent = htmlContent.Replace("@Hora", DataPdfCarrito.Encabezado.Hora);
             htmlContent = htmlContent.Replace("@FechaValida", DataPdfCarrito.Encabezado.DocDueDate.ToString("dd/MM/yyyy"));
             htmlContent = htmlContent.Replace("@CardCode", DataPdfCarrito.Encabezado.CardCode.ToUpper());
             htmlContent = htmlContent.Replace("@CardName", DataPdfCarrito.Encabezado.FacNombre.ToUpper());
@@ -98,22 +99,28 @@ namespace PORTALI.Controllers
             htmlContent = htmlContent.Replace("@Impuestos", DataPdfCarrito.Encabezado.Impuesto.ToString("F2"));
             htmlContent = htmlContent.Replace("@Descuento", DataPdfCarrito.Encabezado.Descuento.ToString("F2"));
             htmlContent = htmlContent.Replace("@Total", DataPdfCarrito.Encabezado.DocTotal.ToString("F2"));
-
-
+            htmlContent = htmlContent.Replace("@Email_Cliente", DataPdfCarrito.Encabezado.CorreoCliente);
+            htmlContent = htmlContent.Replace("@Telefono_Cliente", DataPdfCarrito.Encabezado.TelefonoCliente);
+            htmlContent = htmlContent.Replace("@Direccion_Cliente", DataPdfCarrito.Encabezado.DomicilioCliente);
             htmlContent2 = htmlContent2.Replace("@Observaciones", comentario);
             htmlContent2 = htmlContent2.Replace("@Asesor", asesor);
             htmlContent2 = htmlContent2.Replace("@Codigo", DataPdfCarrito.Encabezado.SlpCode.ToString());
+            htmlContent2 = htmlContent2.Replace("@Iva", DataPdfCarrito.Encabezado.Impuesto.ToString());
+
 
 
             string tabla = "";
             for (int i = 0; i < DataPdfCarrito.Detalle.Count; i++)
             {
                 tabla += @"<tr>" +
-                        "<td style='text-align:left'>" + DataPdfCarrito.Detalle[i].Dscription.ToString().ToUpper() + "</td>" +
-                        "<td style='text-align:right'>" + DataPdfCarrito.Detalle[i].Quantity.ToString().ToUpper() + "</td>" +
-                        "<td style='text-align:right'>" + DataPdfCarrito.Detalle[i].Price.ToString().ToUpper() + "</td>" +
-                        "<td style='text-align:right'>" + DataPdfCarrito.Detalle[i].LineTotal.ToString().ToUpper() + "</td></tr>";
+                    "<td class= 'containerImg'><img src='" + DataPdfCarrito.Detalle[i].ImagenUrl.ToString() + "' title='Imagen' class='ItemImg' />" +
+                    "<h5 style='display: inline; margin-left:5px;'>" + DataPdfCarrito.Detalle[i].Dscription.ToString().ToUpper() + " </h5> </td>" +
+                    "<td style='text-align:right'>" + DataPdfCarrito.Detalle[i].Quantity.ToString("N0").ToUpper() + "</td>" + // Formatea la cantidad sin decimales
+                    "<td style='text-align:right'>" + DataPdfCarrito.Detalle[i].Price.ToString("F2") + "</td>" + // Formatea el precio con dos decimales
+                    "<td style='text-align:right'>" + DataPdfCarrito.Detalle[i].LineTotal.ToString("F2") + "</td></tr>"; // Formatea el total con dos decimales
             }
+
+            //"<td style='text-align:left'> " + DataPdfCarrito.Detalle[i].Dscription.ToString().ToUpper() + "</td>" +
             htmlContent = htmlContent.Replace("@Detalle", tabla);
 
             var htmlContentTotal = htmlContent + "<div style='page-break-before: always;'></div>" + htmlContent2;

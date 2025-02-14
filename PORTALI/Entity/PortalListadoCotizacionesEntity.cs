@@ -25,6 +25,9 @@ namespace Entity
         public string Address { get; set; }
         public DateTime DocDate { get; set; }
         public DateTime DocDueDate { get; set; }
+        public string CorreoCliente { get; set; }
+        public string TelefonoCliente { get; set; }
+        public string DomicilioCliente { get; set; }
         public int SlpCode { get; set; }
         public string SlpName { get; set; }
         public double SubTotal { get; set; }
@@ -35,14 +38,17 @@ namespace Entity
         public string Notas { get; set; }
         public string IsCookie { get; set; }
         public string Comments { get; set; }
+        public string Hora { get; set; }
     }
 
-    public class PortalCotizacionesDetalleEntity 
+    public class PortalCotizacionesDetalleEntity
     {
+        public string ImagenUrl { get; set; }
         public string ItemCode { get; set; }
         public string Dscription { get; set; }
         public double Quantity { get; set; }
         public double Price { get; set; }
+        public double Iva { get; set; }
         public double Descuento { get; set; }
         public double LineTotal { get; set; }
     }
