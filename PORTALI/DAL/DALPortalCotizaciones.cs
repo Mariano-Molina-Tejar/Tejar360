@@ -11,6 +11,70 @@ namespace DAL
 {
     public class DALPortalCotizaciones
     {
+        public static List<ListaAsesoresEntity> getAllUsers(string WhsCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_listado_asesores_por_tienda", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@WhsCode", WhsCode);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    var bono = (from row in dt.AsEnumerable()
+                                select new ListaAsesoresEntity()
+                                {
+                                    SlpCode = int.Parse(row["SlpCode"].ToString()),
+                                    SlpName = row["SlpName"].ToString()
+                                }).ToList();
+                    return bono;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
+        public static List<PortalTiendasEntity> getTiendas()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_listado_tiendas_sac", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;                
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    var bono = (from row in dt.AsEnumerable()
+                                select new PortalTiendasEntity()
+                                {
+                                    WhsCode = row["WhsCode"].ToString(),
+                                    WhsName = row["WhsName"].ToString()
+                                }).ToList();
+                    return bono;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
+
         public static SimpleEntity ValidacionesCotizacionesCompras(int Depto, int DocEntry, int IdUser, int DocEntrySol)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();

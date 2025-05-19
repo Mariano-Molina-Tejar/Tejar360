@@ -1,8 +1,12 @@
 ﻿@model List<Entity.PortalListadoCotizacionesEntity>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
 <script src="~/js/UpdateCarrito.js"></script>
-<div class="container mt-3">
+<div class="container-fluid mt-3">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Cotizaciones</h5>
@@ -10,97 +14,397 @@
         <div class="card-body">
             <!-- Aseguramos que la tabla ocupe todo el ancho disponible -->
             <div class="table-responsive">
-                <table class="table table-striped table-hover w-100">
-                    <thead class="table-dark">
-                        <tr>
-                            <th style="display:none" class="text-center">DocEntry</th>
-                            <th class="text-center"># SAP</th>
-                            <th style="display:none" class="text-center">CardCode</th>
-                            <th style="display:none" class="text-center">CardName</th>
-                            <th class="text-center">Nit/DPI</th>
-                            <th class="w-25 text-center">Nombre del cliente</th>
-                            <th class="text-center">Fecha</th>
-                            <th style="display:none" class="text-center">SlpCode</th>
-                            <th class="text-center">Total</th>
-                            <th class="text-center"># Factura</th>
-                            <th class="text-center">Estatus</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            var rowClass = item.IsCookie == "Y" ? "cookie-highlight" : "";
-                            <tr class="@rowClass">
-                                <td style="display:none">@item.DocEntry</td>
-                                <td style="text-align:center">@item.DocNum</td>
-                                <td style="display:none">@item.CardCode</td>
-                                <td style="display:none">@item.CardName</td>
-                                <td>@item.Nit</td>
-                                <td class="text-truncate" title="@item.FacNombre">@item.FacNombre</td>
-                                <td>@item.DocDate.ToShortDateString()</td>
-                                <td style="display:none">@item.SlpCode</td>
-                                <td>@item.DocTotal.ToString("C")</td>
-                                <td></td>
-                                <td>
-                                    @if (item.IsCookie != "Y")
-                                    {
-                                        if (item.EstadoCoti == "BR")
-                                        {
-                                            <i class="fas fa-hourglass-half text-warning" title="Pendiente de autorizar"> Pendiente</i>
-                                        }
-                                        else
-                                        {
-                                            <i class="fas fa-check-circle text-success" title="Cotizacion"> Cotización</i>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <i class="fas fa-edit text-warning" title="Borrador"> Borrador</i>
-                                    }
-                                </td>
-                                <td>
-                                    @if (item.EstadoCoti == "CO")
-                                    {
-                                        <div class="d-flex justify-content-end">
-                                            <button class="btn btn-sm btn-danger mr-2 @(item.IsCookie == "Y" ? "d-none" : "")"
-                                                    onclick="GenerarPdf(this);" data-docnumoc="@item.DocEntry" title="Orden de compra @item.DocEntry" id="generatePdf_@item.DocEntry">
-                                                <i class="fas fa-file-pdf"></i> Cotización
-                                            </button>
-                                            <button class="btn btn-sm btn-warning text-dark @(item.IsCookie == "N" ? "d-none" : "")"
-                                                    onclick="editDocument(@item.DocEntry)">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </button>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-sm btn-warning text-dark @(item.IsCookie == "N" ? "d-none" : "")"
-                                                onclick="editDocument(@item.DocEntry)">
-                                            <i class="fas fa-edit"></i> Editar
-                                        </button>
-                                   }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <style>
-                    .cookie-highlight {
-                        color: #ff5722 !important; /* Color de letra diferente */
-                        font-weight: bold; /* Negrita */
-                        background-color: #fff3e0 !important; /* Fondo diferente */
-                    }
 
+                <!-- Botón para expandir/contraer el panel -->
+                <button class="btn btn-primary w-100 mb-3" id="btnToggleFiltros">
+                    <i class="fas fa-filter"></i> Mostrar Filtros
+                </button>
+                <!-- Panel de filtros sin borde -->
+                <div class="shadow-sm d-none" id="filtrosPanel">
+                    <div class="card p-3 animate__animated">
+                        <div class="row">
+                            <!-- Fecha de Inicio -->
+                            <div class="col-md-3">
+                                <label for="fechaInicio"><b>Fecha Inicio</b></label>
+                                <input type="date" id="fechaInicio" class="form-control">
+                            </div>
+
+                            <!-- Fecha de Fin -->
+                            <div class="col-md-3">
+                                <label for="fechaFin"><b>Fecha Fin</b></label>
+                                <input type="date" id="fechaFin" class="form-control">
+                            </div>
+
+                            <!-- Selección de Asesor -->
+                            <div class="col-md-3">
+                                <label for="asesor"><b>Asesor</b></label>
+                                <select id="asesor" class="form-control">
+                                    <option value="-1">-- Seleccione --</option>
+                                </select>
+                            </div>
+
+                            <!-- Selección de Estado -->
+                            <div class="col-md-3">
+                                <label for="crmEstado"><b>Estado</b></label>
+                                <select id="crmEstado" class="form-control">
+                                    <option value="-1">-- Seleccione --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Botón Aplicar Filtros -->
+                        <div class="row mt-3">
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-success" id="btnBuscarCotizaciones">
+                                    <i class="fas fa-search"></i> Aplicar Filtros
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Script de JavaScript -->
+                <script>
+                    document.getElementById("btnToggleFiltros").addEventListener("click", function () {
+                        let panel = document.getElementById("filtrosPanel");
+
+                        if (panel.classList.contains("d-none")) {
+                            panel.classList.remove("d-none", "animate__fadeOut");
+                            panel.classList.add("animate__fadeIn");
+                            this.innerHTML = '<i class="fas fa-filter"></i> Ocultar Filtros';
+                        } else {
+                            panel.classList.remove("animate__fadeIn");
+                            panel.classList.add("animate__fadeOut");
+
+                            // Esperar a que termine la animación antes de ocultarlo
+                            panel.addEventListener("animationend", function hidePanel() {
+                                panel.classList.add("d-none");
+                                panel.removeEventListener("animationend", hidePanel);
+                            });
+
+                            this.innerHTML = '<i class="fas fa-filter"></i> Mostrar Filtros';
+                        }
+                    });
+
+                    document.getElementById("btnBuscarCotizaciones").addEventListener("click", function () {
+                        ConsultarDatos();
+                    });
+
+                </script>
+
+                <!-- Estilos adicionales -->
+                <style>
+                    #btnToggleFiltros {
+                        font-size: 1.1rem;
+                        font-weight: bold;
+                    }
                 </style>
+
+                <div class="card shadow-sm">
+                    <div class="table-container">
+                        <table id="tablaCotizaciones" class="table table-striped table-hover w-100">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="display:none" class="text-center">DocEntry</th>
+                                    <th class="text-center"># SAP</th>
+                                    <th style="display:none" class="text-center">CardCode</th>
+                                    <th style="display:none" class="text-center">CardName</th>
+                                    <th class="text-center">Nit/DPI</th>
+                                    <th class="w-25 text-center">Nombre del cliente</th>
+                                    <th class="text-center">Fecha</th>
+                                    <th style="display:none" class="text-center">SlpCode</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center"># Factura</th>
+                                    <th class="text-center">Estatus</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <style>
+                            .cookie-highlight {
+                                color: #ff5722 !important; /* Color de letra diferente */
+                                font-weight: bold; /* Negrita */
+                                background-color: #fff3e0 !important; /* Fondo diferente */
+                            }
+
+                            .table-container {
+                                max-height: 500px; /* Altura máxima antes de activar el scroll vertical */
+                                overflow-y: auto; /* Scroll vertical */
+                                overflow-x: auto; /* Scroll horizontal si las columnas no encajan */
+                                width: 100%;
+                            }
+
+                            #tablaCotizaciones {
+                                width: 100%;
+                                border-collapse: collapse;
+                                white-space: nowrap; /* Evita que el texto se rompa y mantiene el scroll horizontal */
+                            }
+
+                                #tablaCotizaciones thead {
+                                    position: sticky;
+                                    top: 0;
+                                    background-color: #343a40; /* Color de fondo del encabezado */
+                                    color: white;
+                                    z-index: 10;
+                                }
+                        </style>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<div class="container mt-4">
+    <div class="row text-white d-flex justify-content-center">
+        <div class="col-md-3">
+            <div class="card bg-primary mb-3 text-center text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Cotizaciones</h5>
+                    <p class="card-text display-4" id="txtCantCoti">0</p>
+                    <hr class="bg-light">
+                    <p class="card-text text-gray font-weight-bold" id="txtMotoCoti">Monto: Q 0.00</p>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-md-3">
+            <div class="card bg-success mb-3 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Facturas</h5>
+                    <p class="card-text display-4" id="txtCantFac">0</p>
+                    <hr class="bg-light">
+                    <p class="card-text text-gray font-weight-bold" id="txtMontoFac">Monto: Q 0.00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-3">
+            <canvas id="ventasChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
 <script>
-    function VerCotizacion() {
+    var ventasChart; // Declarar variable global para que pueda ser reutilizada
+    function actualizarGrafico(labels, data) {
+        var ctx = document.getElementById('ventasChart').getContext('2d');
 
+        // Si ya existe el gráfico, destrúyelo antes de crear uno nuevo
+        if (ventasChart) {
+            ventasChart.destroy();
+        }
+
+        // Crear el gráfico de dona 3D
+        ventasChart = new Chart(ctx, {
+            type: 'doughnut', // Tipo dona
+            data: {
+                labels: labels, // Las etiquetas del gráfico
+                datasets: [{
+                    data: data, // Los valores de los segmentos
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                    hoverOffset: 4
+                }]
+            },
+            
+        });
+    }
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Ventas/getAllTipsCRM", // Ajusta la URL según tu backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $select = $("#crmEstado");
+                $select.empty(); // Limpiar el select antes de agregar opciones
+                $select.append('<option value="-1">-- Seleccione --</option>');
+                $select.append('<option value="-2">Mostrar todos</option>');
+
+                // Recorrer los datos y agregarlos al select
+                $.each(data, function (index, item) {
+                    $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                });
+            },
+            error: function () {
+                console.error("Error al cargar los estados.");
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Generales/DatosServer",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                function convertirFechaAInput(fechaASP) {
+                    let timestamp = parseInt(fechaASP.replace("/Date(", "").replace(")/", ""));
+                    let fecha = new Date(timestamp);
+
+                    let anio = fecha.getUTCFullYear(); // Asegura el año correcto
+                    let mes = (fecha.getUTCMonth() + 1).toString().padStart(2, "0"); // Asegura 2 dígitos en el mes
+                    let dia = fecha.getUTCDate().toString().padStart(2, "0"); // Asegura 2 dígitos en el día
+
+                    return `${anio}-${mes}-${dia}`; // Formato YYYY-MM-DD
+                }
+
+                $("#fechaInicio").val(convertirFechaAInput(data.FechaInicioMes));
+                $("#fechaFin").val(convertirFechaAInput(data.FechaFinalMes));
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al obtener los datos:", error);
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Ventas/getAllAsesores", // Ajusta la URL según tu ruta en el backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $asesor = $("#asesor");
+                $asesor.empty(); // Limpiar opciones existentes
+
+                if (data.length === 1) {
+                    // Si solo hay un asesor, lo selecciona automáticamente
+                    $asesor.append(`<option value="${data[0].SlpCode}" selected>${data[0].SlpName}</option>`);
+                    ConsultarDatos(data[0].SlpCode);
+                } else {
+                    // Agregar opción por defecto
+                    $asesor.append('<option value="-1">-- Seleccione --</option>');
+                    $asesor.append('<option value="-2">Mostrar todos</option>');
+                    // Recorrer los datos y agregarlos al select
+                    $.each(data, function (index, item) {
+                        $asesor.append(`<option value="${item.SlpCode}">${item.SlpName}</option>`);
+                    });
+                }
+            },
+            error: function () {
+                console.error("Error al cargar los asesores.");
+            }
+        });
+    });
+
+    function ConsultarDatos() {
+        let slpCode = $("#asesor").val();
+        let FechaI = $("#fechaInicio").val();
+        let FechaF = $("#fechaFin").val();
+        let estadoCrm = $("#crmEstado").val();
+
+        $("#globalLoading").show();
+        $.ajax({
+            url: "/Ventas/BuscarCotizaciones",
+            type: "GET",
+            data: { SlpCode: slpCode, FechaI: FechaI, FechaF: FechaF, TipoCrm: estadoCrm },
+            dataType: "json",
+            success: function (data) {
+                let tbody = $("#tablaCotizaciones tbody");
+                tbody.empty();
+
+                if (data.length === 0) {
+                    tbody.append("<tr><td colspan='10' class='text-center'>No se encontraron cotizaciones</td></tr>");
+                    $("#globalLoading").hide();
+                    return;
+                }
+
+                console.log(data);
+                if (data.length > 0 && data[0].DatosGraficosDona) {
+                    // Obtén solo el primer conjunto de datos de gráficos
+                    let datosGrafico = data[0].DatosGraficosDona;
+
+                    console.log(datosGrafico); // Verifica los datos que obtienes
+
+                    // Si necesitas procesar estos datos para el gráfico
+                    let etiquetas = [];
+                    let valores = [];
+
+                    // Extrae las etiquetas y valores del primer conjunto de datos
+                    datosGrafico.forEach(grafico => {
+                        etiquetas.push(grafico.DescEstadoCrm);
+                        valores.push(grafico.CountEstados);
+                    });
+
+                    // Actualiza el gráfico con los datos
+                    actualizarGrafico(etiquetas, valores);
+                } else {
+                    console.log("No se encontraron datos gráficos");
+                }
+                /***************************************************************/
+                data.forEach(item => {
+                    document.getElementById("txtCantCoti").innerHTML = item.CountCotizaciones;
+                    document.getElementById("txtMotoCoti").innerHTML = "Q " + item.DocTotalCoti.toLocaleString("es-GT", { minimumFractionDigits: 2 });
+                    document.getElementById("txtCantFac").innerHTML = item.CountFacturas;
+                    document.getElementById("txtMontoFac").innerHTML = "Q " + item.DocTotalFact.toLocaleString("es-GT", { minimumFractionDigits: 2 });
+
+                    let rowClass = item.IsCookie === "Y" ? "cookie-highlight" : "";
+                    let estadoIcono = item.IsCookie !== "Y" ?
+                        (item.EstadoCoti === "BR" ? `<i class="fas fa-hourglass-half text-warning"> Pendiente</i>` :
+                            `<i class="fas fa-check-circle text-success"> Cotización</i>`) :
+                        `<i class="fas fa-edit text-warning"> Borrador</i>`;
+
+                    let acciones = item.EstadoCoti === "CO" ? `
+                                            <div class="d-flex justify-content-between w-100">
+                                                <button class="btn btn-sm btn-warning text-dark ${item.IsCookie === "N" ? "d-none" : ""}" onclick="editDocument(${item.DocEntry})">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </button>
+                                                <div class="d-flex">
+                                                    <button class="btn btn-sm btn-danger mr-2 ${item.IsCookie === "Y" ? "d-none" : ""}"
+                                                            onclick="GenerarPdf(this);" data-docnumoc="${item.DocEntry}">
+                                                        <i class="fas fa-file-pdf"></i> Cotización
+                                                    </button>
+                                                    <button class="btn btn-sm btn-info mr-2 ${item.IsCookie === "Y" ? "d-none" : ""}"
+                                                            onclick="VerCotizacion(${item.DocEntry});" data-docnumoc="${item.DocEntry}">
+                                                        <i class="fas fa-eye"></i> Ver
+                                                    </button>
+                                                </div>
+                                            </div>` :
+                        `<div class="d-flex justify-content-between w-100">
+                                                <div class="d-flex">
+                                                    <button class="btn btn-sm btn-warning text-dark ${item.IsCookie === "N" ? "d-none" : ""}"
+                                                            onclick="editDocument(${item.DocEntry})">
+                                                        <i class="fas fa-edit"></i> Editar
+                                                    </button>
+                                                </div>
+                                            </div>`;
+
+                    let newRow = `
+                                                            <tr class="${rowClass}">
+                                                                <td style="display:none">${item.DocEntry}</td>
+                                                                <td style="text-align:center">${item.DocNum}</td>
+                                                                <td style="display:none">${item.CardCode}</td>
+                                                                <td style="display:none">${item.CardName}</td>
+                                                                <td>${item.Nit}</td>
+                                                                <td class="text-truncate" title="${item.FacNombre}">${item.FacNombre}</td>
+                                                                <td style='text-align:center'>${new Date(parseInt(item.DocDate.match(/\d+/)[0])).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
+                                                                <td style="display:none">${item.SlpCode}</td>
+                                                                <td style="text-align:end">Q${(Number(item.DocTotal) || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                                <td style='text-align:center'>${item.DocNumFac || ''}</td>
+                                                                <td style='text-align:center'>${item.DscrpTipoCrm}</td>
+                                                                <td class="text-aling:center;d-flex justify-content-center" style="width:170px">${acciones}</td>
+                                                            </tr>
+                                                        `;
+
+                    tbody.append(newRow);
+                });
+
+                $("#globalLoading").hide();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al obtener las cotizaciones:", error);
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    function VerCotizacion(DocEntry) {
+        window.location.href = `/Ventas/Detalle?DocEntry=${DocEntry}`;
     }
 
     function generatePDF(docEntry) {
@@ -109,7 +413,7 @@
     }
 
     function shareDocument(docEntry) {
-        
+
         /*ActualizaBorrador(nombre);*/
     }
 
@@ -126,9 +430,8 @@
             ActualizaBorrador(nombre);
             window.location.href = '/MiCarrito/ListadoCarrito';
             $("#globalLoading").hide();
-        }        
+        }
     }
-
 
     function GenerarPdf(elemento) {
         $("#globalLoading").show();

@@ -21,6 +21,7 @@ namespace Entity
         public string WhsCode { get; set; }
         public string WhsName { get; set; }
         public double Stock { get; set; }
+        public double Comprometido { get; set; }
         public double Price { get; set; }
         public string Direccion { get; set; }
     }

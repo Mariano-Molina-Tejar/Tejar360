@@ -75,7 +75,7 @@
                         </td>
                         <td id="productDescriptionContainer" class="desc">
                             <h3>
-                                <a href="#" class="text-navy" onclick="cargarDescuentos('@Html.Raw(item.ItemCode)', '@Html.Raw(item.Identity)', '@Html.Raw(item.EsPromo)','@Html.Raw(item.Price)','@Html.Raw(item.Dscription)')">
+                                <a href="#" class="text-navy" onclick="cargarDescuentos('@Html.Raw(item.ItemCode)', '@Html.Raw(item.Identity)', '@Html.Raw(item.EsPromo)','@Html.Raw(item.Price)','@Html.Raw(item.Dscto)','@Html.Raw(item.Dscription)')">
                                     @item.Dscription
                                 </a>
                             </h3>
@@ -87,11 +87,19 @@
                             </p>
                             <p id="iDscto" class="small" style="margin: 0; line-height: 1.5;">
                                 <strong>Descuento: Q.@Convert.ToSingle(item.Dscto).ToString("F2")</strong>
+                                @if (item.DescuentoQtz > 0)
+                                {
+                                    <strong id="DescuentoManual" style="color:red">(Q.@Convert.ToSingle(item.DescuentoQtz).ToString("F2"))</strong>
+                                }
                             </p>
                             <p id="discountedPrice" class="small" style="margin: 0; line-height: 1.5;">
                                 <strong>
                                     Precio con Descto: Q.@(Convert.ToSingle(item.Dscto) > 0 ? (Convert.ToSingle(item.Price) - Convert.ToSingle(item.Dscto)).ToString("F2") : "0.00")
                                 </strong>
+                                @if (item.DescuentoQtz > 0)
+                                {
+                                    <strong id="LtotalDespuesDscto" style="color:red">(Q.@Convert.ToSingle(item.Price - (item.DescuentoQtz + item.Dscto)).ToString("F2"))</strong>
+                                }
                             </p>
                             @if (item.DescuentoLpr > 0)
                             {
@@ -130,7 +138,7 @@
                                     <strong>Q.@Convert.ToSingle(item.LineTotal).ToString("N2")</strong>
                                 </h4>
                                 <h4 id="TDescuento" style="font-size: 13px; margin: 2px 0 0; color:red;">
-                                    <strong>(Q.@Convert.ToSingle(item.DescuentoU).ToString("N2"))</strong>
+                                    <strong>(Q.@Convert.ToSingle((item.Dscto + item.DescuentoQtz) * item.Quantity).ToString("N2"))</strong>
                                 </h4>
                             </div>
                         </td>
@@ -153,9 +161,16 @@
                 <div class="mb-3">
                     <label for="selected-price" class="form-label fw-bold text-primary">Nombre del producto</label>
                     <div class="input-group">
-                        <input type="text" id="txtNombreProducto" class="form-control" readonly value="0.00" aria-describedby="basic-addon1" style="background-color:white; font-size: 1.2rem; color: black; text-align: left;">
+                        <input type="text" id="txtNombreProducto" class="form-control" readonly value="" aria-describedby="basic-addon1" style="background-color:white; font-size: 1.2rem; color: black; text-align: left;">
                     </div>
                     <a id="txtLlave" style="display:none"></a>
+                </div>
+
+                <div class="mb-3">
+                    <label for="selected-price" class="form-label fw-bold text-primary">Forma de pago</label>
+                    <div class="input-group">
+                        <input type="text" id="txtFormaPago" class="form-control" readonly value="" aria-describedby="basic-addon1" style="background-color:white; font-size: 1.2rem; color: black; text-align: left;">
+                    </div>                    
                 </div>
 
                 <div class="mb-3">
@@ -198,7 +213,7 @@
                     <tbody id="discountTableBody">
                     </tbody>
                 </table>
-                <a id="txtLP" style="display:none"></a>
+                <a id="txtLP"></a>
                 <div class="mb-3">
                     <label for="selected-price" class="form-label fw-bold text-primary">Precio unitario con descuento</label>
                     <div class="input-group">
@@ -222,7 +237,7 @@
 </div>
 
 <script>
-    function applyDiscount() {        
+    function applyDiscount() {
         $("#globalLoading").show();
 
         const _llave = document.getElementById('txtLlave').textContent;
@@ -230,6 +245,7 @@
         const _dsctoPor = parseFloat(document.getElementById('txtPdecuento').value) || 0;
         const _dsctoQtz = parseFloat(document.getElementById('txtQdescuento').value) || 0;
         let _dsctoNwp = parseFloat(document.getElementById('txtTotalDescuento').value) || 0; // Cambiado a let
+        const _formaPago = document.getElementById("pLista").innerHTML;
 
         const _iDescuentos = {
             DescuentoLpr: _lp,
@@ -259,15 +275,17 @@
     }
 
     //CARGA LA TABLA EN EL MODAL DE CALULO DE DESCUENTOS.
-    function cargarDescuentos(itemCode, llave, esPromo, price, Dscription) {
+    function cargarDescuentos(itemCode, llave, esPromo, price, dscto, Dscription) {
         if (esPromo === "1") {
             alert("No se puede aplicar descuento a un producto con promoción");
             return;
         }
 
+        const tipoLp = document.getElementById('pLista').innerText;
         document.getElementById('txtLlave').textContent = llave;
         document.getElementById('txtNombreProducto').value = Dscription;
-        document.getElementById('selected-price').value = Number(price).toFixed(2);
+        document.getElementById('selected-price').value = Number(price - dscto).toFixed(2);
+        document.getElementById('txtFormaPago').value = tipoLp === "1" ? "PRECIO BENEFICIO" : "PRECIO NORMAL";
 
         $.ajax({
             url: '/MiCarrito/TablaDescuentos', // Ajusta el nombre del controlador
@@ -411,8 +429,13 @@
         }
         return null;
     }
+    if ("@Model.DocNum > 0")
+    {
+        $('#DatoEditar').removeClass('d-none');
+        $('#btnGuardarComoBorrador').removeClass('d-none');
+        document.getElementById('txtNoCotizacionEditar').innerHTML = "@Model.DocNum.ToString()";        
+    }
 
-    document.getElementById('totalItems').innerHTML = "@Model.Detalle.Count()";
 
     function calcularGranTotal() {
         let granTotal = 0;
@@ -421,22 +444,39 @@
         // Recorrer todas las filas de la tabla
         document.querySelectorAll(".shoping-cart-table tbody tr").forEach(row => {
             // Obtener LineTotal y convertirlo a número
-            let lineTotalElement = row.querySelector("#LineTotal strong");
-            let lineTotal = lineTotalElement ? parseFloat(lineTotalElement.textContent.replace("Q.", "").replace(",","").trim()) : 0;
+            let lineTotalElement = row.querySelector("#productUnitPrice strong");
+            let lineTotal = lineTotalElement ? parseFloat(lineTotalElement.textContent.replace("Precio Unitario: Q.", "").replace(",", "").trim()) : 0;
+
+            let lineTotalDespuesDescto = row.querySelector("#discountedPrice strong");
+            let lineTotalDespuesDscto = lineTotalDespuesDescto ? parseFloat(lineTotalDespuesDescto.textContent.replace("Precio con Descto: Q.", "").replace(",", "").trim()) : 0;
 
             // Obtener el descuento por unidad
             let descuentoElement = row.querySelector("#iDscto strong");
             let descuento = descuentoElement ? parseFloat(descuentoElement.textContent.replace("Descuento: Q.", "").replace(",", "").trim()) : 0;
 
+            // Obtener el descuento manual
+            let descuentoElement2 = row.querySelector("#DescuentoManual");
+            let descuento2 = descuentoElement2 ? parseFloat(descuentoElement2.textContent.replace("Q.", "").replace("(", "").replace(")", "").replace(",", "").trim()) : 0;
+
+            // Obtener el total ya con descuento
+            let descuentoTotalConDescto = row.querySelector("#LtotalDespuesDscto");
+            let totalYaConDescuento = descuentoTotalConDescto ? parseFloat(descuentoTotalConDescto.textContent.replace("Q.", "").replace("(", "").replace(")", "").replace(",", "").trim()) : 0;
+
             // Obtener la cantidad ingresada
             let cantidadElement = row.querySelector("#counterInput");
             let cantidad = cantidadElement ? parseFloat(cantidadElement.value) : 1;
 
+            //console.log("Precio Inicial", lineTotal);
+            //console.log("Descuento por efectivo", descuento);
+            //console.log("Descuento manual", descuento2);
+            //console.log("Precio total en efectivo", lineTotalDespuesDscto);
+            //console.log("Precio total en descuento manual", totalYaConDescuento);
+
             // Sumar al gran total
-            granTotal += lineTotal;
+            granTotal += (totalYaConDescuento === 0 ? (lineTotalDespuesDscto === 0 ? lineTotal : lineTotalDespuesDscto) : totalYaConDescuento) * cantidad;
 
             // Calcular el total de descuento
-            totalDescuento += (descuento * cantidad);
+            totalDescuento += ((descuento + descuento2) * cantidad);
         });
 
         // Mostrar los resultados
@@ -465,16 +505,25 @@
             const discountedPriceText = btnPlus.closest('tr').querySelector('#discountedPrice').textContent;
             const Identity = btnPlus.closest('tr').querySelector('#LineId').textContent;
 
+            const dsctoManualElem = btnPlus.closest('tr').querySelector('#DescuentoManual');
+            const dsctoManual = dsctoManualElem ? dsctoManualElem.textContent : "0.00";
+
+            const totalManualElem = btnPlus.closest('tr').querySelector('#LtotalDespuesDscto');
+            const totalManual = totalManualElem ? totalManualElem.textContent : "0.00";
+
             const unitPrice = parseFloat(unitPriceText.replace("Precio Unitario: Q.", "").trim()) || 0;
             const discount = parseFloat(discountText.replace("Descuento: Q.", "").trim()) || 0;
             const discountedPrice = parseFloat(discountedPriceText.replace("Precio con Descto: Q.", "").trim()) || 0;
+
+            const DsctoManual = parseFloat(dsctoManual.replace("Q.", "").replace("(", "").replace(")", "").replace(",", "").trim()) || 0;
+            const TotalManual = parseFloat(totalManual.replace("Q.", "").replace("(", "").replace(")", "").replace(",", "").trim()) || 0;
 
             // Determinar el precio base a usar
             let finalPrice = discountedPrice > 0 ? discountedPrice : unitPrice;
 
             // Calcular el total
-            let total = (currentValue + 1) * finalPrice;
-            let DescuentoU = (currentValue + 1) * discount;
+            let total = (currentValue + 1) * (TotalManual === 0 ? finalPrice : TotalManual);
+            let DescuentoU = (currentValue + 1) * (discount + DsctoManual);
 
             // Mostrar el total en LineTotal
             lineTotalElement.innerHTML = `<h4 style="font-size:18px;margin:0"><strong>Q.${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></h4>`;
@@ -507,17 +556,29 @@
             const discountText = btnPlus.closest('tr').querySelector('#iDscto').textContent;
             const discountedPriceText = btnPlus.closest('tr').querySelector('#discountedPrice').textContent;
             const Identity = btnPlus.closest('tr').querySelector('#LineId').textContent;
+            const dsctoManual = btnPlus.closest('tr').querySelector('#DescuentoManual').textContent;
+            const totalManual = btnPlus.closest('tr').querySelector('#LtotalDespuesDscto').textContent;
 
             const unitPrice = parseFloat(unitPriceText.replace("Precio Unitario: Q.", "").trim()) || 0;
             const discount = parseFloat(discountText.replace("Descuento: Q.", "").trim()) || 0;
             const discountedPrice = parseFloat(discountedPriceText.replace("Precio con Descto: Q.", "").trim()) || 0;
 
+
+            const DsctoManual = parseFloat(dsctoManual.replace("Q.", "").replace("(", "").replace(")", "").replace(",", "").trim()) || 0;
+            const TotalManual = parseFloat(totalManual.replace("Q.", "").replace("(", "").replace(")", "").replace(",", "").trim()) || 0;
+
             // Determinar el precio base a usar
             let finalPrice = discountedPrice > 0 ? discountedPrice : unitPrice;
 
             // Calcular el total
-            let total = parseFloat(input.value) * finalPrice;
-            let DescuentoU = parseFloat(input.value) * discount;
+            //let total = (currentValue + 1) * (TotalManual === 0 ? finalPrice : TotalManual);
+            //let DescuentoU = (currentValue + 1) * (discount + DsctoManual);
+
+            let total = parseFloat(input.value) * (TotalManual === 0 ? finalPrice : TotalManual);
+            let DescuentoU = parseFloat(input.value) * (discount + DsctoManual);
+
+            //let total = parseFloat(input.value) * finalPrice;
+            //let DescuentoU = parseFloat(input.value) * discount;
 
             // Mostrar el total en LineTotal sin perder el formato
             lineTotalElement.innerHTML = `<h4 style="font-size:18px;margin:0"><strong>Q.${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></h4>`;

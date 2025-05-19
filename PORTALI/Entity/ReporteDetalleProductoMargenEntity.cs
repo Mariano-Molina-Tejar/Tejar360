@@ -17,6 +17,8 @@ namespace Entity
         public double Base { get; set; }
         public double Margen { get; set; }
         public string Imagen { get; set; }
+        public string TipoDescuento { get; set; }
+        public string PorcentajeDescuento { get; set; }
 
     }
 }

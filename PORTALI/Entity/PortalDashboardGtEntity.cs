@@ -15,6 +15,11 @@ namespace Entity
         public double Indice { get; set; }        
         public double VentaTiendaProy { get; set; }
         public double IndiceProyectado { get; set; }
+        public double UtilidadTienda { get; set; }
+        public double MetaUtilidadTienda { get; set; }
+        public double UtilidadIndice { get; set; }
+        public double UtilidadTiendaProy { get; set; }
+        public double IndiceUtilidadProy { get; set; }
         public List<PortalDashboardDetalleAsesorEntity> ListaAsesores { get; set; }
         public PortalChartPieEntity PieChartData { get; set; }
     }

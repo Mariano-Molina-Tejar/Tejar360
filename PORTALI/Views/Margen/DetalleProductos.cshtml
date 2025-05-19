@@ -1,4 +1,4 @@
-﻿@model List<Entity.ReporteDetalleProductoMargenEntity>
+﻿@model List<Entity.Reporte_Margen_Facturas>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -50,7 +50,7 @@
         }
 
         .styled-table th {
-            background-color: #343a40;
+            background-color: #17a2b8;
             color: white;
             position: sticky; /* Encabezados fijos al hacer scroll */
             top: 38px; /* Altura del título superior */
@@ -79,37 +79,102 @@
     .d-flex {
         gap: 10px;
     }
+
+    #ventasTabla th:nth-child(1),
+    #ventasTabla td:nth-child(1) {
+        display: none;
+    }
+    .modal-full {
+        width: 70%; /* Ocupa el 100% del ancho de la ventana */
+        max-width: none; /* Evita que Bootstrap aplique un límite en el ancho */
+    }
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <div class="form-container">
     <h2>Margen de utilidad</h2>
-    <div class="table-container">
-        <table id="ventasTabla" class="table table-bordered table-hover text-center align-middle styled-table">
-            <thead class="thead-dark">
+    <div class="table-container pt-0">
+        <table id="ventasTabla" class="table table-striped table-bordered table-hover text-center align-middle mb-2">
+            <thead class="table-dark">
                 <tr>
-                    <th width="80px"></th>
-                    <th>Tipo</th>
-                    <th width="100px">Fecha</th>
-                    <th width="140px">Código</th>
-                    <th>Nombre producto</th>
-                    <th>Margen</th>
+                    <th class="align-items-center"></th>
+                    <th class="align-items-center">Tipo</th>
+                    <th class="align-items-center" width="100px">Documento</th>
+                    <th class="align-items-center" width="140px">Fecha</th>
+                    <th class="align-items-center">CardName</th>
+                    <th class="align-items-center">Total</th>
+                    <th class="align-items-center">Margen porcentual</th>
+                    <th class="align-items-center">Opciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td style="text-align:center">
-                            <img src="@(string.IsNullOrEmpty(item.Imagen) ? Url.Content("~/Img/imagen-no-disponible.png") : item.Imagen)" alt="@item.ItemCode" width="40" height="40" />
-                        </td>
+                        <td></td>
                         <td>@item.Tipo</td>
+                        <td>@item.DocNum</td>
                         <td>@item.DocDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.ItemCode</td>
-                        <td style="text-align:left">@item.Dscription</td>
-                        <td>@item.Margen</td>
+                        <td style="text-align:left">@item.CardName</td>
+                        <td style="text-align:left">@string.Format("Q.{0:#,##0.00}", @item.LineTotal)</td>
+                        <td style="text-align:left">@string.Format("{0:#,##0.00}%", @item.Margen) </td>
+                        <td class="text-center">
+                            <button class="btn btn-info fa fa-eye" title="Ver detalles" onclick="verDetalle(@item.DocNum,'@item.Tipo');"></button>
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+    
 </div>
+<div id="detalleModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header" role="document">
+
+                <h5 class="modal-title" id="exampleModalLabel">Documento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#ventasTabla').DataTable({
+        "paging": true,
+        "searching": false,
+        "info": true,
+        "ordering": true,
+        "order": [],
+        "dom": '<"top"f>rt<"bottom"lp><"clear">',
+    });
+  
+    function verDetalle(_docNum, _tipo) {
+        $("#globalLoading").show();
+        $.ajax({
+            url: '@Url.Action("CargarDetalleFactura", "Margen")',
+            type: 'GET',
+            data: {
+                DocNum: _docNum,
+                Tipo: _tipo
+            },
+            success: function (data) {
+                $("globalLoading").hide();
+                $('#modal-content').html(data);
+                $('#detalleModal').modal('show');
+            },
+            error: function () {
+                //$("#globalLoading").hide();
+                alert('Hubo un error al cargar el contenido');
+            }
+        })
+    }
+</script>

@@ -35,7 +35,7 @@ namespace PORTALI.Controllers
                 else
                 {
                     Session["PropertiesEntity"] = sessionLoginEntity;
-                    string redirectUrl = sessionLoginEntity.Nivel == 2 ? Url.Action("Index", "Dashboard") : Url.Action("Cotizacion", "CotizacionVentas");
+                    string redirectUrl = sessionLoginEntity.Nivel == 2 ? Url.Action("DashboardGerenteVentas", "DashboardGerenteVentas") : Url.Action("Cotizacion", "CotizacionVentas");
                     return Json(new { success = true, redirectUrl });
                 }
             }

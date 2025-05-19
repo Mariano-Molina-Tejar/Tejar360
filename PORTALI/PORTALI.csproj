@@ -319,8 +319,11 @@
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DashboardGerenteVentasController.cs" />
     <Compile Include="Controllers\DeliveryController.cs" />
+    <Compile Include="Controllers\EspecialistaController.cs" />
+    <Compile Include="Controllers\GeneralesController.cs" />
     <Compile Include="Controllers\GerenciaRankinController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KpiCrmController.cs" />
     <Compile Include="Controllers\MargenController.cs" />
     <Compile Include="Controllers\MiCarritoController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -330,6 +333,7 @@
     <Compile Include="Controllers\SAPOcController.cs" />
     <Compile Include="Controllers\SAP_SC_Controller.cs" />
     <Compile Include="Controllers\VentasController.cs" />
+    <Compile Include="Controllers\VentasEmpresaController.cs" />
     <Compile Include="Filter\VerifySession.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -364,6 +368,7 @@
     <Content Include="Css\nucleo-icons.css" />
     <Content Include="Css\nucleo-svg.css" />
     <Content Include="Css\Profile.css" />
+    <Content Include="Css\ResumenCarrito.css" />
     <Content Include="Css\SocioNegocioCarrito.css" />
     <Content Include="Css\style.css" />
     <Content Include="Css\style.min.css" />
@@ -378,6 +383,7 @@
     <Content Include="Html\cotizacionP2.html" />
     <Content Include="Html\CotizacionVenta.html" />
     <Content Include="Html\OrdenCompra.html" />
+    <Content Include="Html\UnoAUno.html" />
     <Content Include="Icons\ionicons.css" />
     <Content Include="Icons\ionicons.min.css" />
     <Content Include="ImgUp\imagen-no-disponible.png" />
@@ -1091,12 +1097,18 @@
     <Content Include="Views\MiCarrito\Resumen.cshtml" />
     <Content Include="Views\CotizacionVentasAutoriza\Autorizacion.cshtml" />
     <Content Include="Views\CotizacionVentasAutoriza\Detalle.cshtml" />
+    <Content Include="Views\Ventas\Detalle.cshtml" />
+    <Content Include="Views\Especialista\Registro.cshtml" />
+    <Content Include="Views\Especialista\List.cshtml" />
+    <Content Include="Views\KpiCrm\Crm.cshtml" />
+    <Content Include="Views\VentasEmpresa\VentasEmpresa.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Attchments\" />
     <Folder Include="Models\" />
     <Folder Include="Views\Contratos\" />
+    <Folder Include="Views\Generales\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

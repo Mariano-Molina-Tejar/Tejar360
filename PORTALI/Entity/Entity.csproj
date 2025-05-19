@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutorizaCotizacionEntity.cs" />
     <Compile Include="AutorizarCotizacionEntity.cs" />
     <Compile Include="BuscarProductoEntity.cs" />
     <Compile Include="BusquedaDetalleProductoEntity.cs" />
@@ -76,12 +77,19 @@
     <Compile Include="CotizacionCompraEntity.cs" />
     <Compile Include="CotizacionHeadEntity.cs" />
     <Compile Include="CotizacionSAP.cs" />
+    <Compile Include="CrmCotiAnalisisEntity.cs" />
+    <Compile Include="CrmGraficoDonaCotiEntity.cs" />
+    <Compile Include="CrmSeguimientoCotiEntity.cs" />
     <Compile Include="DALEntity.cs" />
     <Compile Include="DashboardAsesorGraficoEntity.cs" />
+    <Compile Include="DatosServerEntity.cs" />
     <Compile Include="DetalleBusquedaProductosEntity.cs" />
     <Compile Include="DetallePresupuestoEntity.cs" />
+    <Compile Include="EncabezadoVentaEditarEntity.cs" />
     <Compile Include="ItemsCotizacionEntity.cs" />
     <Compile Include="LaligaDashboardAsesoresEntity.cs" />
+    <Compile Include="ListaAsesoresEntity.cs" />
+    <Compile Include="ListadoSeguimientoEntity.cs" />
     <Compile Include="LoginEntity.cs" />
     <Compile Include="MesesEntity.cs" />
     <Compile Include="PortalBonificacionLigaEntity.cs" />
@@ -123,6 +131,8 @@
     <Compile Include="SocioNegocioEntity.cs" />
     <Compile Include="SolicitudCompraEncabezadoEntity.cs" />
     <Compile Include="SystemDateTimeEntity.cs" />
+    <Compile Include="VentasDetalleEntity.cs" />
+    <Compile Include="VentasEmpresaEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

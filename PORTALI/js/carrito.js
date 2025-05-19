@@ -1,5 +1,5 @@
 ﻿// Función para obtener una cookie
-function getCookie(name) {    
+function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
@@ -7,12 +7,11 @@ function getCookie(name) {
 }
 
 // Función para inicializar el badge al cargar la página
-function inicializarCarritoBadge() {    
-    let cookieName = GetNombreCookie("T-OneCotizacion-");
+function inicializarCarritoBadge() {
+    let cookieName = GetNombreCookie("T-OneCotizacion-");    
     const existingCotizacion = getCookie(cookieName);
-
-    if (existingCotizacion) {
-        const cotizacion = JSON.parse(existingCotizacion);
+    if (existingCotizacion) {        
+        const cotizacion = JSON.parse(existingCotizacion);        
         actualizarCarritoBadge(cotizacion.productos.length);
     } else {
         actualizarCarritoBadge(0); // Si no hay cookie, muestra 0
@@ -20,7 +19,7 @@ function inicializarCarritoBadge() {
 }
 
 // Función para actualizar el badge del carrito
-function actualizarCarritoBadge(totalProductos) {
+function actualizarCarritoBadge(totalProductos) {    
     const cartBadge = document.getElementById('cartBadge');
     if (cartBadge) {
         cartBadge.textContent = totalProductos;

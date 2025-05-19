@@ -1,145 +1,145 @@
-﻿@model Entity.PortalDashboardGtEntity
-<body>
-    <div class="main-content animated fadeIn">
-        <div class="container mt-7 mt-4">
-            <div class="card shadow" style="border-radius:10px; border-top-left-radius:10px; border-top-right-radius:10px">
-                <div class="card-header" style="background-color: #FAD803; border-top-left-radius: 10px; border-top-right-radius: 10px ">
-                    Tienda
-                </div>
-                <div class="card-body row col-xl-12">
-                    <div class="col-xl-6 pb-2">
-                        <canvas id="myPieChart"></canvas>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="card">
-                            <div class="card-header">
-                                Datos generales
-                            </div>
-                            <div class="card-body">
-                                <div class="col-auto">
-                                    <label class="sr-only" for="inlineFormInputGroup">Meta</label>
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text" style="background-color: #FAD803; width:150px">Meta</div>
-                                        </div>
-                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("Q.{0:#,##0.00}", @Model.MetaTienda)">
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <label class="sr-only" for="inlineFormInputGroup">Venta</label>
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text" style="background-color: #FAD803; width:150px">Venta</div>
-                                        </div>
-                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("Q.{0:#,##0.00}", @Model.VentaTienda)">
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <label class="sr-only" for="inlineFormInputGroup">Indice</label>
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text" style="background-color: #FAD803; width:150px">Indice</div>
-                                        </div>
-                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("{0:#,##0.00}", @Model.Indice)%">
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <label class="sr-only" for="inlineFormInputGroup">Venta Proyectada</label>
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text" style="background-color: #e59866; width: 150px ">Venta Proyectada</div>
-                                        </div>
-                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("Q.{0:#,##0.00}", @Model.VentaTiendaProy)">
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <label class="sr-only" for="inlineFormInputGroup">Indice Proyectado</label>
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text" style="background-color: #e59866; width: 150px ">Indice Proyectado</div>
-                                        </div>
-                                        <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="0.00" style="background-color:white" readonly onmousedown="return false;" value="@string.Format("{0:#,##0.00}", @Model.IndiceProyectado)%">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+﻿<!--@{
+    ViewBag.Title = "Dashboard de Ventas";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Ventas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-5xl mx-auto">
+        <!-- Título -->-->
+        <!--@*<h1 class="text-3xl font-bold text-gray-800 mb-4">Ventas</h1>*@
+
+        <br />-->
+        <!-- Filtro de fechas -->
+        <!--<div class="flex space-x-4 mb-6">
+            <input type="date" id="startDate" class="p-2 border rounded w-1/3">
+            <input type="date" id="endDate" class="p-2 border rounded w-1/3">
+            <button onclick="filtrarDatos()" class="bg-blue-500 text-white px-4 py-2 rounded">Filtrar</button>
+        </div>-->
+
+        <!-- Tarjetas Resumen -->
+        <!--<div class="grid grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <h2 class="text-xl font-semibold">Total Ventas</h2>
+                <p class="text-2xl font-bold text-green-600" id="totalVentas">$0</p>
             </div>
-            <div class="row pt-3">
-                <div class="col">
-                    <div class="card shadow">
-                        <div class="table-responsive">
-                            <table class="table align-items-center table-flush">
-                                <thead style="background-color: #FAD803;">
-                                    <tr>
-                                        <th scope="col">Nombre asesor</th>
-                                        <th scope="col">Meta</th>
-                                        <th scope="col">Venta</th>
-                                        <th scope="col">Indice</th>
-                                        <th scope="col">Peso</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model != null)
-                                    {
-                                        for (int i = 0; i < Model.ListaAsesores.Count; i++)
-                                        {
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="media align-items-center">
-                                                        <a href="#" class="avatar rounded-circle mr-3">
-                                                            <img alt="Image placeholder" src="~/ImgUp/imagen-no-disponible.png">
-                                                        </a>
-                                                        <div class="media-body">
-                                                            <span class="mb-0 text-sm">@Model.ListaAsesores[i].SlpName</span>
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <td>
-                                                    @string.Format("Q.{0:#,##0.00}", @Model.ListaAsesores[i].MetaAsesor)
-                                                </td>
-                                                <td>
-                                                    @string.Format("Q.{0:#,##0.00}", @Model.ListaAsesores[i].VentaAsesor)
-                                                </td>
-                                                <td>
-                                                    @string.Format("{0:#,##0.00}", @Model.ListaAsesores[i].Indice)%
-                                                </td>
-                                                <td>
-                                                    @string.Format("{0:#,##0.00}", @Model.ListaAsesores[i].Peso)%
-                                                </td>
-                                            </tr>
-                                        }
-                                     }
-                                </tbody>
-                            </table>
-                        </div>                        
-                    </div>
-                </div>
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <h2 class="text-xl font-semibold">Meta Total</h2>
+                <p class="text-2xl font-bold text-blue-600" id="metaTotal">$100,000</p>
             </div>
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <h2 class="text-xl font-semibold">% Alcanzado</h2>
+                <p class="text-2xl font-bold text-yellow-600" id="porcentajeAlcanzado">0%</p>
+            </div>
+        </div>-->
+
+        <!-- Gráfico de ventas -->
+        <!--<div class="bg-white p-6 mt-6 rounded-lg shadow-md">
+            <canvas id="ventasChart"></canvas>
         </div>
     </div>
-</body>
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<script src="~/Scripts/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
-<script type="text/javascript">
-    $(function () {
-        var ctx = document.getElementById("myPieChart").getContext('2d');
-        var myPieChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: @Html.Raw(Json.Encode(Model.PieChartData)),
-            options: {
-                responsive: true,                
-                legend: {
-                    position: 'top',
+    <script>        
+        $(document).ready(function () {
+            $.ajax({
+                url: "/DashboardGerenteVentas/CargarData", // Ruta del controlador en ASP.NET
+                type: "GET",
+                dataType: "json",
+                beforeSend: function () {
+                    $("#globalLoading").show();
                 },
-                title: {
-                    display: true,
-                    text: 'Ventas sobre meta'
+                success: function (data) {
+                    $("#globalLoading").hide();
+
+
+                },
+                error: function (xhr, status, error) {
+                    $("#globalLoading").hide();
+                    console.error("Error al obtener datos: " + error);
+                    alert("Se ha producido un error");
                 }
-            }            
+            });
         });
-    });
-</script>
+
+        // Simulación de datos (luego los traerás de tu API en C#)
+        let ventasPorAsesor = [
+            { nombre: "VCHIQ-Silvia Soto", ventas: 25000, meta: 50000 },
+            { nombre: "VCHIQ-Jessica Pérez", ventas: 30000, meta: 30000 },
+            { nombre: "VCHIQ-Yendelyn Amabilia Vásquez González", ventas: 20000, meta: 20000 },
+            { nombre: "VCHIQ-Hector Armando España Pérez", ventas: 35000, meta: 50000 }
+        ];
+
+        // Función para abreviar nombres
+        function abreviarNombre(nombre) {
+            let partes = nombre.split("-");
+            if (partes.length > 1) {
+                let nombresApellidos = partes[1].split(" ");    
+                return `${nombresApellidos[0]} ${nombresApellidos[nombresApellidos.length - 1]}`;
+            }
+            return nombre;
+        }
+
+        // Configuración del gráfico con Chart.js
+        let ctx = document.getElementById("ventasChart").getContext("2d");
+        let ventasChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ventasPorAsesor.map(a => abreviarNombre(a.nombre)), // Abreviar nombres
+                datasets: [
+                    {
+                        label: "Ventas",
+                        backgroundColor: "rgba(54, 162, 235, 0.6)",
+                        data: ventasPorAsesor.map(a => a.ventas)
+                    },
+                    {
+                        label: "Meta",
+                        backgroundColor: "rgba(255, 99, 132, 0.6)",
+                        data: ventasPorAsesor.map(a => a.meta)
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45, // Rotar etiquetas para mejor visibilidad
+                            minRotation: 45
+                        }
+                    },
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: (tooltipItems) => {
+                                let index = tooltipItems[0].dataIndex;
+                                return ventasPorAsesor[index].nombre; // Mostrar nombre completo en tooltip
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Simulación de filtrado (conéctalo a tu API en C#)
+        function filtrarDatos() {
+            let startDate = document.getElementById("startDate").value;
+            let endDate = document.getElementById("endDate").value;
+
+            console.log(`Filtrando desde ${startDate} hasta ${endDate}`);
+            actualizarDashboard(); // Aquí deberías hacer una llamada a la API en C#
+        }
+
+        actualizarDashboard();
+    </script>
+</body>
+</html>-->

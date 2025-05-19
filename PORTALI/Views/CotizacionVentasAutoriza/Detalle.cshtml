@@ -107,16 +107,13 @@
                     url: '/CotizacionVentasAutoriza/EnviarAutorizacionSAP/', // Asegúrate de que esta ruta esté correcta
                     type: 'POST',
                     data: {
-                        DocEntry: docEntry
+                        DocEntry: docEntry,                        
+                        Estado: estado,
+                        Notas: observaciones
                     },
                     success: function (response) {
-                        if (response.success) {
-                            $("#globalLoading").hide();
-                            window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
-                        } else {
-                            $("#globalLoading").hide();
-                            window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
-                        }
+                        $("#globalLoading").hide();
+                        window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
                     },
                     error: function (xhr, status, error) {
                         $("#globalLoading").hide();

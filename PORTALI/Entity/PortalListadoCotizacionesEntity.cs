@@ -18,11 +18,15 @@ namespace Entity
         public int Llave { get; set; }
         public int DocEntry { get; set; }
         public int DocNum { get; set; }
+        public int DocNumFac { get; set; }
         public string CardCode { get; set; }
         public string CardName { get; set; }
+        public string NitDocto { get; set; }
+        public string NitCardCode { get; set; }
         public string Nit { get; set; }
         public string FacNombre { get; set; }
         public string Address { get; set; }
+        public string DireccionCardCode { get; set; }
         public DateTime DocDate { get; set; }
         public DateTime DocDueDate { get; set; }
         public string CorreoCliente { get; set; }
@@ -39,6 +43,15 @@ namespace Entity
         public string IsCookie { get; set; }
         public string Comments { get; set; }
         public string Hora { get; set; }
+        public int IdTipoCrm { get; set; }
+        public string DscrpTipoCrm { get; set; }
+        public string CorreoDocto { get; set; }
+        public string TelefonoDocto { get; set; }
+        public int CountCotizaciones { get; set; }
+        public double DocTotalCoti { get; set; }
+        public int CountFacturas { get; set; }
+        public double DocTotalFact { get; set; }
+        public List<CrmGraficoDonaCotiEntity> DatosGraficosDona { get; set; }
     }
 
     public class PortalCotizacionesDetalleEntity

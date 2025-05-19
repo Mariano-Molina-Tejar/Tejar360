@@ -7,6 +7,7 @@ using Entity;
 using DAL;
 using SelectPdf;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace PORTALI.Controllers
 {
@@ -20,9 +21,44 @@ namespace PORTALI.Controllers
             }
 
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            //List<PortalListadoCotizacionesEntity> documents = Cotizaciones(sessions.SlpCode);
+            //return View(documents);
+            return View();
+        }
 
+        public JsonResult CargarSeguimientos(int DocEntry)
+        {
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            List<ListadoSeguimientoEntity> listaSeguimientos = DALCrmCotizacionesAnalisis.listadoSeguimientoCotizaciones(DocEntry);
+            return Json(listaSeguimientos, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult SaveSeguimiento(CrmSeguimientoCotiEntity crmSeguimientoCotiEntity)
+        {
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            crmSeguimientoCotiEntity.UserId = sessions.UserId;
+            string contenido = DAL_API.CrearCotizacionVenta("Crm/SeguimientoCotizacion/", crmSeguimientoCotiEntity);
+            Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
+            return Json(datos, JsonRequestBehavior.AllowGet);            
+        }
+
+        public JsonResult BuscarCotizaciones(int SlpCode, DateTime FechaI, DateTime FechaF, int TipoCrm)
+        {
+            var sessions = Session["PropertiesEntity"] as Entity.SessionLoginEntity;
+            if (sessions == null)
+            {
+                return Json(new { mensaje = "Sesión no encontrada" }, JsonRequestBehavior.AllowGet);
+            }
+
+            List<PortalListadoCotizacionesEntity> documents = Cotizaciones(SlpCode, FechaI, FechaF, TipoCrm);
+            return Json(documents, JsonRequestBehavior.AllowGet);
+        }
+
+        protected List<PortalListadoCotizacionesEntity> Cotizaciones(int SlpCode, DateTime FechaI, DateTime FechaF, int TipoCrm)
+        {
+            var sessions = Session["PropertiesEntity"] as Entity.SessionLoginEntity;
             // Obtener listado de cotizaciones desde BD
-            List<PortalListadoCotizacionesEntity> documents = DALPortalCarritoCompras.getAllCotizacionesVenta(sessions.SlpCode);
+            List<PortalListadoCotizacionesEntity> documents = DALPortalCarritoCompras.getAllCotizacionesVenta(SlpCode, FechaI, FechaF, TipoCrm, sessions.WhsCode);
             // Capturar todas las cookies con prefijo "T-OneCotizacion-"
             List<CarritoTempEntity> listadoCookie = new List<CarritoTempEntity>();
             foreach (string cookieKey in Request.Cookies.AllKeys)
@@ -35,7 +71,6 @@ namespace PORTALI.Controllers
                         if (cookie != null && !string.IsNullOrEmpty(cookie.Value))
                         {
                             string cookieValue = HttpUtility.UrlDecode(cookie.Value); // Decodificar la cookie
-
                             // Deserializar como un solo objeto en lugar de una lista
                             var cotizacion = JsonConvert.DeserializeObject<CarritoTempEntity>(cookieValue);
 
@@ -49,14 +84,16 @@ namespace PORTALI.Controllers
                                     entidadTemp.CardName = cotizacion.CardName;
                                     entidadTemp.DocNum = cotizacion.NoCotizacion;
                                     entidadTemp.DocEntry = cotizacion.Llave;
-                                    entidadTemp.SlpCode = sessions.SlpCode;
+                                    entidadTemp.SlpCode = SlpCode;
                                     entidadTemp.FacNombre = (cotizacion.FacturarNombre == "" ? "CONSUMIDOR FINAL" : cotizacion.FacturarNombre);
                                     entidadTemp.Nit = (cotizacion.FacturarNit == "" ? "CF" : cotizacion.FacturarNit);
                                     entidadTemp.DocDate = cotizacion.Fecha;
                                     entidadTemp.DocDueDate = cotizacion.Fecha;
                                     entidadTemp.DocTotal = cotizacion.Productos.Sum(p => p.LineTotal);
                                     entidadTemp.IsCookie = "Y";
-                                    documents.Add(entidadTemp); // Agregar la cotización al listado
+                                    entidadTemp.IdTipoCrm = -1;
+                                    entidadTemp.DscrpTipoCrm = "Borrador";
+                                    documents.Add(entidadTemp); // Agregar la cotización al listado                                    
                                 }
                             }
                         }
@@ -67,7 +104,8 @@ namespace PORTALI.Controllers
                     }
                 }
             }
-            return View(documents);
+
+            return documents;
         }
 
         [HttpPost]
@@ -124,11 +162,8 @@ namespace PORTALI.Controllers
             htmlContent = htmlContent.Replace("@Detalle", tabla);
 
             var htmlContentTotal = htmlContent + "<div style='page-break-before: always;'></div>" + htmlContent2;
-
-
             // Configuración del convertidor
             HtmlToPdf converter = new HtmlToPdf();
-
 
             converter.Options.PdfPageSize = PdfPageSize.Letter;
             converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
@@ -141,16 +176,15 @@ namespace PORTALI.Controllers
             converter.Footer.Height = 70;
             converter.Footer.DisplayOnEvenPages = false;
             converter.Footer.Add(new PdfHtmlSection(foot(), string.Empty));
-           
-            PdfDocument pdfDocument = converter.ConvertHtmlString(htmlContentTotal);
-            
 
-            var outputPath = Server.MapPath("~/Pdf/CotizacionVenta.pdf");
-            pdfDocument.Save(outputPath);
-            pdfDocument.Close();
-          
-            var fileStream = System.IO.File.ReadAllBytes(outputPath);
-            return File(fileStream, "application/pdf");
+            using (var memoryStream = new MemoryStream())
+            {
+                PdfDocument pdfDocument = converter.ConvertHtmlString(htmlContentTotal);
+                pdfDocument.Save(memoryStream);
+                pdfDocument.Close();
+
+                return File(memoryStream.ToArray(), "application/pdf", "CotizacionVenta.pdf");
+            }
         }
 
         private string foot()
@@ -176,6 +210,64 @@ namespace PORTALI.Controllers
                 return texto.Substring(index + 1).Trim(); // Obtiene el texto después del "-" y elimina espacios extra
             }
             return string.Empty; // Retorna vacío si no se encuentra el "-"
+        }
+
+        public ActionResult Detalle(int DocEntry)
+        {
+            if (Session["PropertiesEntity"] == null)
+            {
+                return View();
+            }
+
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            CarritoComprasPDFEntity detail = DALPortalCarritoCompras.getAllCotizacionesPendientesDetalle(DocEntry, sessions.SlpCode);
+            return View(detail);
+        }
+
+        public JsonResult getAllAsesores()
+        {
+            var sessions = Session["PropertiesEntity"] as Entity.SessionLoginEntity;            
+            if (sessions == null)
+            {
+                return Json(new { mensaje = "Sesión no encontrada" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (sessions.Nivel == 2)
+            {
+                List<ListaAsesoresEntity> lista = DALPortalCarritoCompras.getAllUsuariosPorTienda(sessions.WhsCode);
+                return Json(lista, JsonRequestBehavior.AllowGet);
+            }
+
+            List<ListaAsesoresEntity> lista2 = new List<ListaAsesoresEntity>
+            {
+                new ListaAsesoresEntity { SlpCode = sessions.SlpCode, SlpName = sessions.SlpName }
+            };
+
+            return Json(lista2, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult getAllTipsCRM() 
+        {
+            var sessions = Session["PropertiesEntity"] as Entity.SessionLoginEntity;
+            if (sessions == null)
+            {
+                return Json(new { mensaje = "Sesión no encontrada" }, JsonRequestBehavior.AllowGet);
+            }
+
+            List<PortalListadoGeneralEntity> lista = DALPortalGenerales.getAllTiposCrm();
+            return Json(lista, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult getAllTiposCrm()
+        {
+            var sessions = Session["PropertiesEntity"] as Entity.SessionLoginEntity;
+            if (sessions == null)
+            {
+                return Json(new { mensaje = "Sesión no encontrada" }, JsonRequestBehavior.AllowGet);
+            }
+
+            List<PortalListadoGeneralEntity> lista = DALPortalGenerales.getAllTiposContactoCrm();
+            return Json(lista, JsonRequestBehavior.AllowGet);
         }
     }
 }

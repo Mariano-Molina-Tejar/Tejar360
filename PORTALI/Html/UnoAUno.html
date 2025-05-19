@@ -1,0 +1,531 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Proyectos y Avances</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        .proyecto {
+            margin-bottom: 60px;
+        }
+
+        .titulo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .asignado {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .comentarios {
+            margin-top: 15px;
+            font-style: italic;
+            color: #444;
+        }
+
+        .chart-container {
+            width: 250px;
+            margin: 20px auto;
+        }
+
+        .gantt-container {
+            overflow-x: auto;
+        }
+    </style>
+
+    <style>
+        .info-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            max-width: 700px;
+        }
+
+            .info-card h3 {
+                margin-bottom: 15px;
+                color: #333;
+                font-size: 20px;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 5px;
+            }
+
+            .info-card ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            .info-card li {
+                margin-bottom: 8px;
+                font-size: 16px;
+            }
+
+            .info-card .comentarios {
+                margin-top: 15px;
+                font-style: italic;
+                color: #444;
+                line-height: 1.5;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="project-section">
+        <!-- Contenedor para Gantt y gráfico -->
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <div class="info-card">
+                <h2>Proyecto ROCA PRINCIPAL (CRM)</h2>
+                <h3>📋 Información del Proyecto</h3>
+                <ul>
+                    <li><strong>👤 Asignado a:</strong> Bayron Lopez</li>
+                    <li><strong>📅 Fecha inicial:</strong> 01 de mayo de 2025</li>
+                    <li><strong>📅 Fecha final:</strong> 30 de junio de 2025</li>
+                </ul>
+                <p class="comentarios">
+                    🗨️ <strong>Comentarios:</strong> Vamos en tiempo. El equipo ha avanzado en las configuraciones, entregas y capacitaciones conforme a lo programado. Se han presentado pequeños ajustes logísticos, pero nada fuera del plan establecido.
+                </p>
+            </div>
+            <!-- Gantt -->
+            <div class="gantt-container" style="overflow: auto; max-width: 70%; max-height: 500px;">
+                <svg id="ganttROCA"></svg>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="chart-container" style="width: 70%;">
+                <canvas id="graficoRoca" style="width: 100%; height: 200px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Línea de separación -->
+        <div style="border-top: 2px solid #ccc; margin: 40px 0;"></div>
+
+        <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 40px;">
+            <!-- Info del proyecto -->
+            <div class="info-card alerta">
+                <h2 style="color: #c0392b;">⚠️ Proyecto ROCA RUTAS (MÓDULO DE RUTAS)</h2>
+                <h3>📋 Información del Proyecto</h3>
+                <ul>
+                    <li><strong>👤 Asignado a:</strong> Mariano Molina</li>
+                    <li><strong>📅 Fecha inicial:</strong> 07 de febrero de 2025</li>
+                    <li><strong>📅 Fecha final:</strong> 04 de abril de 2025 (🕒 16/05/2025 se entrega este viernes)</li>
+                </ul>
+                <p class="comentarios">
+                    🛑 <strong>Comentarios:</strong> El proyecto está completo y listo para su publicación este viernes. A pesar de algunos retrasos debido a cambios inesperados, hemos logrado finalizar todas las etapas y ahora estamos preparados para implementarlo en producción.
+                </p>
+            </div>
+
+            <!-- Gantt -->
+            <div class="gantt-container" style="overflow: auto; max-width: 70%; max-height: 500px;">
+                <svg id="ganttRutas"></svg>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="chart-container" style="width: 70%;">
+                <canvas id="graficoRutas" style="width: 100%; height: 200px;"></canvas>
+            </div>
+        </div>
+
+        <div style="border-top: 2px solid #ccc; margin: 40px 0;"></div>
+
+        <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 40px;">
+            <!-- Info del proyecto -->
+            <div class="info-card alerta">
+                <h2 style="color: #c0392b;">⚠️ Proyecto PLAN DE ESPECIALISTAS</h2>
+                <h3>📋 Información del Proyecto</h3>
+                <ul>
+                    <li><strong>👤 Asignado a:</strong> Mariano Molina</li>
+                    <li><strong>📅 Fecha inicial:</strong> 21 de abril de 2025</li>
+                    <li><strong>📅 Fecha final:</strong> 13 de junio de 2025</li>
+                </ul>
+                <p class="comentarios">
+                    🛑 <strong>Comentarios:</strong>  Proyecto con atraso, en 2 semanas nos ponemos en al día, este retraso fue por la roca de rutas, no podemos cambiar fechas por tema de rocas en otro departamento.
+                </p>
+            </div>
+
+            <!-- Gantt -->
+            <div class="gantt-container" style="overflow: auto; max-width: 70%; max-height: 500px;">
+                <svg id="ganttEspecialista"></svg>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="chart-container" style="width: 70%;">
+                <canvas id="graficoEspecialista" style="width: 100%; height: 200px;"></canvas>
+            </div>
+        </div>
+
+        <div style="border-top: 2px solid #ccc; margin: 40px 0;"></div>
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <div class="info-card">
+                <h2>Proyecto Control de entrada y salida tarde(Roles)</h2>
+                <h3>📋 Información del Proyecto</h3>
+                <ul>
+                    <li><strong>👤 Asignado a:</strong> Oskar Majuz</li>
+                    <li><strong>📅 Fecha inicial:</strong> 10 de abril de 2025</li>
+                    <li><strong>📅 Fecha final:</strong> 30 de junio de 2025</li>
+                </ul>
+                <p class="comentarios">
+                    🗨️ <strong>Comentarios:</strong> El desarrollo del ADD-ON SAP se encuentra dentro del cronograma establecido. Este incluirá la asignación y creación de roles, la configuración de horarios flexibles y entradas ajustables, así como la implementación de reportes para el control de entradas y salidas tardías
+                </p>
+            </div>
+            <!-- Gantt -->
+            <div class="gantt-container" style="overflow: auto; max-width: 70%; max-height: 500px;">
+                <svg id="ganttRh"></svg>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="chart-container" style="width: 70%;">
+                <canvas id="graficoRH" style="width: 100%; height: 200px;"></canvas>
+            </div>
+        </div>
+
+        <div style="border-top: 2px solid #ccc; margin: 40px 0;">
+        </div>
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <div class="info-card">
+                <h2>MANTENIMIENTO DE EQUIPOS Y CODIFICACION (CODIGO BARRA)</h2>
+                <h3>📋 Información del Proyecto</h3>
+                <ul>
+                    <li><strong>👤 Asignado a:</strong> Marcos Maas</li>
+                    <li><strong>📅 Fecha inicial:</strong> 02 de junio de 2025</li>
+                    <li><strong>📅 Fecha final:</strong> 29 de agosto de 2025</li>
+                </ul>
+                <p class="comentarios">
+                    🗨️ <strong>Comentarios:</strong> Este proyecto consiste en etiquetar todos los equipos de computación, incluyendo computadoras, teclados y otros dispositivos. Se realizará una reestructuración completa del inventario, asignando cada equipo a su respectiva tienda, con la identificación del responsable y la persona encargada de su mantenimiento. Además, se registrará el estado de cada equipo y se les asignará una etiqueta con código de barras. En el caso de que un equipo se deteriore, se procederá a su baja utilizando dicho código de barras para mantener un control eficiente del inventario
+                </p>
+            </div>
+            <!-- Gantt -->
+            <div class="gantt-container" style="overflow: auto; max-width: 70%; max-height: 500px;">
+                <svg id="ganttRh"></svg>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="chart-container" style="width: 70%;">
+                <canvas id="graficoMant" style="width: 100%; height: 200px;"></canvas>
+            </div>
+        </div>
+
+        <div style="border-top: 2px solid #ccc; margin: 40px 0;">
+        </div>
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <div class="info-card">
+                <h2>PAGINA WEB</h2>
+                <h3>📋 Información del Proyecto</h3>
+                <ul>
+                    <li><strong>👤 Asignado a:</strong> Pablo Martinez</li>
+                    <li><strong>📅 Fecha inicial:</strong> 28 de abril de 2025</li>
+                    <li><strong>📅 Fecha final:</strong> 30 de junio de 2025</li>
+                </ul>
+                <p class="comentarios">
+                    🗨️ <strong>Comentarios:</strong> Se implementarán mejoras en la página web, comenzando con la optimización de la carga inicial para reducir los tiempos de espera. El menú será rediseñado para ofrecer una experiencia más elegante y moderna, con iconos adaptativos que se ajusten a cualquier tipo de pantalla. Además, la funcionalidad de selección de productos se actualizará, proporcionando una visualización más detallada y mejorada de cada artículo.
+                </p>
+
+                <div class="task-list" style="max-width: 70%; max-height: 500px; overflow-y: auto;">
+                    <ul>
+                        <li>
+                            <span><strong>Mejoras de Página Web</strong></span>
+                            <div style="background-color: #e0e0e0; border-radius: 5px; height: 10px; width: 100%; margin-top: 5px;">
+                                <div style="background-color: #76c7c0; height: 100%; width: 5%; border-radius: 5px;"></div>
+                            </div>
+                            <span>5%</span>
+                        </li>
+                        <li>
+                            <span><strong>Cambio a la Pantalla Inicial</strong></span>
+                            <div style="background-color: #e0e0e0; border-radius: 5px; height: 10px; width: 100%; margin-top: 5px;">
+                                <div style="background-color: #f4b400; height: 100%; width: 10%; border-radius: 5px;"></div>
+                            </div>
+                            <span>10%</span>
+                        </li>
+                        <li>
+                            <span><strong>Velocidad al Momento de la Carga</strong></span>
+                            <div style="background-color: #e0e0e0; border-radius: 5px; height: 10px; width: 100%; margin-top: 5px;">
+                                <div style="background-color: #76c7c0; height: 100%; width: 25%; border-radius: 5px;"></div>
+                            </div>
+                            <span>25%</span>
+                        </li>
+                        <li>
+                            <span><strong>Menú Principal</strong></span>
+                            <div style="background-color: #e0e0e0; border-radius: 5px; height: 10px; width: 100%; margin-top: 5px;">
+                                <div style="background-color: #f4b400; height: 100%; width: 10%; border-radius: 5px;"></div>
+                            </div>
+                            <span>10%</span>
+                        </li>
+                        <li>
+                            <span><strong>Seleccion de categorias</strong></span>
+                            <div style="background-color: #e0e0e0; border-radius: 5px; height: 10px; width: 100%; margin-top: 5px;">
+                                <div style="background-color: #76c7c0; height: 100%; width: 10%; border-radius: 5px;"></div>
+                            </div>
+                            <span>10%</span>
+                        </li>
+                        <li>
+                            <span><strong>Mejora de Selección en el Listado de Productos</strong></span>
+                            <div style="background-color: #e0e0e0; border-radius: 5px; height: 10px; width: 100%; margin-top: 5px;">
+                                <div style="background-color: #f4b400; height: 100%; width: 0%; border-radius: 5px;"></div>
+                            </div>
+                            <span>0%</span>
+                        </li>
+                        <li>
+                            <span><strong>Velocidad de consulta con API</strong></span>
+                            <div style="background-color: #e0e0e0; border-radius: 5px; height: 10px; width: 100%; margin-top: 5px;">
+                                <div style="background-color: #f4b400; height: 100%; width: 0%; border-radius: 5px;"></div>
+                            </div>
+                            <span>0%</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>    
+</div>
+
+
+    </div>
+
+    <script>
+        const tareasROCA = [
+            { id: '1', name: 'CONFIGURACION, HOJAS DE ACEPTACION Y DISTRIBUCION DE TABLETS', start: '2025-05-01', end: '2025-05-03', progress: 100 },
+            { id: '2', name: 'Entrega de tablets de proveedor', start: '2025-05-04', end: '2025-05-04', progress: 100 },
+            { id: '3', name: 'Entrega de estuches', start: '2025-05-05', end: '2025-05-05', progress: 100 },
+            { id: '4', name: 'Configuraciones', start: '2025-05-06', end: '2025-05-07', progress: 80 },
+            { id: '5', name: 'Primer Viaje (Tecnico1)', start: '2025-05-08', end: '2025-05-10', progress: 70 },
+            { id: '6', name: 'Tienda chimaltenango (5)', start: '2025-05-08', end: '2025-05-08', progress: 100 },
+            { id: '7', name: 'Tienda Quiche (3)', start: '2025-05-09', end: '2025-05-09', progress: 100 },
+            { id: '8', name: 'Tienda Xela (3)', start: '2025-05-10', end: '2025-05-10', progress: 100 },
+            { id: '9', name: 'Primer Viaje (Tecnico 2)', start: '2025-05-11', end: '2025-05-13', progress: 50 },
+            { id: '10', name: 'Tienda Escuintla (3)', start: '2025-05-11', end: '2025-05-11', progress: 100 },
+            { id: '11', name: 'Tienda Santa Lucia (3)', start: '2025-05-12', end: '2025-05-12', progress: 80 },
+            { id: '12', name: 'Tienda Tiquizate (3)', start: '2025-05-13', end: '2025-05-13', progress: 60 },
+            { id: '13', name: 'Tienda Mazatenango (4)', start: '2025-05-13', end: '2025-05-13', progress: 60 },
+            { id: '14', name: 'Primer Viaje (Tecnico 3)', start: '2025-05-14', end: '2025-05-15', progress: 30 },
+            { id: '15', name: 'Tienda Jutiapa (3)', start: '2025-05-14', end: '2025-05-14', progress: 20 },
+            { id: '16', name: 'Tienda Jalapa (2)', start: '2025-05-15', end: '2025-05-15', progress: 10 },
+            { id: '17', name: 'Segundo Viaje (Tecnico 1)', start: '2025-05-16', end: '2025-05-18', progress: 0 },
+            { id: '18', name: 'Tienda Salama (3)', start: '2025-05-16', end: '2025-05-16', progress: 0 },
+            { id: '19', name: 'Tienda Tactic (3)', start: '2025-05-17', end: '2025-05-17', progress: 0 },
+            { id: '20', name: 'Tienda Coban (5)', start: '2025-05-18', end: '2025-05-18', progress: 0 },
+            { id: '29', name: 'MEJORAS DE CRM', start: '2025-05-23', end: '2025-05-25', progress: 10 },
+            { id: '30', name: 'Avances de desarrollo', start: '2025-05-23', end: '2025-05-24', progress: 10 },
+            { id: '31', name: 'Feedback de presentacion', start: '2025-05-25', end: '2025-05-25', progress: 0 }
+        ];
+
+        // Gantt
+        const gantt = new Gantt("#ganttROCA", tareasROCA, {
+            view_mode: 'Day',
+            date_format: 'YYYY-MM-DD',
+            language: 'es'
+        });
+
+        // Calcular progreso total (promedio)
+        const totalProgress = tareasROCA.reduce((acc, t) => acc + t.progress, 0) / tareasROCA.length;
+
+        // Chart.js
+        const ctx = document.getElementById('graficoRoca').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completado', 'Pendiente'],
+                datasets: [{
+                    data: [totalProgress, 100 - totalProgress],
+                    backgroundColor: ['#4caf50', '#e0e0e0'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                },
+                cutout: '70%',
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+
+        const tasksRutas = [
+            { "id": "1.1", "name": "Editar fecha de descarga + matriz de motivos", "start": "2025-02-07", "end": "2025-02-10", "progress": 100, "dependencies": "1" },
+            { "id": "1.1.1", "name": "Solo equipo logística", "start": "2025-02-10", "end": "2025-02-10", "progress": 100, "dependencies": "1.1" },
+            { "id": "1.1.2", "name": "Permitir múltiples cambios de fecha", "start": "2025-02-10", "end": "2025-02-10", "progress": 100 },
+            { "id": "2", "name": "Número de ingreso (recolección)", "start": "2025-02-11", "end": "2025-02-13", "progress": 100 },
+            { "id": "2.1", "name": "Modificar código en creación de ruta", "start": "2025-02-11", "end": "2025-02-13", "progress": 100 },
+            { "id": "3", "name": "Adición de intertiendas", "start": "2025-02-14", "end": "2025-02-21", "progress": 100 },
+            { "id": "3.1", "name": "Agregar en layout + autorización logística", "start": "2025-02-14", "end": "2025-02-14", "progress": 100 },
+            { "id": "3.1.1", "name": "Creación de layout", "start": "2025-02-17", "end": "2025-02-19", "progress": 100 },
+            { "id": "3.1.2", "name": "Desarrollo Backend", "start": "2025-02-19", "end": "2025-02-21", "progress": 100 },
+            { "id": "4", "name": "Error en reporte de distribución", "start": "2025-02-24", "end": "2025-02-25", "progress": 100 },
+            { "id": "4.1", "name": "No respeta fechas / habilitar NC 1 y 2", "start": "2025-02-24", "end": "2025-02-24", "progress": 100 },
+            { "id": "4.1.1", "name": "Modificar Backend", "start": "2025-02-25", "end": "2025-02-25", "progress": 100 },
+            { "id": "4.1.2", "name": "Modificar Frontend", "start": "2025-02-25", "end": "2025-02-25", "progress": 100 },
+            { "id": "5", "name": "Eliminación cliente recoge tienda", "start": "2025-02-26", "end": "2025-02-28", "progress": 100 },
+            { "id": "5.1.1", "name": "Filtros abiertos/cerrados", "start": "2025-02-26", "end": "2025-02-26", "progress": 100 },
+            { "id": "5.1.2", "name": "Modificar Add-On estructura", "start": "2025-02-26", "end": "2025-02-26", "progress": 100 },
+            { "id": "6", "name": "Macro ruta SAP", "start": "2025-02-27", "end": "2025-02-28", "progress": 100 },
+            { "id": "6.1.1", "name": "Layout Macro", "start": "2025-02-27", "end": "2025-02-27", "progress": 100 },
+            { "id": "6.1.2", "name": "PDF Macro", "start": "2025-02-28", "end": "2025-03-01", "progress": 100 },
+            { "id": "6.1.3", "name": "Layout de Rutas", "start": "2025-03-01", "end": "2025-03-02", "progress": 100 },
+            { "id": "6.1.4", "name": "Proceso Backend", "start": "2025-03-02", "end": "2025-03-03", "progress": 100 },
+            { "id": "7", "name": "Macro ruta SAP - cambios pendientes", "start": "2025-03-03", "end": "2025-03-05", "progress": 100 },
+            { "id": "7.1.1", "name": "Layout", "start": "2025-03-03", "end": "2025-03-03", "progress": 100 },
+            { "id": "7.1.2", "name": "PDF Macro", "start": "2025-03-04", "end": "2025-03-04", "progress": 100 },
+            { "id": "7.1.3", "name": "Layout de rutas", "start": "2025-03-04", "end": "2025-03-05", "progress": 100 },
+            { "id": "7.1.4", "name": "Proceso Backend", "start": "2025-03-05", "end": "2025-03-05", "progress": 100 },
+            { "id": "8", "name": "Variación OC (precio)", "start": "2025-03-05", "end": "2025-03-06", "progress": 100 },
+            { "id": "9", "name": "Notas de crédito", "start": "2025-03-06", "end": "2025-03-07", "progress": 100 },
+            { "id": "10", "name": "Ordenes proveedor Hispacensa", "start": "2025-03-06", "end": "2025-03-07", "progress": 100 },
+            { "id": "10.1.1", "name": "Layout OC", "start": "2025-03-06", "end": "2025-03-07", "progress": 100 },
+            { "id": "10.1.2", "name": "BackEnd", "start": "2025-03-07", "end": "2025-03-10", "progress": 100 },
+            { "id": "11", "name": "Liquidación de ruta proveedores", "start": "2025-03-06", "end": "2025-03-07", "progress": 100 },
+            { "id": "12", "name": "Reportería", "start": "2025-03-06", "end": "2025-03-07", "progress": 100 },
+            { "id": "13", "name": "Pruebas", "start": "2025-03-10", "end": "2025-03-17", "progress": 100 }
+        ];
+
+
+        const ganttRutas = new Gantt("#ganttRutas", tasksRutas, {
+            view_mode: 'Week',
+            date_format: 'YYYY-MM-DD',
+            custom_popup_html: null
+        });
+
+        window.onload = function () {
+            const ctx2 = document.getElementById('graficoRutas').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completado', 'Pendiente'],
+                    datasets: [{
+                        data: [100, 0],  // Completado 100% y pendiente 0%
+                        backgroundColor: ['#4caf50', '#e0e0e0'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    },
+                    cutout: '0%',  // Esto elimina el centro del doughnut para que quede un círculo completo
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        };
+
+        const tasksEspecialistas = [
+            { "id": "1", "name": "Inicio del proyecto", "start": "2025-04-21", "end": "2025-04-21", "progress": 100 },
+            { "id": "1.1", "name": "Plan del proyecto", "start": "2025-04-21", "end": "2025-04-21", "progress": 100 },
+            { "id": "1.1.1", "name": "Construcción tablas (3) AUDU", "start": "2025-04-21", "end": "2025-04-23", "progress": 100 },
+            { "id": "1.1.2", "name": "Desarrollo en BackEnd", "start": "2025-04-21", "end": "2025-05-09", "progress": 100 },
+            { "id": "1.1.3", "name": "Update de Layouts carrito de ventas", "start": "2025-05-12", "end": "2025-05-16", "progress": 100 },
+            { "id": "1.1.4", "name": "Dashboard y reporteria (consulta de puntos y canjes)", "start": "2025-05-19", "end": "2025-05-23", "progress": 100 },
+            { "id": "2", "name": "Primera Presentación", "start": "2025-05-26", "end": "2025-05-26", "progress": 100 },
+            { "id": "2.1", "name": "Avances de proyecto", "start": "2025-05-26", "end": "2025-05-26", "progress": 100 },
+            { "id": "2.2", "name": "Capacitación", "start": "2025-05-28", "end": "2025-05-28", "progress": 100 },
+            { "id": "2.3", "name": "Entrega Fase final", "start": "2025-05-29", "end": "2025-05-29", "progress": 100 },
+            { "id": "2.4", "name": "Lanzamiento y ejecución del proyecto", "start": "2025-05-30", "end": "2025-05-30", "progress": 100 }
+        ];
+
+        const ganttEspecialista = new Gantt("#ganttEspecialista", tasksEspecialistas, {
+            view_mode: 'Week',
+            date_format: 'YYYY-MM-DD',
+            custom_popup_html: null
+        });
+
+        const ctx3 = document.getElementById('graficoEspecialista').getContext('2d');
+        new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completado', 'Pendiente'],
+                datasets: [{
+                    data: [0],
+                    backgroundColor: ['#4caf50', '#e0e0e0'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                },
+                cutout: '0%',
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+
+
+        const tasksRH = [
+            { "id": "1", "name": "Análisis y levantamiento", "start": "2025-04-10", "end": "2025-04-10", "progress": 100 },
+            { "id": "2", "name": "Toma de requerimientos con la persona a cargo", "start": "2025-04-10", "end": "2025-04-10", "progress": 100 },
+            { "id": "3", "name": "Documentación de RH", "start": "2025-04-11", "end": "2025-04-11", "progress": 100 },
+            { "id": "4", "name": "Listado de roles", "start": "2025-04-11", "end": "2025-04-11", "progress": 100 },
+            { "id": "5", "name": "Horas de gracia", "start": "2025-04-11", "end": "2025-04-11", "progress": 100 },
+            { "id": "6", "name": "Diseño funcional y técnico", "start": "2025-04-14", "end": "2025-04-15", "progress": 100 },
+            { "id": "7", "name": "Diagrama de alcance y funcionalidad", "start": "2025-04-14", "end": "2025-04-14", "progress": 100 },
+            { "id": "8", "name": "Validación de roles, permisos y procesos", "start": "2025-04-15", "end": "2025-04-15", "progress": 100 },
+            { "id": "9", "name": "Inicio de desarrollo de sistema", "start": "2025-04-21", "end": "2025-05-30", "progress": 0 },
+            { "id": "9.1", "name": "Generación de tablas y permisos", "start": "2025-04-21", "end": "2025-05-05", "progress": 0 },
+            { "id": "9.2", "name": "Inicio de desarrollo (BackEnd, FrontEnd)", "start": "2025-04-21", "end": "2025-05-05", "progress": 0 },
+            { "id": "9.3", "name": "Integración SAP B1", "start": "2025-04-21", "end": "2025-05-05", "progress": 0 },
+            { "id": "10", "name": "Presentación de avances", "start": "2025-05-31", "end": "2025-05-31", "progress": 0 },
+            { "id": "10.1", "name": "Reunión con personas involucradas", "start": "2025-05-31", "end": "2025-05-31", "progress": 0 },
+            { "id": "10.2", "name": "Cambios y ajustes", "start": "2025-05-31", "end": "2025-05-31", "progress": 0 },
+            { "id": "11", "name": "Presentación final con ajustes", "start": "2025-06-02", "end": "2025-06-02", "progress": 0 },
+            { "id": "11.1", "name": "Presentación y aprobación", "start": "2025-06-02", "end": "2025-06-02", "progress": 0 },
+            { "id": "11.2", "name": "Capacitación de personal RH", "start": "2025-06-02", "end": "2025-06-02", "progress": 0 },
+            { "id": "12", "name": "Producción (funcional)", "start": "2025-06-05", "end": "2025-06-06", "progress": 0 },
+            { "id": "12.1", "name": "Copia de desarrollo a producción", "start": "2025-06-05", "end": "2025-06-06", "progress": 0 },
+            { "id": "12.2", "name": "Creación de usuarios y permisos", "start": "2025-06-05", "end": "2025-06-06", "progress": 0 },
+            { "id": "12.3", "name": "Videos y manuales para el uso", "start": "2025-06-05", "end": "2025-06-06", "progress": 0 },
+            { "id": "13", "name": "FUNCIONAL", "start": "2025-06-06", "end": "2025-06-06", "progress": 0 },
+            { "id": "14", "name": "Soporte", "start": "2025-06-06", "end": "2025-06-06", "progress": 0 },
+            { "id": "14.1", "name": "Soporte a usuarios (uso de sistema)", "start": "2025-06-06", "end": "2025-06-06", "progress": 0 }
+        ];
+
+        const ganttRH = new Gantt("#ganttRh", tasksRH, {
+            view_mode: 'Week',
+            date_format: 'YYYY-MM-DD',
+            custom_popup_html: null
+        });
+
+        const ctx4 = document.getElementById('graficoRH').getContext('2d');
+        new Chart(ctx4, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completado', 'Pendiente'],
+                datasets: [{
+                    data: [0],
+                    backgroundColor: ['#4caf50', '#e0e0e0'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                },
+                cutout: '0%',
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -54,7 +54,7 @@ function updateSoloQuantity(pList) {
         const rows = document.querySelectorAll("table.shoping-cart-table tbody tr");
 
         rows.forEach(row => {
-            const lineId = row.querySelector("#LineId")?.textContent.trim() || "";
+            const identity = row.querySelector("#LineId")?.textContent.trim() || "";
             const itemCodeElement = row.querySelector("#ItemCode");
             const priceUnitElement = row.querySelector("#productUnitPrice strong");
             const quantityInput = row.querySelector("#counterInput");
@@ -62,23 +62,27 @@ function updateSoloQuantity(pList) {
 
             const itemCode = itemCodeElement?.textContent.trim() || "";
             const priceText = priceUnitElement?.textContent.trim() || "0";
-            const DescuentoText = DescuentoElement?.textContent.trim() || "0";
+            const DescuentoText = DescuentoElement?.textContent.trim() || "0";            
 
             const quantity = parseFloat(quantityInput?.value) || 0;
-            const priceUnit = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
-            const descuento = parseFloat(DescuentoText.replace(/[^0-9.]/g, '')) || 0;
-
+            const priceUnit = parseFloat(priceText.replace('Precio Unitario: Q.', '')) || 0;
+            const descuento = parseFloat(DescuentoText.replace('Descuento: Q.', '')) || 0;
+            
             const item = parsedData.productos.find(product =>
-                product.ItemCode.toString().trim() === itemCode.toString().trim() &&
-                product.LineId.toString().trim() === lineId.toString().trim()
+                product.ItemCode.toString().trim() === itemCode.toString().trim()
+                &&
+                product.Identity.toString().trim() === identity.toString().trim()
             );
 
             if (item) {
                 item.ListPrice = listaPrecios;
                 item.Quantity = quantity;
-                item.Dscto = descuento;
+                item.DescuentoU = descuento;
+                item.Price = (priceUnit - descuento);
                 item.LineTotal = ((priceUnit - descuento) * quantity);
             }
+
+            console.log("Precios", item);
         });
 
         // Actualiza la cookie una vez después del bucle
@@ -129,49 +133,81 @@ function ModificarCantidades(llave, cantidad, Descuento) {
 
 
 /*CREA EL COOKIE DE COTIZACION*/
-function CrearCotizacionCookie(clienteId, producto) {
+function CrearCotizacionCookie(clienteId, producto, docEntry) {
     let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
     var llave = generarNumeroCotizacion();
     // Si no existe una cotización previa, crea una nueva
+    
     if (!cookieName) {
-
         cookieName = "T-OneCotizacion-" + llave;
     }
 
     const existingCotizacion = getCookie(cookieName);
     let cotizacion;
-    if (existingCotizacion) {
-        cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto
+    if (existingCotizacion) {        
+        cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto        
+        console.log(cotizacion)
         cotizacion.productos.push(producto); // Agregamos el nuevo producto
-    } else {
-        cotizacion = {
-            Llave: llave,
-            NoCotizacion: generarNumeroCotizacion(),
-            cliente: clienteId,
-            LicTradNum: "",
-            CardCode: "",
-            CardName: "",
-            Direccion: "",
-            Email: "",
-            Telefono: "",
-            Fecha: new Date().toISOString().split('T')[0], // Fecha actual
-            PriceId: 9,
-            FacturarNit: "",
-            FacturarNombre: "",
-            FacturarDireccion: "",
-            EsCF: "",
-            Borrador: "N",
-            productos: [producto]
-        };
-    }
 
-    // Guardar la cotización actualizada
-    setCookie(cookieName, JSON.stringify(cotizacion), 7);
+        // Guardar la cotización actualizada
+        setCookie(cookieName, JSON.stringify(cotizacion), 7);
 
-    // Actualizar el badge del carrito
-    actualizarCarritoBadge(cotizacion.productos.length);
+        // Actualizar el badge del carrito
+        actualizarCarritoBadge(cotizacion.productos.length);
+    } else { //CUANDO ES NUEVO ESTA MIERDA ENTRA ACA..        
+        if (docEntry > 0) {
+            $.ajax({
+                url: '/Generales/ObtenerCotizacion', // cambia "TuControlador" por el nombre real
+                type: 'GET',
+                data: { DocEntry: docEntry },
+                success: function (data) {
+                    cotizacion = data;
+                    // Guardar la cotización actualizada
+                    setCookie(cookieName, JSON.stringify(cotizacion), 7);
+                    // Actualizar el badge del carrito
+                    actualizarCarritoBadge(cotizacion.productos.length);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al obtener la cotización:", error);
+                }
+            });
+        } else {
+            cotizacion = {
+                DocN: 0,
+                Llave: llave,
+                NoCotizacion: generarNumeroCotizacion(),
+                cliente: clienteId,
+                LicTradNum: "",
+                CardCode: "",
+                CardName: "",
+                Direccion: "",
+                Email: "",
+                Telefono: "",
+                Fecha: new Date().toISOString().split('T')[0], // Fecha actual
+                PriceId: 9,
+                FacturarNit: "",
+                FacturarNombre: "",
+                FacturarDireccion: "",
+                EsCF: "",
+                Borrador: "N",
+                productos: [producto]
+            };
+
+            // Guardar la cotización actualizada
+            setCookie(cookieName, JSON.stringify(cotizacion), 7);
+
+            // Actualizar el badge del carrito
+            actualizarCarritoBadge(cotizacion.productos.length);
+        }
+        
+    }    
 
     return true;
+}
+
+// Función para generar un número de cotización aleatorio (o secuencial si prefieres)
+function generarNumeroCotizacion() {
+    return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
 }
 
 function setCookie(name, value, days) {

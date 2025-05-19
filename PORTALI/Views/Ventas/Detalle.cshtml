@@ -1,0 +1,668 @@
+﻿@model Entity.CarritoComprasPDFEntity
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Cotización</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="~/Css/DetalleAutorizaVenta.css" rel="stylesheet" />
+    <script src="/js/UpdateCarrito.js" defer></script>
+</head>
+<body>
+
+    <div class="container mt-4">
+        <div class="header-section">📄 Detalle de Cotización</div>
+
+        <!-- Encabezado de la cotización -->
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" style="text-align:center">📌 Datos generales</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6"><strong>Fecha:</strong> <span id="fecha">@Model.Encabezado.DocDate.ToString("dd/MM/yyyy")</span></div>
+                            <div class="col-md-6"><strong>Vencimiento:</strong> <span id="fecha">@Model.Encabezado.DocDueDate.ToString("dd/MM/yyyy")</span></div>
+                            <div class="col-md-6"><strong>No. Documento:</strong> <span id="docNum">@Model.Encabezado.DocNum</span></div>
+                            <div class="col-md-6"><strong>No. Factura:</strong> <span id="docNum">@Model.Encabezado.DocNumFac</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header" style="background-color:darkcyan">📌 Datos del cliente</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Código:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="codigoclienteInput" value="@Model.Encabezado.CardCode" class="form-control" readonly style="background-color:white; border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Nombre:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="nombreInput" value="@Model.Encabezado.CardName" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Nit:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="nitInput" value="@Model.Encabezado.NitCardCode" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 70px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Dirección:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="direccionInput" value="@Model.Encabezado.DireccionCardCode" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Teléfono:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="telefonoInput" value="@Model.Encabezado.TelefonoCliente" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 70px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow='none';" />
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Correo:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="correoInput" value="@Model.Encabezado.CorreoCliente" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 70px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header" style="background-color:orange">📌 Datos de facturación</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!--<div class="col-md-12">
+                                <div class="d-flex align-items-center">-->
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <!--<strong class="mr-2" style="min-width: 100px;">Consumidor Final</strong>-->
+
+                                    <!-- Select con opciones de Sí y No -->
+                                    <!--<select id="consumidorFinal" class="form-control" style="border: none; outline: none; width: auto; min-width: 150px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';">
+                                        <option value="sí">Sí</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                            </div>-->
+
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Nit/DPI:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="nitInput" value="@Model.Encabezado.NitDocto" class="form-control" style="border: none; outline: none; width: auto; min-width: 150px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                    <!-- Botón con icono de lupa -->
+                                    <button type="button" class="btn btn-light" id="btnActualizarNit" style="margin-left: 10px;">
+                                        <i class="bi bi-search"></i> <!-- Icono de lupa usando Bootstrap Icons -->
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Cliente:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="clienteInput" value="@Model.Encabezado.CardName" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Dirección:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="direccionInput" value="@Model.Encabezado.Address" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Teléfono:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="telefonoInput" value="@Model.Encabezado.TelefonoDocto" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow='none';" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <!-- Etiqueta (strong) a la izquierda -->
+                                    <strong class="mr-2" style="min-width: 100px;">Correo:</strong>
+                                    <!-- Input sin borde con tamaño ajustable -->
+                                    <input type="text" id="correoInput" value="@Model.Encabezado.CorreoDocto" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a id="txtDocEntry" style="display:none">@Model.Encabezado.DocEntry</a>
+        <!-- Detalle de productos -->
+        <div class="card mt-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>📦 Detalle de Productos</span>
+                <button type="button" class="btn btn-sm btn-warning" id="btnEditarCotizacion" onclick="confirmarEditar()">
+                    <i class="bi bi-pencil-square"></i> Editar Cotización
+                </button>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center">
+                        <thead>
+                            <tr>
+                                @*<th>Opción</th>*@
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Descuento (Q)</th>
+                                <th>Precio con Descuento</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalle-body">
+                            @foreach (var item in Model.Detalle)
+                            {
+                                <tr>
+                                    @*<td style="text-align: center; vertical-align: middle;">
+                                        <i class="bi bi-trash-fill text-danger" style="cursor: pointer;" title="Eliminar" onclick="confirmarEliminar(this)"></i>
+                                    </td>*@
+                                    <td style="vertical-align: middle;">@item.ItemCode</td>
+                                    <td style="text-align:left; vertical-align: middle;">@item.Dscription</td>
+                                    <td style="vertical-align: middle;">
+                                        <input type="number" name="Cantidad" value="@item.Quantity" min="1" step="1"
+                                               class="cantidad-input"
+                                               style="text-align:center; width: 100%; border: none; outline: none; background: transparent;" />
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;" class="precio" data-precio="@item.Price">
+                                        Q @item.Price.ToString("#,##0.00")
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; justify-content: flex-end;">
+                                            <span style="margin-right: 4px;">Q</span>
+                                            <input type="number" name="Descuento"
+                                                   value="@item.Descuento.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                                                   min="0" step="0.01"
+                                                   class="descuento-input"
+                                                   style="text-align: right; width: 100%; border: none; outline: none; background: transparent;" />
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;" class="precio-descuento">Q 0.00</td>
+                                    <td style="text-align: right; vertical-align: middle;" class="line-total">Q 0.00</td>
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr style="background-color:#efe8e8">
+                                <td colspan="6" class="text-end"><strong>Gran Total:</strong></td>
+                                <td id="gran-total"><strong>Q 0.00</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            function calcularTotales() {
+                                let totalGeneral = 0;
+
+                                document.querySelectorAll('#detalle-body tr').forEach(function (fila) {
+                                    const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value || 0);
+                                    const descuento = parseFloat(fila.querySelector('.descuento-input')?.value || 0);
+                                    const precio = parseFloat(fila.querySelector('.precio')?.dataset.precio || 0);
+
+                                    const precioConDescuento = precio - descuento;
+                                    const totalLinea = cantidad * precioConDescuento;
+
+                                    // Mostrar en columna correspondiente
+                                    fila.querySelector('.precio-descuento').textContent = precioConDescuento.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' });
+                                    fila.querySelector('.line-total').textContent = totalLinea.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' });
+
+                                    totalGeneral += totalLinea;
+                                });
+
+                                document.getElementById('gran-total').innerHTML = `<strong>${totalGeneral.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' })}</strong>`;
+                            }
+
+                            // Asignar evento
+                            document.querySelectorAll('.cantidad-input, .descuento-input').forEach(function (input) {
+                                input.addEventListener('input', calcularTotales);
+                            });
+
+                            // Calcular una vez al cargar
+                            calcularTotales();
+                        });
+                    </script>
+
+
+                </div>
+
+                <!-- Observaciones -->
+                <div class="mt-4">
+                    <label for="observaciones" class="form-label"><i class="fas fa-sticky-note"></i> Comentarios </label>
+                    <textarea id="observaciones" class="form-control" rows="3" placeholder="Observación...">@Model.Encabezado.Comments</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header" style="background-color:yellowgreen">📦 Seguimiento</div>
+            <div class="card-body">
+                <div style="display: flex; justify-content: end; margin-bottom: 10px;">
+                    <button id="agregarSeguimiento" style="background-color:red" class="custom-btn">➕ Agregar Seguimiento</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="seguimiento" class="table table-bordered table-hover text-center">
+                        <thead style="background-color:red">
+                            <tr>
+                                <th>Creado</th>
+                                <th>Fecha</th>
+                                <th>Fecha Seg.</th>
+                                <th>Estado</th>
+                                <th>Tipo contacto</th>
+                                <th>Acción realizada</th>
+                                <th>Anotaciones</th>
+                                <th>Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seguimiento-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modalSeguimiento" class="modal fade" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-confirm" style="max-width: 500px; margin: auto;">
+            <div class="modal-content" style="border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+
+                <!-- Header -->
+                <div class="modal-header" style="display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #ddd; padding: 15px;">
+                    <h5 class="modal-title" id="miModalLabel" style="margin: 0; font-weight: bold; display: flex; align-items: center;">
+                        <i class="fas fa-tasks" style="color: #007bff; margin-right: 10px;"></i> Seguimiento
+                    </h5>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <form id="formSeguimiento">
+                        <label for="notas" style="font-weight: bold; display: block; margin-top: 10px;">Notas:</label>
+                        <textarea id="txtNotas" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+
+                        <label for="fechaSeguimiento" style="font-weight: bold; display: block; margin-top: 10px;">Fecha de Seguimiento:</label>
+                        <input type="date" id="txtfechaSeguimiento" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+
+                        <label for="fechaVencimiento" style="font-weight: bold; display: block; margin-top: 10px;">Fecha de Vencimiento:</label>
+                        <input type="date" id="txtfechaVencimiento" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+
+                        <label for="estado" style="font-weight: bold; display: block; margin-top: 10px;">Estado:</label>
+                        <select id="crmEstado" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">                            
+                        </select>
+
+                        <label for="tipoContacto" style="font-weight: bold; display: block; margin-top: 10px;">Tipo de Contacto:</label>
+                        <select id="txttipoContacto" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">                           
+                        </select>                       
+                        <label for="accionRealizada" style="font-weight: bold; display: block; margin-top: 10px;">Acción Realizada:</label>
+                        <input type="text" id="txtaccionRealizada" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" autocomplete="off">
+                    </form>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer" style="border-top: none; text-align: center;">
+                    <button id="btnSaveSeguimiento" type="button" class="btn btn-success btn-block" style="width: 100%; padding: 10px; font-size: 16px; border-radius: 4px;">Guardar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome para iconos -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>    
+    <script>
+        function confirmarEditar() {
+            const cookies = document.cookie.split(";");
+            // Buscar todas las cookies que empiecen por T-OneCotizacion-
+            const cotizaciones = cookies.filter(cookie => {
+                const nombre = cookie.trim().split("=")[0];
+                return nombre.startsWith("T-OneCotizacion-");
+            });
+
+            if (cotizaciones.length >= 1) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cotizaciones abiertas',
+                    text: 'Para editar una cotización debe cerrar las pendientes',
+                    cancelButtonText: 'Cerrar'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        // Puedes redirigir a un listado de cotizaciones si tienes uno
+                        // window.location.href = "/MiCarrito/ListadoCarrito";
+                    }
+                });
+            } else if (cotizaciones.length === 0) {
+                Swal.fire({
+                    title: '¿Desea editar su cotización?',
+                    text: 'Esta cotización ya existe en SAP',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, editar',
+                    cancelButtonText: 'No, cancelar'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        /*window.location.href = "/MiCarrito/ListadoCarrito";*/
+
+
+                        //const precioNo = "1";
+                        //const precioOf = "1";
+                        const clienteId = 'A1';
+                        //const itemCode = "Abc";
+                        //const itemName = "text";
+                        //alert("llegue");
+                        //const quantity = parseFloat(document.getElementById('counterInput').value);
+                        //const price = "50";
+                        //const dscto = "0.00";
+                        //const savings = "0.00";
+                        //const descuentoU = parseFloat(precioOf - precioNo).toFixed(2);
+                        //const listPrice = "12";
+                        //const lineTotal = parseFloat((price * quantity).toFixed(2)) - parseFloat(savings).toFixed(2);                        
+                        //const elemento = document.getElementById('iMetrosTotal');
+                        //const cantidadMetros = elemento ? elemento.textContent.replace("Total metros de piso:", "").trim() : "0";
+                        //const linkImg = "";
+                        //const EsPromo = "1";
+                        //let lineId = regresarId();
+
+                        const producto = "";
+
+                        //const producto = {
+                        //    DocE: 0,
+                        //    LineN: -1,
+                        //    Identity: generateUUID(),
+                        //    LineId: lineId,
+                        //    ItemCode: itemCode,
+                        //    Dscription: itemName.replace(/&#160;/g, ' '),
+                        //    Quantity: quantity,
+                        //    ListPrice: listPrice,
+                        //    Price: (parseFloat(price) - parseFloat(descuentoU)),
+                        //    DescuentoU: descuentoU,
+                        //    Dscto: dscto.replace("%", ""),
+                        //    Saving: savings,
+                        //    LineTotal: lineTotal,
+                        //    CantidadMetros: cantidadMetros,
+                        //    LinkImg: linkImg,
+                        //    EsPromo: EsPromo,
+                        //    DescuentoLpr: 0,
+                        //    DescuentoPor: 0.00,
+                        //    DescuentoQtz: 0.00,
+                        //    DescuentoNwp: 0.00
+                        //};
+
+                        if (CrearCotizacionCookie(clienteId, producto, "@Model.Encabezado.DocEntry") === true) {
+                            $('#miModal').modal('show').addClass('fade-in');
+                            $("#globalLoading").hide();
+                        }
+                    }
+                });
+            }
+        }
+
+        function regresarId() {
+            let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+            const cookieData = getCookie(cookieName);
+            let lineId = 1; // Valor inicial en caso de que no exista la cookie
+
+            if (cookieData) {
+                try {
+                    const cotizacion = JSON.parse(cookieData);
+                    // Acceder al array de productos
+                    if (Array.isArray(cotizacion.productos) && cotizacion.productos.length > 0) {
+                        // Obtener el último producto en la lista
+                        const ultimoProducto = cotizacion.productos[cotizacion.productos.length - 1];
+
+                        // Obtener el último LineId y sumar 1
+                        return (ultimoProducto.LineId || 0) + 1;
+                    }
+                } catch (error) {
+                    console.error('Error al parsear la cookie:', error);
+                    return -1
+                }
+            }
+            return 1;
+        }      
+        // Función para obtener el valor de una cookie
+        function getCookie(name) {
+            const cookies = document.cookie.split("; ");
+            for (const cookie of cookies) {
+                const [key, value] = cookie.split("=");
+                if (key === name) return value;
+            }
+            return null;
+        }
+
+        $(document).ready(function () {
+            cargarSeguimiento();
+        });
+
+        function formatFecha(fechaSAP) {
+            if (!fechaSAP) return ""; // Si la fecha es nula o vacía, devolver vacío
+
+            let timestamp = parseInt(fechaSAP.match(/\d+/)[0]); // Extraer el número de la fecha
+            let fecha = new Date(timestamp); // Convertir a objeto Date
+
+            let dia = fecha.getDate().toString().padStart(2, "0");
+            let mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+            let año = fecha.getFullYear();
+
+            return `${dia}/${mes}/${año}`;
+        }
+
+        function cargarSeguimiento() {
+            let docEntry = '@Model.Encabezado.DocEntry'; // Obtener el valor desde Razor
+            $.ajax({
+                url: '/Ventas/CargarSeguimientos',
+                type: 'GET',
+                data: { DocEntry: docEntry }, // Pasar el parámetro en la solicitud
+                dataType: 'json',
+                success: function (data) {
+                    let tbody = $('#seguimiento-body');
+                    tbody.empty(); // Limpiar la tabla antes de agregar nuevos datos
+
+                    if (data.length > 0) {
+                        $.each(data, function (index, item) {
+                            let fechaFormateada = formatFecha(item.FechaSeg);
+                            let vencimientoFormateado = formatFecha(item.FechaVencimiento);
+                            let fila = `
+                                <tr>
+                                    <td>${item.Creado}</td>
+                                    <td>${fechaFormateada}</td>
+                                    <td>${vencimientoFormateado}</td>
+                                    <td>${item.DescrEstado}</td>
+                                    <td>${item.TipoDeContacto}</td>
+                                    <td>${item.Accion}</td>
+                                    <td>${item.Notas}</td>
+                                    <td>${item.Usuario}</td>
+                                </tr>
+                            `;
+                            tbody.append(fila);
+                        });
+                    } else {
+                        tbody.append('<tr><td colspan="8">No hay seguimientos registrados</td></tr>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al cargar los seguimientos:', error);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $.ajax({
+                url: "/Ventas/getAllTipsCRM", // Ajusta la URL según tu backend
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    let $select = $("#crmEstado");
+                    $select.empty(); // Limpiar el select antes de agregar opciones
+                    $select.append('<option value="-1">-- Seleccione --</option>');
+                    $select.append('<option value="-2">Mostrar todos</option>');
+
+                    // Recorrer los datos y agregarlos al select
+                    $.each(data, function (index, item) {
+                        $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                    });
+                },
+                error: function () {
+                    console.error("Error al cargar los estados.");
+                }
+            });
+
+            $.ajax({
+                url: "/Ventas/getAllTiposCrm", // Ajusta la URL según tu backend
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    let $select = $("#txttipoContacto");
+                    $select.empty(); // Limpiar el select antes de agregar opciones
+                    $select.append('<option value="-1">-- Seleccione --</option>');
+                    // Recorrer los datos y agregarlos al select
+                    $.each(data, function (index, item) {
+                        $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                    });
+                },
+                error: function () {
+                    console.error("Error al cargar los estados.");
+                }
+            });
+        });
+
+        document.getElementById("btnSaveSeguimiento").addEventListener("click", function () {
+            $("#globalLoading").show();
+            // Capturar los valores de los inputs
+            var data = {
+                DocEntry: @Model.Encabezado.DocEntry, // Si es un número directamente
+                DocNum: @Model.Encabezado.DocNum,
+                FechaSeg: document.getElementById("txtfechaSeguimiento").value,
+                FechaVenc: document.getElementById("txtfechaVencimiento").value,
+                IdEstado: document.getElementById("crmEstado").value,
+                IdTipoCont: document.getElementById("txttipoContacto").value,
+                AccionRealizada: document.getElementById("txtaccionRealizada").value, // Asegúrate de que exista este ID
+                Notas: document.getElementById("txtNotas").value
+            };
+            // Enviar datos con AJAX
+            $.ajax({
+                url: "/Ventas/SaveSeguimiento", // Ruta a tu backend en ASP.NET
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (response.result === 1) {
+                        alert("Seguimiento guardado correctamente.");
+                        window.location.href = "/Ventas/Listado";
+                        $("#globalLoading").hide();
+                    } else {
+                        alert("Error: " + response.message);
+                        $("#globalLoading").hide();
+                    }
+                },
+                error: function () {
+                    alert("Error al enviar la solicitud.");
+                    $("#globalLoading").hide();
+                }
+            });
+        });
+
+        document.getElementById("agregarSeguimiento").addEventListener("click", function () {
+            $("#modalSeguimiento").modal('show');
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let total = 0;
+            document.querySelectorAll(".line-total").forEach(function (element) {
+                let valor = parseFloat(element.textContent.replace("Q", "").trim());
+                if (!isNaN(valor)) {
+                    total += valor;
+                }
+            });
+            document.getElementById("gran-total").innerHTML = `<strong>Q ${total.toFixed(2)}</strong>`;
+        });
+
+
+
+        //function guardarAutorizacion() {
+                            //    $("#globalLoading").show();
+                            //    const estado = document.getElementById("status").value;
+                            //    const observaciones = document.getElementById("observaciones").value;
+                            //    const docEntry = document.getElementById("txtDocEntry").textContent;
+                            //    const confirmar = confirm(`¿Está seguro de ${estado == "R" ? "rechazar" : "autorizar"} la cotización?`);
+
+                            //    if (confirmar) {
+                            //        // Realizando la solicitud AJAX
+                            //        $.ajax({
+                            //            url: '/CotizacionVentasAutoriza/EnviarAutorizacionSAP/', // Asegúrate de que esta ruta esté correcta
+                            //            type: 'POST',
+                            //            data: {
+                            //                DocEntry: docEntry
+                            //            },
+                            //            success: function (response) {
+                            //                if (response.success) {
+                            //                    $("#globalLoading").hide();
+                            //                    window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
+                            //                } else {
+                            //                    $("#globalLoading").hide();
+                            //                    window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
+                            //                }
+                            //            },
+                            //            error: function (xhr, status, error) {
+                            //                $("#globalLoading").hide();
+                            //                alert("Error al realizar la solicitud: " + error);
+                            //            }
+                            //        });
+
+                            //    } else {
+                            //        $("#globalLoading").hide();
+                            //        alert("Operación cancelada.");
+                            //    }
+                            //}
+
+                            //function regresarLista() {
+                            //    window.history.back(); // Simula regresar a la lista anterior
+                            //}
+    </script>
+</body>
+</html>
+

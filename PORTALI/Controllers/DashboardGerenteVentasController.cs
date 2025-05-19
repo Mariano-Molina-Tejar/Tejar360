@@ -13,14 +13,26 @@ namespace PORTALI.Controllers
         // GET: DashboardGerenteVentas
         public ActionResult DashboardGerenteVentas()
         {
+            CargarData();
+            return View();
+        }
+
+        public JsonResult CargarData()
+        {
             if (Session["PropertiesEntity"] == null)
             {
-                return View();
+                return Json(new { error = "Sesión no encontrada" }, JsonRequestBehavior.AllowGet);
             }
+
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
-            PortalDashboardGtEntity portalDashboardGtEntity = new PortalDashboardGtEntity();
-            portalDashboardGtEntity = DALPortalDashboardGt.getDashboardVentasGt(sessions.WhsCode, DateTime.Now, DateTime.Now);
-            return View(portalDashboardGtEntity);
+            if (sessions.Nivel == 2)
+            {
+                PortalDashboardGtEntity portalDashboardGtEntity = DALPortalDashboardGt.getDashboardVentasGt(sessions.WhsCode, DateTime.Now, DateTime.Now);
+                return Json(portalDashboardGtEntity, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { error = "No autorizado" }, JsonRequestBehavior.AllowGet);
         }
+
     }
 }

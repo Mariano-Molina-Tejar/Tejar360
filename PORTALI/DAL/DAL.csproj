@@ -162,6 +162,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DALCarritoCotizaciones.cs" />
+    <Compile Include="DALCrmCotizacionesAnalisis.cs" />
     <Compile Include="DALPortalBonoLiga.cs" />
     <Compile Include="DALPortalCarritoCompras.cs" />
     <Compile Include="DALPortalCotizacionCompra.cs" />
@@ -176,6 +178,7 @@
     <Compile Include="DALPortalRankingTrimestral.cs" />
     <Compile Include="DALPortalRecepcionProductos.cs" />
     <Compile Include="DALPortalSolicitudCompra.cs" />
+    <Compile Include="DALPortalVentasEmpresa.cs" />
     <Compile Include="DAL_API.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

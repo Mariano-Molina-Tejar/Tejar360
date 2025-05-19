@@ -169,6 +169,7 @@ namespace DAL
                                                 WhsCode = row["WhsCode"].ToString(),
                                                 WhsName = row["WhsName"].ToString(),
                                                 Stock = double.Parse(row["Stock"].ToString()),
+                                                Comprometido = double.Parse(row["Comprometido"].ToString()),
                                                 Direccion = row["Direccion"].ToString()
                                             }).ToList();
                         return listadoProductos;

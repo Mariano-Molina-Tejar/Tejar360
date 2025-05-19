@@ -8,6 +8,7 @@ using System.Data.OleDb;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,205 @@ namespace DAL
 {
     public class DALPortalGenerales
     {
+        public static List<PortalListadoGeneralEntity> getAllTiposContactoCrm()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<PortalListadoGeneralEntity> listaTiposCrm = new List<PortalListadoGeneralEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("SELECT * FROM [@CRM_TIPOCONT]", iConnection);
+                iCommand.CommandType = CommandType.Text;
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new PortalListadoGeneralEntity()
+                                         {
+                                             Id = row["Code"].ToString(),
+                                             Dscription = row["Name"].ToString()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+        public static List<PortalListadoGeneralEntity> getAllTiposCrm()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<PortalListadoGeneralEntity> listaTiposCrm = new List<PortalListadoGeneralEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("SELECT FldValue As Codigo,Descr As Descripcion FROM UFD1 WHERE TableID = 'OQUT' AND FieldId = '111'", iConnection);
+                iCommand.CommandType = CommandType.Text;
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new PortalListadoGeneralEntity()
+                                         {
+                                             Id = row["Codigo"].ToString(),
+                                             Dscription = row["Descripcion"].ToString()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+
+        public static DatosServerEntity getDatosServer()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            DatosServerEntity datosServerEntity = new DatosServerEntity();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_datos_servidor", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if(dt.Rows.Count > 0) 
+                    {
+                        datosServerEntity.FechaHoy = DateTime.Parse(dt.Rows[0]["FechaHoy"].ToString());
+                        datosServerEntity.FechaInicioMes = DateTime.Parse(dt.Rows[0]["FechaInicioMes"].ToString());
+                        datosServerEntity.FechaFinalMes = DateTime.Parse(dt.Rows[0]["FechaFinalMes"].ToString());
+                        datosServerEntity.Hora = dt.Rows[0]["Hora"].ToString();
+                    }
+                    return datosServerEntity;
+                }
+                catch (Exception ex)
+                {
+                    return new DatosServerEntity();
+                }
+            }
+        }
+
+        public static string BuscarDPI(string cui)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    // Obtener el token
+                    string token = GetTokenSAT();
+
+                    // Verificar si se obtuvo el token
+                    if (string.IsNullOrEmpty(token) || token.StartsWith("Error"))
+                    {
+                        return "Error al obtener el token.";
+                    }
+
+                    // URL de la API
+                    string url = "https://certificador.feel.com.gt/api/v2/servicios/externos/cui";
+
+                    // Agregar el token en el encabezado de la solicitud
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                    // Datos que se enviarán en el cuerpo de la solicitud
+                    var data = new { cui = cui };
+                    string jsonData = JsonConvert.SerializeObject(data);
+                    var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+                    // Realizar la solicitud POST de manera síncrona
+                    HttpResponseMessage response = client.PostAsync(url, content).Result;
+
+                    // Verificar si la solicitud fue exitosa
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = response.Content.ReadAsStringAsync().Result;
+                        dynamic jsonResponse = JsonConvert.DeserializeObject(responseBody);
+
+                        // Retornar solo el nombre
+                        return jsonResponse.cui.nombre;
+                    }
+                    else
+                    {
+                        return $"Error: {response.StatusCode}";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+        public static string GetTokenSAT()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    // URL de la API
+                    string url = "https://certificador.feel.com.gt/api/v2/servicios/externos/login";
+
+                    // Crear el contenido form-data
+                    var formData = new MultipartFormDataContent
+                    {
+                        { new StringContent("TEJAR_TIVOLI"), "prefijo" },
+                        { new StringContent("3186EF8FCCAF78B315CD9B7B8DD9AA23"), "llave" }
+                    };
+
+                    // Realizar la solicitud POST de manera síncrona
+                    HttpResponseMessage response = client.PostAsync(url, formData).Result;
+
+                    // Verificar si la solicitud fue exitosa
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = response.Content.ReadAsStringAsync().Result;
+                        dynamic jsonResponse = JsonConvert.DeserializeObject(responseBody);
+
+                        // Retornar solo el token
+                        return jsonResponse.token;
+                    }
+                    else
+                    {
+                        return $"Error: {response.StatusCode}";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+
         public static ClienteSATEntity ConsultarNIT(string nit)
         {
             // URL del servicio de la SAT
@@ -88,8 +288,6 @@ namespace DAL
                 return null;
             }
         }
-
-
         public static PortalPdfOrdenCompraEntity DataPdfOrdenCompra(int DocEntry)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();

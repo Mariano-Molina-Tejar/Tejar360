@@ -22,7 +22,7 @@ namespace PORTALI.Controllers
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
 
             // Obtener listado de cotizaciones desde BD
-            List<PortalListadoCotizacionesEntity> listado = DALPortalCarritoCompras.getAllCotizacionesPendientes(sessions.SlpCode);
+            List<PortalListadoCotizacionesEntity> listado = DALPortalCarritoCompras.getAllCotizacionesPendientes(sessions.UserId);
 
             return View(listado);
         }
@@ -35,12 +35,12 @@ namespace PORTALI.Controllers
             }
 
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
-            CarritoComprasPDFEntity detail = DALPortalCarritoCompras.getAllCotizacionesPendientesDetalle(DocEntry, sessions.SlpCode);
+            CarritoComprasPDFEntity detail = DALPortalCarritoCompras.getAllCotizacionesPendientesDetalleAutorizacion(DocEntry);
             return View(detail);
         }
 
         [System.Web.Http.HttpPost]
-        public ActionResult EnviarAutorizacionSAP(int DocEntry)
+        public ActionResult EnviarAutorizacionSAP(int DocEntry, string Estado, string Notas)
         {
             if (Session["PropertiesEntity"] == null)
             {
@@ -48,9 +48,14 @@ namespace PORTALI.Controllers
             }
 
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
-            string urlParametros = $"{DocEntry}";
-            string contenido = DALPortalSolicitudCompra.NewSolicitud("CarritoCompras/GenerarCotizacionAutorizada/", null, urlParametros);
+
+            AutorizaCotizacionEntity autorizaCotizacionEntity = new AutorizaCotizacionEntity();
+            autorizaCotizacionEntity.DocEntry = DocEntry;
+            autorizaCotizacionEntity.TipoAutoriza = (Estado == "A" ? 1 : 0);
+            autorizaCotizacionEntity.Notas = Notas;
+            autorizaCotizacionEntity.Usuario = sessions.UserCode;
             
+            string contenido = DAL_API.CrearCotizacionVenta("CarritoCompras/GenerarCotizacionAutorizada/", autorizaCotizacionEntity);
             Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
             return Json(datos, JsonRequestBehavior.AllowGet);
         }

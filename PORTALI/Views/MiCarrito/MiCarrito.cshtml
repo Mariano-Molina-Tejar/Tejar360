@@ -135,9 +135,9 @@
 
 <div class="container">
     <div class="wrapper wrapper-content animated fadeInRight">
-        <div class="metodoPago">
-            <h3>Método de pago</h3>
-            <div class="botones_pago">
+        <div class="metodoPago text-center">
+            <h3 class="mb-1">Método de pago</h3>
+            <div class="botones_pago mt-3">
                 <button class="boton" onclick="CargarData(9, this);">
                     <span class="icon">💳</span> Precio Normal
                 </button>
@@ -145,7 +145,8 @@
                     <span class="icon">💵</span> Precio Beneficio
                 </button>
             </div>
-            <div id="pLista"></div>
+
+            <div id="pLista" class="mt-3"></div>            
         </div>
 
         <style>
@@ -184,7 +185,7 @@
                 cursor: pointer;
                 transition: 0.3s;
                 font-weight: bold;
-            } 
+            }
 
             .icon {
                 font-size: 20px;
@@ -237,8 +238,8 @@
                         <button type="submit" class="btn-buscar" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: #ff8c00; margin-bottom:10px;
                                 border: none; border-radius: 12px; cursor: pointer;" onclick="loadStep(1)">
                             Continuar  &#8594;
-                        </button>                        
-                        <button type="submit" class="btn-buscar" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: green;
+                        </button>
+                        <button id="btnGuardarComoBorrador" type="submit" class="btn-buscar d-none" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: green;
                                 border: none; border-radius: 12px; cursor: pointer;" onclick="GuardarBorrador()">
                             Guardar como borrador
                         </button>
@@ -277,9 +278,8 @@
         }
     }
 
-    $(document).ready(function () {        
-        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
-        console.log(cookieName);
+    $(document).ready(function () {
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");        
         // Si no hay cookies existentes, salir de la función
         if (!cookieName) {
             console.warn("No se encontró ninguna cookie de cotización.");
@@ -310,7 +310,6 @@
 
         try {
             const parsedData = JSON.parse(cookieData);
-            console.log("respuesta", parsedData);
             // Verificar si "productos" existe y es un array
             if (!parsedData.productos || !Array.isArray(parsedData.productos) || parsedData.productos.length === 0) {
                 console.log('No hay productos en la cookie.');
@@ -318,13 +317,19 @@
                 return; // Detener la ejecución si no hay productos
             }
 
+            let _docNum = parsedData.NoCotizacion || 0;
+            let _docEntry = parsedData.DocN || 0;
+
+
             const cartItems = parsedData.productos.map(item => ({
+                DocNum: _docNum,
+                DocEntry: _docEntry,
                 Identity: item.Identity,
                 LineId: item.LineId,
                 ItemCode: item.ItemCode,
                 Dscription: item.Dscription,
                 Quantity: item.Quantity,
-                Price: item.Price,
+                Price: (parseFloat(item.Price) - parseFloat(item.DescuentoU)),
                 LineTotal: item.LineTotal,
                 ListPrice: item.ListPrice,
                 LinkImg: item.LinkImg,
@@ -352,7 +357,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ Detalle: cartItems, PriceList: pList, Btn: 1 })
+                body: JSON.stringify({ Detalle: cartItems, DocNum: _docNum, DocEntry: _docEntry, PriceList: pList, Btn: 1 })
             })
                 .then(response => response.text())
                 .then(data => {

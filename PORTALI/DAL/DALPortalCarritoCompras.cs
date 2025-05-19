@@ -6,22 +6,62 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entity;
+using Newtonsoft.Json;
 
 namespace DAL
 {
     public class DALPortalCarritoCompras
     {
-        public static CarritoComprasPDFEntity getAllCotizacionesPendientesDetalle(int DocEntry, int SlpCode)
+        public static List<ListaAsesoresEntity> getAllUsuariosPorTienda(string WhsCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_listado_asesores_por_tienda_2", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@WhsCode", WhsCode);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        var listado = (from row in dt.AsEnumerable()
+                                       select new ListaAsesoresEntity()
+                                       {
+                                           SlpCode = int.Parse(row["SlpCode"].ToString()),
+                                           SlpName = row["SlpName"].ToString()
+                                       }).ToList();
+                        return listado;
+                    }
+                    return new List<ListaAsesoresEntity>();
+                }
+                catch (Exception ex)
+                {
+                    return new List<ListaAsesoresEntity>();
+                }
+            }
+        }
+
+        public static CarritoComprasPDFEntity getAllCotizacionesPendientesDetalleAutorizacion(int DocEntry)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
             using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
             {
                 CarritoComprasPDFEntity carritoComprasPDFEntity = new CarritoComprasPDFEntity();
+                carritoComprasPDFEntity.Encabezado = new PortalListadoCotizacionesEntity();
+                carritoComprasPDFEntity.Detalle = new List<PortalCotizacionesDetalleEntity>();
+
                 OleDbCommand iCommand = null;
-                iCommand = new OleDbCommand("sp_autorizacion_cotizaciones_de_carrito_detalle", iConnection);
+                iCommand = new OleDbCommand("sp_autorizacion_cotizaciones_de_carrito_detalle_v3", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
-                iCommand.Parameters.AddWithValue("@DocEntry", DocEntry);
-                iCommand.Parameters.AddWithValue("@SlpCode", SlpCode);
+                iCommand.Parameters.AddWithValue("@DocEntry", DocEntry);                
 
                 try
                 {
@@ -34,11 +74,22 @@ namespace DAL
                     if (dt.Rows.Count > 0)
                     {
                         PortalListadoCotizacionesEntity encabezado = new PortalListadoCotizacionesEntity();
-                        encabezado.Nit = dt.Rows[0]["Nit"].ToString();
+                        encabezado.NitDocto = dt.Rows[0]["NitDocto"].ToString();
+                        encabezado.NitCardCode = dt.Rows[0]["NitCardCode"].ToString();
+                        encabezado.CardCode = dt.Rows[0]["CardCode"].ToString();
+                        encabezado.DocNum = int.Parse(dt.Rows[0]["DocNum"].ToString());
                         encabezado.DocDate = DateTime.Parse(dt.Rows[0]["DocDate"].ToString());
+                        encabezado.DocDueDate = DateTime.Parse(dt.Rows[0]["DocDueDate"].ToString());
                         encabezado.CardName = dt.Rows[0]["FacNombre"].ToString();
                         encabezado.DocEntry = int.Parse(dt.Rows[0]["DocEntry"].ToString());
-
+                        encabezado.Comments = dt.Rows[0]["Comments"].ToString();
+                        encabezado.DocNumFac = int.Parse(dt.Rows[0]["DocNumFac"].ToString());
+                        encabezado.Address = dt.Rows[0]["AddressDocto"].ToString();
+                        encabezado.DireccionCardCode = dt.Rows[0]["DireccionCardCode"].ToString();
+                        encabezado.CorreoCliente = dt.Rows[0]["CorreoCardCode"].ToString();
+                        encabezado.TelefonoCliente = dt.Rows[0]["TelefonoCardCode"].ToString();
+                        encabezado.CorreoDocto = dt.Rows[0]["CorreoDocto"].ToString();
+                        encabezado.TelefonoDocto = dt.Rows[0]["TelefonoDocto"].ToString();
 
                         var listado = (from row in dt.AsEnumerable()
                                        select new PortalCotizacionesDetalleEntity()
@@ -62,7 +113,72 @@ namespace DAL
             }
         }
 
-        public static List<PortalListadoCotizacionesEntity> getAllCotizacionesPendientes(int SlpCode)
+        public static CarritoComprasPDFEntity getAllCotizacionesPendientesDetalle(int DocEntry, int SlpCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                CarritoComprasPDFEntity carritoComprasPDFEntity = new CarritoComprasPDFEntity();
+                carritoComprasPDFEntity.Encabezado = new PortalListadoCotizacionesEntity();
+                carritoComprasPDFEntity.Detalle = new List<PortalCotizacionesDetalleEntity>();
+
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_autorizacion_cotizaciones_de_carrito_detalle_v2", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@DocEntry", DocEntry);
+                iCommand.Parameters.AddWithValue("@SlpCode", SlpCode);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        PortalListadoCotizacionesEntity encabezado = new PortalListadoCotizacionesEntity();
+                        encabezado.NitDocto = dt.Rows[0]["NitDocto"].ToString();
+                        encabezado.NitCardCode = dt.Rows[0]["NitCardCode"].ToString();
+                        encabezado.CardCode = dt.Rows[0]["CardCode"].ToString();
+                        encabezado.DocNum = int.Parse(dt.Rows[0]["DocNum"].ToString());
+                        encabezado.DocDate = DateTime.Parse(dt.Rows[0]["DocDate"].ToString());
+                        encabezado.DocDueDate = DateTime.Parse(dt.Rows[0]["DocDueDate"].ToString());
+                        encabezado.CardName = dt.Rows[0]["FacNombre"].ToString();
+                        encabezado.DocEntry = int.Parse(dt.Rows[0]["DocEntry"].ToString());
+                        encabezado.Comments = dt.Rows[0]["Comments"].ToString();
+                        encabezado.DocNumFac = int.Parse(dt.Rows[0]["DocNumFac"].ToString());
+                        encabezado.Address = dt.Rows[0]["AddressDocto"].ToString();
+                        encabezado.DireccionCardCode = dt.Rows[0]["DireccionCardCode"].ToString();
+                        encabezado.CorreoCliente = dt.Rows[0]["CorreoCardCode"].ToString();
+                        encabezado.TelefonoCliente = dt.Rows[0]["TelefonoCardCode"].ToString();
+                        encabezado.CorreoDocto = dt.Rows[0]["CorreoDocto"].ToString();
+                        encabezado.TelefonoDocto = dt.Rows[0]["TelefonoDocto"].ToString();
+
+                        var listado = (from row in dt.AsEnumerable()
+                                       select new PortalCotizacionesDetalleEntity()
+                                       {
+                                           ItemCode = row["ItemCode"].ToString(),
+                                           Dscription = row["Dscription"].ToString(),
+                                           Quantity = double.Parse(row["Quantity"].ToString()),
+                                           Price = double.Parse(row["Price"].ToString()),
+                                           Descuento = double.Parse(row["DiscPrcnt"].ToString()),
+                                           LineTotal = double.Parse(row["LineTotal"].ToString())
+                                       }).ToList();
+                        carritoComprasPDFEntity.Encabezado = encabezado;
+                        carritoComprasPDFEntity.Detalle = listado;
+                    }
+                    return carritoComprasPDFEntity;
+                }
+                catch (Exception ex)
+                {
+                    return carritoComprasPDFEntity;
+                }
+            }
+        }
+
+        public static List<PortalListadoCotizacionesEntity> getAllCotizacionesPendientes(int UserCode)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
             using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
@@ -70,7 +186,7 @@ namespace DAL
                 OleDbCommand iCommand = null;
                 iCommand = new OleDbCommand("sp_autorizacion_cotizaciones_de_carrito", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
-                iCommand.Parameters.AddWithValue("@SlpCode", SlpCode);
+                iCommand.Parameters.AddWithValue("@UserCode", UserCode);
 
                 try
                 {
@@ -176,7 +292,7 @@ namespace DAL
                 }
             }
         }
-        public static List<PortalListadoCotizacionesEntity> getAllCotizacionesVenta(int SlpCode)
+        public static List<PortalListadoCotizacionesEntity> getAllCotizacionesVenta(int SlpCode, DateTime FechaI, DateTime FechaF, int TipoCrm, string WhsCode)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
             using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
@@ -185,6 +301,10 @@ namespace DAL
                 iCommand = new OleDbCommand("sp_cotizaciones_de_carrito", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
                 iCommand.Parameters.AddWithValue("@SlpCode", SlpCode);
+                iCommand.Parameters.AddWithValue("@FechaI", FechaI);
+                iCommand.Parameters.AddWithValue("@FechaF", FechaF);
+                iCommand.Parameters.AddWithValue("@TipoCrm", TipoCrm);
+                iCommand.Parameters.AddWithValue("@WhsCode", WhsCode);
 
                 try
                 {
@@ -196,11 +316,15 @@ namespace DAL
 
                     if (dt.Rows.Count > 0)
                     {
+                        string json = dt.Rows[0]["Dona"].ToString();
+                        List<CrmGraficoDonaCotiEntity> listaDona = JsonConvert.DeserializeObject<List<CrmGraficoDonaCotiEntity>>(json);
+
                         var listado = (from row in dt.AsEnumerable()
                                        select new PortalListadoCotizacionesEntity()
                                        {
                                            DocEntry = int.Parse(row["DocEntry"].ToString()),
                                            DocNum = int.Parse(row["DocNum"].ToString()),
+                                           DocNumFac = int.Parse(row["DocNumFac"].ToString()),
                                            Nit = row["Nit"].ToString(),
                                            FacNombre = row["FacNombre"].ToString(),
                                            CardCode = row["CardCode"].ToString(),
@@ -210,7 +334,14 @@ namespace DAL
                                            DocTotal = double.Parse(row["DocTotal"].ToString()),
                                            IsCookie = "N",
                                            EstadoCoti = row["TipoCoti"].ToString(),
-                                           DscrTipoCoti = row["DscrTipoCoti"].ToString()
+                                           DscrTipoCoti = row["DscrTipoCoti"].ToString(),
+                                           IdTipoCrm = int.Parse(row["IdEstadoCrm"].ToString()),
+                                           DscrpTipoCrm = row["DescEstadoCrm"].ToString(),
+                                           CountCotizaciones = int.Parse(row["CountCotizaciones"].ToString()),
+                                           DocTotalCoti = double.Parse(row["DocTotalCoti"].ToString()),
+                                           CountFacturas = int.Parse(row["CountFacturas"].ToString()),
+                                           DocTotalFact = double.Parse(row["DocTotalFact"].ToString()),
+                                           DatosGraficosDona = (dt.Rows.IndexOf(row) == 0) ? listaDona : null
                                        }).ToList();
                         return listado;
                     }

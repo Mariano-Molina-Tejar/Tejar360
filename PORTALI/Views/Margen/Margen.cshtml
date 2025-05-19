@@ -2,29 +2,29 @@
 <style>
     body {
         font-family: Arial, sans-serif;
-        background-color: #f8f9fa; /* Color de fondo suave */
+        background-color: #f8f9fa;
         margin: 0;
         padding: 0;
     }
 
     .form-container {
-        background-color: #ffffff; /* Fondo blanco */
+        background-color: #ffffff;
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
-        max-width: 90%; /* Ajusta el ancho máximo */
-        margin: 30px auto; /* Centrado */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 90%;
+        margin: 30px auto;
         padding: 20px;
         overflow: hidden;
     }
 
     h2 {
         text-align: center;
-        color: #333; /* Color del texto */
+        color: #333;
         margin-bottom: 20px;
     }
 
     .table-container {
-        overflow-x: auto; /* Scroll horizontal si es necesario */
+        overflow-x: auto;
     }
 
     .styled-table {
@@ -40,7 +40,7 @@
         }
 
         .styled-table th {
-            background-color: #343a40;
+            background-color: #17a2b8;
             color: white;
         }
 
@@ -52,24 +52,14 @@
             background-color: #ddd;
         }
 
-    #filterTienda {
-        max-width: 200px;
-        font-size: 0.9rem;
+    .progress-container {
+        width: 120px;
         margin: 0 auto;
     }
 
-    .form-container h2 {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    .d-flex {
-        gap: 10px;
-    }
-
-    #ventasTabla th:nth-child(1),
-    #ventasTabla td:nth-child(1) {
-        display: none;
+    .progress {
+        height: 10px;
+        margin-top: 5px;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -84,69 +74,122 @@
             {
                 foreach (var item in Model.ListaTiendas)
                 {
-                    <option value="@item.WhsCode">@item.WhsName</option>
-                }
+<option value="@item.WhsCode">@item.WhsName</option>}
             }
         </select>
+        <div class="d-flex">
+            <div class="bg-secondary m-1 p-2 rounded-2">
+                Normal
+            </div>
+            <div class="bg-primary m-1 p-2 rounded-2">
+                Descuento
+            </div>
+            <div class="bg-warning m-1 p-2 rounded-2">
+                Promoción
+            </div>
+
+        </div>
+
     </div>
     <div class="table-container">
-        <table id="ventasTabla" class="table table-bordered table-hover text-center align-middle">
-            <thead class="thead-dark">
+        <table id="ventasTabla" class="styled-table table-bordered text-center align-middle">
+            <thead class="bg-info">
                 <tr>
                     <th>WhsCode</th>
                     <th>Nombre de Tienda</th>
                     <th>Vendedor</th>
                     <th>Venta Actual</th>
                     <th>Venta Proyectada</th>
-                    <th>Rentabilidad</th>
+                    <th>Margen Porcentual</th>
                     <th>Facturas</th>
                     <th>Opción</th>
                 </tr>
             </thead>
             <tbody>
-                @if (Model != null)
+                @if (Model != null && Model.ListaMargenes != null)
                 {
-                    if (Model.ListaMargenes != null)
+                    foreach (var item in Model.ListaMargenes)
                     {
-                        foreach (var item in Model.ListaMargenes)
-                        {
-                            <tr>
-                                <td>@item.WhsCode</td>
-                                <td>@item.WhsName</td>
-                                <td>@item.SlpName</td>
-                                <td>@string.Format("Q.{0:#,##0.00}", @item.VentaActual)</td>
-                                <td>@string.Format("Q.{0:#,##0.00}", @item.VentaProyectada)</td>
-                                <td>
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <span class="badge badge-success">
-                                            <i class="fas fa-chart-line"></i> @string.Format("Q.{0:#,##0.00}", @item.Rentabilidad)
-                                        </span>
-                                    </div>
-                                    <div class="progress mt-1" style="height: 10px; width: 100px; margin: 0 auto;">
-                                        <div class="progress-bar bg-success"
-                                             role="progressbar"
-                                             style="width: @($"{item.Rentabilidad}%");"
-                                             aria-valuenow="@item.Rentabilidad"
-                                             aria-valuemin="0"
-                                             aria-valuemax="100">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-info">
-                                        <i class="fas fa-file-invoice"></i> @item.Facturas
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="javascript:void(0);" class="btn btn-primary bold-btn fa fa-eye" id="btnVerDetalle" data-slpcode="@item.SlpCode"></a>
-                                </td>
-                            </tr>
-                        }
-                    }
+    <tr>
+        <td>@item.WhsCode</td>
+        <td>@item.WhsName</td>
+        <td>@item.SlpName</td>
+        <td>
+            <span class="badge badge-secondary">@string.Format("Q.{0:#,##0.00}", @item.VentaNormal)</span>  <br />
+            <span class="badge badge-info">@string.Format("Q.{0:#,##0.00}", @item.VentaDescuento)</span><br />
+            <span class="badge badge-warning">@string.Format("Q.{0:#,##0.00}", @item.VentPromocion)</span>
+            <hr />
+            @string.Format("Q.{0:#,##0.00}", @item.VentaActual)
+
+        </td>
+        <td>@string.Format("Q.{0:#,##0.00}", @item.VentaProyectada)</td>
+        <td>
+            <div class="progress-container">
+                <span class="badge badge-secondary">@string.Format("{0:#,##0.00}%", @item.Rentabilidad)</span>
+                <div class="progress">
+                    <div class="progress-bar bg-secondary" role="progressbar" style="width: @($"{item.Rentabilidad}%");"></div>
+                </div>
+                <span class="badge badge-info">@string.Format("{0:#,##0.00}%", @item.RentabilidadDecuento)</span>
+                <div class="progress">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: @($"{item.RentabilidadDecuento}%");"></div>
+                </div>
+                <span class="badge badge-warning">@string.Format("{0:#,##0.00}%", @item.RentabilidadPromocion)</span>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: @($"{item.RentabilidadPromocion}%");"></div>
+                </div>
+            </div>
+        </td>
+        <td><span class="badge badge-info"><i class="fas fa-file-invoice"></i> @item.Facturas</span></td>
+        <td>
+            <a href="javascript:void(0);" class="btn btn-primary bold-btn fa fa-eye" id="btnVerDetalle" data-slpcode="@item.SlpCode"></a>
+        </td>
+    </tr>}
                 }
             </tbody>
         </table>
-    </div>   
+    </div>
+
+    <div class="container mt-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm p-3 bg-aqua">
+                    <h5 class="fw-bold text-primary">Venta Actual</h5>
+                    @string.Format("Q.{0:#,##0.00}", Model.MargenTienda.VentaActual)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm p-3">
+                    <h5 class="fw-bold text-primary">Venta Proyectada</h5>
+                    @string.Format("Q.{0:#,##0.00}", Model.MargenTienda.VentaProyectada)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm p-3">
+                    <h5 class="fw-bold text-primary">Facturas</h5>
+                    @Model.MargenTienda.Facturas
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm p-3">
+                    <h5 class="fw-bold text-primary">Rentabilidad</h5>
+                    @string.Format("{0:#,##0.00}%", @Model.MargenTienda.Rentabilidad)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm p-3">
+                    <h5 class="fw-bold text-primary">Rentabilidad / Descuento </h5>
+                    @string.Format("{0:#,##0.00}%", @Model.MargenTienda.RentabilidadDecuento)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm p-3">
+                    <h5 class="fw-bold text-primary">Rentabilidad / Promoción</h5>
+                    @string.Format("{0:#,##0.00}%", @Model.MargenTienda.RentabilidadPromocion)
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <script>
     $('#ventasTabla').DataTable({
@@ -155,54 +198,43 @@
         "info": true,
         "ordering": true,
         "order": [],
-        "dom": '<"top"f>rt<"bottom"lp><"clear">', // Diseño de DataTables
+        "dom": '<"top"f>rt<"bottom"lp><"clear">',
     });
 
     function filtrarTienda() {
         $("#globalLoading").show();
-        // Obtén el valor seleccionado del dropdown
         const whsCode = document.getElementById('filterTienda').value;
-
-        // Realiza la solicitud AJAX
         $.ajax({
-            url: '/Margen/Margen', // La URL de tu controlador y acción
-            method: 'POST',        // Usamos POST para enviar el filtro
-            data: {
-                whsCode: whsCode,  // Enviamos el código de tienda
-                isAjax: true        // Indicamos que es una solicitud AJAX
-            },
+            url: '/Margen/Margen',
+            method: 'POST',
+            data: { whsCode: whsCode, isAjax: true },
             success: function (response) {
                 $('#ventasTabla tbody').html(response);
                 $("#globalLoading").hide();
             },
-            error: function (xhr, status, error) {
+            error: function () {
                 $("#globalLoading").hide();
-                console.error('Error al filtrar la tienda:', error);
-                alert('Ocurrió un error al intentar filtrar los datos.');                
+                alert('Ocurrió un error al intentar filtrar los datos.');
             }
-        });        
+        });
     }
 
-        $(document).on('click', '#btnVerDetalle', function () {
-            const slpCode = $(this).data('slpcode'); // Obtener el código
-
-            // Enviar el código al servidor
-            $.ajax({
-                url: '/Margen/Detalle', // Ruta del controlador
-                type: 'POST',           // Método POST
-                data: { SlpCode: slpCode }, // Dato que enviamos
-                success: function (response) {
-                    // Si la respuesta contiene una URL, redirige
-                    if (response.success) {
-                        window.location.href = response.redirectUrl;
-                    } else {
-                        alert('Ocurrió un error: ' + response.message);
-                    }
-                },
-                error: function () {
-                    alert('Error al comunicarse con el servidor.');
+    $(document).on('click', '#btnVerDetalle', function () {
+        const slpCode = $(this).data('slpcode');
+        $.ajax({
+            url: '/Margen/Detalle',
+            type: 'POST',
+            data: { SlpCode: slpCode },
+            success: function (response) {
+                if (response.success) {
+                    window.location.href = response.redirectUrl;
+                } else {
+                    alert('Ocurrió un error: ' + response.message);
                 }
-            });
+            },
+            error: function () {
+                alert('Error al comunicarse con el servidor.');
+            }
         });
-
+    });
 </script>

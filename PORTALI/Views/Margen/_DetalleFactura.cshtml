@@ -1,0 +1,196 @@
+﻿@model List<Entity.Detalle_Margen_Factura>
+
+<style>
+    .modal-full-2 {
+        width: 40%; /* Ocupa el 100% del ancho de la ventana */
+        max-width: none; /* Evita que Bootstrap aplique un límite en el ancho */
+    }
+</style>
+<div class="col-xl-12">
+    @if (Model[0].Tipo == "Factura de ventas")
+    {
+        <span class="badge badge-success m-2">@Model[0].Tipo</span>
+    }
+    else
+    {
+        <span class="badge badge-warning m-2">@Model[0].Tipo</span>
+    }
+
+    <div class="form-row justify-content-between">
+        <div class="form-group col-xl-4">
+            <label for="inputState">
+
+            </label>
+            <label for="inputState">Numero de documento</label>
+            <input id="txtDocNum" type="text" class="form-control" value="@Model[0].DocNum" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputState">Fecha documento</label>
+            <input type="date" class="form-control" id="txtDocDate" value="@Model[0].DocDate.ToString("yyyy-MM-dd")" readonly style="background-color:white">
+        </div>
+
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="inputState">Código</label>
+            <input type="text" class="form-control" id="txtCardCode" value="@Model[0].CardCode" readonly style="background-color:white">
+        </div>
+        <div class="form-group col-md-9">
+            <label for="inputState">Proveedor</label>
+            <input type="text" class="form-control" id="txtCardName" value="@Model[0].CardName" readonly style="background-color:white">
+        </div>
+
+    </div>
+    <div class="form-row">
+        <div class="form-group col-xl-4">
+            <label for="inputState">Notas</label>
+            @*<textarea id="txtObservaciones" type="text" class="form-control" value="@Model[0].ComentarioCotizacion" maxlength="254" readonly style="background-color:white"></textarea>*@
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-md-10 col-xl-12 col-md-offset-1">
+            <table class="table table-hover">
+                <thead style="background-color: #0c769e; color: white ">
+                    <tr>
+
+                        <th class="text-center">#</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th class="text-center">Total</th>
+                        <th class="text-center">Margen Porcentual</th>
+                        <th class="text-center">Tipo Descuento</th>
+                        <th class="text-center">Descuento Autorizado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Item in Model)
+                    {
+                        <tr>
+                            <td class="col-sm-1 col-md-1 text-center">
+                                <h5><strong>@Item.LineNum</strong></h5>
+                            </td>
+                            <td class="col-sm-8 col-md-6">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h5 class="media-heading"><strong>@Item.ItemCode</strong> - <strong>@Item.Dscripcion</strong></h5>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-sm-1 col-md-1 text-center"><strong>@string.Format("{0:#,##0.00}", @Item.Quantity)</strong></td>
+                            <td class="col-sm-1 col-md-1 text-center"><strong>Q.@string.Format("{0:#,##0.00}", @Item.LineTotal)</strong></td>
+                            <td class="col-sm-1 col-md-1 text-center">
+                                @if (Item.Margen == 0)
+                                {
+                                    <span class="badge badge-warning"><strong>@string.Format("{0:#,##0.00}%", @Item.Margen)</strong></span>
+                                }
+                                @if (Item.Margen > 0)
+                                {
+                                    <span class="badge badge-success"><strong>@string.Format("{0:#,##0.00}%", @Item.Margen)</strong></span>
+                                }
+                                @if (Item.Margen < 0)
+                                {
+                                    <span class="badge badge-danger"><strong>@string.Format("{0:#,##0.00}%", @Item.Margen)</strong></span>
+                                }
+                            </td>
+                            <td class="col-sm-1 col-md-1 text-center">
+                                @if (Item.TipoD == "Normal")
+                                {
+                                    <span class="badge badge-secondary"><strong> @Item.TipoD</strong></span>
+                                }
+                                @if (Item.TipoD == "Descuento")
+                                {
+                                    <span class="badge badge-info"><strong> @Item.TipoD</strong></span>
+                                }
+                                @if (Item.TipoD == "Promocion")
+                                {
+                                    <span class="badge badge-warning"><strong> @Item.TipoD</strong></span>
+                                }
+                            </td>
+                            <td class="col-sm-1 col-md-1 text-center"><strong> @Item.PorcentajeAutorizado</strong></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="py-6 card bg-gray-300 shadow-none mb-4 card-body col-sm-12 m-2">
+            <h5 style="text-align:end; margin-right :20px;"><strong>Total : Q.@string.Format("{0:#,##0.00}", @Model[0].LineTotal)</strong></h5>
+            <h5 style="text-align:end; margin-right :20px;">
+                <strong>
+                    Margen %:
+
+
+                    @if (Model[0].MargenTotal == 0)
+                    {
+                        <span class="badge badge-warning"><strong>@string.Format("{0:#,##0.00}%", Model[0].MargenTotal)</strong></span>
+                    }
+                    @if (Model[0].MargenTotal > 0)
+                    {
+                        <span class="badge badge-success"><strong>@string.Format("{0:#,##0.00}%", Model[0].MargenTotal)</strong></span>
+                    }
+                    @if (Model[0].MargenTotal < 0)
+                    {
+                        <span class="badge badge-danger"><strong>@string.Format("{0:#,##0.00}%", Model[0].MargenTotal)</strong></span>
+                    }
+
+                </strong>
+            </h5>
+        </div>
+    </div>
+
+    \
+</div>
+
+<script>
+    cerrarLoading();
+
+    function fn_Rechazar(_codeWdd, _opcion, _comentarios) {
+      //console.log("Autorizar " + CodeWdd +" "+ Comentario)
+        $("#globalLoading").show();
+        $.ajax({
+            url: '@Url.Action("ServicioAprobacion", "SAP_Pedidos")',
+            type: 'GET',
+            data: {
+                CodeWdd: _codeWdd,
+                Opcion: _opcion,
+                Comentarios: _comentarios
+            },
+            success: function (data) {
+                $("#globalLoading").hide();
+                $("#mdlRechazarDetalle").modal('hide');
+
+                $("#detalleModal").modal('hide');
+
+                $('#modal-content-2').html(data);
+                $('#mdl-Confirmacion').modal('show');
+
+            },
+            error: function () {
+                $("#globalLoading").hide();
+                alert('Hubo un error al cargar el contenido');
+            }
+        })
+    }
+
+    function fn_autorizar(CodeWdd) {
+        console.log("Autorizar " + CodeWdd)
+    }
+
+    function cerrarLoading() {
+        $("#globalLoading").hide();
+    }
+
+    $(document).ready(function () {
+        $("#btnAutorizarCotizacion").click(function () {
+            $("#mdlCondicion").modal('show');
+        });
+    });
+
+    $(document).ready(function () {
+        $("#btnRechazar").click(function () {
+            $("#mdlRechazarDetalle").modal('show');
+        });
+    });
+
+</script>

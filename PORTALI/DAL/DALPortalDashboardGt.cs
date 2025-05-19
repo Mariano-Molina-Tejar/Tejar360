@@ -37,8 +37,12 @@ namespace DAL
                         portalDashboardGtEntity.MetaTienda = double.Parse(dt.Rows[0]["MetaTienda"].ToString());
                         portalDashboardGtEntity.VentaTienda = double.Parse(dt.Rows[0]["VentaTienda"].ToString());
                         portalDashboardGtEntity.Indice = double.Parse(dt.Rows[0]["IndiceTienda"].ToString());
-                        portalDashboardGtEntity.VentaTiendaProy = double.Parse(dt.Rows[0]["VentaTiendaProyectada"].ToString());
-                        portalDashboardGtEntity.IndiceProyectado = double.Parse(dt.Rows[0]["IndiceProyectado"].ToString());
+                        portalDashboardGtEntity.VentaTiendaProy = double.Parse(dt.Rows[0]["VentaTiendaProy"].ToString());
+                        portalDashboardGtEntity.IndiceProyectado = double.Parse(dt.Rows[0]["IndiceProy"].ToString());
+                        portalDashboardGtEntity.MetaUtilidadTienda = double.Parse(dt.Rows[0]["MetaUtilidadTienda"].ToString());
+                        portalDashboardGtEntity.UtilidadIndice = double.Parse(dt.Rows[0]["IndiceUtilidadTienda"].ToString());
+                        portalDashboardGtEntity.UtilidadTiendaProy = double.Parse(dt.Rows[0]["UtilidadTiendaProy"].ToString());
+                        portalDashboardGtEntity.IndiceUtilidadProy = double.Parse(dt.Rows[0]["IndiceUtilidadProy"].ToString());
                     }
 
                     portalDashboardGtEntity.ListaAsesores = (from row in dt.AsEnumerable()
@@ -49,7 +53,7 @@ namespace DAL
                                         MetaAsesor = double.Parse(row["MetaAsesor"].ToString()),
                                         VentaAsesor = double.Parse(row["VentaAsesor"].ToString()),
                                         Indice = double.Parse(row["IndiceAsesor"].ToString()),
-                                        Peso = double.Parse(row["PesoAsesor"].ToString())
+                                        Peso = double.Parse(row["PesoAsesor"].ToString())                                        
                                     }).ToList();
 
                     PortalChartPieEntity portalChartPieEntity = new PortalChartPieEntity();

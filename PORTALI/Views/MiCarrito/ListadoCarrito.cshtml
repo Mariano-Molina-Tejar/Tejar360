@@ -7,7 +7,7 @@
     body {
         background: #eee;
     }
-    
+
     /* Contenedor de la barra de progreso */
     .progress-container {
         display: flex;
@@ -85,7 +85,7 @@
             right: calc(50% + 15px);
             height: 4px;
             width: 100%;
-            background-color:red;
+            background-color: red;
             background-color: #ff8c00;
             transform: translateY(-50%);
             z-index: -1;
@@ -155,11 +155,11 @@
         cursor: pointer;
         transition: background-color 0.3s ease, color 0.3s ease;
     }
-    
-   /* .btn .icon {
+
+    /* .btn .icon {
         font-size: 18px;
     }*/
-    
+
 </style>
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
@@ -178,6 +178,12 @@
         <div class="circle">3</div>
         <p>Finalizar</p>
     </div>
+</div>
+<div class="text-center my-3 d-none" id="DatoEditar">
+    <span class="badge bg-danger px-5 py-3" style="font-size: 0.90rem;">
+        <i class="bi bi-pencil-square me-2"></i>
+        Editando cotización No. <span id="txtNoCotizacionEditar">0</span>
+    </span>
 </div>
 
 <div id="partialViewContainer">
@@ -234,7 +240,7 @@
             }
         });
 
-         /*Actualiza la línea de progreso*/
+        /*Actualiza la línea de progreso*/
         let progress = ((currentStep - 2) / ($('.step').length - 2)) * 100;
         $('.progress-bar').css('width', progress + '%');
     }

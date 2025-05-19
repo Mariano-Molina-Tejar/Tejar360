@@ -34,12 +34,11 @@ namespace PORTALI.Controllers
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
 
             if (carrito != null && carrito.Detalle.Any())
-            {   
+            {
                 if(Btn == 1)
                 {
                     string data = string.Join(",", carrito.Detalle.Select(item => item.ItemCode));
                     List<ItemsCotizacionEntity> _lista = DAL.DALPortalCarritoCompras.CambioPrecioCotizacion(PriceList, data, sessions.WhsCode);
-
                     foreach (var detalle in carrito.Detalle)
                     {
                         // Buscar el item correspondiente en la lista de cotización (_lista)
@@ -47,11 +46,11 @@ namespace PORTALI.Controllers
 
                         // Si se encuentra el item en _lista, actualizar el precio
                         if (itemCotizacion != null)
-                        {                            
+                        {
                             detalle.Price = itemCotizacion.PreciUnitAlto;
                             detalle.Dscto = itemCotizacion.DescuentoQ;
-                            detalle.DescuentoU = (detalle.Quantity * detalle.Dscto);
-                            detalle.LineTotal = (itemCotizacion.Price * detalle.Quantity);
+                            detalle.DescuentoU = detalle.DescuentoQtz;
+                            detalle.LineTotal = (detalle.Price - (itemCotizacion.DescuentoQ + detalle.DescuentoU)) * detalle.Quantity;
                         }
                     }
                 }
@@ -118,7 +117,8 @@ namespace PORTALI.Controllers
                 case 2:
                     return PartialView("SocioNegocio");
                 case 3:
-                    return PartialView("Resumen");
+                    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+                    return PartialView("Resumen", sessions);
                 default:
                     return PartialView("MiCarrito");
             }
@@ -135,12 +135,13 @@ namespace PORTALI.Controllers
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
             if (carrito != null)
             {
-                // Realizar alguna lógica para enviar la cotización a SAP o realizar cualquier otra acción
+                //Realizar alguna lógica para enviar la cotización a SAP o realizar cualquier otra acción
                 carrito.SlpCode = sessions.SlpCode;
                 carrito.UserCode = sessions.UserCode;
                 string contenido = DAL_API.CrearCotizacionVenta("CarritoCompras/New/", carrito);
                 Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
                 return Json(datos, JsonRequestBehavior.AllowGet);
+                //return Json("", JsonRequestBehavior.AllowGet);
             }
 
             // Si el carrito es nulo o hay algún problema, retornar un mensaje de error
@@ -151,6 +152,24 @@ namespace PORTALI.Controllers
         {
             List<ListaPreciosEntity> listaPreciosEntities = DALPortalInventario.ListaPreciosVentas(ItemCode);
             return Json(listaPreciosEntities, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult getAllTiendas()
+        {
+            List<PortalTiendasEntity> listaTiendas = DALPortalCotizaciones.getTiendas();
+            return Json(listaTiendas, JsonRequestBehavior.AllowGet);
+        }
+
+        [System.Web.Http.HttpGet]
+        public JsonResult getAsesoresPorTienda(string WhsCode)
+        {
+            if (string.IsNullOrEmpty(WhsCode))
+            {
+                return Json(new { error = "WhsCode es requerido" }, JsonRequestBehavior.AllowGet);
+            }
+
+            List<ListaAsesoresEntity> listaUsuarios = DALPortalCotizaciones.getAllUsers(WhsCode);
+            return Json(listaUsuarios, JsonRequestBehavior.AllowGet);
         }
     }
 }

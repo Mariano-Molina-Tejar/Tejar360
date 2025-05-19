@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace Entity
 {
     public class CarritoComprasEntity
-    {        
+    {
+        public int DocNum { get; set; }
+        public int DocEntry { get; set; }
         public int NoCotizacionV { get; set; }
         public string Nit { get; set; }
         public string CardCode { get; set; }
@@ -26,16 +28,21 @@ namespace Entity
         public string FacturarNombre { get; set; }
         public string FacturarDireccion { get; set; }
         public string EsCf { get; set; }
+        public bool AplicaSAC { get; set; }
+        public string WhsCodeSAC { get; set; }
+        public int SlpCodeSAC { get; set; }
         public List<DetalleCarritoEntity> Detalle { get; set; }
     }
 
     public class DetalleCarritoEntity
     {
+        public int DocEn { get; set; }
+        public int LineN { get; set; }
         public string Identity { get; set; }
         public int LineId { get; set; }
         public string ItemCode { get; set; }
         public string Dscription { get; set; }
-        public double Quantity { get; set; }
+        public double Quantity { get; set; }        
         public double DescuentoU { get; set; }
         public double Price { get; set; }
         public double Dscto { get; set; }
@@ -48,5 +55,6 @@ namespace Entity
         public double DescuentoNwp { get; set; }
         public double DescuentoPor { get; set; }
         public double DescuentoQtz { get; set; }
+        public string CodigoPromo { get; set; }
     }
 }

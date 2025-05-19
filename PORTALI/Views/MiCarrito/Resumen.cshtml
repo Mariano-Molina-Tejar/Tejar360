@@ -1,19 +1,22 @@
 ﻿<script src="/js/UpdateCarrito.js" defer></script>
+<link href="~/Css/ResumenCarrito.css" rel="stylesheet" />
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-12 col-md-10">
             <div class="card shadow-lg rounded-3">
                 <div class="card-body">
-                    <h2 class="text-center my-4">Resumen de la compra</h2>
+                    <h2 class="text-center my-4">Resumen de la compra</h2>                    
                     <div class="table-responsive">
                         <table class="table table-sm">
                             <thead>
-                                <tr class="ml-3">
+                                <tr>
                                     <th></th>
-                                    <th class="text-left" width="40%">Producto</th>
-                                    <th class="text-center" width="20%">Cantidad</th>
-                                    <th class="text-center" width="20%">Precio U.</th>
-                                    <th class="text-center" width="20%">Subtotal</th>
+                                    <th class="text-left">Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-center d-none d-sm-table-cell">Precio U.</th>
+                                    <th class="text-center d-none d-md-table-cell">Descuento</th>
+                                    <th class="text-center d-none d-lg-table-cell">SubTotal</th>
+                                    <th class="text-center d-none d-lg-table-cell">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="productos-table">
@@ -21,57 +24,138 @@
                             </tbody>
                         </table>
                     </div>
+
                     <h2 class="text-center my-4">Datos de facturación</h2>
                     <div class="table-responsive">
                         <table class="table table-sm">
                             <tbody>
-                                <tr>
-                                    <td width="35%" class="align-middle text-left">Nit/DPI</td>
-                                    <td class="text-left" id="nit"></td>
-                                </tr>
-                                <tr>
-                                    <td width="35%" class="align-middle text-left">Nombre</td>
-                                    <td class="text-left" id="nombre"></td>
-                                </tr>
-                                <tr>
-                                    <td class="align-middle text-left">Teléfono</td>
-                                    <td class="align-middle text-left" id="telefono"></td>
-                                </tr>
-                                <tr>
-                                    <td class="align-middle text-left">Correo</td>
-                                    <td class="align-middle text-left" id="correo"></td>
-                                </tr>
-                                <tr>
-                                    <td class="align-middle text-left">Dirección</td>
-                                    <td class="align-middle text-left" id="direccion"></td>
-                                </tr>
-                                <tr>
-                                    <td class="align-middle text-left">Forma de pago</td>
-                                    <td class="align-middle text-left" id="FormaDePago"></td>
-                                </tr>
+                                <tr><td class="align-middle text-left">Nit/DPI</td><td id="nit"></td></tr>
+                                <tr><td class="align-middle text-left">Nombre</td><td id="nombre"></td></tr>
+                                <tr><td class="align-middle text-left">Teléfono</td><td id="telefono"></td></tr>
+                                <tr><td class="align-middle text-left">Correo</td><td id="correo"></td></tr>
+                                <tr><td class="align-middle text-left">Dirección</td><td id="direccion"></td></tr>
+                                <tr><td class="align-middle text-left">Forma de pago</td><td id="FormaDePago"></td></tr>
                             </tbody>
                         </table>
                     </div>
 
                     <div class="mb-4">
-                        <label for="comentarios" class="form-label fw-bold">Comentarios o instrucciones adicionales</label>
+                        <label for="txtComentarios" class="form-label fw-bold">Comentarios o instrucciones adicionales</label>
                         <textarea id="txtComentarios" class="form-control" rows="4" placeholder="Escribe aquí cualquier comentario adicional..."></textarea>
                     </div>
 
+                    @model Entity.SessionLoginEntity
+                    @if (Model.Depto == 15)
+                    {
+                        <h2 class="text-center my-4">Asignar asesor</h2>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td class="align-middle text-left">Usuario SAC</td>
+                                        <td>
+                                            <input type="checkbox" id="tiendaCheck" style="width: 20px; height: 20px;">
+                                            <label for="tiendaCheck">Servicio al cliente</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="align-middle text-left">Selecciona una tienda:</td>
+                                        <td>
+                                            <select id="tienda" class="form-select">
+                                                <option selected disabled value="0">Elige una tienda...</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="align-middle text-left">Selecciona un asesor:</td>
+                                        <td>
+                                            <select id="asesor" class="form-select">
+                                                <option selected disabled>Elige un asesor...</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
                     <div class="d-flex justify-content-between my-4">
-                        <button type="button" class="btn btn-secondary" style="flex: 1; text-align: left;" onclick="loadStep(-1)">
-                            Atrás
-                        </button>
-                        <button type="button" class="btn btn-primary" style="flex: 1; text-align: right;" onclick="FinalizarCompra()">
-                            Finalizar
-                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="loadStep(-1)">Atrás</button>
+                        <button type="button" class="btn btn-primary" onclick="FinalizarCompra()">Finalizar</button>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <script>
+    $(document).ready(function () {
+        fetchTiendas();
+
+        let checkbox = document.getElementById("tiendaCheck");
+        let selectTienda = document.getElementById("tienda");
+        let selectAsesor = document.getElementById("asesor");
+
+        checkbox.addEventListener("change", function () {
+            if (checkbox.checked) {
+                selectTienda.selectedIndex = 0;
+                selectAsesor.innerHTML = '<option selected disabled>Elige un asesor...</option>';
+                selectTienda.disabled = true;
+                selectAsesor.disabled = true;
+            } else {
+                // Si el checkbox se desmarca, se habilitan los selects
+                selectTienda.disabled = false;
+                selectAsesor.disabled = false;
+            }
+        });
+
+        $("#tienda").on("change", function () {
+            $("#globalLoading").show();
+            let whsCode = $(this).val();
+            if (!whsCode) return; // Evitar hacer una petición si el valor es inválido
+            fetch(`/MiCarrito/getAsesoresPorTienda?WhsCode=${whsCode}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Error en la respuesta del servidor");
+                    return response.json();
+                })
+                .then(data => {
+                    let selectAsesor = document.getElementById("asesor");
+                    selectAsesor.innerHTML = '<option selected disabled>Elige un asesor...</option>';
+
+                    data.forEach(asesor => {
+                        let option = document.createElement("option");
+                        option.value = asesor.SlpCode;
+                        option.textContent = asesor.SlpName;
+                        selectAsesor.appendChild(option);
+                    });
+                    $("#globalLoading").hide();
+                })
+                .catch(error => console.error("Error al cargar asesores:", error));
+        });
+    });
+
+    function fetchTiendas() {
+        fetch('/MiCarrito/getAllTiendas')
+            .then(response => {
+                if (!response.ok) throw new Error("Error en la respuesta del servidor");
+                return response.json();
+            })
+            .then(data => {
+                let selectTienda = document.getElementById("tienda");
+                selectTienda.innerHTML = '<option selected disabled>Elige una tienda...</option>';
+
+                data.forEach(tienda => {
+                    let option = document.createElement("option");
+                    option.value = tienda.WhsCode;
+                    option.textContent = tienda.WhsName;
+                    selectTienda.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Error al cargar tiendas:", error));
+    }
+
     $(document).ready(function () {
         // Determinar el texto y el estilo según el valor de FormaDePago
         let formaDePagoText = 'N/A';
@@ -108,7 +192,14 @@
         // Llenar tabla de productos
         const productos = socioNegocio.productos || [];
         const productosTable = $('#productos-table');
+        var subTotal = 0.00;
+        var descuento = 0.00;
+        let totalLineTotal = 0;
+        let totalDescuento = 0;
+
         productos.forEach(producto => {
+            producto.LineTotal = producto.Quantity * producto.Price;
+            descuento = descuento + ((producto.DescuentoU + producto.DescuentoQtz) * producto.Quantity);
             const row = `
             <tr>
                 <td>
@@ -119,34 +210,35 @@
                 </td>
                 <td class="align-middle text-left">${producto.Dscription || 'Producto'}</td>
                 <td class="align-middle text-center">${producto.Quantity || 0}</td>
-                <td class="align-middle text-center">Q${(parseFloat(producto.Price) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                <td class="align-middle text-right">Q${(producto.LineTotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-center">Q${(parseFloat(producto.Price + producto.DescuentoU) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-center">Q${(parseFloat(producto.DescuentoU + producto.DescuentoQtz) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-center">Q${(parseFloat(producto.Price - producto.DescuentoQtz) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-right">Q${((producto.Price - (producto.DescuentoQtz)) * producto.Quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             </tr>
         `;
+            totalLineTotal = totalLineTotal + (((producto.Price + producto.DescuentoU) - (producto.DescuentoU + producto.DescuentoQtz)) * producto.Quantity);
             productosTable.append(row);
         });
 
         // Inicializamos las variables de descuento y total
-        let totalDescuento = 0;
-        let totalLineTotal = 0;
 
         // Iteramos sobre los productos y calculamos las sumas de descuento y total
         socioNegocio.productos.forEach(producto => {
-            totalDescuento += (parseFloat(producto.Dscto) || 0) * (parseFloat(producto.Quantity) || 0);  // Si Dscto no es un número válido, lo tratamos como 0
-            totalLineTotal += parseFloat(producto.LineTotal) || 0;  // Si LineTotal no es un número válido, lo tratamos como 0
+            /*totalDescuento += (parseFloat(producto.Dscto) || 0) * (parseFloat(producto.Quantity) || 0);  // Si Dscto no es un número válido, lo tratamos como 0*/
+            /*totalLineTotal += parseFloat(totalDocto) || 0;  // Si LineTotal no es un número válido, lo tratamos como 0*/
         });
 
         // Ahora construimos las filas de descuento y total
         const descuentoRow = `
         <tr>
-            <td colspan="4" class="align-middle text-right" style="color:red">Descuento</td>
-            <td class="align-middle text-right" style="color:red">${totalDescuento.toFixed(2) || 0}</td>
+            <td colspan="6" class="align-middle text-right" style="color:red">Descuento</td>
+            <td class="align-middle text-right" style="color:red">Q${(parseFloat(descuento) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
         </tr>`;
 
-            const totalRow = `
+        const totalRow = `
         <tr>
-            <td colspan="4" class="align-middle text-right font-weight-bold">Total</td>
-            <td class="align-middle text-right font-weight-bold">${totalLineTotal.toFixed(2) || 0}</td>
+            <td colspan="6" class="align-middle text-right font-weight-bold">Total</td>
+            <td class="align-middle text-right font-weight-bold">Q${(parseFloat(totalLineTotal) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
         </tr>`;
 
         productosTable.append(descuentoRow);
@@ -154,7 +246,7 @@
     });
 
     function FinalizarCompra() {
-        // Mostrar el mensaje de confirmación con un alert        
+        // Mostrar el mensaje de confirmación con un alert
         const confirmacion = confirm("¿Estás seguro de que deseas finalizar la compra?");
         var _llave;
         const comentario = document.getElementById("txtComentarios").value;
@@ -163,38 +255,52 @@
         if (confirmacion) {
             $("#globalLoading").show();
             // Obtener los datos de la cookie
+
+            let chkSAC = document.getElementById("tiendaCheck");
+            let selectTienda = document.getElementById("tienda");
+            let selectAsesor = document.getElementById("asesor");
+
+            let AplicaSAC = chkSAC ? chkSAC.checked : false;
+            let WhsCodeSAC = selectTienda ? (selectTienda.value || "-1") : "-1";
+            let SlpCodeSAC = selectAsesor ? (selectAsesor.value || "-1") : "-1";
+
             const socioNegocio = getAllCookieCotizacion();
+
             if (socioNegocio) {
                 _llave = socioNegocio.Llave;
                 // Crear el objeto de CarritoComprasEntity en formato adecuado para enviarlo
                 const carrito = {
-                    NoCotizacionV: socioNegocio.NoCotizacion,  // Cotización número
-                    Nit: socioNegocio.LicTradNum,  // NIT
-                    CardCode: socioNegocio.CardCode,  // Código de cliente
-                    CardName: socioNegocio.CardName,  // Nombre de cliente
-                    Telefono: socioNegocio.Phone,  // Teléfono
-                    Correo: socioNegocio.Email,  // Correo
-                    Direccion: socioNegocio.Address,  // Dirección
-                    FormaPago: socioNegocio.PriceId.toString(),  // Forma de pago (Convertir a string si es necesario)
-                    SlpCode: socioNegocio.cliente,  // Código de vendedor
-                    PriceList: socioNegocio.PriceId,  // Lista de precios
+                    NoCotizacionV: socioNegocio.NoCotizacion,
+                    Nit: socioNegocio.LicTradNum,
+                    CardCode: socioNegocio.CardCode,
+                    CardName: socioNegocio.CardName,
+                    Telefono: socioNegocio.Phone,
+                    Correo: socioNegocio.Email,
+                    Direccion: socioNegocio.Address,
+                    FormaPago: socioNegocio.PriceId.toString(),
+                    SlpCode: socioNegocio.cliente,
+                    PriceList: socioNegocio.PriceId,
                     FacturarNit: socioNegocio.FacturarNit,
                     FacturarNombre: socioNegocio.FacturarNombre,
                     FacturarDireccion: socioNegocio.FacturarDireccion,
                     EsCf: socioNegocio.EsCF,
                     Comentarios: comentario,
+                    AplicaSAC: AplicaSAC,
+                    WhsCodeSAC: WhsCodeSAC,
+                    SlpCodeSAC: SlpCodeSAC,
                     Detalle: socioNegocio.productos.map(producto => ({
                         LineId: producto.LineId,
                         ItemCode: producto.ItemCode,
                         Dscription: producto.Dscription,
                         Quantity: producto.Quantity,
-                        Price: parseFloat(producto.Price),  // Convertir el precio a número
+                        Price: parseFloat(producto.Price),
                         Dscto: producto.Dscto,
-                        Saving: parseFloat(producto.Saving),  // Convertir ahorro a número
-                        CantMetros: parseFloat(producto.CantidadMetros.replace('Total en metros ', '')),  // Convertir a número
-                        LineTotal: producto.LineTotal,
-                        LinkImg: producto.LinkImg || '/Img/imagen-no-disponible.png',  // En caso de que no haya imagen
-                        EsPromo: parseInt(producto.EsPromo),  // Convertir EsPromo a número
+                        descuentoU: parseFloat(producto.DescuentoU), // Convertir a número
+                        Saving: parseFloat(producto.Saving),
+                        CantMetros: parseFloat(producto.CantidadMetros.replace('Total en metros ', '')),
+                        LineTotal: parseFloat(producto.LineTotal).toFixed(2), // Conversión y resta segura
+                        LinkImg: producto.LinkImg || '/Img/imagen-no-disponible.png',
+                        EsPromo: parseInt(producto.EsPromo),
                         DescuentoLpr: parseFloat(producto.DescuentoLpr),
                         DescuentoNwp: parseFloat(producto.DescuentoNwp),
                         DescuentoPor: parseFloat(producto.DescuentoPor),

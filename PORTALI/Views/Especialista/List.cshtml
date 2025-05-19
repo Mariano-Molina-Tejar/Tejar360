@@ -1,0 +1,321 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario y Listado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Estilos globales */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding-top: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 15px;
+        }
+
+        /* Panel informativo */
+        .panel-info {
+            background: linear-gradient(135deg, #ff9800, #ffcc80);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Formulario estilizado */
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .form-group {
+            flex: 1 1 calc(33.33% - 10px);
+            min-width: 200px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ff9800;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #e65100;
+            box-shadow: 0px 0px 5px rgba(230, 81, 0, 0.5);
+        }
+
+        @*/* Responsividad */
+        @media (max-width: 768px) {
+            .form-group {
+                flex: 1 1 calc(50% - 10px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-group {
+                flex: 1 1 100%;
+            }
+        }*@
+
+        .btn {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            width: 30%;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s ease;
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            background-color: #e65100;
+        }
+
+        /* Tabla */
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ff9800;
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+
+        td {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Panel Informativo -->
+        <div class="panel-info">
+            <h4><i class="fa-solid fa-chart-line"></i> Panel de Inscripciones</h4>
+            <div class="form-row" style="display: flex; gap: 20px; align-items: center;">
+                <div class="form-group" style="flex: 1;">
+                    <label style="font-weight: bold; color: #444; display: block; margin-bottom: 5px;">Meta Total</label>
+                    <input type="number" id="metaTotal" value="100" readonly
+                           style="width: 100%; padding: 10px; border: 2px solid #ff9800; border-radius: 8px; font-size: 16px; background: #fffbe6; text-align: center;">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label style="font-weight: bold; color: #444; display: block; margin-bottom: 5px;">Total Inscritos</label>
+                    <input type="number" id="totalInscritos" value="0" readonly
+                           style="width: 100%; padding: 10px; border: 2px solid #4caf50; border-radius: 8px; font-size: 16px; background: #e8f5e9; text-align: center;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Inscripción -->
+        <div class="form-container">
+            <h5><i class="fa-solid fa-user-plus"></i> Registrar Especialista</h5>
+            <form id="formRegistro">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>NIT</label>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <input type="text" id="nit" placeholder="Ingrese el NIT" autocomplete="off"
+                                   style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                            <button type="button"
+                                    style="background-color: #ff9800; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; transition: 0.3s;"
+                                    onclick="BuscarNit();"
+                                    onmouseover="this.style.backgroundColor='#e68900'"
+                                    onmouseout="this.style.backgroundColor='#ff9800'">
+                                <i class="fa-solid fa-search"></i>
+                            </button>
+                        </div>                        
+                    </div>
+
+                    <div class="form-group">
+                        <label>DPI</label>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <input type="text" id="dpi" placeholder="Ingrese el DPI" autocomplete="off"
+                                   style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                            <button type="button"
+                                    style="background-color: #ff9800; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; transition: 0.3s;"
+                                    onclick="BuscarDPI();"
+                                    onmouseover="this.style.backgroundColor='#e68900'"
+                                    onmouseout="this.style.backgroundColor='#ff9800'">
+                                <i class="fa-solid fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">                    
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="nombre" placeholder="Ingrese el nombre" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" id="direccion" placeholder="Ingrese la dirección" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" id="telefono" placeholder="Ingrese el teléfono" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Tienda</label>
+                        <input type="text" id="tienda" placeholder="Ingrese la tienda" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Especialista</label>
+                        <select id="tipoEspecialista">
+                            <option value="">Seleccione una opción</option>
+                            <option value="Tecnico">Técnico</option>
+                            <option value="Ingeniero">Ingeniero</option>
+                            <option value="Soporte">Soporte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Observaciones</label>
+                        <textarea id="observaciones" rows="3" placeholder="Ingrese observaciones"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-button">
+                    <button type="submit" class="btn">
+                        <i class="fa-solid fa-save"></i> Guardar
+                    </button>
+                </div>
+
+                <style>
+                    .form-button {
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 15px; /* Espacio arriba del botón */
+                    }
+                </style>
+            </form>
+        </div>
+
+        <!-- Listado de Especialistas -->
+        <div class="table-container">
+            <h5><i class="fa-solid fa-list"></i> Listado de Especialistas</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>NIT</th>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>Especialista</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaEspecialistas">
+                    <tr id="noDataRow">
+                        <td colspan="5" style="text-align: center; font-style: italic; color: gray;">
+                            No hay datos registrados aún
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>
+<script>
+    function BuscarDPI() {
+        var dpi = document.getElementById("dpi").value.trim();
+
+        if (dpi === "") {
+            alert("Por favor, ingrese un NIT válido.");
+            return;
+        }
+
+        $.ajax({
+            url: "/Especialista/BuscarDPI", // Ajusta la URL según tu ruta
+            type: "POST",
+            data: { DPI: dpi },
+            dataType: "json",
+            success: function (response) {
+                document.getElementById("nombre").value = response.nombre;
+            },
+            error: function () {
+                alert("Error al realizar la solicitud.");
+            }
+        });
+    }
+
+    function BuscarNit() {
+        var nit = document.getElementById("nit").value.trim();
+
+        if (nit === "") {
+            alert("Por favor, ingrese un NIT válido.");
+            return;
+        }
+
+        $.ajax({
+            url: "/Especialista/BuscarNit", // Ajusta la URL según tu ruta
+            type: "POST",
+            data: { Nit: nit },
+            dataType: "json",
+            success: function (response) {                
+                document.getElementById("nombre").value = response.nombre;
+            },
+            error: function () {
+                alert("Error al realizar la solicitud.");
+            }
+        });
+    }
+
+</script>

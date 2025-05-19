@@ -14,13 +14,12 @@ namespace DAL
         public static PortalComisionAsesoresEntity BonificacionLiga(int Anio, int Mes, int SlpCode, string Usuario)
         {
             PortalComisionAsesoresEntity Liga = new PortalComisionAsesoresEntity();
-
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
             using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
             {
                 OleDbCommand iCommand = null;
-                //iCommand = new OleDbCommand("sp_portal_liga_asesor_main_v2", iConnection);
-                iCommand = new OleDbCommand("sp_portal_liga_asesor_main_v5", iConnection);
+                iCommand = new OleDbCommand("sp_portal_liga_asesor_main_v2", iConnection);
+                //iCommand = new OleDbCommand("sp_portal_liga_asesor_main_v5", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
                 iCommand.Parameters.AddWithValue("@Anio", Anio);
                 iCommand.Parameters.AddWithValue("@Mes", Mes);
@@ -70,7 +69,7 @@ namespace DAL
                                     TotalRecibir = double.Parse(row["TotalRecibir"].ToString())
                                 }).FirstOrDefault();
 
-                        Liga.ListaBonos = DALPortalBonoLiga.ListaBonos(Liga.VentaAsesor, Liga.MetaAsesor);                        
+                        Liga.ListaBonos = DALPortalBonoLiga.ListaBonos(Liga.VentaAsesor, Liga.MetaAsesor);
                     }
                     else
                     {

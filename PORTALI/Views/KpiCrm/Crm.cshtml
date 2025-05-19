@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
+    <style>
+        canvas {
+            max-width: 250px;
+            max-height: 250px;
+            margin: auto;
+            display: block;
+        }
+
+        .percentage-label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Tasa de Cierre</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="venta1">Cotizaciones Abiertas</label>
+                                <input type="text" id="txtTotalCotiAbiertas" class="form-control" value="0.00" style="text-align:center; background-color:white" readonly>
+                            </div>
+                            <div class="col">
+                                <label for="meta1">Cotizaciones Cerradas</label>
+                                <input type="text" id="txtTotalCotiCerradas" class="form-control" value="0.00" style="text-align: center; background-color: white" readonly>
+                            </div>
+                        </div>
+                        <canvas id="chart1"></canvas>                        
+                        <h5 class="percentage-label" id="txtTasaCierreIndice">0.00%</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Tasa de Generación</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="venta2">Cotizaciones Generadas</label>
+                                <input type="text" id="txtGeneradasTotal" class="form-control" value="0.00" style="text-align:center; background-color:white" readonly>
+                            </div>
+                            <div class="col">
+                                <label for="meta2">Meta Cotizaciones</label>
+                                <input type="text" id="txtMetaCotizacion" class="form-control" value="0.00" style="text-align:center; background-color:white" readonly>
+                            </div>
+                        </div>
+                        <canvas id="chart2"></canvas>
+                        <h5 class="percentage-label" id="txtIndiceTasaGen">0.00%</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Bolson</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="clientesNuevos">Clientes Nuevos</label>
+                                <input type="number" id="clientesNuevos" class="form-control" value="25">
+                            </div>
+                            <div class="col">
+                                <label for="metaClientes">Meta Clientes</label>
+                                <input type="number" id="metaClientes" class="form-control" value="50">
+                            </div>
+                        </div>
+                        <canvas id="chartClientes"></canvas>
+                        <h5 class="percentage-label" id="percentageClientes">50%</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">Tasa perdida</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="clientesRetenidos">Clientes Retenidos</label>
+                                <input type="number" id="clientesRetenidos" class="form-control" value="40">
+                            </div>
+                            <div class="col">
+                                <label for="totalClientes">Total Clientes</label>
+                                <input type="number" id="totalClientes" class="form-control" value="60">
+                            </div>
+                        </div>
+                        <canvas id="chartRetencion"></canvas>
+                        <h5 class="percentage-label" id="percentageRetencion">66.67%</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $(document).ready(function () {
+            let fechaI = "2025-03-01"; // Fecha de inicio (ajústala dinámicamente si es necesario)
+            let fechaF = "2025-03-31"; // Fecha de fin
+            $("#globalLoading").show();
+            $.ajax({
+                url: '/KpiCrm/CargarDataInicial',
+                type: 'GET',
+                data: { FechaI: fechaI, FechaF: fechaF }, // Enviamos los parámetros
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        
+                        $("#txtTotalCotiAbiertas").val(data.TotalCotAbiertas.toLocaleString("es-GT", { minimumFractionDigits: 2 }));
+                        $("#txtTotalCotiCerradas").val(data.TotalCotCerradas.toLocaleString("es-GT", { minimumFractionDigits: 2 }));
+                        $("#txtTasaCierreIndice").text(data.Indice.toLocaleString("es-GT", { minimumFractionDigits: 2 }));
+
+                        $("#txtGeneradasTotal").val(data.TotalCotAbiertas.toLocaleString("es-GT", { minimumFractionDigits: 2 }));
+                        $("#txtMetaCotizacion").val(data.MetaCoti.toLocaleString("es-GT", { minimumFractionDigits: 2 }));
+                        $("#txtIndiceTasaGen").text(data.IndiceMetaCoti.toLocaleString("es-GT", { minimumFractionDigits: 2 }));
+                    }
+                    actualizarGraficos();
+                    $("#globalLoading").hide();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar datos:", error);
+                    $("#globalLoading").hide();
+                }
+            });
+        });
+
+        function obtenerValor(id) {
+            console.log(document.getElementById(id).value);
+            return parseFloat(document.getElementById(id).value) || 0;
+        }
+
+        function calcularPorcentaje(valor, total) {
+            return total === 0 ? 0 : ((valor / total) * 100).toFixed(2);
+        }
+
+        function actualizarGraficos() {
+            let data = [
+                ['txtTotalCotiCerradas', 'txtTotalCotiAbiertas', 'chart1'],
+                ['txtMetaCotizacion', 'txtGeneradasTotal', 'chart2']                
+            ];
+
+            data.forEach(([val1, val2, chartId]) => {
+                let valor = obtenerValor(val1);
+                let total = obtenerValor(val2);
+                window[chartId].data.datasets[0].data = [valor, (total - valor)];
+                window[chartId].update();
+                /*document.getElementById(percentageId).innerText = `${calcularPorcentaje(valor, valor + total)}%`;*/
+            });
+        }
+
+        let chartsConfig = [
+            { id: 'chart1', labels: ['Cerradas', 'Abiertas'], colors: ['#FF6384', '#36A2EB'] },
+            { id: 'chart2', labels: ['Generadas', 'Meta'], colors: ['#4CAF50', '#FF9800'] }
+            //{ id: 'chartClientes', labels: ['Nuevos', 'Meta'], colors: ['#17A2B8', '#FFC107'] },
+            //{ id: 'chartRetencion', labels: ['Retenidos', 'Total'], colors: ['#8E44AD', '#2ECC71'] }
+        ];
+
+        chartsConfig.forEach(cfg => {
+            let ctx = document.getElementById(cfg.id).getContext('2d');
+            window[cfg.id] = new Chart(ctx, {
+                type: 'pie',
+                data: { labels: cfg.labels, datasets: [{ data: [50, 50], backgroundColor: cfg.colors }] }
+            });
+        });
+        
+    </script>
+</body>
+</html>

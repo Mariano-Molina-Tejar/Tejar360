@@ -351,44 +351,45 @@
                                             <span class="total-label">Total</span>
                                             <span class="total-value">@string.Format("Q{0:#,##0.00}", 0.00)</span>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <span id="txtPrecio" style="display: none;"></span>
                                 <span id="txtListPrice" style="display: none;"></span>
-                                <div onclick="borrarCotizacion('A1')" style="cursor: pointer;">borrar cookie</div>
-                            <div class="product-price">
-                                <div style="display: flex; gap: 20px; justify-content: center;">
-                                    <!-- Primer contador -->
-                                    <div class="counter" style="border-radius: 6px; background-color: #f5f5f5; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                                        <a style="font-size: 14px; font-weight: bold; color: #ff9800; margin-bottom: 10px;">
-                                            @if (Model.Encabezado.IdGrupo == 1)
-                                            {
-                                                @:Cajas
-                                            }
-                                            else
-                                            {
-                                                @:Unidades
-                                            }
-                                        </a>
-                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                            <button class="btn-minus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularTotales()">-</button>
-                                            <input type="number" id="counterInput" value="1" min="1" style="border-radius: 5px; border: 1px solid #ddd; padding: 8px; font-size: 16px; text-align: center;width: 70px;" onchange="CalcularTotales()">
-                                            <button class="btn-plus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularTotales()">+</button>
-                                        </div>
-                                    </div>
-                                    @if (Model.Encabezado.IdGrupo == 1)
-                                    {
+                                @*BORRAR COOKIE*@
+                                @*<div onclick="borrarCotizacion('A1')" style="cursor: pointer;">borrar cookie</div>*@
+                                <div class="product-price">
+                                    <div style="display: flex; gap: 20px; justify-content: center;">
+                                        <!-- Primer contador -->
                                         <div class="counter" style="border-radius: 6px; background-color: #f5f5f5; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                                            <a style="font-size: 14px; font-weight: bold; color: #ff9800; margin-bottom: 10px;">Metros</a>
+                                            <a style="font-size: 14px; font-weight: bold; color: #ff9800; margin-bottom: 10px;">
+                                                @if (Model.Encabezado.IdGrupo == 1)
+                                                {
+                                                    @:Cajas
+                                                }
+                                                else
+                                                {
+                                                    @:Unidades
+                                                }
+                                            </a>
                                             <div style="display: flex; align-items: center; gap: 10px;">
-                                                <button class="btnMetrosMinus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularMetros()">-</button>
-                                                <input type="number" id="txtTotalMetros" value="1" min="1" style="border-radius: 5px; border: 1px solid #ddd; padding: 8px; font-size: 16px; text-align: center; width: 70px;" onchange="CalcularMetros()">
-                                                <button class="btnMetrosPlus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularMetros()">+</button>
+                                                <button class="btn-minus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularTotales()">-</button>
+                                                <input type="number" id="counterInput" value="1" min="1" style="border-radius: 5px; border: 1px solid #ddd; padding: 8px; font-size: 16px; text-align: center;width: 70px;" onchange="CalcularTotales()">
+                                                <button class="btn-plus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularTotales()">+</button>
                                             </div>
                                         </div>
-                                    }
-                                </div>
-                                <script>
+                                        @if (Model.Encabezado.IdGrupo == 1)
+                                        {
+                                            <div class="counter" style="border-radius: 6px; background-color: #f5f5f5; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                                                <a style="font-size: 14px; font-weight: bold; color: #ff9800; margin-bottom: 10px;">Metros</a>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <button class="btnMetrosMinus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularMetros()">-</button>
+                                                    <input type="number" id="txtTotalMetros" value="1" min="1" style="border-radius: 5px; border: 1px solid #ddd; padding: 8px; font-size: 16px; text-align: center; width: 70px;" onchange="CalcularMetros()">
+                                                    <button class="btnMetrosPlus" style="padding: 10px; border: none; background-color: transparent; cursor: pointer;" onclick="CalcularMetros()">+</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <script>
                                     //CALCULA LOS TOTALES EN PRECIO
                                     function CalcularTotales() {
                                         const cantidad = parseInt(document.getElementById('counterInput').value, 10);
@@ -455,43 +456,43 @@
 
                                     // Asocia el evento input a la función correcta
                                     document.getElementById('txtTotalMetros').addEventListener('input', CalcularMetros);
-                                </script>
+                                    </script>
 
-                                <style>
-                                    /* Estilos para el input de tipo número */
-                                    input[type="number"]::-webkit-inner-spin-button,
-                                    input[type="number"]::-webkit-outer-spin-button {
-                                        -webkit-appearance: none;
-                                        margin: 0;
-                                    }
-
-                                    input[type="number"] {
-                                        -moz-appearance: textfield;
-                                        appearance: textfield;
-                                        width: 50px;
-                                        text-align: center;
-                                        border: 1px solid #ddd;
-                                        border-radius: 5px;
-                                        padding: 8px;
-                                        font-size: 16px;
-                                        color: #333;
-                                        outline: none;
-                                        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-                                    }
-
-                                        input[type="number"]:focus {
-                                            border-color: #ff9800;
+                                    <style>
+                                        /* Estilos para el input de tipo número */
+                                        input[type="number"]::-webkit-inner-spin-button,
+                                        input[type="number"]::-webkit-outer-spin-button {
+                                            -webkit-appearance: none;
+                                            margin: 0;
                                         }
-                                </style>                                
-                                <div style="display: flex; flex-direction: row; gap: 5px; justify-content: center; align-items: center; max-width: 100%; text-align: center; padding: 15px;">
-                                    <div style="text-align:center; margin-top:15px;width:50%;padding-top:40px">
-                                        <a class="btn btn-warning bold-btn" style="width:100%;height:45px" onclick="agregarProductoDesdeVista()">
-                                            <i class="fa fa-shopping-cart" style="font-size: 22px; margin-right: 5px; margin-top:4px"></i>
-                                            <strong>Agregar al carrito</strong>
-                                        </a>
+
+                                        input[type="number"] {
+                                            -moz-appearance: textfield;
+                                            appearance: textfield;
+                                            width: 50px;
+                                            text-align: center;
+                                            border: 1px solid #ddd;
+                                            border-radius: 5px;
+                                            padding: 8px;
+                                            font-size: 16px;
+                                            color: #333;
+                                            outline: none;
+                                            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+                                        }
+
+                                            input[type="number"]:focus {
+                                                border-color: #ff9800;
+                                            }
+                                    </style>
+                                    <div style="display: flex; flex-direction: row; gap: 5px; justify-content: center; align-items: center; max-width: 100%; text-align: center; padding: 15px;">
+                                        <div style="text-align:center; margin-top:15px;width:50%;padding-top:40px">
+                                            <a class="btn btn-warning bold-btn" style="width:100%;height:45px" onclick="agregarProductoDesdeVista()">
+                                                <i class="fa fa-shopping-cart" style="font-size: 22px; margin-right: 5px; margin-top:4px"></i>
+                                                <strong>Agregar al carrito</strong>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             </div>
                         </div>
                     </div>
@@ -536,21 +537,82 @@
                                         <tbody id="resultadosBusqueda">
                                             @foreach (var item in Model.Tiendas)
                                             {
-                                <tr>
-                                    <td style="color:gray" class="tienda-column">
-                                        @item.WhsName.ToUpper() <br />
-                                        <a style="font-size: 12px; color: #ccc">@item.Direccion.ToString()</a>
-                                    </td>
-                                    <td>@item.Stock</td>
-                                </tr>}
+                                                <tr ondblclick="mostrarMensaje('@item.WhsCode')" style="cursor: pointer;">
+                                                    <td style="color: gray" class="tienda-column" onmousedown="return false;">
+                                                        <strong>@item.WhsName.ToUpper()</strong><br />
+                                                        <a style="font-size: 12px; color: #ccc">@item.Direccion.ToString()</a>
+                                                    </td>
+                                                    <td onmousedown="return false;">
+                                                        <div style="white-space: nowrap;">
+                                                            <span style="font-size:13px">Stock:</span> @item.Stock
+                                                        </div>
+                                                        <div style="color: red; white-space: nowrap;">
+                                                            <span style="font-size:13px">Cmp:</span> @item.Comprometido
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
                                         </tbody>
                                     </table>
+
+                                    <script>
+                                        function mostrarMensaje(nombreTienda) {
+                                            $("#modalProducto").show();
+                                        }
+                                    </script>
                                 </div>
                             </div>
 
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalProducto" class="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); padding-top: 60px;">
+        <div class="modal-content" style="background-color: white; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h5 class="modal-title" style="margin: 0;">Detalles del producto comprometido</h5>
+                <span class="close" onclick="cerrarModal()" style="font-size: 30px; cursor: pointer;">×</span>
+            </div>
+            <div class="modal-body" style="margin-top: 20px;">
+
+                <!-- Nombre del producto -->
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="productoNombre" style="font-size: 14px;">Nombre del Producto</label>
+                    <input type="text" id="productoNombre" class="form-control" readonly style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; margin-top: 5px;" />
+                </div>
+
+                <!-- Tabla con detalles del producto -->
+                <table id="productoDetalles" class="table" style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd; background-color: rgba(0, 0, 0, 0.1);">Documento</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd; background-color: rgba(0, 0, 0, 0.1);">Fecha</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd; background-color: rgba(0, 0, 0, 0.1);">Socio de negocio</th>                            
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd; background-color: rgba(0, 0, 0, 0.1);">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Se llenará dinámicamente -->
+                        <tr>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">12345</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">2021-03-01</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">Cliente A</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">5</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">12345</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">2021-03-01</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">Cliente A</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin-top: 20px; text-align: right;">
+                <button type="button" class="btn" onclick="cerrarModal()" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer;">Cerrar</button>
             </div>
         </div>
     </div>
@@ -639,14 +701,14 @@
                 <div class="items-container">
                     @foreach (var item in Model.VentaCruzada)
                     {
-        <div class="item">
-            <img src="@(string.IsNullOrEmpty(item.Imagen) ? "/Img/imagen-no-disponible.png" : item.Imagen)" alt="@item.ItemName.ToUpper()">
-            <h3>@item.ItemName.ToUpper()</h3>
-            <h3>@item.ItemCode</h3>
-            <p class="price">Precio: <strong style="color: #007bff;">Q @item.PrecioVenta.ToString("N2")</strong></p>
-            <p class="promotion">En promoción</p>
-        </div>}
-                </div>               
+                        <div class="item">
+                            <img src="@(string.IsNullOrEmpty(item.Imagen) ? "/Img/imagen-no-disponible.png" : item.Imagen)" alt="@item.ItemName.ToUpper()">
+                            <h3>@item.ItemName.ToUpper()</h3>
+                            <h3>@item.ItemCode</h3>
+                            <p class="price">Precio: <strong style="color: #007bff;">Q @item.PrecioVenta.ToString("N2")</strong></p>
+                            <p class="promotion">En promoción</p>
+                        </div>}
+                </div>
             </div>
         </div>
     </div>
@@ -1123,7 +1185,7 @@
     }
 
     function borrarCotizacion(clienteId) {
-        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");        
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
         borrarCookie(cookieName);
 
         actualizarCarritoBadge(0);
@@ -1144,9 +1206,8 @@
         });
     }
 
-
-    function agregarProductoDesdeVista() {        
-        $("#globalLoading").show();
+    function agregarProductoDesdeVista() {
+        $("#globalLoading").show();        
         const precioNo = "@Model.Encabezado.PrecioVenta";
         const precioOf = "@Model.Encabezado.PrecioBeneficio";
         const clienteId = 'A1';
@@ -1162,22 +1223,23 @@
         const elemento = document.getElementById('iMetrosTotal');
         const cantidadMetros = elemento ? elemento.textContent.replace("Total metros de piso:", "").trim() : "0";
         const linkImg = "@Model.Encabezado.Imagen";
-        const EsPromo = "@Model.Encabezado.EsPromo";
+        const EsPromo = "@Model.Encabezado.EsPromo";        
         let lineId = regresarId();
 
         const producto = {
+            DocE: 0,
+            LineN: -1,
             Identity: generateUUID(),
             LineId: lineId,
             ItemCode: itemCode,
-            Dscription: itemName.replace("Ñ", "N"),
+            Dscription: itemName.replace(/&#160;/g, ' '),
             Quantity: quantity,
-            ListPrice: listPrice,
-            Price: price,
-            DescuentoU: descuentoU,
-            Dscto: dscto.replace("%", ""),
-            Saving: savings,
+            ListPrice: parseInt(listPrice),
+            Price: (parseFloat(price) - parseFloat(descuentoU)),
+            DescuentoU: parseFloat(descuentoU),
+            Dscto: parseFloat(dscto.replace("%", "")),
             LineTotal: lineTotal,
-            CantidadMetros: cantidadMetros,
+            CantidadMetros: parseFloat(cantidadMetros),
             LinkImg: linkImg,
             EsPromo: EsPromo,
             DescuentoLpr: 0,
@@ -1185,12 +1247,58 @@
             DescuentoQtz: 0.00,
             DescuentoNwp: 0.00
         };
-        
-        if (CrearCotizacionCookie(clienteId, producto) === true) {
+
+        if (CrearCotizacionCookie(clienteId, producto,0) === true) {
             $('#miModal').modal('show').addClass('fade-in');
             $("#globalLoading").hide();
         }
     }
+
+    //function CrearCotizacionCookie(clienteId, producto) {
+    //    let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+    //    var llave = generarNumeroCotizacion();
+    //    // Si no existe una cotización previa, crea una nueva
+
+    //    if (!cookieName) {
+
+    //        cookieName = "T-OneCotizacion-" + llave;
+    //    }
+
+    //    const existingCotizacion = getCookie(cookieName);
+    //    let cotizacion;
+    //    if (existingCotizacion) {
+    //        cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto        
+    //        cotizacion.productos.push(producto); // Agregamos el nuevo producto
+    //    } else {
+    //        cotizacion = {
+    //            DocN: 0,
+    //            Llave: llave,
+    //            NoCotizacion: generarNumeroCotizacion(),
+    //            cliente: clienteId,
+    //            LicTradNum: "",
+    //            CardCode: "",
+    //            CardName: "",
+    //            Direccion: "",
+    //            Email: "",
+    //            Telefono: "",
+    //            Fecha: new Date().toISOString().split('T')[0], // Fecha actual
+    //            PriceId: 9,
+    //            FacturarNit: "",
+    //            FacturarNombre: "",
+    //            FacturarDireccion: "",
+    //            EsCF: "",
+    //            Borrador: "N",
+    //            productos: [producto]
+    //        };
+    //    }
+    //    // Guardar la cotización actualizada
+    //    setCookie(cookieName, JSON.stringify(cotizacion), 7);
+
+    //    // Actualizar el badge del carrito
+    //    actualizarCarritoBadge(cotizacion.productos.length);
+
+    //    return true;
+    //}
 
     function regresarId() {
         let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
@@ -1214,12 +1322,7 @@
             }
         }
         return 1;
-    }
-
-    // Función para generar un número de cotización aleatorio (o secuencial si prefieres)
-    function generarNumeroCotizacion() {
-        return Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
-    }
+    }    
 
     // Función para obtener el valor de una cookie
     function getCookie(name) {

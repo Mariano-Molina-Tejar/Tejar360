@@ -26,7 +26,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
     <link href="~/js/Loading.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Scripts JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/carrito.js" defer></script>
@@ -37,6 +39,12 @@
 
         body {
         }
+
+        .nav-dropdown-items .nav-item a {
+            padding-left: 30px;
+        }
+
+
     </style>
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
@@ -102,99 +110,121 @@
                             <i class="nav-icon icon-speedometer"></i> Dashboard
                         </a>
                     </li>
-                    <li class="nav-title">La Liga</li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("ComisionLiga", "BilleteraComisionLiga")">
-                            <i class="nav-icon icon-calculator"></i> Mi billetera
+
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon fas fa-coins"></i> Finanzas
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "RankingV2")">
-                            <i class="nav-icon icon-graph"></i> Ranking
-                        </a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("ComisionLiga", "BilleteraComisionLiga")">
+                                    <i class="nav-icon fas fa-wallet"></i> Mi Billetera
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "RankingV2")">
+                                    <i class="nav-icon fas fa-trophy"></i> Ranking
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Margen", "Margen")">
+                                    <i class="nav-icon fas fa-chart-line"></i> Margen
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="nav-item nav-dropdown">
                         <a class="nav-link nav-dropdown-toggle" href="#">
-                            <i class="nav-icon icon-share-alt"></i> Ventas
+                            <i class="nav-icon fas fa-shopping-cart"></i> Ventas
                         </a>
                         <ul class="nav-dropdown-items">
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Cotizacion", "CotizacionVentas")">
-                                    <i class="nav-icon icon-bag"></i> Nueva venta
+                                    <i class="nav-icon fas fa-plus-circle"></i> Nueva venta
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Listado", "Ventas")">
-                                    <i class="nav-icon icon-compass"></i> Cotizaciones
+                                    <i class="nav-icon fas fa-file-invoice-dollar"></i> Cotizaciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("List", "Especialista")">
+                                    <i class="nav-icon fas fa-user-tie"></i> Especialista
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Autorizacion", "CotizacionVentasAutoriza")">
-                                    <i class="nav-icon icon-compass"></i> Autorizaciones
+                                    <i class="nav-icon fas fa-check-circle"></i> Autorizaciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("VentasEmpresa", "VentasEmpresa")">
+                                    <i class="nav-icon fas fa-check-circle"></i> Ventas empresa
                                 </a>
                             </li>
                         </ul>
                     </li>
 
-                    @*<li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Cotizacion", "CotizacionVentas")">
-                                <i class="nav-icon icon-puzzle"></i> Inventario
-                            </a>
-                        </li>*@
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Margen", "Margen")">
-                            <i class="nav-icon icon-calculator"></i> Margen
-                        </a>
-                    </li>
-                    <li class="nav-title">Operativo</li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("SolicitudCompra", "SAPOc")">
-                            @*<img id="navIcon" src="~/Img/solicitud_compra.png" alt="Solicitud de compra" width="16" height="16">*@
-                            <i class="nav-icon icon-basket"></i>
-                            Solicitud de compra
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("AutorizarSolicitudes", "SAPAutorizar")">
-                            @*<img id="navIcon" src="~/Img/autorizacion_2.png" alt="Autorización" width="16" height="16">*@
-                            <i class="nav-icon icon-bell"></i>
-                            Autorizar solicitud
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Recepcion", "Delivery")">
-                            <i class="nav-icon icon-basket-loaded"></i>Recepción
-                        </a>
-                    </li>
-                    @*<li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("AutorizacionSuperior", "SAPAutorizaSuperior")">
-                                <i class="nav-icon icon-basket-loaded"></i>Autorización superior
-                            </a>
-                        </li>*@
-                    <li class="divider"></li>
-                    <li class="nav-title">Herramientas</li>
                     <li class="nav-item nav-dropdown">
                         <a class="nav-link nav-dropdown-toggle" href="#">
-                            <i class="nav-icon icon-settings"></i> Configuración
+                            <i class="nav-icon fas fa-users"></i> Clientes/Crm
                         </a>
                         <ul class="nav-dropdown-items">
                             <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Perfil", "Profile")" target="_top">
-                                    <i class="nav-icon icon-user"></i> Perfil
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="register.html" target="_top">
-                                    <i class="nav-icon icon-star"></i> Acerca de
+                                <a class="nav-link" href="@Url.Action("Crm", "KpiCrm")">
+                                    <i class="nav-icon fas fa-address-book"></i> Crm
                                 </a>
                             </li>
                         </ul>
                     </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon fas fa-truck-loading"></i> Compras
+                        </a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("SolicitudCompra", "SAPOc")">
+                                    <i class="nav-icon fas fa-file-signature"></i> Solicitud de compra
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("AutorizarSolicitudes", "SAPAutorizar")">
+                                    <i class="nav-icon fas fa-thumbs-up"></i> Autorizar solicitud
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Recepcion", "Delivery")">
+                                    <i class="nav-icon fas fa-box-open"></i> Recepción
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon fas fa-cogs"></i> Configuración
+                        </a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Perfil", "Profile")" target="_top">
+                                    <i class="nav-icon fas fa-user-cog"></i> Perfil
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="register.html" target="_top">
+                                    <i class="nav-icon fas fa-info-circle"></i> Acerca de
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                 </ul>
             </nav>
             <button class="sidebar-minimizer brand-minimizer" type="button"></button>
-        </div>
+        </div>        
         <main class="main">
             <div id="globalLoading" class="loading-overlay">
                 @*<img src="~/Img/tejar-ico.png" alt="Loading..." class="loading-image">*@
@@ -220,7 +250,7 @@
     </div>
     <footer class="app-footer fixed-bottom p-xl-2">
         <div>
-            <span>&copy; 2025 Desarrollo ElTejar</span>
+            <span>&copy; 2025 Desarrollo ElTejar Versión 1.5</span>
         </div>
     </footer>
     <!-- Bootstrap and necessary plugins-->
