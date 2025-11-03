@@ -1,588 +1,1190 @@
-﻿@model Entity.CarritoComprasPDFEntity
+﻿@{
+    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+    string _clienteCF = sessions.ClienteCf;
+
+    bool puedeSeleccionar = false;
+
+    if (sessions != null)
+    {
+        // Verificar si es manager o nivel permitido
+        if (sessions.UserCode == "manager" || (sessions.Nivel >= 1 && sessions.Nivel <= 3))
+        {
+            puedeSeleccionar = true;
+        }
+    }
+}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle de Cotización</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="~/Css/DetalleAutorizaVenta.css" rel="stylesheet" />
+
+    <!-- CSS de Bootstrap -->
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <!-- Font Awesome para íconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <!-- JS de Bootstrap (requerido para modales) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @*<link href="~/Css/DetalleAutorizaVenta.css" rel="stylesheet" />*@
     <script src="/js/UpdateCarrito.js" defer></script>
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', sans-serif;
+            padding-bottom: 50px;
+        }
+
+        .title-box {
+            background: linear-gradient(to right, #343a40, #212529);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-box {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: #343a40;
+            margin-bottom: 20px;
+            border-left: 4px solid #0d6efd;
+            padding-left: 10px;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .alert-note {
+            background-color: #e9ecef;
+            border-left: 5px solid #ffc107;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+
+        .section-box {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .custom-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+        }
+
+            .custom-table thead {
+                background-color: #f5f5f5;
+            }
+
+                .custom-table thead th {
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 2px solid #ccc;
+                    color: #444;
+                }
+
+            .custom-table tbody tr {
+                transition: background-color 0.2s;
+            }
+
+                .custom-table tbody tr:hover {
+                    background-color: #f9f9f9;
+                }
+
+            .custom-table td {
+                padding: 10px;
+                border-bottom: 1px solid #e0e0e0;
+                color: #555;
+            }
+
+
+        .seguimiento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-seguimiento {
+            background-color: #198754;
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+            .btn-seguimiento:hover {
+                background-color: #157347;
+            }
+
+        #txtMotivoPerdida {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #f5f5f5; /* Gris claro al estar deshabilitado */
+            color: #777;
+            cursor: not-allowed;
+        }
+
+            #txtMotivoPerdida:enabled {
+                background-color: #f5f5f5; /* Fondo cuando está habilitado */
+                color: #000;
+                cursor: pointer;
+            }
+    </style>
 </head>
 <body>
+    <input type="hidden" id="clienteCF" value="@_clienteCF" />
+    <div class="container">
 
-    <div class="container mt-4">
-        <div class="header-section">📄 Detalle de Cotización</div>
-
-        <!-- Encabezado de la cotización -->
-        <div class="row mt-3">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="text-align:center">📌 Datos generales</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6"><strong>Fecha:</strong> <span id="fecha">@Model.Encabezado.DocDate.ToString("dd/MM/yyyy")</span></div>
-                            <div class="col-md-6"><strong>Vencimiento:</strong> <span id="fecha">@Model.Encabezado.DocDueDate.ToString("dd/MM/yyyy")</span></div>
-                            <div class="col-md-6"><strong>No. Documento:</strong> <span id="docNum">@Model.Encabezado.DocNum</span></div>
-                            <div class="col-md-6"><strong>No. Factura:</strong> <span id="docNum">@Model.Encabezado.DocNumFac</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header" style="background-color:darkcyan">📌 Datos del cliente</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Código:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="codigoclienteInput" value="@Model.Encabezado.CardCode" class="form-control" readonly style="background-color:white; border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Nombre:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="nombreInput" value="@Model.Encabezado.CardName" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Nit:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="nitInput" value="@Model.Encabezado.NitCardCode" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 70px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Dirección:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="direccionInput" value="@Model.Encabezado.DireccionCardCode" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Teléfono:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="telefonoInput" value="@Model.Encabezado.TelefonoCliente" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 70px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow='none';" />
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Correo:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="correoInput" value="@Model.Encabezado.CorreoCliente" class="form-control" readonly style="background-color: white; border: none; outline: none; width: auto; min-width: 70px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header" style="background-color:orange">📌 Datos de facturación</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!--<div class="col-md-12">
-                                <div class="d-flex align-items-center">-->
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <!--<strong class="mr-2" style="min-width: 100px;">Consumidor Final</strong>-->
-
-                                    <!-- Select con opciones de Sí y No -->
-                                    <!--<select id="consumidorFinal" class="form-control" style="border: none; outline: none; width: auto; min-width: 150px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';">
-                                        <option value="sí">Sí</option>
-                                        <option value="no">No</option>
-                                    </select>
-                                </div>
-                            </div>-->
-
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Nit/DPI:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="nitInput" value="@Model.Encabezado.NitDocto" class="form-control" style="border: none; outline: none; width: auto; min-width: 150px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                    <!-- Botón con icono de lupa -->
-                                    <button type="button" class="btn btn-light" id="btnActualizarNit" style="margin-left: 10px;">
-                                        <i class="bi bi-search"></i> <!-- Icono de lupa usando Bootstrap Icons -->
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Cliente:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="clienteInput" value="@Model.Encabezado.CardName" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Dirección:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="direccionInput" value="@Model.Encabezado.Address" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Teléfono:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="telefonoInput" value="@Model.Encabezado.TelefonoDocto" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow='none';" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="d-flex align-items-center">
-                                    <!-- Etiqueta (strong) a la izquierda -->
-                                    <strong class="mr-2" style="min-width: 100px;">Correo:</strong>
-                                    <!-- Input sin borde con tamaño ajustable -->
-                                    <input type="text" id="correoInput" value="@Model.Encabezado.CorreoDocto" class="form-control" style="border: none; outline: none; width: auto; min-width: 400px; height: 30px; padding: 5px;" onfocus="this.style.boxShadow = 'none';" />
-                                </div>
-                            </div>
-
-
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Título -->
+        <div class="title-box" style="padding:10px; font-size:15px;">
+            <i class="fas fa-file-invoice-dollar me-2"></i>Detalle de Cotización
         </div>
 
-        <a id="txtDocEntry" style="display:none">@Model.Encabezado.DocEntry</a>
-        <!-- Detalle de productos -->
-        <div class="card mt-3">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>📦 Detalle de Productos</span>
-                <button type="button" class="btn btn-sm btn-warning" id="btnEditarCotizacion" onclick="confirmarEditar()">
-                    <i class="bi bi-pencil-square"></i> Editar Cotización
+        <!-- Botones -->
+        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+
+            <!-- Botón Editar -->
+
+            @if (Model.Encabezado.Estado != "Pendiente" && Model.Encabezado.Estado != "Autorizado")
+            {
+                <button id="btnEditar" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-save" style="margin-right: 5px;"></i> Guardar cambios
                 </button>
-            </div>
-
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover text-center">
-                        <thead>
-                            <tr>
-                                @*<th>Opción</th>*@
-                                <th>Código</th>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio Unitario</th>
-                                <th>Descuento (Q)</th>
-                                <th>Precio con Descuento</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detalle-body">
-                            @foreach (var item in Model.Detalle)
-                            {
-                                <tr>
-                                    @*<td style="text-align: center; vertical-align: middle;">
-                                        <i class="bi bi-trash-fill text-danger" style="cursor: pointer;" title="Eliminar" onclick="confirmarEliminar(this)"></i>
-                                    </td>*@
-                                    <td style="vertical-align: middle;">@item.ItemCode</td>
-                                    <td style="text-align:left; vertical-align: middle;">@item.Dscription</td>
-                                    <td style="vertical-align: middle;">
-                                        <input type="number" name="Cantidad" value="@item.Quantity" min="1" step="1"
-                                               class="cantidad-input"
-                                               style="text-align:center; width: 100%; border: none; outline: none; background: transparent;" />
-                                    </td>
-                                    <td style="text-align: right; vertical-align: middle;" class="precio" data-precio="@item.Price">
-                                        Q @item.Price.ToString("#,##0.00")
-                                    </td>
-                                    <td style="text-align: right; vertical-align: middle;">
-                                        <div style="display: flex; align-items: center; justify-content: flex-end;">
-                                            <span style="margin-right: 4px;">Q</span>
-                                            <input type="number" name="Descuento"
-                                                   value="@item.Descuento.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
-                                                   min="0" step="0.01"
-                                                   class="descuento-input"
-                                                   style="text-align: right; width: 100%; border: none; outline: none; background: transparent;" />
-                                        </div>
-                                    </td>
-                                    <td style="text-align: right; vertical-align: middle;" class="precio-descuento">Q 0.00</td>
-                                    <td style="text-align: right; vertical-align: middle;" class="line-total">Q 0.00</td>
-                                </tr>
-                            }
-                        </tbody>
-
-                        <tfoot>
-                            <tr style="background-color:#efe8e8">
-                                <td colspan="6" class="text-end"><strong>Gran Total:</strong></td>
-                                <td id="gran-total"><strong>Q 0.00</strong></td>
-                            </tr>
-                        </tfoot>
-                    </table>
+            }
 
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            function calcularTotales() {
-                                let totalGeneral = 0;
-
-                                document.querySelectorAll('#detalle-body tr').forEach(function (fila) {
-                                    const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value || 0);
-                                    const descuento = parseFloat(fila.querySelector('.descuento-input')?.value || 0);
-                                    const precio = parseFloat(fila.querySelector('.precio')?.dataset.precio || 0);
-
-                                    const precioConDescuento = precio - descuento;
-                                    const totalLinea = cantidad * precioConDescuento;
-
-                                    // Mostrar en columna correspondiente
-                                    fila.querySelector('.precio-descuento').textContent = precioConDescuento.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' });
-                                    fila.querySelector('.line-total').textContent = totalLinea.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' });
-
-                                    totalGeneral += totalLinea;
-                                });
-
-                                document.getElementById('gran-total').innerHTML = `<strong>${totalGeneral.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' })}</strong>`;
-                            }
-
-                            // Asignar evento
-                            document.querySelectorAll('.cantidad-input, .descuento-input').forEach(function (input) {
-                                input.addEventListener('input', calcularTotales);
-                            });
-
-                            // Calcular una vez al cargar
-                            calcularTotales();
-                        });
-                    </script>
-
-
-                </div>
-
-                <!-- Observaciones -->
-                <div class="mt-4">
-                    <label for="observaciones" class="form-label"><i class="fas fa-sticky-note"></i> Comentarios </label>
-                    <textarea id="observaciones" class="form-control" rows="3" placeholder="Observación...">@Model.Encabezado.Comments</textarea>
-                </div>
-            </div>
+            <!-- Botón PDF -->
+            <button id="btnPdf" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-file-pdf" style="margin-right: 5px;"></i> PDF
+            </button>
         </div>
 
-        <div class="card mt-3">
-            <div class="card-header" style="background-color:yellowgreen">📦 Seguimiento</div>
-            <div class="card-body">
-                <div style="display: flex; justify-content: end; margin-bottom: 10px;">
-                    <button id="agregarSeguimiento" style="background-color:red" class="custom-btn">➕ Agregar Seguimiento</button>
-                </div>
-                <div class="table-responsive">
-                    <table id="seguimiento" class="table table-bordered table-hover text-center">
-                        <thead style="background-color:red">
-                            <tr>
-                                <th>Creado</th>
-                                <th>Fecha</th>
-                                <th>Fecha Seg.</th>
-                                <th>Estado</th>
-                                <th>Tipo contacto</th>
-                                <th>Acción realizada</th>
-                                <th>Anotaciones</th>
-                                <th>Usuario</th>
-                            </tr>
-                        </thead>
-                        <tbody id="seguimiento-body">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal -->
-    <div id="modalSeguimiento" class="modal fade" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-confirm" style="max-width: 500px; margin: auto;">
-            <div class="modal-content" style="border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <!-- Librería SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                <!-- Header -->
-                <div class="modal-header" style="display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #ddd; padding: 15px;">
-                    <h5 class="modal-title" id="miModalLabel" style="margin: 0; font-weight: bold; display: flex; align-items: center;">
-                        <i class="fas fa-tasks" style="color: #007bff; margin-right: 10px;"></i> Seguimiento
-                    </h5>
-                </div>
-
-                <!-- Body -->
-                <div class="modal-body">
-                    <form id="formSeguimiento">
-                        <label for="notas" style="font-weight: bold; display: block; margin-top: 10px;">Notas:</label>
-                        <textarea id="txtNotas" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
-
-                        <label for="fechaSeguimiento" style="font-weight: bold; display: block; margin-top: 10px;">Fecha de Seguimiento:</label>
-                        <input type="date" id="txtfechaSeguimiento" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-
-                        <label for="fechaVencimiento" style="font-weight: bold; display: block; margin-top: 10px;">Fecha de Vencimiento:</label>
-                        <input type="date" id="txtfechaVencimiento" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-
-                        <label for="estado" style="font-weight: bold; display: block; margin-top: 10px;">Estado:</label>
-                        <select id="crmEstado" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">                            
-                        </select>
-
-                        <label for="tipoContacto" style="font-weight: bold; display: block; margin-top: 10px;">Tipo de Contacto:</label>
-                        <select id="txttipoContacto" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">                           
-                        </select>                       
-                        <label for="accionRealizada" style="font-weight: bold; display: block; margin-top: 10px;">Acción Realizada:</label>
-                        <input type="text" id="txtaccionRealizada" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" autocomplete="off">
-                    </form>
-                </div>
-
-                <!-- Footer -->
-                <div class="modal-footer" style="border-top: none; text-align: center;">
-                    <button id="btnSaveSeguimiento" type="button" class="btn btn-success btn-block" style="width: 100%; padding: 10px; font-size: 16px; border-radius: 4px;">Guardar</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Font Awesome para iconos -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>    
-    <script>
-        function confirmarEditar() {
-            const cookies = document.cookie.split(";");
-            // Buscar todas las cookies que empiecen por T-OneCotizacion-
-            const cotizaciones = cookies.filter(cookie => {
-                const nombre = cookie.trim().split("=")[0];
-                return nombre.startsWith("T-OneCotizacion-");
-            });
-
-            if (cotizaciones.length >= 1) {
+        <script>
+            document.getElementById("btnEditar").addEventListener("click", function () {
                 Swal.fire({
-                    icon: 'info',
-                    title: 'Cotizaciones abiertas',
-                    text: 'Para editar una cotización debe cerrar las pendientes',
-                    cancelButtonText: 'Cerrar'
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        // Puedes redirigir a un listado de cotizaciones si tienes uno
-                        // window.location.href = "/MiCarrito/ListadoCarrito";
-                    }
-                });
-            } else if (cotizaciones.length === 0) {
-                Swal.fire({
-                    title: '¿Desea editar su cotización?',
-                    text: 'Esta cotización ya existe en SAP',
                     icon: 'question',
+                    title: 'Confirmación de cambios',
+                    text: '¿Está seguro de que desea guardar los cambios realizados en la cotización?',
                     showCancelButton: true,
-                    confirmButtonText: 'Sí, editar',
+                    confirmButtonText: 'Sí, guardar',
                     cancelButtonText: 'No, cancelar'
                 }).then(result => {
                     if (result.isConfirmed) {
-                        /*window.location.href = "/MiCarrito/ListadoCarrito";*/
+                        $("#globalLoading").show();
+                        const itemCodes = [];
+                        $('#detProductos tr').each(function () {
+                            const lineNum = parseInt($(this).find('td').eq(1).text().trim());
+                            const itemCode = $(this).find('td').eq(2).text().trim();
+                            const quantity = parseFloat($(this).find('td').eq(4).find('input[type="number"]').val().trim()) || 0;
+                            const precioTexto = $(this).find('td').eq(5).text().trim();
+                            const precio = parseFloat(precioTexto.replace('Q', '').replace(/\s/g, '').replace(/,/g, '')) || 0;
+                            const descuento = parseFloat($(this).find('td').eq(6).text().trim()) || 0;
+                            const promocion = $(this).find('td').eq(9).text().trim();
+
+                            if (itemCode !== '') {
+                                itemCodes.push({
+                                    LineNum: lineNum,
+                                    ItemCode: itemCode,
+                                    Precio: precio,
+                                    Cantidad: quantity,
+                                    Descuento: descuento,
+                                    PrecioCDescto: descuento,
+                                    LineTotal: 0,
+                                    ListPrice: $('#tipoPrecio').val(),
+                                    Promocion: promocion
+                                });
+                            }
+                        });
+
+                        // Encabezado
+                        const encabezado = {
+                            DocEntry: parseInt('@Model.Encabezado.DocEntry'),
+                            DocNum: parseInt('@Model.Encabezado.DocNum'),
+                            Nit: $('#Nit').val(),
+                            CardCode: $('#CardCode').val(),
+                            CardName: $('#CardName').val(),
+                            Direccion: $('#Direccion').val(),
+                            Contacto: $('#Contacto').val(),
+                            Telefono: $('#Telefono').val(),
+                            Correo: $('#Correo').val(),
+                            Nota: $('#Comments').val()
+                        };
+
+                        // Objeto completo
+                        const editarCotizacionEntity = {
+                            Encabezado: encabezado,
+                            Detalle: itemCodes
+                        };
+
+                        $.ajax({
+                            url: '/Ventas/EditarCoti',
+                            type: 'POST',
+                            data: { EditarCotizacionEntity: editarCotizacionEntity },
+                            success: function (response) {
+                                Swal.fire('Éxito', response.message, 'success').then(() => {
+                                    location.reload();
+                                });
+                                $("#globalLoading").hide();
+                            },
+                            error: function (xhr, status, error) {
+                                $("#globalLoading").hide();
+                                Swal.fire('Error', 'No se pudo actualizar.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            document.getElementById("btnPdf").addEventListener("click", function () {
+                Swal.fire({
+                    title: '¿Deseas descargar el PDF?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Sí, descargar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const params = new URLSearchParams(window.location.search);
+                        const DocEntry = params.get("DocEntry");
+                        if (DocEntry == '') {
+                            alert("No se encuentra documento")
+                            return;
+                        }
+
+                        $("#globalLoading").show();
+                        $.ajax({
+                            url: '/Ventas/GeneratePdfAjax',
+                            type: 'POST',
+                            data: JSON.stringify({ docEntry: DocEntry }), // Serializa a JSON
+                            contentType: 'application/json',
+                            xhrFields: {
+                                responseType: 'blob' // Indica que la respuesta será un binario (PDF)
+                            },
+                            success: function (blob, status, xhr) {
+                                $("#globalLoading").hide();
+                                const url = window.URL.createObjectURL(blob);
+                                window.open(url, '_blank');
+                            },
+                            error: function (xhr, status, error) {
+                                $("#globalLoading").hide();
+                                alert('Hubo un error al descargar la cotización.');
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+
+        <!-- Datos generales -->
+        <div class="section-box" style="font-size:12px;">
+            <div class="section-header"><i class="fas fa-circle-info me-2"></i>Datos Generales</div>
+            <div class="row">
+                <div class="col-md-4">
+                    <p><span class="data-label">Fecha:</span> @Model.Encabezado.DocDate.ToString("dd/MM/yyyy")</p>
+                    <p><span class="data-label">Vencimiento:</span> @Model.Encabezado.DocDueDate.ToString("dd/MM/yyyy")</p>
+                    <p><span class="data-label">No. Documento:</span> @Model.Encabezado.DocNum</p>
+                    <p><span class="data-label">No. Factura:</span> @Model.Encabezado.DocNumFac</p>
+                </div>
+                <div class="col-md-4">
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <span class="data-label">Código Cliente:</span>
+                        <input type="text" id="CardCode" name="CardCode" value="@Model.Encabezado.CardCode" readonly style="flex: 1; border: none; outline: none; background-color: transparent;" />
+                    </p>
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <select id="tipoDocumento" name="tipoDocumento" style="border: none; outline: none; background: transparent; padding-right:5px">
+                            <option value="1">Nit/DPI:</option>
+                            <option value="2">CF</option>
+                        </select>
+                        <input type="text" id="Nit" name="Nit" value="@Model.Encabezado.NitDocto" style="flex: 1; border: none; border-bottom: 1px solid #ccc; outline: none; background-color: transparent; text-transform:uppercase" autocomplete="off" />
+                        <button id="btnBuscarNit" type="button" class="btn btn-outline-secondary btn-sm" title="Buscar" onclick="BuscarCliente()"
+                                style="padding-left: 12px; padding-right: 12px;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </p>
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <span class="data-label">Nombre:</span>
+                        <input type="text" id="CardName" name="CardName" value="@Model.Encabezado.CardName" style="flex: 1; border: none; border-bottom: 1px solid #ccc; outline: none; background-color: transparent; text-transform: uppercase" autocomplete="off" readonly />
+                    </p>
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <span class="data-label">Dirección:</span>
+                        <input type="text" id="Direccion" name="Direccion" value="@Model.Encabezado.Address" style="flex: 1; border: none; border-bottom: 1px solid #ccc; outline: none; background-color: transparent; text-transform: uppercase" autocomplete="off" />
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <span class="data-label">Contacto:</span>
+                        <input type="text" id="Contacto" name="Contacto" value="@Model.Encabezado.Contacto" style="flex: 1; border: none; border-bottom: 1px solid #ccc; outline: none; background-color: transparent; text-transform: uppercase" autocomplete="off" />
+                    </p>
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <span class="data-label">Teléfono:</span>
+                        <input type="text" id="Telefono" name="Telefono" value="@Model.Encabezado.Telefono" style="flex: 1; border: none; border-bottom: 1px solid #ccc; outline: none; background-color: transparent; text-transform: uppercase" autocomplete="off" />
+                    </p>
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <span class="data-label">Correo:</span>
+                        <input type="text" id="Correo" name="Correo" value="@Model.Encabezado.Correo" style="flex: 1; border: none; border-bottom: 1px solid #ccc; outline: none; background-color: transparent; text-transform: lowercase" autocomplete="off" />
+                    </p>
+
+                    <style>
+                        #Asesor:disabled {
+                            color: gray;
+                            pointer-events: none;
+                            opacity: 0.6;
+                        }
+                    </style>
+
+                    <p style="display: flex; align-items: center; gap: 10px;">
+                        <span class="data-label">Asesor:</span>
+                        <select id="Asesor" name="Asesor"
+                                style="flex: 1; border: none; border-bottom: 1px solid #ccc; outline: none; background-color: transparent; text-transform: lowercase;"
+                                autocomplete="off"
+                                @(puedeSeleccionar ? "" : "disabled")>
+                        </select>
+                    </p>
+
+                    <script>
+                        $(document).ready(function () {
+                            let primeraCarga = true; // bandera para ignorar el primer change
+
+                            function CargarUsuarios() {
+                                $('#Asesor')
+                                    .html('')
+                                    .append($('<option>', { value: '-1', text: '-- Seleccionar --' }))
+                                    .val('-1');
+                                    // NO disparamos change aquí, para no ejecutar AJAX en la carga inicial
+
+                                $.ajax({
+                                    url: '@Url.Action("ListaDeAsesoresCotizaciones", "Ventas")',
+                                    type: "POST",
+                                    data: { WhsCode: '@Model.Encabezado.WhsCode' },
+                                    success: function (data) {
+                                        var slpSeleccionado = '@Model.Encabezado.SlpCode'; // valor desde el modelo
+                                        var encontrado = false;
+
+                                        if (data && data.length > 0) {
+                                            $.each(data, function (index, item) {
+                                                $('#Asesor').append(
+                                                    $('<option>', {
+                                                        value: item.SlpCode,
+                                                        text: item.SlpName
+                                                    })
+                                                );
+
+                                                if (item.SlpCode.toString() === slpSeleccionado.toString()) {
+                                                    encontrado = true;
+                                                }
+                                            });
+
+                                            if (encontrado) {
+                                                $('#Asesor').val(slpSeleccionado);
+                                            } else {
+                                                $('#Asesor').val('-1');
+                                            }
+                                        } else {
+                                            $('#Asesor').val('-1');
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Error al cargar los asesores:", error);
+                                        $('#Asesor').val('-1').prop('disabled', false);
+                                    },
+                                    complete: function () {
+                                        $("#globalLoading").hide();
+                                        primeraCarga = false; // listo para detectar cambios posteriores
+                                    }
+                                });
+                            }
+
+                            $('#Asesor').change(function () {
+                                if (primeraCarga) {
+                                    // Ignorar el primer cambio disparado al asignar valor
+                                    return;
+                                }
+
+                                $("#globalLoading").show();
+                                let asesorSeleccionado = $(this).val();
+                                let docEntry = '@Model.Encabezado.DocEntry';
+
+                                if (asesorSeleccionado) {
+                                    $.ajax({
+                                        url: '/Ventas/ActualizarAsesor',
+                                        type: 'POST',
+                                        data: {
+                                            asesor: asesorSeleccionado,
+                                            docEntry: docEntry
+                                        },
+                                        success: function (resp) {
+                                            $("#globalLoading").hide();
+                                            if (resp.success) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Actualización exitosa',
+                                                    text: resp.message,
+                                                    toast: true,
+                                                    position: 'top-end',
+                                                    showConfirmButton: false,
+                                                    timer: 3000,
+                                                    timerProgressBar: true
+                                                });
+                                            }
+                                        },
+                                        error: function (err) {
+                                            $("#globalLoading").hide();
+                                        }
+                                    });
+                                }
+                            });
+
+                            CargarUsuarios();
+                        });
+
+                    </script>
+                </div>
+            </div>
+
+            <div class="alert-note" style="display: flex; align-items: start; gap: 10px; background-color: #fefae0; padding: 10px; border-radius: 8px;">
+                <i class="fas fa-comment-dots text-warning" style="margin-top: 5px;"></i>
+                <textarea id="Comments" name="Comments"
+                          placeholder="Escribe tus comentarios..."
+                          style="flex: 1; border: none; outline: none; background-color: transparent; resize: none;
+                          min-height: 35px; font-family: inherit; font-size: 14px;">@Model.Encabezado.Comments</textarea>
+            </div>
+        </div>
+
+        <script>
+            $('#tipoDocumento').on('change', function () {
+                $("#globalLoading").show();
+
+                // Limpiar campos
+                $('#CardName').val("");
+                $('#Nit').val("");
+                $('#CardCode').val("");
+                $('#Direccion').val("");
+                $('#Telefono').val("");
+                $('#Contacto').val("");
+                $('#Correo').val("");
+                $('#Contacto').focus();
+
+                const valor = $(this).val();
+
+                if (valor == '1') {
+                    // Nit/DPI seleccionado: habilitar campos
+                    $('#CardName').prop('disabled', true);
+                    $('#Nit').prop('disabled', false);
+                    $('#btnBuscarNit').prop('disabled', false);
+                    $('#Nit').focus();
+                    $("#globalLoading").hide();
+                    return;
+                }
+
+                if (valor === '2') {
+                    // CF seleccionado: autocompletar y bloquear campos
+                    var clienteCF = "@HttpUtility.JavaScriptStringEncode(_clienteCF)";
+                    $('#CardName').val("CONSUMIDOR FINAL").prop('disabled', true);
+                    $('#Nit').val(clienteCF).prop('disabled', true);
+                    $('#btnBuscarNit').prop('disabled', true);
+                    $("#globalLoading").hide();
+                }
+            });
+        </script>
+
+        <!-- Detalle de productos -->
+
+        @if (Model.Encabezado.Estado == "Revision" || Model.Encabezado.Estado == "Autorizado")
+        {
+            <div class="section-box">
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fas fa-key me-2"></i>
+                        <span>Autorización</span>
+                    </div>
+                </div>
+
+                <!-- Tabla de autorizaciones -->
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-striped table-sm" style="font-size: 12px;">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center p-1">Estado</th>
+                                <th class="text-center p-1">Fecha y Hora</th>
+                                <th class="text-center p-1">Usuario</th>
+                                <th class="text-center p-1">Comentario</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaAutorizacion">
+                            @foreach (var item in Model.HistorialAuto)
+                            {
+                                var rowClass = item.IdEstado == 1 ? "table-success" : ""; // Verde si IdEstado = 1
+                                <tr class="@rowClass">
+                                    <td class="text-center p-1">@item.Estado</td>
+                                    <td class="text-center p-1">@item.FechaHora</td>
+                                    <td class="text-center p-1">@item.Usuario</td>
+                                    <td class="text-start p-1">@item.Notas</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        }
+
+        <style>
+            .tipo-precio-select {
+                width: 220px;
+                padding: 8px 12px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                font-size: 15px;
+                background-color: #f4f4f4;
+                transition: border-color 0.3s ease-in-out;
+            }
+
+                .tipo-precio-select:focus {
+                    border-color: #007bff;
+                    outline: none;
+                    background-color: #fff;
+                    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+                }
+        </style>
 
 
-                        //const precioNo = "1";
-                        //const precioOf = "1";
-                        const clienteId = 'A1';
-                        //const itemCode = "Abc";
-                        //const itemName = "text";
-                        //alert("llegue");
-                        //const quantity = parseFloat(document.getElementById('counterInput').value);
-                        //const price = "50";
-                        //const dscto = "0.00";
-                        //const savings = "0.00";
-                        //const descuentoU = parseFloat(precioOf - precioNo).toFixed(2);
-                        //const listPrice = "12";
-                        //const lineTotal = parseFloat((price * quantity).toFixed(2)) - parseFloat(savings).toFixed(2);                        
-                        //const elemento = document.getElementById('iMetrosTotal');
-                        //const cantidadMetros = elemento ? elemento.textContent.replace("Total metros de piso:", "").trim() : "0";
-                        //const linkImg = "";
-                        //const EsPromo = "1";
-                        //let lineId = regresarId();
+        <div class="section-box">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-box-open me-2"></i>
+                    <span>Detalle de Productos</span>
+                </div>
 
-                        const producto = "";
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                    <button id="btnAbrirModalProducto" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalBuscarProducto" style="display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-search"></i> Buscar producto
+                    </button>
+                </div>
+            </div>
 
-                        //const producto = {
-                        //    DocE: 0,
-                        //    LineN: -1,
-                        //    Identity: generateUUID(),
-                        //    LineId: lineId,
-                        //    ItemCode: itemCode,
-                        //    Dscription: itemName.replace(/&#160;/g, ' '),
-                        //    Quantity: quantity,
-                        //    ListPrice: listPrice,
-                        //    Price: (parseFloat(price) - parseFloat(descuentoU)),
-                        //    DescuentoU: descuentoU,
-                        //    Dscto: dscto.replace("%", ""),
-                        //    Saving: savings,
-                        //    LineTotal: lineTotal,
-                        //    CantidadMetros: cantidadMetros,
-                        //    LinkImg: linkImg,
-                        //    EsPromo: EsPromo,
-                        //    DescuentoLpr: 0,
-                        //    DescuentoPor: 0.00,
-                        //    DescuentoQtz: 0.00,
-                        //    DescuentoNwp: 0.00
-                        //};
+            <div style="margin-bottom:15px; font-size:12px;">
+                <select id="tipoPrecio" class="tipo-precio-select" style="font-size: 12px;">
+                    <option value="1" @(Model.Encabezado.PriceList == 1 ? "selected" : "")>💼 Precio beneficio</option>
+                    <option value="9" @(Model.Encabezado.PriceList == 9 ? "selected" : "")>🏷️ Precio normal</option>
+                </select>
+            </div>
 
-                        if (CrearCotizacionCookie(clienteId, producto, "@Model.Encabezado.DocEntry") === true) {
-                            $('#miModal').modal('show').addClass('fade-in');
+            <script>
+                $(document).ready(function () {
+                    $('#tipoPrecio').on('change', function () {
+                        $("#globalLoading").show();
+                        const tipoSeleccionado = $(this).val();
+                        const itemCodes = [];
+                        $('#detProductos tr').each(function () {
+                            const itemCode = $(this).find('td').eq(2).text().trim();
+                            const quantity = $(this).find('td').eq(4).find('input[type="number"]').val().trim();
+                            const descuento = $(this).find('td').eq(6).text().trim();
+                            const promocion = $(this).find('td').eq(9).text().trim();
+
+                            if (itemCode !== '' && promocion !== 'P') {
+                                itemCodes.push({ ItemCode: itemCode, Quantity: quantity, Descuento: descuento });
+                            }
+                        });
+
+                        const textoJson = JSON.stringify(itemCodes, null, 2);
+                        $.ajax({
+                            url: '/Ventas/CambiarPrecios',
+                            type: 'POST',
+                            data: { tipoPrecio: tipoSeleccionado, Codigos: textoJson },
+                            success: function (response) {
+                                let totalGeneral = 0; // Inicializa acumulador
+
+                                response.forEach(itemNuevo => {
+                                    $('#detProductos tr').each(function () {
+                                        const itemCode = $(this).find('td').eq(2).text().trim();
+                                        if (itemCode === itemNuevo.ItemCode) {
+                                            const nuevoPrecio = itemNuevo.Price;
+
+                                            // Actualizar visualmente el precio unitario
+                                            const tdPrecio = $(this).find('td.precio');
+                                            tdPrecio.text(`Q ${nuevoPrecio.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+                                            tdPrecio.attr('data-precio', nuevoPrecio);
+
+                                            // Obtener cantidad y calcular total de la línea
+                                            const cantidad = parseFloat($(this).find('input[name="Cantidad"]').val()) || 1;
+                                            const totalLinea = cantidad * nuevoPrecio;
+
+                                            // Mostrar total de línea
+                                            $(this).find('.line-total').text(`Q ${totalLinea.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+
+                                            // Sumar al total general
+                                            totalGeneral += totalLinea;
+                                        }
+                                    });
+                                });
+
+                                // ✅ Mostrar el total general en el campo correspondiente
+                                $('#total-general').text(`Q ${totalGeneral.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+
+
+                                $("#globalLoading").hide();
+                            },
+                            error: function (xhr, status, error) {
+                                $("#globalLoading").hide();
+                                Swal.fire('Error', 'No se pudo actualizar el tipo de precio.', 'error');
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <div class="table-responsive" style="font-size: 12px;">
+                <table class="table table-bordered align-middle;" style="font-size:12px">
+                    <thead>
+                        <tr style="text-align:center">
+                            <th>_</th>
+                            <th style="display: none;">LineNum</th>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Descuento (%)</th>
+                            <th>Precio c/Desc.</th>
+                            <th>Total</th>
+                            <th style="display: none;">Promocion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detProductos">
+                        @foreach (var item in Model.Detalle)
+                        {
+                            <tr>
+                                <td style="vertical-align: middle;">
+                                    @if (item.Promocion != "P")
+                                    {
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="QuitarListado(this)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    }
+                                </td>
+
+                                <td style="vertical-align: middle; display: none;">@item.LineNum</td>
+                                <td style="vertical-align: middle;">@item.ItemCode</td>
+                                <td style="text-align:left; vertical-align: middle;">
+                                    @item.Dscription
+                                    @if (item.Promocion == "P")
+                                    {
+                                        <i class="fas fa-tags text-danger ms-1" title="Producto en promoción"></i>
+                                    }
+                                </td>
+                                <td style="vertical-align: middle; text-align: center;">
+                                    <input type="number" id="Cantidad" name="Cantidad" value="@item.Quantity" min="1"
+                                           class="cantidad" @(item.Promocion == "P" ? "readonly" : "")
+                                           style="width: 60px; text-align: center; border: none; outline: none; background: transparent;
+                                                @(item.Promocion != "P" ? "border-bottom: 1px solid #ccc;" : "")" />
+                                </td>
+                                <td style="text-align: right; vertical-align: middle;" class="precio" data-precio="@item.Price">
+                                    Q @((item.Price + item.DsctoQuetzal).ToString("#,##0.00"))
+                                </td>
+                                <td style="text-align: right; vertical-align: middle;">@item.DsctoPor.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                <td style="text-align: right; vertical-align: middle;" class="precio-descuento">@item.DsctoNuevoPr.ToString("#,##0.00")</td>
+                                <td style="text-align: right; vertical-align: middle;" class="line-total">Q @item.LineTotal.ToString("#,##0.00")</td>
+                                <td style="text-align: right; vertical-align: middle; display: none;">@item.Promocion</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" style="text-align: right; font-weight: bold;">Subtotal:</td>
+                            <td colspan="2" style="text-align: right; font-weight: bold;" id="subtotal">Q 0.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: right; font-weight: bold;">Descuento Promedio (%):</td>
+                            <td colspan="2" style="text-align: right; font-weight: bold;" id="descuento-total">0.00 %</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: right; font-weight: bold;">Total General:</td>
+                            <td colspan="2" style="text-align: right; font-weight: bold;" id="total-general">Q 0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            $(document).on('input', '.cantidad', function () {
+                const input = $(this);
+                const fila = input.closest('tr');
+
+                let cantidad = parseFloat(input.val()) || 1;
+                if (cantidad < 1) {
+                    cantidad = 1;
+                    input.val(cantidad);
+                }
+
+                const precioUnitario = parseFloat(fila.find('.precio').data('precio')) || 0;
+                const descuento = parseFloat(fila.find('td').eq(6).text().trim()) || 0;
+
+                // Calcular precio con descuento
+                const precioConDescuento = precioUnitario - (precioUnitario * descuento / 100);
+                const totalLinea = cantidad * precioConDescuento;
+
+                // Actualizar DOM
+                /*fila.find('.precio-descuento').text('Q ' + precioConDescuento.toLocaleString('es-GT', { minimumFractionDigits: 2 }));*/
+                fila.find('.line-total').text('Q ' + totalLinea.toLocaleString('es-GT', { minimumFractionDigits: 2 }));
+
+                // Recalcular totales
+                recalcularTotales();
+            });
+
+            function recalcularTotales() {
+                let subtotal = 0;
+                let descuentoAcumulado = 0;
+                let totalDescuentosAplicados = 0;
+                let totalGeneral = 0;
+                let totalItems = 0;
+
+                $('#detProductos tr').each(function () {
+                    const fila = $(this);
+                    const cantidad = parseFloat(fila.find('.cantidad').val()) || 1;
+                    const precioUnitario = parseFloat(fila.find('.precio').data('precio')) || 0;
+                    const descuento = parseFloat(fila.find('td').eq(6).text().trim()) || 0;
+
+                    const precioConDescuento = precioUnitario;
+                    const totalLinea = cantidad * precioConDescuento;
+
+                    totalGeneral += totalLinea;
+                });
+                $('#total-general').text('Q ' + totalGeneral.toLocaleString('es-GT', { minimumFractionDigits: 2 }));
+            }
+        </script>
+
+        <style>
+            .modal-xl-custom {
+                max-width: 80%; /* o 100% si querés que ocupe todo */
+            }
+        </style>
+
+        <div class="modal fade" id="modalBuscarProducto" tabindex="-1" aria-labelledby="modalBuscarProductoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-xl-custom">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalBuscarProductoLabel"><i class="fas fa-search me-2"></i> Buscar Producto</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <!-- Filtro de búsqueda -->
+                        <div class="input-group mb-3">
+                            <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar producto..." style="text-transform:uppercase">
+                            <button class="btn btn-outline-secondary" type="button" id="btnBuscar">
+                                <i class="fas fa-search me-1"></i> Buscar
+                            </button>
+                        </div>
+
+                        <script>
+                            $('#buscarProducto').on('keypress', function (e) {
+                                if (e.which === 13) { // 13 = tecla Enter
+                                    e.preventDefault();
+                                    $('#btnBuscar').click();
+                                }
+                            });
+                        </script>
+
+                        <!-- Tabla de productos -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>_</th>
+                                        <th>Imagen</th>
+                                        <th>Código</th>
+                                        <th>Nombre del Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Metros</th>
+                                        <th>Precio Normal</th>
+                                        <th>Precio Efectivo</th>
+                                        <th>Precio Oferta</th>
+                                        <th>Stock en mi almacén</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaProductosBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary">Aceptar selección</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+
+            $(document).ready(function () {
+                $('#btnAbrirModalProducto').on('click', function () {
+                    cargarProductos("", true);
+                });
+
+                $('#btnBuscar').on('click', function () {
+                    const nameItem = document.getElementById('buscarProducto').value;
+                    cargarProductos(nameItem, false);
+                });
+            });
+
+            function generarSelectAlmacenes(almacenes, seleccionado) {
+                let html = `<select class="form-select form-select-sm"
+                                                                                        style="width: 100%; height: 100%; border: none; outline: none; background-color: transparent; box-shadow: none;"
+                                                                                        onchange="this.value = this.getAttribute('data-current');"
+                                                                                        data-current="${seleccionado}">`;
+
+                almacenes.forEach(a => {
+                    const texto = `${a.WhsName} (Stock: ${a.Stock}, Comprometido: ${a.Comprometido})`;
+                    const selected = (a.Seleccionado != '') ? 'selected' : '';
+                    html += `<option ${selected}>${texto}</option>`;
+                });
+
+                html += `</select>`;
+                return html;
+            }
+
+            function cargarProductos(ItemName, esPromo) {
+                $("#globalLoading").show();
+                $.ajax({
+                    url: '/Ventas/BuscarProductos', // Cambiá esta URL a tu endpoint real
+                    type: 'GET',
+                    async: false,
+                    data: { NombreProducto: ItemName, Promos: esPromo },
+                    success: function (productos) {
+                        $("#globalLoading").hide();
+                        let html = '';
+                        $('#tablaProductosBody').html('<tr><td colspan="8" class="text-center text-danger">No hay promociones cargadas</td></tr>');
+                        productos.forEach(p => {
+                            const selectAlmacen = generarSelectAlmacenes(p.Almacenes, "");
+                            html += `
+                                                                                                <tr>
+                                                                                                    <td style="width:125px; text-align: center;">
+                                                                                                        <button type="button" class="btn btn-sm btn-success btn-seleccionar">
+                                                                                                            <i class="fas fa-check-circle me-1"></i> Select
+                                                                                                        </button>
+                                                                                                    </td>
+                                                                                                    <td style="text-align: center; vertical-align: middle; width:70px">
+                                                                                                       <img src="${p.Imagen === '' ? '/Img/imagen-no-disponible.png' : p.Imagen}" alt="Icono" style="width: 32px; height: 32px;" />
+                                                                                                    </td>
+                                                                                                    <td style="width:125px;" id='ItemCode'>${p.ItemCode}</td>
+                                                                                                    <td id='ItemName'>${p.ItemName}</td>
+                                                                                                    <td style="text-align: center; vertical-align: middle; padding: 0; width: 125px;">
+                                                                                                            <input id='txtCantidad' type="number" min="1" value="1" class="form-control form-control-sm text-center cantidad"
+                                                                                                                   data-metraje="${p.Metraje}" style="width: 100%; border: none; outline: none; background-color: transparent; font-size:14px" />
+                                                                                                    </td>
+                                                                                                    <td style="text-align: center; width: 80px;" class="resultado">
+                                                                                                        ${p.Metraje}
+                                                                                                    </td>
+                                                                                                    <td id="PrecioNormal" style="text-align: center; width: 130px;">Q${p.PrecioBeneficio.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                                                                    <td id="PrecioEfectivo" style="text-align: center; width: 130px;">Q${p.PrecioVenta.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                                                                    <td id="PrecioOferta" style="text-align: center; width: 130px;">
+                                                                                                        Q${p.PrecioPromocion.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                                                        ${p.PrecioPromocion > 0 ? '<i class="fas fa-tags text-danger ms-1" title="Producto en promoción"></i>' : ''}
+                                                                                                    </td>
+                                                                                                    <td style="text-align: center; vertical-align: middle; padding: 0; height: 100%;">${selectAlmacen}</td>
+                                                                                                </tr>
+                                                                                            `;
+                        });
+
+                        $(document).off('click', '.btn-seleccionar').on('click', '.btn-seleccionar', function () {
+                            const fila = $(this).closest('tr');
+                            fila.closest('tbody').find('tr').removeClass('table-primary');
+                            fila.addClass('table-primary');
+
+                            const itemCode = fila.find('#ItemCode').text().trim();
+                            const itemName = fila.find('#ItemName').text().trim();
+                            const cantidad = fila.find('#txtCantidad').val().trim();
+
+                            const PrecioNormal = parseFloat(fila.find('#PrecioNormal').text().replace('Q', '').replace(',', '').trim()) || 0;
+                            const PrecioEfectivo = parseFloat(fila.find('#PrecioEfectivo').text().replace('Q', '').replace(',', '').trim()) || 0;
+                            const PrecioOferta = parseFloat(fila.find('#PrecioOferta').text().replace('Q', '').replace(',', '').trim()) || 0;
+
+                            let PrecioFinal = 0.00;
+                            const tipoSeleccionado = parseInt(document.getElementById("tipoPrecio").value);
+
+                            if (tipoSeleccionado === 1) { // PRECIO BENEFICIO
+                                if (PrecioOferta > 0) {
+                                    PrecioFinal = PrecioOferta;
+                                } else {
+                                    PrecioFinal = PrecioEfectivo;
+                                }
+                            } else if (tipoSeleccionado === 9) { // PRECIO NORMAL
+                                PrecioFinal = PrecioNormal;
+                            }
+
+                            let PrecioTotal = 0.00;
+                            PrecioTotal = PrecioFinal * cantidad;
+                            let nuevaFila = ``;
+                            nuevaFila = `
+                                                                                                <tr>
+                                                                                                    <td style="vertical-align: middle;">
+                                                                                                        <button type="button" class="btn btn-danger btn-sm" onclick="QuitarListado(this)">
+                                                                                                            <i class="fas fa-trash-alt"></i>
+                                                                                                        </button>
+                                                                                                    </td>
+                                                                                                    <td style="vertical-align: middle; display: none;">-1</td> <!-- LineNum -->
+                                                                                                    <td style="vertical-align: middle;">${itemCode}</td>
+                                                                                                    <td style="text-align:left; vertical-align: middle;">${itemName}</td>
+                                                                                                    <td style="vertical-align: middle; text-align: center;">
+                                                                                                    <input type="number" id="Cantidad" name="Cantidad" value="${cantidad}" min="1"
+                                                                                                                   class="cantidad"
+                                                                                                                   style="width: 60px; text-align: center; border: none; outline: none; border-bottom: 1px solid #ccc; background: transparent;" />
+                                                                                                    </td>
+                                                                                                    <td style="text-align: right; vertical-align: middle;" class="precio" data-precio="${PrecioFinal}">
+                                                                                                      Q${PrecioFinal.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                                                    </td>
+                                                                                                    <td style="text-align: right; vertical-align: middle;">0.00</td>
+                                                                                                    <td style="text-align: right; vertical-align: middle;" class="precio-descuento">Q 0.00</td>
+                                                                                                     <td style="text-align: right; vertical-align: middle;" class="line-total" data-precio="${PrecioTotal}">
+                                                                                                      Q${PrecioTotal.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                                                    </td>
+                                                                                                    <td style="text-align: right; vertical-align: middle; display: none;"></td>
+                                                                                                </tr>
+                                                                                            `;
+
+                            // Agregar fila al tbody
+                            console.log(nuevaFila);
+                            $('#detProductos').append(nuevaFila);
+                            /*const modal = bootstrap.Modal.getInstance(document.getElementById('modalBuscarProducto'));*/
+                            //if (modal) modal.hide();
+                            $('#modalBuscarProducto').modal('hide');
+
+                        });
+
+                        $(document).on('input', '.cantidad', function () {
+                            const input = $(this);
+                            const fila = input.closest('tr');
+
+                            let cantidad = parseFloat(input.val()) || 1;
+                            if (cantidad < 1) {
+                                cantidad = 1;
+                                input.val(cantidad);
+                            }
+
+                            const precioUnitario = parseFloat(fila.find('.precio').data('precio')) || 0;
+                            const descuento = parseFloat(fila.find('td').eq(6).text().trim()) || 0;
+
+                            // Calcular precio con descuento
+                            const precioConDescuento = precioUnitario;
+                            const totalLinea = cantidad * precioUnitario;
+
+                            // Actualizar DOM
+                            /*fila.find('.precio-descuento').text('Q ' + precioConDescuento.toLocaleString('es-GT', { minimumFractionDigits: 2 }));*/
+                            fila.find('.line-total').text('Q ' + totalLinea.toLocaleString('es-GT', { minimumFractionDigits: 2 }));
+
+                            // Recalcular totales
+                            recalcularTotales();
+                        });
+
+                        $(document).on('input change', '.cantidad', function () {
+                            const input = $(this);
+                            let cantidad = parseInt(input.val());
+                            const metraje = parseFloat(input.data('metraje')) || 0;
+                            const resultado = cantidad * metraje;
+
+                            input.closest('tr').find('.resultado').text(resultado.toFixed(2));
+                        });
+
+                        $('#tablaProductosBody').html(html);
+                    },
+                    error: function () {
+                        $('#tablaProductosBody').html('<tr><td colspan="8" class="text-center text-danger">Error al cargar los productos</td></tr>');
+                        $("#globalLoading").hide();
+                    }
+                });
+            }
+
+            function BuscarCliente() {
+                $("#globalLoading").show();
+                const nitDpi = document.getElementById('Nit').value;
+                if (nitDpi.trim() === '') {
+                    $("#globalLoading").hide();
+                    alert('Por favor ingrese un NIT o DPI antes de buscar.');
+                } else {
+                    $.ajax({
+                        url: '/MiCarrito/BuscarSocioNegocio', // Asegúrate de que esta URL sea la correcta
+                        type: 'GET',
+                        data: { Nit: nitDpi },
+                        success: function (data) {
                             $("#globalLoading").hide();
+                            console.log(data);
+                            document.getElementById('CardCode').value = data.CardCode;
+                            document.getElementById('CardName').value = data.FacturarNombre;
+                            document.getElementById('Direccion').value = data.FacturarDireccion;
+                        },
+                        error: function (xhr, status, error) {
+                            $("#globalLoading").hide();
+                            alert('Hubo un error al realizar la búsqueda.');
+                        }
+                    });
+                }
+            }
+
+            function QuitarListado(btn) {
+                Swal.fire({
+                    title: '¡Atención!',
+                    text: '¿Eliminar la fila seleccionada',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, estoy seguro',
+                    cancelButtonText: 'No, cancelar',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    reverseButtons: true,
+                    backdrop: `rgba(255,0,0,0.1)`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const fila = btn.closest('tr');
+                        if (fila) {
+                            fila.remove();
+                            recalcularTotales();
                         }
                     }
                 });
             }
-        }
 
-        function regresarId() {
-            let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
-            const cookieData = getCookie(cookieName);
-            let lineId = 1; // Valor inicial en caso de que no exista la cookie
-
-            if (cookieData) {
-                try {
-                    const cotizacion = JSON.parse(cookieData);
-                    // Acceder al array de productos
-                    if (Array.isArray(cotizacion.productos) && cotizacion.productos.length > 0) {
-                        // Obtener el último producto en la lista
-                        const ultimoProducto = cotizacion.productos[cotizacion.productos.length - 1];
-
-                        // Obtener el último LineId y sumar 1
-                        return (ultimoProducto.LineId || 0) + 1;
-                    }
-                } catch (error) {
-                    console.error('Error al parsear la cookie:', error);
-                    return -1
-                }
+            // Función para formatear número como "#,##0.00"
+            function formatoNumero(num) {
+                return num.toLocaleString('es-GT', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
             }
-            return 1;
-        }      
-        // Función para obtener el valor de una cookie
-        function getCookie(name) {
-            const cookies = document.cookie.split("; ");
-            for (const cookie of cookies) {
-                const [key, value] = cookie.split("=");
-                if (key === name) return value;
-            }
-            return null;
-        }
 
-        $(document).ready(function () {
-            cargarSeguimiento();
+            window.addEventListener("DOMContentLoaded", () => {
+                let total = 0;
+                let descuentos = 0;
+                let filas = 0;
+
+                document.querySelectorAll("tbody tr").forEach(tr => {
+                    const descuento = parseFloat(tr.children[4].textContent.replace('%', '').trim()) || 0;
+                    const lineTotal = parseFloat(tr.querySelector('.line-total').textContent.replace('Q', '').replace(/,/g, '').trim()) || 0;
+
+                    total += lineTotal;
+                    descuentos += descuento;
+                    filas++;
+                });
+
+                const promedioDescuento = filas > 0 ? (descuentos / filas) : 0;
+
+                document.getElementById("descuento-total").textContent = formatoNumero(promedioDescuento) + " %";
+                document.getElementById("total-general").textContent = "Q " + formatoNumero(total);
+            });
+        </script>
+    </div>
+</body>
+</html>
+
+<script>
+    document.getElementById("txtMotivoPerdida").disabled = true;
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Ventas/getAllTiposCrm", // Ajusta la URL según tu backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $select = $("#txtMedioContacto");
+                $select.empty(); // Limpiar el select antes de agregar opciones
+                $select.append('<option value="-1">-- Seleccione --</option>');
+                // Recorrer los datos y agregarlos al select
+                $.each(data, function (index, item) {
+                    $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                });
+            },
+            error: function () {
+                console.error("Error al cargar los estados.");
+            }
         });
 
-        function formatFecha(fechaSAP) {
-            if (!fechaSAP) return ""; // Si la fecha es nula o vacía, devolver vacío
-
-            let timestamp = parseInt(fechaSAP.match(/\d+/)[0]); // Extraer el número de la fecha
-            let fecha = new Date(timestamp); // Convertir a objeto Date
-
-            let dia = fecha.getDate().toString().padStart(2, "0");
-            let mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
-            let año = fecha.getFullYear();
-
-            return `${dia}/${mes}/${año}`;
-        }
-
-        function cargarSeguimiento() {
-            let docEntry = '@Model.Encabezado.DocEntry'; // Obtener el valor desde Razor
-            $.ajax({
-                url: '/Ventas/CargarSeguimientos',
-                type: 'GET',
-                data: { DocEntry: docEntry }, // Pasar el parámetro en la solicitud
-                dataType: 'json',
-                success: function (data) {
-                    let tbody = $('#seguimiento-body');
-                    tbody.empty(); // Limpiar la tabla antes de agregar nuevos datos
-
-                    if (data.length > 0) {
-                        $.each(data, function (index, item) {
-                            let fechaFormateada = formatFecha(item.FechaSeg);
-                            let vencimientoFormateado = formatFecha(item.FechaVencimiento);
-                            let fila = `
-                                <tr>
-                                    <td>${item.Creado}</td>
-                                    <td>${fechaFormateada}</td>
-                                    <td>${vencimientoFormateado}</td>
-                                    <td>${item.DescrEstado}</td>
-                                    <td>${item.TipoDeContacto}</td>
-                                    <td>${item.Accion}</td>
-                                    <td>${item.Notas}</td>
-                                    <td>${item.Usuario}</td>
-                                </tr>
-                            `;
-                            tbody.append(fila);
-                        });
-                    } else {
-                        tbody.append('<tr><td colspan="8">No hay seguimientos registrados</td></tr>');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error al cargar los seguimientos:', error);
-                }
-            });
-        }
-
-        $(document).ready(function () {
-            $.ajax({
-                url: "/Ventas/getAllTipsCRM", // Ajusta la URL según tu backend
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                    let $select = $("#crmEstado");
-                    $select.empty(); // Limpiar el select antes de agregar opciones
-                    $select.append('<option value="-1">-- Seleccione --</option>');
-                    $select.append('<option value="-2">Mostrar todos</option>');
-
-                    // Recorrer los datos y agregarlos al select
-                    $.each(data, function (index, item) {
-                        $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
-                    });
-                },
-                error: function () {
-                    console.error("Error al cargar los estados.");
-                }
-            });
-
-            $.ajax({
-                url: "/Ventas/getAllTiposCrm", // Ajusta la URL según tu backend
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                    let $select = $("#txttipoContacto");
-                    $select.empty(); // Limpiar el select antes de agregar opciones
-                    $select.append('<option value="-1">-- Seleccione --</option>');
-                    // Recorrer los datos y agregarlos al select
-                    $.each(data, function (index, item) {
-                        $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
-                    });
-                },
-                error: function () {
-                    console.error("Error al cargar los estados.");
-                }
-            });
+        $.ajax({
+            url: "/Ventas/getAllEstadoPerdidas", // Ajusta la URL según tu backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $select = $("#txtMotivoPerdida");
+                $select.empty(); // Limpiar el select antes de agregar opciones
+                $select.append('<option value="-1">-- Seleccione --</option>');
+                // Recorrer los datos y agregarlos al select
+                $.each(data, function (index, item) {
+                    $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                });
+            },
+            error: function () {
+                console.error("Error al cargar los estados.");
+            }
         });
+    });
 
-        document.getElementById("btnSaveSeguimiento").addEventListener("click", function () {
+    function guardarSeguimiento() {
             $("#globalLoading").show();
             // Capturar los valores de los inputs
             var data = {
-                DocEntry: @Model.Encabezado.DocEntry, // Si es un número directamente
+                DocEntry: @Model.Encabezado.DocEntry,
                 DocNum: @Model.Encabezado.DocNum,
-                FechaSeg: document.getElementById("txtfechaSeguimiento").value,
-                FechaVenc: document.getElementById("txtfechaVencimiento").value,
-                IdEstado: document.getElementById("crmEstado").value,
-                IdTipoCont: document.getElementById("txttipoContacto").value,
-                AccionRealizada: document.getElementById("txtaccionRealizada").value, // Asegúrate de que exista este ID
-                Notas: document.getElementById("txtNotas").value
+                MedioContacto: document.getElementById("txtMedioContacto").value,
+                Notas: document.getElementById("txtNotas").value,
+                PosFechaCompra: document.getElementById("txtFechaCompra").value,
+                FechaSeguimiento: document.getElementById("txtProximoSeg").value,
+                EstadoPerdida: document.getElementById("chkPerdida").checked ? "Y" : "N",
+                MotivoPerdida: document.getElementById("txtMotivoPerdida").value
             };
+
             // Enviar datos con AJAX
             $.ajax({
                 url: "/Ventas/SaveSeguimiento", // Ruta a tu backend en ASP.NET
@@ -592,7 +1194,7 @@
                 success: function (response) {
                     if (response.result === 1) {
                         alert("Seguimiento guardado correctamente.");
-                        window.location.href = "/Ventas/Listado";
+                        cargarSeguimiento();
                         $("#globalLoading").hide();
                     } else {
                         alert("Error: " + response.message);
@@ -604,65 +1206,129 @@
                     $("#globalLoading").hide();
                 }
             });
-        });
+        }
 
-        document.getElementById("agregarSeguimiento").addEventListener("click", function () {
-            $("#modalSeguimiento").modal('show');
-        });
+    document.getElementById('btnSaveSeguimiento').addEventListener('click', function () {
+        const chkPerdida = document.getElementById('chkPerdida');
+        const medioContacto = document.getElementById('txtMedioContacto');
+        const notas = document.getElementById('txtNotas');
+        const fechaCompra = document.getElementById('txtFechaCompra');
+        const proximoSeg = document.getElementById('txtProximoSeg');
+        const motivoPerdida = document.getElementById('txtMotivoPerdida');
 
-        document.addEventListener("DOMContentLoaded", function () {
-            let total = 0;
-            document.querySelectorAll(".line-total").forEach(function (element) {
-                let valor = parseFloat(element.textContent.replace("Q", "").trim());
-                if (!isNaN(valor)) {
-                    total += valor;
+        if (!notas.value.trim()) {
+            alert("Escribe alguna observación o acción realizada.");
+            notas.focus();
+            return;
+        }
+
+        if (chkPerdida.checked) {
+            // Validaciones solo para cotización perdida
+            if (!motivoPerdida.value || motivoPerdida.value === "0") {
+                alert("Si marcaste que se perdió, dime por qué… ¡Vamos! selecciona el motivo de la cotización perdida");
+                motivoPerdida.focus();
+                return;
+            }
+        } else {
+            // Validaciones normales
+            if (!medioContacto.value || medioContacto.value === "0" || medioContacto.value == "-1") {
+                alert("Selecciona un medio de contacto.");
+                medioContacto.focus();
+                return;
+            }
+            if (!fechaCompra.value) {
+                alert("No olvides seleccionar la posible fecha de compra.");
+                fechaCompra.focus();
+                return;
+            }
+            if (!proximoSeg.value) {
+                alert("¿Y cuándo le vas a dar seguimiento? Selecciona la fecha.");
+                proximoSeg.focus();
+                return;
+            }
+        }
+
+        if (chkPerdida.checked) {
+            Swal.fire({
+                title: '¡Atención!',
+                text: '¿Estás seguro de marcar esta cotización como perdida? Esta acción indica que no continuarás con el proceso.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, estoy seguro',
+                cancelButtonText: 'No, cancelar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true,
+                backdrop: `rgba(255,0,0,0.1)`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guardarSeguimiento();
+                } else {
+                    Swal.fire({
+                        title: 'Cotización NO marcada como perdida',
+                        icon: 'info',
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
                 }
             });
-            document.getElementById("gran-total").innerHTML = `<strong>Q ${total.toFixed(2)}</strong>`;
+        } else {
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: '¿Desea guardar el seguimiento?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guardarSeguimiento();
+                }
+            });
+        }
+    });
+
+    document.getElementById("agregarSeguimiento").addEventListener("click", function () {
+        $("#modalSeguimiento").modal('show');
+    });
+
+    function cargarSeguimiento() {
+        let docEntry = '@Model.Encabezado.DocEntry'; // Obtener el valor desde Razor
+        $.ajax({
+            url: '/Ventas/CargarSeguimientos',
+            type: 'GET',
+            data: { DocEntry: docEntry }, // Pasar el parámetro en la solicitud
+            dataType: 'json',
+            success: function (data) {
+                let tbody = $('#seguimiento-body');
+                tbody.empty(); // Limpiar la tabla antes de agregar nuevos datos
+                if (data.length > 0) {
+                    $.each(data, function (index, item) {
+                        let fechaFormateada = formatFecha(item.FechaSeg);
+                        let vencimientoFormateado = formatFecha(item.FechaVencimiento);
+                        let fila = `
+                                    <tr>
+                                    <td>${item.Creado}</td>
+                                    <td>${fechaFormateada}</td>
+                                    <td>${vencimientoFormateado}</td>
+                                    <td>${item.DescrEstado}</td>
+                                    <td>${item.TipoDeContacto}</td>
+                                    <td>${item.Accion}</td>
+                                    <td>${item.Notas}</td>
+                                    <td>${item.Usuario}</td>
+                                </tr>
+                            `;
+                            tbody.append(fila);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="8">No hay seguimientos registrados</td></tr>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al cargar los seguimientos:', error);
+            }
         });
-
-
-
-        //function guardarAutorizacion() {
-                            //    $("#globalLoading").show();
-                            //    const estado = document.getElementById("status").value;
-                            //    const observaciones = document.getElementById("observaciones").value;
-                            //    const docEntry = document.getElementById("txtDocEntry").textContent;
-                            //    const confirmar = confirm(`¿Está seguro de ${estado == "R" ? "rechazar" : "autorizar"} la cotización?`);
-
-                            //    if (confirmar) {
-                            //        // Realizando la solicitud AJAX
-                            //        $.ajax({
-                            //            url: '/CotizacionVentasAutoriza/EnviarAutorizacionSAP/', // Asegúrate de que esta ruta esté correcta
-                            //            type: 'POST',
-                            //            data: {
-                            //                DocEntry: docEntry
-                            //            },
-                            //            success: function (response) {
-                            //                if (response.success) {
-                            //                    $("#globalLoading").hide();
-                            //                    window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
-                            //                } else {
-                            //                    $("#globalLoading").hide();
-                            //                    window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
-                            //                }
-                            //            },
-                            //            error: function (xhr, status, error) {
-                            //                $("#globalLoading").hide();
-                            //                alert("Error al realizar la solicitud: " + error);
-                            //            }
-                            //        });
-
-                            //    } else {
-                            //        $("#globalLoading").hide();
-                            //        alert("Operación cancelada.");
-                            //    }
-                            //}
-
-                            //function regresarLista() {
-                            //    window.history.back(); // Simula regresar a la lista anterior
-                            //}
-    </script>
-</body>
-</html>
-
+    }
+</script>

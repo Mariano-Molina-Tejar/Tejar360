@@ -5,7 +5,7 @@
         <div class="col-12 col-md-10">
             <div class="card shadow-lg rounded-3">
                 <div class="card-body">
-                    <h2 class="text-center my-4">Resumen de la compra</h2>                    
+                    <h2 class="text-center my-4">Resumen de la compra</h2>
                     <div class="table-responsive">
                         <table class="table table-sm">
                             <thead>
@@ -25,15 +25,36 @@
                         </table>
                     </div>
 
+                    <h2 class="text-center my-4">Regalos por promoción</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th class="text-left">Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-center d-none d-sm-table-cell">Precio U.</th>
+                                    <th class="text-center d-none d-md-table-cell">Descuento</th>
+                                    <th class="text-center d-none d-lg-table-cell">SubTotal</th>
+                                    <th class="text-center d-none d-lg-table-cell">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regalitos-promocion">
+                                <!-- Productos se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+
                     <h2 class="text-center my-4">Datos de facturación</h2>
                     <div class="table-responsive">
                         <table class="table table-sm">
                             <tbody>
                                 <tr><td class="align-middle text-left">Nit/DPI</td><td id="nit"></td></tr>
-                                <tr><td class="align-middle text-left">Nombre</td><td id="nombre"></td></tr>
+                                <tr><td class="align-middle text-left">Cliente</td><td id="nombre"></td></tr>
+                                <tr><td class="align-middle text-left">Dirección</td><td id="direccion"></td></tr>
+                                <tr><td class="align-middle text-left">Contacto</td><td id="contacto"></td></tr>
                                 <tr><td class="align-middle text-left">Teléfono</td><td id="telefono"></td></tr>
                                 <tr><td class="align-middle text-left">Correo</td><td id="correo"></td></tr>
-                                <tr><td class="align-middle text-left">Dirección</td><td id="direccion"></td></tr>
                                 <tr><td class="align-middle text-left">Forma de pago</td><td id="FormaDePago"></td></tr>
                             </tbody>
                         </table>
@@ -82,6 +103,9 @@
                     <div class="d-flex justify-content-between my-4">
                         <button type="button" class="btn btn-secondary" onclick="loadStep(-1)">Atrás</button>
                         <button type="button" class="btn btn-primary" onclick="FinalizarCompra()">Finalizar</button>
+
+                        <input type="text" id="series" readonly style="display: none;" />
+                        <input type="text" id="sucursal" readonly style="display: none;" />
                     </div>
 
                 </div>
@@ -89,6 +113,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     $(document).ready(function () {
@@ -104,6 +129,13 @@
                 selectAsesor.innerHTML = '<option selected disabled>Elige un asesor...</option>';
                 selectTienda.disabled = true;
                 selectAsesor.disabled = true;
+
+                const seriesInput = document.getElementById("series");
+                if (seriesInput) seriesInput.value = "";
+
+                const sucursalInput = document.getElementById("sucursal");
+                if (sucursalInput) sucursalInput.value = "";
+
             } else {
                 // Si el checkbox se desmarca, se habilitan los selects
                 selectTienda.disabled = false;
@@ -113,6 +145,13 @@
 
         $("#tienda").on("change", function () {
             $("#globalLoading").show();
+            let selectedOption = this.options[this.selectedIndex];
+            let series = selectedOption.getAttribute("data-series");
+            let sucursal = selectedOption.getAttribute("data-sucursal");
+
+            document.getElementById("series").value = series;
+            document.getElementById("sucursal").value = sucursal;
+
             let whsCode = $(this).val();
             if (!whsCode) return; // Evitar hacer una petición si el valor es inválido
             fetch(`/MiCarrito/getAsesoresPorTienda?WhsCode=${whsCode}`)
@@ -150,6 +189,8 @@
                     let option = document.createElement("option");
                     option.value = tienda.WhsCode;
                     option.textContent = tienda.WhsName;
+                    option.setAttribute("data-series", tienda.Series);
+                    option.setAttribute("data-sucursal", tienda.IdSucursal)
                     selectTienda.appendChild(option);
                 });
             })
@@ -163,13 +204,15 @@
         let iconClass = '';
 
         const socioNegocio = getAllCookieCotizacion();
-        console.log(socioNegocio);
+        const cookieRegalos = getAllCookieRegalitos();
+
         // Llenar perfil del cliente
-        $('#nit').text(socioNegocio.FacturarNit || 'N/A');
-        $('#nombre').text(socioNegocio.FacturarNombre || 'N/A');
-        $('#telefono').text(socioNegocio.FacturarPhone || 'N/A');
+        $('#nit').text(socioNegocio.LicTradNum || 'N/A');
+        $('#nombre').text(socioNegocio.CardName || 'N/A');
+        $('#telefono').text(socioNegocio.Telefono || 'N/A');
         $('#correo').text(socioNegocio.Email || 'N/A');
-        $('#direccion').text(socioNegocio.FacturarDireccion || 'N/A');
+        $('#contacto').text(socioNegocio.Contacto || 'N/A');
+        $('#direccion').text(socioNegocio.Direccion || 'N/A');
 
         if (socioNegocio.PriceId === 1) {
             formaDePagoText = 'Precio efectivo';
@@ -192,6 +235,13 @@
         // Llenar tabla de productos
         const productos = socioNegocio.productos || [];
         const productosTable = $('#productos-table');
+
+        const regalos = cookieRegalos || [];
+        const regalosTable = $('#regalitos-promocion');
+
+        //const regalos = Regalitos.productos || [];
+        //const regalosTable = $('#regalitos-promocion');
+
         var subTotal = 0.00;
         var descuento = 0.00;
         let totalLineTotal = 0;
@@ -220,6 +270,31 @@
             productosTable.append(row);
         });
 
+        regalos.forEach(producto => {
+            producto.LineTotal = producto.Quantity * producto.Price;
+            descuento = descuento + ((producto.DescuentoU + producto.DescuentoQtz) * producto.Quantity);
+            const row = `
+            <tr>
+                <td>
+                <img id="productImage" src="${producto.UrlImagen || '/Img/imagen-no-disponible.png'}"
+                                     onerror="this.onerror=null; this.src='/Img/imagen-no-disponible.png';"
+                                     alt="Imagen del producto"
+                                     style="width: 50px; height: 50px; object-fit: cover;" />
+                </td>
+                <td class="align-middle text-left">${producto.ItemName || 'Producto'}</td>
+                <td class="align-middle text-center">${producto.Regalito || 0}</td>
+                <td class="align-middle text-center">Q${(parseFloat(producto.Price + producto.DescuentoU) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-center">Q${(parseFloat(producto.DescuentoU + producto.DescuentoQtz) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-center">Q${(parseFloat(producto.Price - producto.DescuentoQtz) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td class="align-middle text-right">Q${((producto.Price - (producto.DescuentoQtz)) * producto.Quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+        `;
+            totalLineTotal = totalLineTotal + (((producto.Price + producto.DescuentoU) - (producto.DescuentoU + producto.DescuentoQtz)) * producto.Quantity);
+            regalosTable.append(row);
+        });
+
+
+
         // Inicializamos las variables de descuento y total
 
         // Iteramos sobre los productos y calculamos las sumas de descuento y total
@@ -245,91 +320,180 @@
         productosTable.append(totalRow);
     });
 
-    function FinalizarCompra() {
-        // Mostrar el mensaje de confirmación con un alert
-        const confirmacion = confirm("¿Estás seguro de que deseas finalizar la compra?");
-        var _llave;
-        const comentario = document.getElementById("txtComentarios").value;
-
-        // Si el usuario confirma que sí
-        if (confirmacion) {
-            $("#globalLoading").show();
-            // Obtener los datos de la cookie
-
-            let chkSAC = document.getElementById("tiendaCheck");
-            let selectTienda = document.getElementById("tienda");
-            let selectAsesor = document.getElementById("asesor");
-
-            let AplicaSAC = chkSAC ? chkSAC.checked : false;
-            let WhsCodeSAC = selectTienda ? (selectTienda.value || "-1") : "-1";
-            let SlpCodeSAC = selectAsesor ? (selectAsesor.value || "-1") : "-1";
-
-            const socioNegocio = getAllCookieCotizacion();
-
-            if (socioNegocio) {
-                _llave = socioNegocio.Llave;
-                // Crear el objeto de CarritoComprasEntity en formato adecuado para enviarlo
-                const carrito = {
-                    NoCotizacionV: socioNegocio.NoCotizacion,
-                    Nit: socioNegocio.LicTradNum,
-                    CardCode: socioNegocio.CardCode,
-                    CardName: socioNegocio.CardName,
-                    Telefono: socioNegocio.Phone,
-                    Correo: socioNegocio.Email,
-                    Direccion: socioNegocio.Address,
-                    FormaPago: socioNegocio.PriceId.toString(),
-                    SlpCode: socioNegocio.cliente,
-                    PriceList: socioNegocio.PriceId,
-                    FacturarNit: socioNegocio.FacturarNit,
-                    FacturarNombre: socioNegocio.FacturarNombre,
-                    FacturarDireccion: socioNegocio.FacturarDireccion,
-                    EsCf: socioNegocio.EsCF,
-                    Comentarios: comentario,
-                    AplicaSAC: AplicaSAC,
-                    WhsCodeSAC: WhsCodeSAC,
-                    SlpCodeSAC: SlpCodeSAC,
-                    Detalle: socioNegocio.productos.map(producto => ({
-                        LineId: producto.LineId,
-                        ItemCode: producto.ItemCode,
-                        Dscription: producto.Dscription,
-                        Quantity: producto.Quantity,
-                        Price: parseFloat(producto.Price),
-                        Dscto: producto.Dscto,
-                        descuentoU: parseFloat(producto.DescuentoU), // Convertir a número
-                        Saving: parseFloat(producto.Saving),
-                        CantMetros: parseFloat(producto.CantidadMetros.replace('Total en metros ', '')),
-                        LineTotal: parseFloat(producto.LineTotal).toFixed(2), // Conversión y resta segura
-                        LinkImg: producto.LinkImg || '/Img/imagen-no-disponible.png',
-                        EsPromo: parseInt(producto.EsPromo),
-                        DescuentoLpr: parseFloat(producto.DescuentoLpr),
-                        DescuentoNwp: parseFloat(producto.DescuentoNwp),
-                        DescuentoPor: parseFloat(producto.DescuentoPor),
-                        DescuentoQtz: parseFloat(producto.DescuentoQtz)
-                    }))
-                };
-
-                // Enviar el objeto al servidor mediante AJAX
-                $.ajax({
-                    url: '/MiCarrito/EnviarCotizacionSAP',  // Ruta de tu acción
-                    type: 'POST',
-                    data: JSON.stringify(carrito),  // Convertir el objeto a JSON
-                    contentType: 'application/json',  // Tipo de contenido para enviar JSON
-                    success: function (response) {
-                        alert(response.message);
-                        if (response.result == 1) {
-                            EliminarCookie("T-OneCotizacion-" + _llave);
-                            $("#globalLoading").hide();
-                            window.location.href = "/Ventas/Listado";
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        // Aquí manejas los errores si los hay
-                        $("#globalLoading").hide();
-                        alert('Hubo un error al enviar la cotización.');
-                    }
-                });
-            }
+    function hayDescuentoQtzEnProductos() {
+        const data = getAllCookieCotizacion(); // tu función que ya obtienes
+        if (data && Array.isArray(data.productos)) {
+            const hayDescuento = data.productos.some(p => parseFloat(p.DescuentoQtz) > 0);
+            return hayDescuento ? 1 : 0;
         }
+        return 0;
+    }
+
+    function FinalizarCompra() {
+        let resultado = hayDescuentoQtzEnProductos();
+        Swal.fire({
+            title: (resultado == 1 ? '¡Atención! Esta cotización requiere una autorización' : '¡Atención!'),
+            text: '¿Está seguro de finalizar la cotización?',
+            icon: (resultado == 1 ? 'warning' : 'question'),
+            showCancelButton: true,
+            confirmButtonText: 'Sí, estoy seguro',
+            cancelButtonText: 'No, cancelar',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true,
+            background: (resultado == 1 ? '#f8d7da' : '#ffffff')
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#globalLoading").show();
+                var _llave;
+                const comentario = document.getElementById("txtComentarios").value;
+                const txtSeries = document.getElementById("series").value;
+                const txtSucursal = document.getElementById("sucursal").value;
+
+                let chkSAC = document.getElementById("tiendaCheck");
+                let selectTienda = document.getElementById("tienda");
+                let selectAsesor = document.getElementById("asesor");
+
+                let AplicaSAC = chkSAC ? chkSAC.checked : false;
+                let WhsCodeSAC = selectTienda ? (selectTienda.value || "-1") : "-1";
+                let SlpCodeSAC = selectAsesor ? (selectAsesor.value || "-1") : "-1";
+
+                const socioNegocio = getAllCookieCotizacion();
+                const cookieRegalo = getAllCookieRegalitos();
+
+                if (socioNegocio) {
+                    _llave = socioNegocio.Llave;
+
+                    const carrito = {
+                        DocN: socioNegocio.DocN,
+                        DocEntry: socioNegocio.DocN,
+                        NoCotizacionV: socioNegocio.NoCotizacion,
+                        Nit: socioNegocio.LicTradNum,
+                        CardCode: socioNegocio.CardCode,
+                        CardName: socioNegocio.CardName,
+                        Telefono: socioNegocio.Telefono,
+                        Correo: socioNegocio.Email,
+                        Direccion: socioNegocio.Direccion,
+                        Contacto: socioNegocio.Contacto,
+                        FormaPago: socioNegocio.PriceId.toString(),
+                        SlpCode: socioNegocio.cliente,
+                        PriceList: socioNegocio.PriceId,
+                        EsCf: socioNegocio.EsCF,
+                        Comentarios: comentario,
+                        AplicaSAC: AplicaSAC,
+                        WhsCodeSAC: WhsCodeSAC,
+                        SlpCodeSAC: SlpCodeSAC,
+                        IdSerie: txtSeries,
+                        IdSucursal: txtSucursal,
+                        Detalle: socioNegocio.productos.map(producto => ({
+                            LineId: producto.LineId,
+                            LineN: producto.LineN,
+                            ItemCode: producto.ItemCode,
+                            Dscription: producto.Dscription,
+                            Quantity: producto.Quantity,
+                            Price: parseFloat(producto.Price),
+                            Dscto: producto.Dscto,
+                            descuentoU: parseFloat(producto.DescuentoU),
+                            Saving: parseFloat(producto.Saving),
+                            CantMetros: 0.00,
+                            LineTotal: parseFloat(producto.LineTotal).toFixed(2),
+                            LinkImg: producto.LinkImg || '/Img/imagen-no-disponible.png',
+                            EsPromo: parseInt(producto.EsPromo),
+                            DescuentoLpr: parseFloat(producto.DescuentoLpr),
+                            DescuentoNwp: parseFloat(producto.DescuentoNwp),
+                            DescuentoPor: parseFloat(producto.DescuentoPor),
+                            DescuentoQtz: parseFloat(producto.DescuentoQtz),
+                            CodPromo: producto.CodPromo
+                        })),
+                        Regalo: Array.isArray(cookieRegalo) && cookieRegalo.length > 0
+                            ? cookieRegalo.map(item => ({
+                                ItemCode: item.ItemCode,
+                                Cantidad: item.Regalito
+                            }))
+                            : null
+                    };
+
+                    $.ajax({
+                        url: '/MiCarrito/EnviarCotizacionSAP',  // Ruta de tu acción
+                        type: 'POST',
+                        data: JSON.stringify(carrito),  // Convertir el objeto a JSON
+                        contentType: 'application/json',  // Tipo de contenido para enviar JSON
+                        success: function (response) {
+                            if (response.result == 1) {
+                                EliminarCookie("T-OneCotizacion-" + _llave);
+                                EliminarCookie("tejar360.Premios");
+                                $("#globalLoading").hide();
+                                Swal.fire({
+                                    title: '¡Cotización finalizada!',
+                                    html: 'Tu compra se ha registrado correctamente.<br><br>' +
+                                        'Número de documento: <span style="font-weight:bold; background-color:#f0f0f0; padding:4px 8px; border-radius:4px; display:inline-block;">' +
+                                        response.data.DocNum + '</span>',
+                                    icon: 'success',
+                                    showCancelButton: true,
+                                    confirmButtonText: '📄 Descargar PDF',
+                                    cancelButtonText: 'Continuar',
+                                    reverseButtons: true,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        GenerarPdf(response.data.DocEntry);
+                                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                        window.location.href = "/CotizacionVentas/Cotizacion";
+                                    }
+                                });
+
+
+                            } else {
+                                $("#globalLoading").hide();
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.message,
+                                    icon: 'error',
+                                    confirmButtonText: 'Cerrar',
+                                    showCancelButton: true,
+                                    reverseButtons: true,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            // Aquí manejas los errores si los hay
+                            $("#globalLoading").hide();
+                            alert('Hubo un error al enviar la cotización.');
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function GenerarPdf(DocEntry) {
+        $("#globalLoading").show();
+        $.ajax({
+            url: '/Ventas/GeneratePdfAjax',
+            type: 'POST',
+            data: JSON.stringify({ docEntry: DocEntry }), // Serializa a JSON
+            contentType: 'application/json',
+            xhrFields: {
+                responseType: 'blob' // Indica que la respuesta será un binario (PDF)
+            },
+            success: function (blob, status, xhr) {
+                $("#globalLoading").hide();
+
+                // Crea una URL temporal para el blob
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                setTimeout(() => {
+                    window.location.href = "/CotizacionVentas/Cotizacion";
+                }, 500); // Espera 0.5 segundos antes de redirigir
+            },
+            error: function (xhr, status, error) {
+                $("#globalLoading").hide();
+                alert('Hubo un error al descargar la cotización.');
+            }
+        });
     }
 
 </script>

@@ -12,4 +12,11 @@ namespace Entity
         public object data { get; set; }
         public string message { get; set; }
     }
+
+    public class Response
+    {
+        public bool result { get; set; }
+        public object data { get; set; }
+        public string message { get; set; }
+    }
 }

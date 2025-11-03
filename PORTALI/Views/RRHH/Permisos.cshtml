@@ -1,0 +1,1155 @@
+﻿@using Entity;
+@model List<GetPermisoEntity>
+
+@{
+    ViewBag.Title = "Permisos";
+    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+}
+
+<style>
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --accent-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #34495e;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --info-color: #1abc9c;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f5f7fa;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header styles */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-title i {
+        color: var(--primary-color);
+    }
+
+    /* Filter card */
+    .filter-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 25px;
+        overflow: hidden;
+    }
+
+    .filter-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filter-body {
+        padding: 20px;
+    }
+
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark-color);
+        font-size: 14px;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+    .filter-input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        background-color: #f8f9fa;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-right: none;
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+        color: #7f8c8d;
+    }
+
+    .filter-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-button:hover {
+        background-color: #2980b9;
+    }
+
+    /* Table styles */
+    .table-container {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead {
+        background-color: var(--success-color);
+        color: white;
+    }
+
+    .data-table th {
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .data-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .data-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-danger {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    /* Action buttons */
+    .action-button {
+        padding: 6px 12px;
+        border-radius: var(--border-radius);
+        font-size: 13px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--primary-color);
+        background-color: transparent;
+        color: var(--primary-color);
+    }
+
+    .action-button:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .action-button.success {
+        border-color: var(--success-color);
+        color: var(--success-color);
+    }
+
+    .action-button.success:hover {
+        background-color: var(--success-color);
+        color: white;
+    }
+
+    .action-button.danger {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+
+    .action-button.danger:hover {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .action-button.warning {
+        border-color: var(--warning-color);
+        color: var(--warning-color);
+    }
+
+    .action-button.warning:hover {
+        background-color: var(--warning-color);
+        color: white;
+    }
+
+    /* Button group */
+    .button-group {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+    }
+
+    /* Footer */
+    .footer-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #eee;
+    }
+
+    .add-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .add-button:hover {
+        background-color: #2980b9;
+    }
+
+    /* Modal styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+    }
+
+    .modal.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        width: 100%;
+        max-width: 800px;
+        transform: translateY(-20px);
+        transition: var(--transition);
+    }
+
+    .modal.active .modal-content {
+        transform: translateY(0);
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .modal-title {
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: white;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark-color);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .form-text {
+        font-size: 12px;
+        color: #7f8c8d;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .form-col {
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background-color: #27ae60;
+    }
+
+    .btn-secondary {
+        background-color: #bdc3c7;
+        color: var(--dark-color);
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #95a5a6;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #7f8c8d;
+    }
+
+    .empty-state i {
+        font-size: 40px;
+        margin-bottom: 15px;
+        color: #bdc3c7;
+    }
+
+    /* Type colors */
+    .text-danger {
+        color: var(--accent-color);
+    }
+
+    .text-secondary {
+        color: #7f8c8d;
+    }
+
+    .text-info {
+        color: var(--primary-color);
+    }
+
+    .text-warning {
+        color: var(--warning-color);
+    }
+
+    .text-muted {
+        color: #95a5a6;
+    }
+
+    .text-success {
+        color: var(--success-color);
+    }
+
+    @*/* Responsive adjustments */
+    @media (max-width: 768px) {
+        .filter-row {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .form-row {
+            flex-direction: column;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .button-group {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }*@
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-file-signature"></i>
+                Permisos
+            </h1>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Permisos", "RRHH", FormMethod.Get))
+    {
+        <div class="filter-card">
+            <div class="filter-header">
+                <i class="fas fa-filter"></i>
+                Filtros de Búsqueda
+            </div>
+            <div class="filter-body">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Inicio</label>
+                        <div class="input-group">                            
+                            <input type="date" class="filter-input" id="fechaInicio" name="fechaInicio" value="@ViewBag.FechaInicio" />
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Fin</label>
+                        <div class="input-group">                            
+                            <input type="date" class="filter-input" id="fechaFin" name="fechaFin" value="@ViewBag.FechaFin" />
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Estado</label>
+                        <div class="input-group">                            
+                            <select id="estado" name="estado" class="filter-input">
+                                @if (sessions.CodeEmpleado == 178)
+                                {
+                                    <option value="0" selected>Pendientes (VoBo)</option>
+                                    <option value="1">Autorizado (VoBo)</option>
+                                }
+                                else
+                                {
+                                    <option value="0" selected> Pendiente</option>
+                                    <option value="1"> Autorizado</option>
+                                    <option value="-1"> Rechazado</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button type="submit" class="filter-button">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="footer-actions">
+        <button type="button" class="add-button" id="btnAgregarPermiso">
+            <i class="fas fa-plus"></i> Agregar permiso
+        </button>
+    </div>
+
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Fecha Registro</th>
+                        <th>Nombre</th>
+                        <th>Puesto</th>
+                        <th>Permiso</th>
+                        <th>Observaciones</th>
+                        <th>Departamento/Tienda</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Dias</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="12" class="empty-state">
+                                <i class="fas fa-info-circle"></i>
+                                <div>No se encontraron registros</div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var lista in Model)
+                        {
+                            <tr>
+                                <td>@lista.Rw</td>
+                                <td>@lista.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                                <td>@lista.Nombre</td>
+                                <td>@lista.Puesto</td>
+                                <td>
+                                    @{
+                                        var icono = "";
+                                        var clase = "";
+
+                                        switch (lista.TipoPermiso?.Trim().ToLower())
+                                        {
+                                            case "enfermedad con constancia igss":
+                                                icono = "fas fa-notes-medical";
+                                                clase = "text-danger";
+                                                break;
+
+                                            case "permiso especial":
+                                                icono = "fas fa-clipboard-list";
+                                                clase = "text-secondary";
+                                                break;
+
+                                            case "vacaciones":
+                                                icono = "fas fa-calendar-check";
+                                                clase = "text-info";
+                                                break;
+
+                                            case "emergencia personal":
+                                            case "emergencia familiar":
+                                            case "emergencia personal o familiar":
+                                                icono = "fas fa-exclamation-circle";
+                                                clase = "text-warning";
+                                                break;
+
+                                            default:
+                                                icono = "fas fa-question-circle";
+                                                clase = "text-muted";
+                                                break;
+                                        }
+                                    }
+                                    <i class="@icono @clase"></i> @lista.TipoPermiso
+                                </td>
+                                <td>@lista.U_Observacion</td>
+                                <td>@lista.Departamento</td>
+                                <td>@lista.FechaInicio.ToString("dd/MM/yyyy")</td>
+                                <td>@lista.FechaFin.ToString("dd/MM/yyyy")</td>
+                                <td>@lista.DiasGozados</td>
+                                <td>
+                                    @{
+                                        
+                                        int estado = lista.U_Estado;
+
+                                        switch (estado)
+                                        {
+                                            case 0:
+                                                icono = "fas fa-exclamation-circle text-warning";
+                                                break;
+                                            case 1:
+                                                icono = "fas fa-check-circle text-success";
+                                                break;
+                                            case 2:
+                                                icono = "fas fa-check text-success";
+                                                break;
+                                            case -1:
+                                                icono = "fas fa-times-circle text-danger";
+                                                break;
+                                        }
+                                    }
+                                    <i class="@icono"></i>
+                                    @if (estado + lista.EstadoRH == 1)
+                                    {
+                                        icono = "fas fa-exclamation text-warning";
+                                        <i class="@icono"></i>
+                                    }
+                                    else if (estado + lista.EstadoRH == 2)
+                                    {
+                                        icono = "fas fa-check text-success";
+                                        <i class="@icono"></i>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="button-group">
+                                        @if (lista.U_Estado == 1)
+                                        {
+                                            <button type="button" class="action-button success" title="Descargar"
+                                                    onclick="GenerarPdf(this);"
+                                                    data-FechaRegistro="@lista.FechaRegistro"
+                                                    data-Nombre="@lista.Nombre"
+                                                    data-Puesto="@lista.Puesto"
+                                                    data-Departamento="@lista.Departamento"
+                                                    data-CodigoEmpleado="@lista.CodigoEmpleado"
+                                                    data-FechaInicio="@lista.FechaInicio"
+                                                    data-FechaFin="@lista.FechaFin"
+                                                    data-FechaPresentarse="@lista.FechaPresentarse"
+                                                    data-TipoPermiso="@lista.TipoPermiso"
+                                                    data-U_Observacion="@lista.U_Observacion"
+                                                    data-DiasGozados="@lista.DiasGozados"
+                                                    data-LineId="@lista.LineId">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+
+                                            if (lista.EstadoRH == 0 && lista.rrhh == 1 && lista.EstadoRH == 0)
+                                            {
+                                                <button type="button" class="action-button success" title="Vo. Bo. RRHH"
+                                                        onclick="GenrarVoBoRH(this);"
+                                                        data-FechaRegistro="@lista.FechaRegistro"
+                                                        data-Nombre="@lista.Nombre"
+                                                        data-Puesto="@lista.Puesto"
+                                                        data-Departamento="@lista.Departamento"
+                                                        data-CodigoEmpleado="@lista.CodigoEmpleado"
+                                                        data-FechaInicio="@lista.FechaInicio"
+                                                        data-FechaFin="@lista.FechaFin"
+                                                        data-FechaPresentarse="@lista.FechaPresentarse"
+                                                        data-TipoPermiso="@lista.TipoPermiso"
+                                                        data-U_Observacion="@lista.U_Observacion"
+                                                        data-DiasGozados="@lista.DiasGozados"
+                                                        data-LineId="@lista.LineId"
+                                                        data-rrhh="@lista.rrhh">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </button>
+                                            }
+                                        }
+
+                                        @if (lista.Autorizar == 1 && lista.U_Estado == 0)
+                                        {
+                                            <button type="button" class="action-button" title="Aceptar permiso"
+                                                    onclick="AceptarRechazarPermiso(this);"
+                                                    data-LineId="@lista.LineId"
+                                                    data-CodigoEmpleado="@lista.CodigoEmpleado"
+                                                    data-Id="1">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+
+                                            <button type="button" class="action-button danger" title="Rechazar permiso"
+                                                    onclick="AceptarRechazarPermiso(this);"
+                                                    data-LineId="@lista.LineId"
+                                                    data-CodigoEmpleado="@lista.CodigoEmpleado"
+                                                    data-Id="-1">
+                                                <i class="fas fa-times-circle"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mensajes de error -->
+    @if (Model != null && Model.Any() && Model[0].ErrorMessage != null)
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            @Model[0].ErrorMessage
+        </div>
+    }
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <!-- Modal Agregar Permiso -->
+    <div class="modal" id="modalAgregarPermiso">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Agregar Permiso
+                </h3>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <form id="formPermiso" method="post" action="GuardarPermisos">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Código Empleado</label>
+                                <input type="text" class="form-control" name="CodigoEmpleado" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" name="FechaInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo Permiso</label>
+                                <select class="form-control" name="Tipo" id="tipoPermiso" required>
+                                    <option value="" selected disabled>-- Seleccionar --</option>
+                                    @foreach (var Tipos in ViewBag.TiposPermiso)
+                                    {
+                                        <option value="@Tipos.Code">@Tipos.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Nombre Empleado</label>
+                                <input type="text" class="form-control" name="NombreEmpleado" id="nombreEmpleadoInput" autocomplete="off">
+                                <div id="sugerenciasEmpleado" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+                                <input type="hidden" name="CodigoEmpleado">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" name="FechaFin" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Observaciones</label>
+                                <textarea class="form-control" rows="2" name="Observaciones"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row d-none" id="camposVacaciones">
+                        <div class="form-col">
+                            <label class="form-label">Periodo del</label>
+                            <input type="number" class="form-control" name="PeriodoDel" id="periodoDel" min="2000" max="2100" value="2024">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Periodo al</label>
+                            <input type="number" class="form-control" name="PeriodoAl" id="periodoAl" min="2000" max="2100" value="2024">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelarPermiso">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Modal functionality
+    const modal = document.getElementById('modalAgregarPermiso');
+    const btnAgregar = document.getElementById('btnAgregarPermiso');
+    const btnCancelar = document.getElementById('btnCancelarPermiso');
+
+    btnAgregar.addEventListener('click', function() {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    btnCancelar.addEventListener('click', function() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Tipo permiso change
+    document.getElementById('tipoPermiso').addEventListener('change', function() {
+        const camposVacaciones = document.getElementById('camposVacaciones');
+        const esVacaciones = this.value === "1";
+        camposVacaciones.classList.toggle('d-none', !esVacaciones);
+    });
+
+    $(document).ready(function () {
+        const esJefe = @ViewBag.EsJefe;
+        const nombre = '@Html.Raw(ViewBag.UserNombre)';
+
+        if (esJefe > 0 || nombre == "MANAGER") {
+            // Permitir búsqueda por nombre
+            $('#nombreEmpleadoInput').on('input', function () {
+                const query = $(this).val();
+                if (query.length < 2) {
+                    $('#sugerenciasEmpleado').empty();
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("BuscarEmpleadosPorNombre", "RRHH")',
+                    method: 'GET',
+                    data: { nombre: query },
+                    success: function (data) {
+                        const $lista = $('#sugerenciasEmpleado');
+                        $lista.empty();
+
+                        if (data.length === 0) {
+                            $lista.append('<div class="list-group-item list-group-item-secondary">No se encontraron empleados</div>');
+                        } else {
+                            data.forEach(emp => {
+                                $lista.append(`<button type="button" class="list-group-item list-group-item-action"
+                                    data-id="${emp.CodigoEmpleado}" data-nombre="${emp.Nombre}">
+                                    ${emp.CodigoEmpleado} - ${emp.Nombre} - ${emp.Departamento}
+                                </button>`);
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Evento para seleccionar sugerencia
+            $('#sugerenciasEmpleado').on('click', 'button', function () {
+                const nombre = $(this).data('nombre');
+                const codigo = $(this).data('id');
+
+                $('#nombreEmpleadoInput').val(nombre);
+                $('input[name="CodigoEmpleado"]').val(codigo);
+
+                $('#sugerenciasEmpleado').empty();
+            });
+
+        } else {
+            // Si no es jefe, se rellenan los datos con los valores del usuario
+            const nombre = '@Html.Raw(ViewBag.UserNombre)';
+            const codigo = '@ViewBag.UserCodigo';
+
+            $('#nombreEmpleadoInput').val(nombre);
+            $('input[name="CodigoEmpleado"]').val(codigo);
+            $('#nombreEmpleadoInput').prop('disabled', true);
+        }
+    });
+
+    // Form submit
+    $('#formPermiso').on('submit', function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (response) {
+                if (response.result === 1) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: response.message,
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+
+                    $('#modalAgregarPermiso').classList.remove('active');
+                    $('#formPermiso')[0].reset();
+                    location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message,
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error en la comunicación con el servidor.',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    });
+
+    // Funciones para acciones
+    async function GenerarPdf(button) {
+        $("#globalLoading").show();
+
+        const datos = {
+            FechaRegistro: button.getAttribute("data-FechaRegistro"),
+            Nombre: button.getAttribute("data-Nombre"),
+            Puesto: button.getAttribute("data-Puesto"),
+            Departamento: button.getAttribute("data-Departamento"),
+            CodigoEmpleado: button.getAttribute("data-CodigoEmpleado"),
+            FechaInicio: button.getAttribute("data-FechaInicio"),
+            FechaFin: button.getAttribute("data-FechaFin"),
+            FechaPresentarse: button.getAttribute("data-FechaPresentarse"),
+            DiasGozados: button.getAttribute("data-DiasGozados"),
+            TipoPermiso: button.getAttribute("data-TipoPermiso"),
+            U_Observacion: button.getAttribute("data-U_Observacion"),
+            LineId: button.getAttribute("data-LineId")
+        };
+
+        const url = datos.TipoPermiso === "Vacaciones"
+            ? '/RRHH/GeneratePdfAjax'
+            : '/RRHH/GeneratePdfAjaxPE';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ permiso: datos}),
+        }).then(response => response.blob())
+            .then(blob => {
+                $("#globalLoading").hide();
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+            })
+        .catch(error => console.error('Error al generar el PDF:', error));
+    }
+
+    async function AceptarRechazarPermiso(button) {
+        const _LineId = button.getAttribute("data-LineId");
+        const _CodigoEmpleado = button.getAttribute("data-CodigoEmpleado");
+        const _Id = parseInt(button.getAttribute("data-Id"));
+
+        let titulo = "";
+        let icono = "";
+        let confirmButtonText = "";
+
+        if (_Id === 1) {
+            titulo = "¿Deseas autorizar el permiso?";
+            icono = "question";
+            confirmButtonText = "Sí, autorizar";
+        } else if (_Id === -1) {
+            titulo = "¿Deseas rechazar el permiso?";
+            icono = "warning";
+            confirmButtonText = "Sí, rechazar";
+        } else {
+            Swal.fire("ID inválido", "No se puede procesar esta acción.", "error");
+            return;
+        }
+
+        const confirmacion = await Swal.fire({
+            title: titulo,
+            icon: icono,
+            showCancelButton: true,
+            confirmButtonText: confirmButtonText,
+            cancelButtonText: "Cancelar"
+        });
+
+        if (!confirmacion.isConfirmed) {
+            return;
+        }
+
+        try {
+            $("#globalLoading").show();
+
+            const response = await fetch("/RRHH/AutorizarRechazarPermisos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    LineId: _LineId,
+                    CodigoEmpleado: _CodigoEmpleado,
+                    Id: _Id
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.result === 1) {
+                location.reload();
+                Swal.fire({
+                    icon: "success",
+                    title: "Éxito",
+                    text: result.message || "Operación realizada correctamente.",
+                    timer: 4500,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: result.message || "No se pudo completar la operación.",
+                    timer: 4500,
+                    showConfirmButton: false
+                });
+            }
+        } catch (error) {
+            console.error("Error al procesar:", error);
+            Swal.fire("Error", "Ocurrió un problema al procesar la solicitud.", "error");
+        } finally {
+            $("#globalLoading").hide();
+        }
+    }
+
+    async function GenrarVoBoRH(button) {
+        const datos = {
+            FechaRegistro: button.getAttribute("data-FechaRegistro"),
+            Nombre: button.getAttribute("data-Nombre"),
+            Puesto: button.getAttribute("data-Puesto"),
+            Departamento: button.getAttribute("data-Departamento"),
+            CodigoEmpleado: button.getAttribute("data-CodigoEmpleado"),
+            FechaInicio: button.getAttribute("data-FechaInicio"),
+            FechaFin: button.getAttribute("data-FechaFin"),
+            FechaPresentarse: button.getAttribute("data-FechaPresentarse"),
+            DiasGozados: button.getAttribute("data-DiasGozados"),
+            TipoPermiso: button.getAttribute("data-TipoPermiso"),
+            U_Observacion: button.getAttribute("data-U_Observacion"),
+            LineId: button.getAttribute("data-LineId"),
+            rrhh: button.getAttribute("data-rrhh")
+        };
+
+        const confirmacion = await Swal.fire({
+            title: "¿Deseas dar visto bueno a este permiso?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Sí",
+            cancelButtonText: "Cancelar"
+        });
+
+        if (!confirmacion.isConfirmed) {
+            return;
+        }
+
+        try {
+            $("#globalLoading").show();
+
+            const response = await fetch("/RRHH/AgregarVoBoRh", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    permisos: datos
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.result === 1) {
+                location.reload();
+                Swal.fire({
+                    icon: "success",
+                    title: "Éxito",
+                    text: result.message || "Operación realizada correctamente.",
+                    timer: 4500,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: result.message || "No se pudo completar la operación.",
+                    timer: 4500,
+                    showConfirmButton: false
+                });
+            }
+        } catch (error) {
+            console.error("Error al procesar:", error);
+            Swal.fire("Error", "Ocurrió un problema al procesar la solicitud.", "error");
+        } finally {
+            $("#globalLoading").hide();
+        }
+    }
+</script>

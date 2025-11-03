@@ -11,6 +11,63 @@ namespace DAL
 {
     public class DALCrmCotizacionesAnalisis
     {
+        public static List<CrmCotizacionesEntity> CrmCotizaciones(DateTime FechaI, DateTime FechaF)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            var lista = new List<CrmCotizacionesEntity>();
+            string connectionString = $"Provider=SQLOLEDB;Server={pConnection.ServerName};Database={pConnection.DataBase};Uid={pConnection.User};Pwd={pConnection.Password};";
+            using (OleDbConnection iConnection = new OleDbConnection(connectionString))
+            using (OleDbCommand iCommand = new OleDbCommand("sp_crm_cotizaciones", iConnection))
+            {
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.Add("@FechaI", OleDbType.Date).Value = FechaI;
+                iCommand.Parameters.Add("@FechaF", OleDbType.Date).Value = FechaF;
+
+                try
+                {
+                    iConnection.Open();
+                    using (OleDbDataAdapter iDAResult = new OleDbDataAdapter(iCommand))
+                    {
+                        DataTable dt = new DataTable();
+                        iDAResult.Fill(dt);
+
+                        lista = (from row in dt.AsEnumerable()
+                                 select new CrmCotizacionesEntity()
+                                 {
+                                     WhsCode = row["WhsCode"]?.ToString() ?? string.Empty,
+                                     WhsName = row["WhsName"]?.ToString() ?? string.Empty,
+                                     Region = row["Region"]?.ToString() ?? string.Empty,
+                                     TotalCoti = row["TotalCoti"] != DBNull.Value ? Convert.ToInt32(row["TotalCoti"]) : 0,
+                                     LineTotalCoti = row["LineTotalCoti"] != DBNull.Value ? Convert.ToDouble(row["LineTotalCoti"]) : 0.0,
+                                     LineTotalCobiAb = row["LineTotalCobiAb"] != DBNull.Value ? Convert.ToDouble(row["LineTotalCobiAb"]) : 0.0,
+                                     TotalFac = row["TotalFac"] != DBNull.Value ? Convert.ToInt32(row["TotalFac"]) : 0,
+                                     LineTotalFac = row["LineTotalFac"] != DBNull.Value ? Convert.ToDouble(row["LineTotalFac"]) : 0.0,
+                                     TasaCierre = row["TasaCierre"] != DBNull.Value ? Convert.ToDouble(row["TasaCierre"]) : 0.0,
+                                     MetaCoti = row["MetaCoti"] != DBNull.Value ? Convert.ToInt32(row["MetaCoti"]) : 0,
+                                     TasaGeneracion = row["TasaGeneracion"] != DBNull.Value ? Convert.ToDouble(row["TasaGeneracion"]) : 0.0,
+                                     ClientesNuevos = row["ClientesNuevos"] != DBNull.Value ? Convert.ToInt32(row["ClientesNuevos"]) : 0,
+                                     TotalClie = row["TotalClie"] != DBNull.Value ? Convert.ToInt32(row["TotalClie"]) : 0,
+                                     totalClieRetenido = row["ClientesRetenidos"] != DBNull.Value ? Convert.ToInt32(row["ClientesRetenidos"]) : 0,
+                                     TasaRetencion = row["TasaRetencion"] != DBNull.Value ? Convert.ToDouble(row["TasaRetencion"]) : 0.0,
+                                     Cerradas = row["Cerradas"] != DBNull.Value ? Convert.ToInt32(row["Cerradas"]) : 0,
+                                     Abiertos = row["Abiertos"] != DBNull.Value ? Convert.ToInt32(row["Abiertos"]) : 0,
+                                     Perdida = row["Perdida"] != DBNull.Value ? Convert.ToInt32(row["Perdida"]) : 0,
+                                     Seguimiento = row["Seguimiento"] != DBNull.Value ? Convert.ToInt32(row["Seguimiento"]) : 0,
+                                     SinEstatus = row["SinEstatus"] != DBNull.Value ? Convert.ToInt32(row["SinEstatus"]) : 0
+                                 }).ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lista = new List<CrmCotizacionesEntity>();
+                }
+            }
+
+            return lista;
+        }
+
+
+
         public static List<ListadoSeguimientoEntity> listadoSeguimientoCotizaciones(int DocEntry)
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
@@ -83,7 +140,7 @@ namespace DAL
                         cotizacionCrm.TotalCotAbiertas = double.Parse(dt.Rows[0]["TotalCotAbiertas"].ToString());
                         cotizacionCrm.TotalCotCerradas = double.Parse(dt.Rows[0]["TotalCotCerradas"].ToString());
                         cotizacionCrm.Indice = double.Parse(dt.Rows[0]["Indice"].ToString());
-                        cotizacionCrm.MetaCoti = double.Parse(dt.Rows[0]["MetaCoti"].ToString());                        
+                        cotizacionCrm.MetaCoti = double.Parse(dt.Rows[0]["MetaCoti"].ToString());
                         cotizacionCrm.IndiceMetaCoti = double.Parse(dt.Rows[0]["IndiceMetaCoti"].ToString());
                     }
 

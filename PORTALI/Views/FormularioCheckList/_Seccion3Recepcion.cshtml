@@ -1,0 +1,395 @@
+﻿@model Entity.FormularioCheckList1Entity
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white fw-bold">
+        <i class="bi bi-truck"></i> Sección 3: Recepción
+    </div>
+    <div class="card-body">
+
+        <!-- Pregunta PR1 -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-map-fill"></i> ¿Se planifican los espacios de almacenamiento para las rutas de abastecimiento?
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">35. PR1</h2>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR1, "Y", new { @class = "form-check-input", id = "PR1_SI" })
+                        <label class="form-check-label" for="PR1">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR1, "N", new { @class = "form-check-input", id = "PR1_NO" })
+                        <label class="form-check-label" for="PR1_NO">No</label>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">36. ADPR1</h2>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR1.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR1.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_Recep_ADPR1" class="form-control" accept="image/*" id="ADPR1" />
+                    }
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">37. IAPR1</h2>
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.U_Recep_IAPR1, "Información adicional", new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(m => m.U_Recep_IAPR1, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPR1" })
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pregunta PR2 -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-person-check-fill"></i> ¿La planificación de contratación de descargadores coincide con los contratados según la liquidación?
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">38. PR2</h2>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR2, "Y", new { @class = "form-check-input", id = "PR2_SI" })
+                        <label class="form-check-label" for="PR2_SI">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR2, "N", new { @class = "form-check-input", id = "PR2_NO" })
+                        <label class="form-check-label" for="PR2_NO">No</label>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">39. ADPR2</h2>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR2.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR2.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_Recep_ADPR2" class="form-control" accept="image/*" id="ADPR2" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">40. IAPR2</h2>
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.U_Recep_IAPR2, "Información adicional", new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(m => m.U_Recep_IAPR2, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPR2" })
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pregunta PR3 -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-exclamation-triangle-fill"></i> ¿Se reporta el producto dañado en las rutas planificadas?
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">41. PR3</h2>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR3, "Y", new { @class = "form-check-input", id = "PR3_SI" })
+                        <label class="form-check-label" for="PR3_SI">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR3, "N", new { @class = "form-check-input", id = "PR3_NO" })
+                        <label class="form-check-label" for="PR3_NO">No</label>
+                    </div>
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">42. ADPR3</h2>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR3.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR3.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_Recep_ADPR3" class="form-control" accept="image/*" id="ADPR3" onchange="subirArchivo(this)" />
+                    }
+
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">43. IAPR3</h2>
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.U_Recep_IAPR3, "Información adicional", new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(m => m.U_Recep_IAPR3, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPR3" })
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pregunta PR4 -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-journal-check"></i> ¿Se realiza la revisión y firma de los documentos de ingreso de las rutas planificadas?
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">44. PR4</h2>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR4, "Y", new { @class = "form-check-input", id = "PR4_SI" })
+                        <label class="form-check-label" for="PR4_SI">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR4, "N", new { @class = "form-check-input", id = "PR4_NO" })
+                        <label class="form-check-label" for="PR4_NO">No</label>
+                    </div>
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">45. ADPR4</h2>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR4.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR4.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_Recep_ADPR4" class="form-control" accept="image/*" id="ADPR4" onchange="subirArchivo(this)" />
+                    }
+
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">46. IAPR4</h2>
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.U_Recep_IAPR4, "Información adicional", new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(m => m.U_Recep_IAPR4, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPR4" })
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pregunta PR5 -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-clock-history"></i> ¿Las recepciones de proveedores y rutas internas se completan sin exceder las 24 horas posteriores a la llegada de los productos?
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">47. PR5</h2>
+                </div>
+                <!-- Respuesta Sí/No -->
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR5, "Y", new { @class = "form-check-input", id = "PR5_SI" })
+                        <label class="form-check-label" for="PR5_SI">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR5, "N", new { @class = "form-check-input", id = "PR5_NO" })
+                        <label class="form-check-label" for="PR5_NO">No</label>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">48. ADPR5</h2>
+                </div>
+                <!-- Evidencia (foto) -->
+                <div class="mb-3">
+
+                    <div class="mb-3">
+                        <label for="ADPR5" class="form-label fw-semibold">
+                            Fotografías de evidencia
+                        </label>
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR5.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR5.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Recep_ADPR5" class="form-control" accept="image/*" id="ADPR5" onchange="subirArchivo(this)" />
+                        }
+
+                    </div>
+
+                </div>
+                <br />
+                <!-- Observaciones -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">49. IAPR5</h2>
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.U_Recep_IAPR5, "Información adicional", new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(m => m.U_Recep_IAPR5, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPR5" })
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pregunta PR6 -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-clock-history"></i> ¿Las áreas de despacho y recepción están claramente identificadas y delimitadas?
+                </h5>
+                <!-- Respuesta Sí/No -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">50. PR6</h2>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR6, "Y", new { @class = "form-check-input", id = "PR6_SI" })
+                        <label class="form-check-label" for="PR5_SI">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR6, "N", new { @class = "form-check-input", id = "PR6_NO" })
+                        <label class="form-check-label" for="PR5_NO">No</label>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">51. ADPR6</h2>
+                </div>
+
+                <div class="mb-3">
+
+                    <div class="mb-3">
+                        <label for="ADPR6" class="form-label fw-semibold">
+                            Fotografías de evidencia
+                        </label>
+
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR6.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR6.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Recep_ADPR6" class="form-control" accept="image/*" id="ADPR6" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+
+                </div>
+                <br />
+                <!-- Observaciones -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">52. IAPR6</h2>
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.U_Recep_IAPR6, "Información adicional", new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(m => m.U_Recep_IAPR6, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPR6" })
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pregunta PR7 -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-clock-history"></i> ¿El mapa de almacenaje se actualiza y utiliza regularmente?
+                </h5>
+                <!-- Respuesta Sí/No -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">53. PR7</h2>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.U_Recep_PR7, "Y", new { @class = "form-check-input", id = "PR7_SI" })
+                        <label class="form-check-label" for="PR5_SI">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                            
+                        @Html.RadioButtonFor(m => m.U_Recep_PR7, "N", new { @class = "form-check-input", id = "PR7_NO" })
+                        <label class="form-check-label" for="PR5_NO">No</label>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">54. ADPR7</h2>
+                </div>
+                <div class="mb-3">
+
+                    <div class="mb-3">
+                        <label for="ADPR7" class="form-label fw-semibold">
+                            Fotografías de evidencia
+                        </label>
+
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR7.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPR7.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Recep_ADPR7" class="form-control" accept="image/*" id="ADPR7" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+
+                </div>
+                <br />
+                <!-- Observaciones -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">55. IAPR7</h2>
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.U_Recep_IAPR7, "Información adicional", new { @class = "form-label fw-semibold" })
+                    @Html.TextAreaFor(m => m.U_Recep_IAPR7, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPR7" })
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-outline-secondary btn-anterior" onclick="EnviarDatos(event,0,3)">
+            <i class="bi bi-arrow-left-circle"></i> Anterior
+        </button>
+        <button type="button" class="btn btn-primary btn-siguiente" onclick="EnviarDatos(event,0,3,1)">
+            Siguiente <i class="bi bi-arrow-right-circle-fill"></i>
+        </button>
+    </div>
+</div>

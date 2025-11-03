@@ -8,6 +8,8 @@ namespace Entity
 {
     public class VentasDetalleEntity
     {
+        public string WhsCode { get; set; }
+        public string WhsName { get; set; }
         public int SlpCode { get; set; }
         public string SlpName { get; set; }
         public double DiasLaborados { get; set; }

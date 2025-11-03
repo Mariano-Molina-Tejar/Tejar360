@@ -46,11 +46,44 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.4.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML, Version=0.105.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.105.0\lib\netstandard2.0\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1d5f7376574c51ec, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.Parser.2.0.0\lib\netstandard2.0\ClosedXML.Parser.dll</HintPath>
+    </Reference>
     <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
     <Reference Include="CrystalDecisions.ReportSource, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
     <Reference Include="CrystalDecisions.Shared, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.1.66\lib\net461\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="DinkToPdf, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DinkToPdf.1.0.8\lib\netstandard1.6\DinkToPdf.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=3.1.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.3.1.1\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml.Framework, Version=3.1.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.Framework.3.1.1\lib\net46\DocumentFormat.OpenXml.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.4, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.4\lib\net461\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.xmlworker, Version=5.5.13.4, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itextsharp.xmlworker.5.5.13.4\lib\net461\itextsharp.xmlworker.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.3\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.3\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Http.Abstractions.2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
@@ -64,12 +97,27 @@
     <Reference Include="Microsoft.AspNetCore.Routing.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Routing.Abstractions.2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Routing.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.1\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Extensions.Primitives, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Primitives.2.2.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Net.Http.Headers, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.Headers.2.2.0\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.0.1\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
@@ -82,8 +130,20 @@
     <Reference Include="Newtonsoft.Json.Bson, Version=1.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.Bson.1.0.2\lib\net45\Newtonsoft.Json.Bson.dll</HintPath>
     </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="RBush, Version=4.0.0.0, Culture=neutral, PublicKeyToken=c77e27b81f4d0187, processorArchitecture=MSIL">
+      <HintPath>..\packages\RBush.Signed.4.0.0\lib\net47\RBush.dll</HintPath>
+    </Reference>
+    <Reference Include="Rotativa, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rotativa.1.7.3\lib\net461\Rotativa.dll</HintPath>
+    </Reference>
     <Reference Include="Select.HtmlToPdf, Version=24.1.0.0, Culture=neutral, PublicKeyToken=e0ae9f6e27a97018, processorArchitecture=MSIL">
       <HintPath>..\packages\Select.HtmlToPdf.24.1.0\lib\net40\Select.HtmlToPdf.dll</HintPath>
+    </Reference>
+    <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
+      <HintPath>..\packages\SixLabors.Fonts.1.0.0\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -184,8 +244,8 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.Extensions.4.1.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
@@ -202,6 +262,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.2.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
       <Private>True</Private>
@@ -297,6 +358,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
     <Reference Include="WkHtmlToPdf, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WkHtmlToPdf.1.0.2\lib\netstandard2.0\WkHtmlToPdf.dll</HintPath>
     </Reference>
@@ -310,34 +372,74 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AsistenciaController.cs" />
+    <Compile Include="Controllers\BaseReporteController.cs" />
     <Compile Include="Controllers\BilleteraComisionLigaController.cs" />
+    <Compile Include="Controllers\BolsonActivoController.cs" />
+    <Compile Include="Controllers\BolsonClientesController.cs" />
+    <Compile Include="Controllers\BolsonPerdidasController.cs" />
     <Compile Include="Controllers\CerrarSesionController.cs" />
+    <Compile Include="Controllers\ComercialTransaccionesController.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
     <Compile Include="Controllers\CotizacionVentasAutorizaController.cs" />
     <Compile Include="Controllers\CotizacionVentasController.cs" />
+    <Compile Include="Controllers\CrmCotizacionesController.cs" />
+    <Compile Include="Controllers\CrmVentasController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DashboardGerenteVentasController.cs" />
     <Compile Include="Controllers\DeliveryController.cs" />
     <Compile Include="Controllers\EspecialistaController.cs" />
+    <Compile Include="Controllers\EstadoBolsonController.cs" />
+    <Compile Include="Controllers\EstadoBolsonV2Controller.cs" />
+    <Compile Include="Controllers\EstadoBolsonV3Controller.cs" />
+    <Compile Include="Controllers\FlujoCDController.cs" />
+    <Compile Include="Controllers\FormularioCheckListController.cs" />
+    <Compile Include="Controllers\GantProyectosITController.cs" />
     <Compile Include="Controllers\GeneralesController.cs" />
     <Compile Include="Controllers\GerenciaRankinController.cs" />
+    <Compile Include="Controllers\GestionDePersonalController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KpiCrmController.cs" />
+    <Compile Include="Controllers\KPISItController.cs" />
+    <Compile Include="Controllers\MacroGantController.cs" />
     <Compile Include="Controllers\MargenController.cs" />
+    <Compile Include="Controllers\MargenTiendasController.cs" />
+    <Compile Include="Controllers\MatrizSeguimientosController.cs" />
     <Compile Include="Controllers\MiCarritoController.cs" />
+    <Compile Include="Controllers\OrdenDeCompraController.cs" />
+    <Compile Include="Controllers\PendientesController.cs" />
+    <Compile Include="Controllers\PresupuestoController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\ProspAgendaController.cs" />
+    <Compile Include="Controllers\ProspGoController.cs" />
+    <Compile Include="Controllers\ProspListadoObrasController.cs" />
+    <Compile Include="Controllers\ProspVisitaController.cs" />
     <Compile Include="Controllers\RankingV2Controller.cs" />
+    <Compile Include="Controllers\ReporteBodegasController.cs" />
+    <Compile Include="Controllers\ReporteDañadoController.cs" />
+    <Compile Include="Controllers\ReporteEstadoCuentaGastosController.cs" />
+    <Compile Include="Controllers\ReporteEstadoCuentaImportacionController.cs" />
+    <Compile Include="Controllers\ReporteEstadoCuentaLocalController.cs" />
+    <Compile Include="Controllers\ReporteEstadoCuentaServiciosAdicionalesController.cs" />
+    <Compile Include="Controllers\ReporteInterTiendasController.cs" />
+    <Compile Include="Controllers\ResumenSeguimientosController.cs" />
+    <Compile Include="Controllers\RRHHController.cs" />
     <Compile Include="Controllers\SAPAutorizarController.cs" />
     <Compile Include="Controllers\SAPAutorizaSuperiorController.cs" />
     <Compile Include="Controllers\SAPOcController.cs" />
     <Compile Include="Controllers\SAP_SC_Controller.cs" />
+    <Compile Include="Controllers\TejarObrasController.cs" />
+    <Compile Include="Controllers\TicketTejarController.cs" />
+    <Compile Include="Controllers\VentasCdController.cs" />
     <Compile Include="Controllers\VentasController.cs" />
     <Compile Include="Controllers\VentasEmpresaController.cs" />
     <Compile Include="Filter\VerifySession.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="hubs\NotificacionesHub.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -350,6 +452,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\FirmaDigitalService.cs" />
+    <Compile Include="Services\MailServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -357,6 +461,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Css\bootstrap.min.css" />
+    <Content Include="Css\ComercialTransacciones.css" />
     <Content Include="Css\Dashboard.css" />
     <Content Include="Css\DetalleAutorizaVenta.css" />
     <Content Include="Css\DetallesCarrito.css" />
@@ -368,12 +473,14 @@
     <Content Include="Css\nucleo-icons.css" />
     <Content Include="Css\nucleo-svg.css" />
     <Content Include="Css\Profile.css" />
+    <Content Include="Css\ProspeccionAgenda.css" />
     <Content Include="Css\ResumenCarrito.css" />
     <Content Include="Css\SocioNegocioCarrito.css" />
     <Content Include="Css\style.css" />
     <Content Include="Css\style.min.css" />
     <Content Include="Css\styleCotizacionDetalle.css" />
     <Content Include="Css\styleCotizacionVentas.css" />
+    <Content Include="Css\styleTicket.css" />
     <Content Include="Css\style_ranking.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -382,7 +489,10 @@
     <Content Include="Html\cotizacionP1.html" />
     <Content Include="Html\cotizacionP2.html" />
     <Content Include="Html\CotizacionVenta.html" />
+    <Content Include="Html\Oc.html" />
     <Content Include="Html\OrdenCompra.html" />
+    <Content Include="Html\PermisosEspeciales.html" />
+    <Content Include="Html\PermisoVacaciones.html" />
     <Content Include="Html\UnoAUno.html" />
     <Content Include="Icons\ionicons.css" />
     <Content Include="Icons\ionicons.min.css" />
@@ -407,12 +517,14 @@
     <Content Include="Img\imagen %281%29.png" />
     <Content Include="Img\imagen logo.png" />
     <Content Include="Img\imagen-no-disponible.png" />
+    <Content Include="Img\loadingv2.gif" />
     <Content Include="Img\loading_circulo.gif" />
     <Content Include="Img\login_fondo.jpg" />
     <Content Include="Img\MÉTODOS-DE-PAGO-PAG2-09.png" />
     <Content Include="Img\ojo.png" />
     <Content Include="Img\PARTE-INFERIOR-PAG-1-08.png" />
     <Content Include="Img\PARTE-INFERIOR-PAG2-05-05 %281%29.png" />
+    <Content Include="Img\perfil.png" />
     <Content Include="Img\Plata.png" />
     <Content Include="Img\pregunta.png" />
     <Content Include="Img\quetzal_simbolo.png" />
@@ -976,6 +1088,10 @@
     <Content Include="lib\popper.js\dist\umd\popper.min.js" />
     <Content Include="lib\simple-line-icons\css\simple-line-icons.css" />
     <Content Include="lib\simple-line-icons\fonts\Simple-Line-Icons.svg" />
+    <Content Include="Rotativa\help-wkhtmltoimage.txt" />
+    <Content Include="Rotativa\help-wkhtmltopdf.txt" />
+    <Content Include="Rotativa\wkhtmltoimage.exe" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Css\style.css.map" />
@@ -1002,13 +1118,19 @@
     <Content Include="lib\simple-line-icons\fonts\Simple-Line-Icons.ttf" />
     <Content Include="lib\simple-line-icons\fonts\Simple-Line-Icons.woff" />
     <Content Include="lib\simple-line-icons\fonts\Simple-Line-Icons.woff2" />
+    <Content Include="App_Browsers\qt.browser" />
+    <Content Include="Img\Perfil.webp" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\chart.js" />
+    <Content Include="Scripts\chart.min.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.3.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.3.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -1071,7 +1193,6 @@
     <Content Include="Views\Profile\Perfil.cshtml" />
     <Content Include="Views\DashboardGerenteVentas\DashboardGerenteVentas.cshtml" />
     <Content Include="Views\SAPOc\Oc.cshtml" />
-    <Content Include="Views\test.cshtml" />
     <Content Include="Views\SAPOc\SolicitudCompra.cshtml" />
     <Content Include="Views\SAPOc\_ListaProductos.cshtml" />
     <Content Include="Views\SAPAutorizar\AutorizarSolicitudes.cshtml" />
@@ -1102,13 +1223,68 @@
     <Content Include="Views\Especialista\List.cshtml" />
     <Content Include="Views\KpiCrm\Crm.cshtml" />
     <Content Include="Views\VentasEmpresa\VentasEmpresa.cshtml" />
+    <Content Include="Views\CrmCotizaciones\Index.cshtml" />
+    <Content Include="Views\BolsonActivo\Listado.cshtml" />
+    <Content Include="Views\EstadoBolson\Bolson.cshtml" />
+    <Content Include="Views\EstadoBolson\BolsonAsesor.cshtml" />
+    <Content Include="Views\MacroGant\Gant.cshtml" />
+    <Content Include="Views\ResumenSeguimientos\Seguimientos.cshtml" />
+    <Content Include="Views\OrdenDeCompra\Nuevo.cshtml" />
+    <Content Include="Views\TejarObras\Nuevo.cshtml" />
+    <Content Include="Views\TicketTejar\Tickets.cshtml" />
+    <Content Include="Views\OrdenDeCompra\Oc.cshtml" />
+    <Content Include="Views\MargenTiendas\Detalle.cshtml" />
+    <Content Include="Views\EstadoBolsonV2\Detalle.cshtml" />
+    <Content Include="Views\CotizacionVentasAutoriza\iDetalle.cshtml" />
+    <Content Include="Views\RRHH\DetalleVacaciones.cshtml" />
+    <Content Include="Views\RRHH\index.cshtml" />
+    <Content Include="Views\RRHH\Permisos.cshtml" />
+    <Content Include="Views\ReporteDañado\ReporteDañado.cshtml" />
+    <Content Include="Views\ReporteDañado\_Graficos.cshtml" />
+    <Content Include="Views\ReporteDañado\_Indicadores.cshtml" />
+    <Content Include="Views\ReporteEstadoCuentaGastos\Index.cshtml" />
+    <Content Include="Views\ReporteEstadoCuentaImportacion\Index.cshtml" />
+    <Content Include="Views\ReporteEstadoCuentaLocal\Index.cshtml" />
+    <Content Include="Views\ReporteEstadoCuentaServiciosAdicionales\Index.cshtml" />
+    <Content Include="Views\ReporteInterTiendas\Index.cshtml" />
+    <Content Include="Views\ReporteInterTiendas\_DetalleEstatusRuta.cshtml" />
+    <Content Include="Views\VentasCd\Cd.cshtml" />
+    <Content Include="Views\MatrizSeguimientos\Index.cshtml" />
+    <Content Include="Views\BolsonPerdidas\Index.cshtml" />
+    <Content Include="Views\BolsonClientes\Index.cshtml" />
+    <Content Include="Views\CrmVentas\Index.cshtml" />
+    <Content Include="Views\EstadoBolsonV3\Index.cshtml" />
+    <Content Include="Views\ProspAgenda\Index.cshtml" />
+    <Content Include="Views\Presupuesto\Index.cshtml" />
+    <Content Include="Views\ProspVisita\Index.cshtml" />
+    <Content Include="Views\FormularioCheckList\Checklist.cshtml" />
+    <Content Include="Views\FormularioCheckList\Index.cshtml" />
+    <Content Include="Views\FormularioCheckList\_Seccion1DatosGenerales.cshtml" />
+    <Content Include="Views\FormularioCheckList\_Seccion2Almacenamiento.cshtml" />
+    <Content Include="Views\FormularioCheckList\_Seccion3Recepcion.cshtml" />
+    <Content Include="Views\FormularioCheckList\_Seccion4Despacho.cshtml" />
+    <Content Include="Views\FormularioCheckList\_Seccion5Daniado.cshtml" />
+    <Content Include="Views\FormularioCheckList\_Seccion6_5S.cshtml" />
+    <Content Include="Views\ReporteBodegas\ReporteBodegas.cshtml" />
+    <Content Include="Views\ProspGo\Index.cshtml" />
+    <Content Include="Views\ComercialTransacciones\Index.cshtml" />
+    <Content Include="Views\ProspListadoObras\Index.cshtml" />
+    <Content Include="Views\KPISIt\Index.cshtml" />
+    <Content Include="Views\GantProyectosIT\Index.cshtml" />
+    <Content Include="Views\VentasEmpresa\VentasEmpresaV2.cshtml" />
+    <Content Include="Views\VentasEmpresa\ReporteGerencia.cshtml" />
+    <Content Include="Views\Asistencia\Index.cshtml" />
+    <Content Include="Views\FlujoCD\Index.cshtml" />
+    <Content Include="Views\GestionDePersonal\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Attchments\" />
     <Folder Include="Models\" />
+    <Folder Include="Uploads\Prospeccion\" />
     <Folder Include="Views\Contratos\" />
     <Folder Include="Views\Generales\" />
+    <Folder Include="Views\Pendientes\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

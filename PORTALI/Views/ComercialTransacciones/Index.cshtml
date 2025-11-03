@@ -1,0 +1,793 @@
+﻿ @{
+     var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+ }
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            flex: 1 1 200px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
+
+            .card h2 {
+                margin: 0;
+                font-size: 1.5rem;
+                color: #3498db;
+            }
+
+            .card p {
+                margin: 5px 0 0 0;
+                font-size: 1rem;
+                color: #555;
+            }
+
+        .charts-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chart-container {
+            flex: 1 1 400px; /* ancho mínimo de 400px y se adapta */
+            max-width: 600px; /* ancho máximo */
+            height: 300px; /* alto fijo */
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .bottom-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .bottom-card {
+            flex: 1 1 300px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+            .bottom-card h3 {
+                margin-top: 0;
+                color: #333;
+            }
+
+        .d-none {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div style="padding:25px">
+        <div class="filtros-dashboard">
+            <label for="fechaInicio">Fecha Inicio:</label>
+            <input type="date" id="FechaI" class="input-fecha">
+
+            <label for="fechaFin">Fecha Fin:</label>
+            <input type="date" id="FechaF" class="input-fecha">
+
+            <label for="tienda">Tienda:</label>
+            <select id="filtroTienda" class="input-select"></select>
+
+            <label for="tienda">Region:</label>
+            <select id="filtroRegion" class="input-select"></select>
+
+            <button id="btnBuscar" class="btn-buscar">
+                🔍 Buscar
+            </button>
+        </div>
+
+        <style>
+            .filtros-dashboard {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+                background: #fff;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+            }
+
+                .filtros-dashboard label {
+                    font-weight: bold;
+                    margin-right: 5px;
+                }
+
+            .input-fecha,
+            .input-select {
+                padding: 6px 10px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                outline: none;
+                transition: 0.2s ease;
+            }
+
+                .input-fecha:focus,
+                .input-select:focus {
+                    border-color: #3498db;
+                    box-shadow: 0 0 4px rgba(52, 152, 219, 0.5);
+                }
+
+            .btn-buscar {
+                background-color: #3498db;
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background 0.2s ease;
+            }
+
+                .btn-buscar:hover {
+                    background-color: #2980b9;
+                }
+        </style>
+
+        <!-- Bloques superiores -->
+        <div class="dashboard-header">
+            <div class="card">
+                <h2 id="metaTrans">
+                    <i class="fas fa-bullseye icon icon-blue"></i>
+                    <span class="value">0</span>
+                </h2>
+                <p>Meta transacciones</p>
+            </div>
+
+            <div class="card">
+                <h2 id="cantidadTrans">
+                    <i class="fas fa-receipt icon icon-green"></i>
+                    <span class="value">0</span>
+                </h2>
+                <p>Cantidad transacciones</p>
+            </div>
+
+            <div class="card d-flex flex-row align-items-center justify-content-center p-2">
+
+                <div>
+                    <h2 id="porcentajeTrans" class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-percent icon icon-purple me-2"></i>
+                        <span class="value">0</span>
+
+                    </h2>
+                    <p>Real</p>
+                </div>
+
+                <h3 class="mx-3 mb-0" style="color:#888">|</h3>
+
+                <div>
+                    <h2 id="porcentajeTransProyectado" class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-percent icon icon-purple me-2"></i>
+                        <span class="value">0</span>
+                    </h2>
+                    <p>Proyección</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 id="promedioDiario">
+                    <i class="fas fa-chart-line icon icon-orange"></i>
+                    <span class="value">0</span>
+                </h2>
+                <p>Promedio diario transacciones</p>
+            </div>
+        </div>
+
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <style>
+            .dashboard-header {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin: 1rem 0;
+            }
+
+            .card.soft {
+                background: #f9fafb; /* gris muy claro */
+                border-radius: 1rem;
+                padding: 1.5rem;
+                text-align: center;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+                .card.soft:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                }
+
+            .card h2 {
+                font-size: 1.6rem;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 0.4rem;
+                color: #333;
+            }
+
+            .card p {
+                margin-top: 0.3rem;
+                font-size: 0.9rem;
+                color: #555;
+            }
+
+            /* 🎨 Colores suaves */
+            .icon {
+                font-size: 1.3rem;
+                opacity: 0.8;
+            }
+
+            .icon-blue {
+                color: #3b82f6;
+            }
+            /* azul pastel */
+            .icon-green {
+                color: #10b981;
+            }
+            /* verde suave */
+            .icon-purple {
+                color: #8b5cf6;
+            }
+            /* morado suave */
+            .icon-orange {
+                color: #f59e0b;
+            }
+            /* naranja pastel */
+
+        </style>
+
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="canvas-wrapper">
+                    <canvas id="graficoLineal"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .charts-section {
+                display: flex;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .chart-container {
+                flex: 1 1 100%;
+                max-width: 100%;
+                height: 450px;
+                background-color: #fff;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                overflow-x: auto; /* scroll horizontal si el canvas es más ancho */
+            }
+
+            .canvas-wrapper {
+                width: max-content; /* el canvas se adapta a su contenido */
+                min-width: 100%; /* al menos ocupa todo el contenedor */
+            }
+
+            canvas#graficoLineal {
+                height: 400px;
+            }
+        </style>
+
+        <!-- Tráfico top -->
+        <div class="bottom-section" style="margin-top:50px; margin-bottom:40px" id="TiendasDestacadas">
+            <div class="bottom-card">
+                <h3>Tiendas Destacadas</h3>
+                <canvas id="top1"></canvas>
+            </div>
+            <div class="bottom-card">
+                <h3>Tiendas Menor Desempeño</h3>
+                <canvas id="top2"></canvas>
+            </div>
+        </div>
+
+        <div class="bottom-card" id="TransaccionesAsesores">
+            <h3>Transacciones por Asesor</h3>
+            <canvas id="TranAsesores" style="max-height: 450px;"></canvas>
+        </div>        
+
+        @section Scripts {
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        }
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script>
+
+        window.topCharts = {};
+
+        $(document).ready(function () {
+            const today = new Date();
+
+            // Fecha inicial: primer día del mes actual
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            // Fecha final: último día del mes actual
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+
+            CargarRegion(@sessions.UserId);
+
+            document.getElementById("filtroRegion").addEventListener("change", function () {
+                const valor = this.value;   // Obtiene el value de la opción seleccionada
+                CargarTiendas(valor,@sessions.UserId);
+            });
+
+            // Función para formatear la fecha en formato yyyy-mm-dd
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // Asignar a los inputs
+            $('#FechaI').val(formatDate(firstDay));
+            $('#FechaF').val(formatDate(lastDay));
+
+            $("#btnBuscar").click(function () {
+                const _fechaI = $("#FechaI").val();
+                const _fechaF = $("#FechaF").val();
+                const _whsCode = $("#filtroTienda").val();
+                const _region = $("#filtroRegion").val();
+
+                var visible = @((ViewBag.visible != null && (bool)ViewBag.visible).ToString().ToLower());
+
+                console.log(visible);
+
+                if (_whsCode != '-1') {
+                    $("#TransaccionesAsesores").removeClass("d-none");
+                    $("#TiendasDestacadas").addClass("d-none");
+
+                } else {
+                    $("#TransaccionesAsesores").addClass("d-none");
+                    $("#TiendasDestacadas").removeClass("d-none");
+                }
+                //CargarRegion(@sessions.UserId);
+
+                $.when(
+                    cargarEncabezado(_fechaI, _fechaF, _whsCode, _region),
+                    cargarGrafico(_fechaI, _fechaF, _whsCode, _region),
+                    cargarTop5(1, 'top1', _fechaI, _fechaF, _whsCode, _region),
+                    cargarTop5(2, 'top2', _fechaI, _fechaF, _whsCode, _region),
+                    CargarTransaccionesAsesores(2, 'TranAsesores', _fechaI, _fechaF, _whsCode)
+                ).done(function () {
+                    /*$("#globalLoading").hide();*/
+                });
+            });
+        });
+
+
+
+        let graficoLinealInstance = null;
+
+        function cargarGrafico(fechaI, fechaF, whsCode, region) {
+            $("#globalLoading").show();
+
+            $.ajax({
+                url: '/ComercialTransacciones/ObtenerTransacciones',
+                type: 'GET',
+                dataType: 'json',
+                data: { FechaI: fechaI, FechaF: fechaF, WhsCode: whsCode, Region: region},
+                success: function (resp) {
+                    const labels = resp.map(x => x.NombreDia);
+                    const data = resp.map(x => x.Transacciones);
+                    const dataMD = resp.map(x => x.D12AM);
+                    const dataTD = resp.map(x => x.D3PM);
+
+
+                    const ctx = document.getElementById('graficoLineal').getContext('2d');
+
+                    // 🔥 Limpiar el gráfico anterior si existe
+                    if (graficoLinealInstance) {
+                        graficoLinealInstance.destroy();
+                    }
+
+                    // Crear gráfico nuevo
+                    graficoLinealInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Transacciones diarias',
+                                data: data,
+                                fill: true,
+                                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                borderColor: 'rgba(52, 152, 219, 1)',
+                                tension: 0.4,
+                                pointRadius: 6
+                            },
+                                {
+                                    label: 'Transacciones 12PM',
+                                    data: dataMD,
+                                    fill: true,
+                                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                    borderColor: 'rgba(235, 39, 0)',
+                                    tension: 0.4,
+                                    pointRadius: 6
+                                },
+                                {
+                                    label: 'Transacciones 3PM',
+                                    data: dataTD,
+                                    fill: true,
+                                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                    borderColor: 'rgba(0, 166, 6)',
+                                    tension: 0.4,
+                                    pointRadius: 6
+                                }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 50
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    $("#globalLoading").hide();
+                },
+                error: function (err) {
+                    console.error("Error al cargar los datos del gráfico", err);
+                    $("#globalLoading").hide();
+                }
+            });
+        }
+
+        function CargarTiendas(idRegion, userId) {
+            $('#filtroTienda')
+                .html('')
+                .append($('<option>', { value: '-1', text: '-- Todos --' }))
+                .val('-1')
+                .trigger('change');
+
+            $.ajax({
+                url: '@Url.Action("ListadoTiendas", "ComercialTransacciones")',
+                type: "POST",
+                data: {
+                    IdRegion: idRegion,
+                    UserId: userId
+                },
+                success: function (data) {
+                    if (data && data.length > 0) {
+                        $.each(data, function (index, item) {
+                            $('#filtroTienda').append(
+                                $('<option>', { value: item.WhsCode, text: item.WhsName })
+                            );
+                        });
+
+
+                        if (data.length === 1) {
+                            $('#filtroTienda').val(data[0].WhsCode).trigger('change');
+                            $('#filtroTienda').prop('disabled', true);
+                            //CargarUsuarios(idRegion, data[0].WhsCode);
+                        } else {
+                            $('#filtroTienda').val('-1').trigger('change');
+                            $('#filtroTienda').prop('disabled', false);
+                            //CargarUsuarios(idRegion, -1);
+                        }
+                    } else {
+                        $('#filtroTienda').val('-1');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar las tiendas:", error);
+                    $('#filtroTienda').val('-1');
+                },
+                complete: function () {
+                    $("#globalLoading").hide();
+                }
+            });
+        }
+
+        function CargarRegion(idUser){
+            $('#filtroRegion')
+                .html('')
+                .append($('<option>', { value: '-1', text: '-- Todos --' }))
+                .val('-1')
+                .trigger('change');
+
+            $.ajax({
+                url: '@Url.Action("ListadoRegion", "ComercialTransacciones")',
+                type: "POST",
+                data: { IdUser: idUser },
+                success: function (data) {
+                    if (data && data.length > 0) {
+                        $.each(data, function (index, item) {
+                            $('#filtroRegion').append(
+                                $('<option>', { value: item.IdRegion, text: item.Region })
+                            );
+                        });
+                        console.log(data.length);
+                        if (data.length === 1) {
+                            $('#filtroRegion').val(data[0].IdRegion).trigger('change');
+                            $('#filtroRegion').prop('disabled', true);
+
+                            //console.log(data[0].IdRegion);
+                            CargarTiendas(data[0].IdRegion, idUser);
+                            //CargarUsuarios(idRegion, data[0].WhsCode);
+                        } else {
+                            $('#filtroRegion').val('-1').trigger('change');
+                            $('#filtroRegion').prop('disabled', false);
+                            CargarTiendas(-1, idUser);
+                            //CargarUsuarios(idRegion, -1);
+                        }
+                    } else {
+                        $('#filtroRegion').val('-1');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar las tiendas:", error);
+                    $('#filtroRegion').val('-1');
+                },
+                complete: function () {
+                    $("#globalLoading").hide();
+                }
+            });
+        }
+
+        function cargarEncabezado(fechaI, fechaF, whsCode, region) {
+            $("#globalLoading").show();
+
+            $.ajax({
+                url: '/ComercialTransacciones/Encabezado',
+                type: 'GET',
+                dataType: 'json',
+                data: { FechaI: fechaI, FechaF: fechaF, WhsCode: whsCode,Region : region },
+                success: function (resp) {
+                    $("#metaTrans .value").text(Number(resp.MetaTrans)
+                        .toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+
+                    $("#cantidadTrans .value").text(Number(resp.CantidadTrans)
+                        .toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+
+                    $("#promedioDiario .value").text(Number(resp.PromedioDiario)
+                        .toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+
+                    $("#porcentajeTrans .value").text(Number(resp.Indice)
+                        .toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+
+                    $("#porcentajeTransProyectado .value").text(Number(resp.IndiceProyectado)
+                        .toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+
+                    $("#globalLoading").hide();
+                },
+                error: function (err) {
+                    console.error("Error al cargar encabezado", err);
+                    $("#globalLoading").hide();
+                }
+            });
+        }
+
+        function cargarTop5(tipo, graficoId, fechaI, fechaF, whsCode, region) {
+            $("#globalLoading").show();
+            $.ajax({
+                url: '/ComercialTransacciones/Top5',
+                type: 'GET',
+                data: { Tipo: tipo, FechaI: fechaI, FechaF: fechaF, WhsCode: whsCode , Region : region},
+                dataType: 'json',
+                success: function (resp) {
+                    const labels = resp.map(x => x.WhsName);
+                    const data = resp.map(x => x.Transacciones);
+
+                    const ctx = document.getElementById(graficoId).getContext('2d');
+
+                    // Si ya existe un gráfico en ese canvas, destruirlo
+                    if (window.topCharts[graficoId]) {
+                        window.topCharts[graficoId].destroy();
+                    }
+
+                    // Crear y guardar el gráfico en la posición correspondiente
+                    window.topCharts[graficoId] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Transacciones',
+                                data: data,
+                                backgroundColor: [
+                                    '#2ecc71', '#3498db', '#9b59b6', '#f39c12', '#e74c3c'
+                                ],
+                                barThickness: 30,
+                                maxBarThickness: 40
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return ` ${context.raw} transacciones`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        autoSkip: false,
+                                        maxRotation: 45,
+                                        minRotation: 0
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                    $("#globalLoading").hide();
+                },
+                error: function (err) {
+                    console.error("Error al cargar", err);
+                    $("#globalLoading").hide();
+                }
+            });
+        }
+
+        function CargarTransaccionesAsesores(tipo, graficoId, fechaI, fechaF, whsCode) {
+            $("#globalLoading").show();
+            $.ajax({
+                url: '/ComercialTransacciones/ObtenerTransaccionesAsesores',
+                type: 'GET',
+                data: { Tipo: tipo, FechaI: fechaI, FechaF: fechaF, WhsCode: whsCode },
+                dataType: 'json',
+                success: function (resp) {
+                    const labels = resp.map(x => x.SlpName);
+                    const data = resp.map(x => x.CantidadTrans);
+                    const dataMeta = resp.map(x => x.MetaTickets);
+
+                    const ctx = document.getElementById(graficoId).getContext('2d');
+
+                    // Destruye el gráfico existente si lo hay para evitar superposiciones
+                    if (window.topCharts && window.topCharts[graficoId]) {
+                        window.topCharts[graficoId].destroy();
+                    }
+                    window.topCharts = window.topCharts || {};
+
+                    window.topCharts[graficoId] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Meta',
+                                    data: dataMeta,
+                                    backgroundColor: '#2ecc71', // rojo transparente
+                                    barPercentage: 0.7,
+                                    categoryPercentage: 0.7,
+                                    order: 1, // La meta se dibuja primero (abajo)
+                                    // Alinea la meta para que los datalabels no se superpongan
+                                    datalabels: {
+                                        anchor: 'start',
+                                        align: 'start'
+                                    }
+                                },
+                                {
+                                    label: 'Transacciones',
+                                    data: data,
+                                    backgroundColor: '#3498db', // azul fuerte
+                                    barPercentage: 0.7,
+                                    categoryPercentage: 0.7,
+                                    order: 2, // Las transacciones se dibujan después (encima)
+                                    //// Alinea las transacciones para que los datalabels no se superpongan
+                                    datalabels: {
+                                        anchor: 'start',
+                                        align: 'start'
+                                    }
+                                }
+                            ]
+                        },
+                        options: {
+                            indexAxis: 'y', // Hace que el gráfico sea horizontal
+                            responsive: true,
+                            // Eliminar las configuraciones de 'scales' x e y para evitar que el gráfico se dibuje mal si tienes una sola barra
+                            // O asegurar que el eje 'x' tenga un tamaño dinámico
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    stacked: false, // Asegura que no se apilen automáticamente si se comparte el eje
+                                    // Opcional: ajustar el máximo del eje X para acomodar los datalabels
+                                    // max: Math.max(...dataMeta, ...data) * 1.1 // Ajusta el eje x para que quepan los labels
+                                },
+                                y: {
+                                    stacked: false, // Asegura que no se apilen automáticamente si se comparte el eje
+                                    ticks: {
+                                        autoSkip: false,
+                                        maxRotation: 0,
+                                        minRotation: 0
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: true, position: 'top'},
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `${context.dataset.label}: ${context.raw}`;
+                                        }
+                                    }
+                                },
+                                datalabels: {
+                                    anchor: 'right',
+                                    align: 'right',
+                                    color: '#fcfcfc',
+                                    font: { weight: 'bold', size: 12 },
+                                    formatter: function (value, ctx) {
+                                        return ctx.dataset.label + " " + value ;
+                                    }
+                                }
+                            }
+                        },
+                        plugins: [ChartDataLabels]
+                    });
+                    $("#globalLoading").hide();
+                },
+                error: function (err) {
+                    console.error("Error al cargar el Top 5", err);
+                    $("#globalLoading").hide();
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

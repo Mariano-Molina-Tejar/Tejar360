@@ -31,7 +31,7 @@ namespace Connection
             catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex.InnerException);
-            }
+            }   
         }
 
         public static string ConsumirAPI(string Url, Object objecto, string parametros)
@@ -74,7 +74,7 @@ namespace Connection
                     }
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return ex.Message;
             }

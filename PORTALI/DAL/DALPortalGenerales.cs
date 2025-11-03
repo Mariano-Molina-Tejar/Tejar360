@@ -1,10 +1,13 @@
-﻿using Entity;
+﻿using Connection;
+using Dapper;
+using Entity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,6 +21,369 @@ namespace DAL
 {
     public class DALPortalGenerales
     {
+        public static List<TicketAnualEntity> TicketsMensual()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<TicketAnualEntity> listaTiposCrm = new List<TicketAnualEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_ticket_mensual", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        var listaTickets = (from row in dt.AsEnumerable()
+                                            select new TicketAnualEntity
+                                            {
+                                                Anio = Convert.ToInt32(row["Anio"].ToString()),
+                                                Mes = Convert.ToInt32(row["Mes"].ToString()),
+                                                PromedioMinutos = Convert.ToDouble(row["PromedioMinutos"].ToString()),
+                                                TotalTickets = Convert.ToInt32(row["TotalTickets"].ToString()),
+                                                PromedioFormateado = row["PromedioFormateado"].ToString()
+                                            }).ToList();
+
+                        return listaTickets;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+        public static List<TicketEntity> ObtenerTickets(DateTime? FechaI, DateTime? FechaF)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<TicketEntity> listaTiposCrm = new List<TicketEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_tickets", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@FechaI", FechaI);
+                iCommand.Parameters.AddWithValue("@FechaF", FechaF);
+                
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        var listaTickets = (from row in dt.AsEnumerable()
+                                            select new TicketEntity
+                                            {
+                                                Id = Convert.ToInt32(row["Id"]),
+                                                Titulo = Convert.ToString(row["Titulo"]),
+                                                Asignado = Convert.ToString(row["Asignado"]),
+                                                Creador = Convert.ToString(row["Creador"]),
+                                                Prioridad = Convert.ToString(row["Prioridad"]),
+                                                Categoria = Convert.ToString(row["Categoria"]),
+                                                Estado = Convert.ToString(row["Estado"]),
+                                                FechaCreacion = Convert.ToDateTime(row["FechaCreacion"]),
+                                                FechaCierre = Convert.ToDateTime(row["FechaCierre"]),
+                                                PrimeraRespuestaMinutos = Convert.ToString(row["PrimeraRespuestaMinutos"]),
+                                                TiempoCierreMinutos = Convert.ToString(row["TiempoCierreMinutos"])
+
+                                            }).ToList();
+
+                        return listaTickets;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+
+        public static List<ZonasEntity> getAllZonas()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<ZonasEntity> listaTiposCrm = new List<ZonasEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("SELECT Code As IdZona, Name As Zona FROM [ELTEJAR_PRUEBAS_R1_5.1].dbo.[@CRM_ZONAS]", iConnection);
+                iCommand.CommandType = CommandType.Text;                
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new ZonasEntity()
+                                         {
+                                             Id = int.Parse(row["IdZona"].ToString()),
+                                             Nombre = row["Zona"].ToString()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+        public static List<MunicipiosEntity> getAllMunicipios(int IdDepto)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<MunicipiosEntity> listaTiposCrm = new List<MunicipiosEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_crm_municipios_gt", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@IdDepto", IdDepto);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new MunicipiosEntity()
+                                         {
+                                             Id = int.Parse(row["IdMunicipio"].ToString()),
+                                             Nombre = row["Municipio"].ToString()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+        public static List<DepartamentosGtEntity> getAllDepartamentosgt(int IdRegion, string WhsCode)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<DepartamentosGtEntity> listaTiposCrm = new List<DepartamentosGtEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_crm_deptos_gt", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@IdRegion", IdRegion);
+                iCommand.Parameters.AddWithValue("@WhsCode", WhsCode);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new DepartamentosGtEntity()
+                                         {
+                                             Id = int.Parse(row["IdDepto"].ToString()),
+                                             Nombre = row["Departamento"].ToString()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+        public static List<SemanasEntity> getAllSemanas(int Tipo, int Anio)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<SemanasEntity> listaTiposCrm = new List<SemanasEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_crm_fechas_bolsonv2", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@Tipo", Tipo);
+                iCommand.Parameters.AddWithValue("@Anio", Anio);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new SemanasEntity()
+                                         {
+                                             Semana = int.Parse(row["Semana"].ToString()),
+                                             FechaInicio = DateTime.Parse(row["FechaInicio"].ToString()),
+                                             FechaFinal = DateTime.Parse(row["FechaFin"].ToString()),
+                                             Texto = row["Texto"].ToString()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+        public static List<AnioEntity> GetAllAnios(int Tipo)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<AnioEntity> listaTiposCrm = new List<AnioEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("sp_crm_fechas_bolsonv2", iConnection);
+                iCommand.CommandType = CommandType.StoredProcedure;
+                iCommand.Parameters.AddWithValue("@Tipo", Tipo);
+                iCommand.Parameters.AddWithValue("@Anio", 2025);
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new AnioEntity()
+                                         {
+                                             Anio = int.Parse(row["Anio"].ToString())
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+        public static List<AccionesEntity> GetAllAcciones()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<AccionesEntity> listaTiposCrm = new List<AccionesEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("SELECT * FROM [@CRM_ACCIONES] WHERE U_Estado = 'Y'", iConnection);
+                iCommand.CommandType = CommandType.Text;
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new AccionesEntity()
+                                         {
+                                             Codigo = int.Parse(row["Code"].ToString()),
+                                             Nombre = row["Name"].ToString(),
+                                             Icono = row["U_Icono"].ToString()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+
+        public static List<PortalListadoGeneralEntity> getAllTiposPerdidasCrm()
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            List<PortalListadoGeneralEntity> listaTiposCrm = new List<PortalListadoGeneralEntity>();
+            using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
+            {
+                OleDbCommand iCommand = null;
+                iCommand = new OleDbCommand("SELECT * FROM [@CRM_SEGUPERD]", iConnection);
+                iCommand.CommandType = CommandType.Text;
+
+                try
+                {
+                    OleDbDataAdapter iDAResult = null;
+                    DataTable dt = new DataTable();
+                    iDAResult = new OleDbDataAdapter();
+                    iDAResult.SelectCommand = iCommand;
+                    iDAResult.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        listaTiposCrm = (from row in dt.AsEnumerable()
+                                         select new PortalListadoGeneralEntity()
+                                         {
+                                             Id = row["Code"].ToString(),
+                                             Dscription = row["Name"].ToString().ToUpper()
+                                         }).ToList();
+                        return listaTiposCrm;
+                    }
+
+                    return listaTiposCrm;
+                }
+                catch (Exception ex)
+                {
+                    return listaTiposCrm;
+                }
+            }
+        }
+
         public static List<PortalListadoGeneralEntity> getAllTiposContactoCrm()
         {
             ConnectionEntity pConnection = Connection.Conexion.ConexionDB();

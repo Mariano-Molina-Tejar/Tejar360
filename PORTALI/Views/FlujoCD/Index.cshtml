@@ -1,0 +1,221 @@
+﻿@model Entity.ViewModelFlujoCD
+@{
+    ViewBag.Title = "Reporte de Movimientos por Almacén";
+}
+@*@section Styles{*@
+    <style>
+        .btn-excel {
+            background-color: #1d6f42;
+            border: none;
+            color: white;   
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 10px 0px;
+        }
+
+            .btn-excel:hover {
+                background-color: #21a366;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+            }
+
+            .btn-excel i {
+                font-size: 1.2rem;
+                margin-right: 6px;
+            }
+
+        .btn_container {
+            /*text-align:end;*/
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+@*}*@
+<div class="container mt-4">
+    <!-- 🔹 FILTROS -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h4 class="mb-3 font-weight-bold">Filtros</h4>
+
+        <form id="formFiltro" method="get" action="Index">
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label for="FechaInicial" class="font-weight-bold">Fecha inicial</label>
+                    <input type="date" id="fechaI" name="fechaI" class="form-control" value="@( ViewBag.FechaI)" />
+                </div>
+
+                <div class="form-group col-md-2">
+                    <label for="FechaFinal" class="font-weight-bold">Fecha final</label>
+                    <input type="date" id="fechaF" name="fechaF" class="form-control" value="@( ViewBag.FechaF)" />
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="Almacen" class="font-weight-bold">Almacén</label>
+                    @*<input type="text" id="Almacen" name="Almacen" class="form-control" placeholder="Ingrese almacén..." />*@
+                    <select id="almacen" name="almacen" class="form-control">
+                        <option value="-1" @(ViewBag.Almacen == "-1" ? "Selected" : "")>-- Todos --</option>
+                        @foreach (var almacenes in Model.Almacenes)
+                        {
+                            <option value="@almacenes.WhsCode" @(ViewBag.Almacen == almacenes.WhsCode ? "Selected" : "")>@almacenes.WhsName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="UnidadMedida" class="font-weight-bold">Unidad de medida</label>
+                    <select id="unidad" name="unidad" class="form-control">
+                        @*<option value="0" selected disabled>-- Seleccione --</option>*@
+                        <option value="1" @(ViewBag.Unidad == 1 ? "Selected" : "")>Metros</option>
+                        <option value="2" @(ViewBag.Unidad == 2 ? "Selected" : "")>Cajas</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+
+                <div class="form-group col-md-1 d-flex align-items-end">
+                    <button type="reset" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 🔹 TABLA -->
+    <div class="card shadow-sm p-4">
+        <div class="btn_container">
+            <h4 class="mb-3 font-weight-bold">Flujo de entradas y salidas</h4>
+            <button id="btnExportarExcel" class="btn btn-excel">
+                <i class="bi bi-file-earmark-excel-fill"></i> Exportar a Excel
+            </button>
+        </div>
+        <div class="table-responsive">
+
+            <table class="table table-bordered text-center align-middle">
+                <thead class="thead-light">
+                    <tr>
+                        <th rowspan="2" class="align-middle">Almacén</th>
+                        <th colspan="2">Entradas</th>
+                        <th colspan="2">Salidas</th>
+                    </tr>
+                    <tr>
+                        <th>Origen</th>
+                        <th>Cantidad</th>
+                        <th>Destino</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @if (!Model.Flujo.Any())
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="warning alert-warning d-flex align-items-center" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <div>
+                                        No se encontraron datos
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else if (!string.IsNullOrEmpty(Model.Flujo[0].ErrorMessage))
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <div>
+                                        Model.Flujo[0].ErrorMessage
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var flujo in Model.Flujo)
+                        {
+                            <tr>
+                                <td class="font-weight-bold">@flujo.Almacen</td>
+                                <td>@flujo.Origen</td>
+                                <td>@(flujo.CantidadO == 0 ? "" : flujo.CantidadO.ToString())</td>
+                                <td>@flujo.Destino</td>
+                                <td>@(flujo.CantidadD == 0 ? "" : flujo.CantidadD.ToString())</td>
+                            </tr>
+                        }
+
+                        <tr class="font-weight-bold bg-light">
+                            <td class="text-right">Totales:</td>
+                            <td class="text-right">Entradas</td>
+
+                            <td>@Model.Flujo.Sum(x => x.CantidadO)</td>
+                            <td class="text-right">Salidas</td>
+                            <td>@Model.Flujo.Sum(x => x.CantidadD)</td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.3/sweetalert2.min.js"></script>
+<script>
+const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+
+    async function ExportarExcel() {
+        let params = {
+            fechaI: document.getElementById('fechaI').value,
+            fechaF: document.getElementById('fechaF').value,
+            almacen: document.getElementById('almacen').value,
+            unidad: document.getElementById('unidad').value
+        };
+
+        const formData = new FormData();
+
+        for (const key in params) formData.append(key, params[key]);
+
+        const response = await fetch('/FlujoCd/ExportarExcel', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            Toast.fire({ icon: 'error', title: 'Error al generar el archivo' });
+            return;
+        }
+
+        // ✅ descarga directa
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'FlujoEntradasSalidas.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        Toast.fire({ icon: 'success', title: 'Excel descargado con éxito' });
+    }
+
+document.getElementById('btnExportarExcel').addEventListener('click', () => ExportarExcel());
+</script>
+
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />

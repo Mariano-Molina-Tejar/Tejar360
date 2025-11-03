@@ -1,0 +1,864 @@
+﻿@*@model Entity.FormularioCheckListEntity*@
+@model Entity.FormularioCheckList1Entity
+
+<head>
+    <link href="~/Css/styleFormularioCheckList.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<style>
+    /* Opcional: Estilo personalizado para las tarjetas y el texto */
+    .card-porcentaje .card-body {
+        min-height: 150px; /* Asegura un tamaño mínimo para las tarjetas */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card-title-porcentaje {
+        font-size: 1rem; /* Tamaño de fuente para el título */
+        margin-bottom: 0.5rem;
+    }
+
+    .porcentaje-valor {
+        font-size: 2.5rem; /* Tamaño de fuente para el porcentaje */
+    }
+    .img-preview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease; /* animación suave */
+        cursor: pointer; /* cambia cursor al pasar encima */
+    }
+
+        .img-preview:hover {
+            transform: scale(1.2); /* aumenta 20% al pasar el mouse */
+            z-index: 10; /* evita que quede detrás de otros elementos */
+        }
+</style>
+
+@using (Html.BeginForm("EnviarSeccion", "FormularioCheckList", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div id="seccion1" class="wizard-section">
+        @Html.Partial("_Seccion1DatosGenerales", Model)
+    </div>
+
+    <div id="seccion2" class="wizard-section d-none">
+        @Html.Partial("_Seccion2Almacenamiento", Model)
+    </div>
+
+    <div id="seccion3" class="wizard-section d-none">
+        @Html.Partial("_Seccion3Recepcion", Model)
+    </div>
+
+    <div id="seccion4" class="wizard-section d-none">
+        @Html.Partial("_Seccion4Despacho", Model)
+    </div>
+
+    <div id="seccion5" class="wizard-section d-none">
+        @Html.Partial("_Seccion5Daniado", Model)
+    </div>
+
+    <div id="seccion6" class="wizard-section d-none">
+        @Html.Partial("_Seccion6_5S", Model)
+    </div>
+    <div style="margin-bottom:30px">
+    </div>
+    //MODAL RESULTADOS
+    <div class="modal fade" id="modalResultados" tabindex="-1" aria-labelledby="modalResultadosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white m-1">
+                    <h5 class="modal-title" id="modalResultadosLabel">📊 Porcentajes del Checklist</h5>
+                    <button type="button" class="btn-close btn-close-white" aria-label="Close" onclick="cerrarModal()"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Fila 1 -->
+                    <div class="row g-4 justify-content-center mb-3">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100 shadow-sm border-primary">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-box-seam fs-1 text-primary mb-2"></i>
+                                    <h6 class="card-title text-muted text-uppercase fw-bold">Almacenaje</h6>
+                                    <p class="card-text display-6 text-primary fw-bold" id="porcentaje-almacenamiento">0%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100 shadow-sm border-success">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-arrow-down-square fs-1 text-success mb-2"></i>
+                                    <h6 class="card-title text-muted text-uppercase fw-bold">Recepción</h6>
+                                    <p class="card-text display-6 text-success fw-bold" id="porcentaje-recepcion">0%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100 shadow-sm border-info">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-truck fs-1 text-info mb-2"></i>
+                                    <h6 class="card-title text-muted text-uppercase fw-bold">Despacho</h6>
+                                    <p class="card-text display-6 text-info fw-bold" id="porcentaje-despacho">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2 -->
+                    <div class="row g-4 justify-content-center mb-3">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100 shadow-sm border-warning">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-x-octagon fs-1 text-warning mb-2"></i>
+                                    <h6 class="card-title text-muted text-uppercase fw-bold">Dañado</h6>
+                                    <p class="card-text display-6 text-warning fw-bold" id="porcentaje-danado">0%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100 shadow-sm border-danger">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-check-circle fs-1 text-danger mb-2"></i>
+                                    <h6 class="card-title text-muted text-uppercase fw-bold">5S</h6>
+                                    <p class="card-text display-6 text-danger fw-bold" id="porcentaje-5s">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Punteo General -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow-sm border-dark">
+                                <div class="card-body text-center bg-light">
+                                    <i class="bi bi-bar-chart-line fs-1 text-dark mb-2"></i>
+                                    <h5 class="card-title text-uppercase fw-bold">Punteo General</h5>
+                                    <p class="card-text display-5 text-dark fw-bold" id="porcentaje-general" style="font-size:25px; font-weight:bold">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">
+                        @(Model.U_Estado == 1 ? "Cerrar":"Finalizar")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @*<div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-body p-0">
+                    <img src="ruta/a/la/imagen-grande.jpg" class="img-fluid" alt="Descripción">
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+    <!-- 🔹 Modal reutilizable para todas las imágenes -->
+    <div class="modal fade" id="imagenModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content bg-dark">
+                <div class="modal-body text-center p-0">
+                    <img id="imagenAmpliada" src="" class="img-fluid rounded" alt="Vista ampliada">
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.3/sweetalert2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    var myModalInstance;
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+    });
+
+    function mensajeInicioFormulario() {
+        var result = @ViewBag.Error.result;
+        var message = '@ViewBag.Error.message';
+
+        if (result === 1) {
+            // No se debe mostrar nada si es 1
+        } else if (result === 2) {
+            Toast.fire({ icon: 'warning', title: message });
+        } else {
+            Toast.fire({ icon: 'error', title: message });
+        }
+    }
+
+    //$(document).ready(function () {
+        //let seccionActual = 1;
+
+        function mostrarSeccion(numero = 1) {
+            $('.wizard-section').addClass('d-none');
+            $('#seccion' + numero).removeClass('d-none');
+        }
+
+    function Siguiente(seccion = 1) {
+        mostrarSeccion(seccion + 1);
+    }
+
+    function Anterior(seccion = 1) {
+        mostrarSeccion(seccion - 1);
+    }
+
+    $(document).ready(function () {
+        mensajeInicioFormulario();
+    });
+
+
+    var disabled = @((ViewBag.disabled ?? false).ToString().ToLower());
+    let finalSeccion = 0;
+    function EnviarDatos(event,seccionFinal = 0, seccion = 0, sigAnt = 0)
+        {
+        event.preventDefault();
+
+        const datos = @Html.Raw(Json.Encode(Model));
+
+
+            const ph1Val = $('input[name="U_Desp_PH1"]:checked').val();
+            const ph2Val = $('input[name="U_Desp_PH2"]:checked').val();
+            const ph3Val = $('input[name="U_Desp_PH3"]:checked').val();
+            const ph4Val = $('input[name="U_Desp_PH4"]:checked').val();
+            const ph5Val = $('input[name="U_Desp_PH5"]:checked').val();
+            const ph6Val = $('input[name="U_Desp_PH6"]:checked').val();
+            const ph7Val = $('input[name="U_Desp_PH7"]:checked').val();
+
+            //Dañado
+            const pd1Val = $('input[name="U_Dan_PD1"]:checked').val();
+            const pd2Val = $('input[name="U_Dan_PD2"]:checked').val();
+            const pd3Val = $('input[name="U_Dan_PD3"]:checked').val();
+            const pd4Val = $('input[name="U_Dan_PD4"]:checked').val();
+            const pd5Val = $('input[name="U_Dan_PD5"]:checked').val();
+            const pd6Val = $('input[name="U_Dan_PD6"]:checked').val();
+            const pd7Val = $('input[name="U_Dan_PD7"]:checked').val();
+
+            //5S
+            const ps1Val = $('input[name="U_5S_PS1"]:checked').val();
+            const ps2Val = $('input[name="U_5S_PS2"]:checked').val();
+            const ps3Val = $('input[name="U_5S_PS3"]:checked').val();
+            const ps4Val = $('input[name="U_5S_PS4"]:checked').val();
+            const ps5Val = $('input[name="U_5S_PS5"]:checked').val();
+            const ps6Val = $('input[name="U_5S_PS6"]:checked').val();
+            const ps7Val = $('input[name="U_5S_PS7"]:checked').val();
+
+
+        if (!disabled) {
+            datos.U_DG_CodTienda = $('#Sucursal').val();
+            datos.U_DG_CodSupBodega = $('#Supbodega').val();
+            datos.U_DG_SupVenta = $('#SupVenta').val();
+            datos.U_DG_CodGerenteTienda = $('#GerenteTienda').val();
+            datos.U_DG_CodEncargadoBodega = $('#EncargadoBodega').val();
+            datos.U_DG_CodArea = $('#Area').val();
+            datos.U_Bodega = $('#Bodega').val();
+
+            // Almacenamiento
+            datos.U_U_Alma_PA1T = $('#PA1T').val();
+            datos.U_Alma_PAIC = $('#PAIC').val();
+            datos.U_Alma_ADPA1 = $('#ADPA1').val();
+            //datos.U_Alma_IAPA1 = $('#IAPA1').val();
+            if (seccion === 2 && sigAnt == 1) {
+                if (isNaN(parseFloat($('#PAIC').val()) / parseFloat($('#PA1T').val()) * 100) || (parseFloat($('#PA1T').val())) === 0) {
+                    Toast.fire({ icon: 'error', title: "Debes ingresar valores validos" });
+                    return;
+                }
+            }
+
+            datos.U_Alma_Punteo1 = parseFloat($('#PAIC').val()) / parseFloat($('#PA1T').val()) * 100;
+
+            datos.U_Alma_PA2T = $('#PA2T').val();
+            datos.U_Alma_PA2C = $('#PA2C').val();
+            datos.U_Alma_ADPA2 = $('#ADPA2').val();
+            datos.U_Alma_IAPA2 = $('#IAPA2').val();
+
+            if (seccion === 2 && sigAnt == 1) {
+                if (isNaN(parseFloat($('#PA2C').val()) / parseFloat($('#PA2T').val()) * 100) || (parseFloat($('#PA2T').val())) === 0) {
+                    Toast.fire({ icon: 'error', title: "Debes ingresar valores validos" });
+                    return;
+                }
+            }
+            datos.U_Alma_Punteo2 = parseFloat($('#PA2C').val()) / parseFloat($('#PA2T').val()) * 100;
+
+            datos.U_Alma_PA3T = $('#PA3T').val();
+            datos.U_Alma_PA3C = $('#PA3C').val();
+            datos.U_Alma_ADPA3 = $('#ADPA3').val();
+            datos.U_Alma_IAPA3 = $('#IAPA3').val();
+
+            if (seccion === 2 && sigAnt == 1) {
+                if (isNaN(parseFloat($('#PA3C').val()) / parseFloat($('#PA3T').val()) * 100) || (parseFloat($('#PA3T').val())) === 0) {
+                    Toast.fire({ icon: 'error', title: "Debes ingresar valores validos" });
+                    return;
+                }
+            }
+            datos.U_Alma_Punteo3 = parseFloat($('#PA3C').val()) / parseFloat($('#PA3T').val()) * 100;
+
+            datos.U_Alma_PA4T = $('#PA4T').val();
+            datos.U_Alma_PA4C = $('#PA4C').val();
+            datos.U_Alma_ADPA4 = $('#ADPA4').val();
+            datos.U_Alma_IAPA4 = $('#IAPA4').val();
+
+            if (seccion === 2 && sigAnt == 1) {
+                if (isNaN(parseFloat($('#PA4C').val()) / parseFloat($('#PA4T').val()) * 100) || (parseFloat($('#PA4T').val())) === 0) {
+                    Toast.fire({ icon: 'error', title: "Debes ingresar valores validos" });
+                    return;
+                }
+            }
+            datos.U_Alma_Punteo4 = parseFloat($('#PA4C').val()) / parseFloat($('#PA4T').val()) * 100;
+
+            datos.U_Alma_PA5T = $('#PA5T').val();
+            datos.U_Alma_PA5C = $('#PA5C').val();
+            datos.U_Alma_ADPA5 = $('#ADPA5').val();
+            datos.U_Alma_IAPA5 = $('#IAPA5').val();
+            if (seccion === 2 && sigAnt == 1) {
+                if (isNaN(parseFloat($('#PA5C').val()) / parseFloat($('#PA5T').val()) * 100) || (parseFloat($('#PA5T').val())) === 0) {
+                    Toast.fire({ icon: 'error', title: "Debes ingresar valores validos" });
+                    return;
+                }
+            }
+
+            datos.U_Alma_Punteo5 = parseFloat($('#PA5C').val()) / parseFloat($('#PA5T').val()) * 100;
+
+            datos.U_Alma_PA6T = $('#PA6T').val();
+            datos.U_Alma_PA6C = $('#PA6C').val();
+            datos.U_Alma_ADPA6 = $('#ADPA6').val();
+            datos.U_Alma_IAPA6 = $('#IAPA6').val();
+            if (seccion === 2 && sigAnt == 1) {
+                if (isNaN(parseFloat($('#PA6C').val()) / parseFloat($('#PA6T').val()) * 100) || (parseFloat($('#PA6T').val())) === 0) {
+                    Toast.fire({ icon: 'error', title: "Debes ingresar valores validos" });
+                    return;
+                }
+            }
+            datos.U_Alma_Punteo6 = parseFloat($('#PA6C').val()) / parseFloat($('#PA6T').val()) * 100;
+
+            datos.U_Alma_PA7T = $('#PA7T').val();
+            datos.U_Alma_PA7C = $('#PA7C').val();
+            datos.U_Alma_ADPA7 = $('#ADPA7').val();
+            datos.U_Alma_IAPA7 = $('#IAPA7').val();
+            if (seccion === 2 && sigAnt == 1) {
+                if (isNaN(parseFloat($('#PA7C').val()) / parseFloat($('#PA7T').val()) * 100) || (parseFloat($('#PA7T').val())) === 0) {
+                    Toast.fire({ icon: 'error', title: "Debes ingresar valores validos" });
+                    return;
+                }
+            }
+            datos.U_Alma_Punteo7 = parseFloat($('#PA7C').val()) / parseFloat($('#PA7T').val()) * 100;
+
+            datos.U_PuntajeAlmacenaje = ((datos.U_Alma_Punteo1 ?? 0) + (datos.U_Alma_Punteo2 ?? 0) + (datos.U_Alma_Punteo3 ?? 0) + (datos.U_Alma_Punteo4 ?? 0) + (datos.U_Alma_Punteo5 ?? 0) + (datos.U_Alma_Punteo6 ?? 0) + (datos.U_Alma_Punteo7 ?? 0)) / 7;
+            /// FIN DE SECCION 2
+
+            // Recepción
+            if ($('input[name="U_Recep_PR1"]:checked').val() != undefined) {
+                datos.U_Recep_PR1 = $('input[name="U_Recep_PR1"]:checked').val() === 'Y' ? 'Y' : 'N';
+            }
+            datos.U_Recep_ADPR1 = $('#ADPR1').val();
+            datos.U_Recep_IAPR1 = $('#IAPR1').val();
+
+            if (seccion === 3 && sigAnt == 1) {
+                if (($('input[name="U_Recep_PR1"]:checked').val()) == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+            } (parseFloat($('#PA7T').val()) * 100)
+
+            datos.U_Recep_Punteo1 = $('input[name="U_Recep_PR1"]:checked').val() === 'Y' ? 14.285714285714286 : 0;
+
+
+            if ($('input[name="U_Recep_PR2"]:checked').val() != undefined) {
+                datos.U_Recep_PR2 = $('input[name="U_Recep_PR2"]:checked').val() === 'Y' ? 'Y' : 'N';
+            }
+            datos.U_Recep_ADPR2 = $('#ADPR2').val();
+            datos.U_Recep_IAPR2 = $('#IAPR2').val();
+            if (seccion === 3 && sigAnt == 1) {
+                if (($('input[name="U_Recep_PR2"]:checked').val()) == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+            }
+            datos.U_Recep_Punteo2 = $('input[name="U_Recep_PR2"]:checked').val() === 'Y' ? 14.285714285714286 : 0;
+
+            if ($('input[name="U_Recep_PR3"]:checked').val() != undefined) {
+                datos.U_Recep_PR3 = $('input[name="U_Recep_PR3"]:checked').val() === 'Y' ? 'Y' : 'N';
+            }
+            datos.U_Recep_ADPR3 = $('#ADPR3').val();
+            datos.U_Recep_IAPR3 = $('#IAPR3').val();
+            if (seccion === 3 && sigAnt == 1) {
+                if (($('input[name="U_Recep_PR3"]:checked').val()) == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+            }
+            datos.U_Recep_Punteo3 = $('input[name="U_Recep_PR3"]:checked').val() === 'Y' ? 14.285714285714286 : 0;
+
+            if ($('input[name="U_Recep_PR4"]:checked').val() != undefined) {
+                datos.U_Recep_PR4 = $('input[name="U_Recep_PR4"]:checked').val() === 'Y' ? 'Y' : 'N';
+            }
+            datos.U_Recep_ADPR4 = $('#ADPR4').val();
+            datos.U_Recep_IAPR4 = $('#IAPR4').val();
+            if (seccion === 3 && sigAnt == 1) {
+                if (($('input[name="U_Recep_PR4"]:checked').val()) == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+            }
+            datos.U_Recep_Punteo4 = $('input[name="U_Recep_PR4"]:checked').val() === 'Y' ? 14.285714285714286 : 0;
+
+            if ($('input[name="U_Recep_PR5"]:checked').val() != undefined) {
+                datos.U_Recep_PR5 = $('input[name="U_Recep_PR5"]:checked').val() === 'Y' ? 'Y' : 'N';
+            }
+            datos.U_Recep_ADPR5 = $('#ADPR5').val();
+            datos.U_Recep_IAPR5 = $('#IAPR5').val();
+            if (seccion === 3 && sigAnt == 1) {
+                if (($('input[name="U_Recep_PR5"]:checked').val()) == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+            }
+            datos.U_Recep_Punteo5 = $('input[name="U_Recep_PR5"]:checked').val() === 'Y' ? 14.285714285714286 : 0;
+
+            if ($('input[name="U_Recep_PR6"]:checked').val() != undefined) {
+                datos.U_Recep_PR6 = $('input[name="U_Recep_PR6"]:checked').val() === 'Y' ? 'Y' : 'N';
+            }
+            datos.U_Recep_ADPR6 = $('#ADPR6').val();
+            datos.U_Recep_IAPR6 = $('#IAPR6').val();
+            if (seccion === 3 && sigAnt == 1) {
+                if (($('input[name="U_Recep_PR6"]:checked').val()) == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+            }
+            datos.U_Recep_Punteo6 = $('input[name="U_Recep_PR6"]:checked').val() === 'Y' ? 14.285714285714286 : 0;
+
+            if ($('input[name="U_Recep_PR7"]:checked').val() != undefined) {
+                datos.U_Recep_PR7 = $('input[name="U_Recep_PR7"]:checked').val() === 'Y' ? 'Y' : 'N';
+            }
+            datos.U_Recep_ADPR7 = $('#ADPR7').val();
+            datos.U_Recep_IAPR7 = $('#IAPR7').val();
+            if (seccion === 3 && sigAnt == 1) {
+                if (($('input[name="U_Recep_PR7"]:checked').val()) == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+            }
+            datos.U_Recep_Punteo7 = $('input[name="U_Recep_PR7"]:checked').val() === 'Y' ? 14.285714285714286 : 0;
+
+
+            datos.U_PuntajeRecepcion = datos.U_Recep_Punteo1 + datos.U_Recep_Punteo2 + datos.U_Recep_Punteo3 + datos.U_Recep_Punteo4 + datos.U_Recep_Punteo5 + datos.U_Recep_Punteo6 + datos.U_Recep_Punteo7;
+
+            //FIN DE RECEPCION
+
+
+            if (seccion === 4 && sigAnt == 1) {
+                if (ph1Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Desp_PH1 = ph1Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Desp_ADPH1 = $('#ADPH1').val();
+            datos.U_Desp_IAHPH1 = $('#IAHPH1').val();
+            datos.U_Desp_Punteo1 = ph1Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 4 && sigAnt == 1) {
+                if (ph2Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Desp_PH2 = ph2Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Desp_ADPH2 = $('#ADPH2').val();
+            datos.U_Desp_IAPH2 = $('#IAPH2').val();
+            datos.U_Desp_Punteo2 = ph2Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 4 && sigAnt == 1) {
+                if (ph3Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Desp_PH3 = ph3Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Desp_ADPH3 = $('#ADPH3').val();
+            datos.U_Desp_IAPH3 = $('#IAPH3').val();
+            datos.U_Desp_Punteo3 = ph3Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 4 && sigAnt == 1) {
+                if (ph4Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Desp_PH4 = ph4Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Desp_ADPH4 = $('#ADPH4').val();
+            datos.U_Desp_IAPH4 = $('#IAPH4').val();
+            datos.U_Desp_Punteo4 = ph4Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 4 && sigAnt == 1) {
+                if (ph5Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Desp_PH5 = ph5Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Desp_ADPH5 = $('#ADPH5').val();
+            datos.U_Desp_IAPH5 = $('#IAPH5').val();
+            datos.U_Desp_Punteo5 = ph5Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 4 && sigAnt == 1) {
+                if (ph6Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Desp_PH6 = ph6Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Desp_ADPH6 = $('#ADPH6').val();
+            datos.U_Desp_IAPH6 = $('#IAPH6').val();
+            datos.U_Desp_Punteo6 = ph6Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 4 && sigAnt == 1) {
+                if (ph7Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Desp_PH7 = ph7Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Desp_ADPH7 = $('#ADPH7').val();
+            datos.U_Desp_IAPH7 = $('#IAPH7').val();
+            datos.U_Desp_Punteo7 = ph7Val === 'Y' ? 14.285714285714286 : 0;
+
+            datos.U_PuntajeDespacho = datos.U_Desp_Punteo1 + datos.U_Desp_Punteo2 + datos.U_Desp_Punteo3 + datos.U_Desp_Punteo4 + datos.U_Desp_Punteo5 + datos.U_Desp_Punteo6 + datos.U_Desp_Punteo7;
+
+            // Daños
+
+
+            if (seccion === 5 && sigAnt == 1) {
+                if (pd1Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Dan_PD1 = pd1Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Dan_ADPD1 = $('#ADPD1').val();
+            datos.U_Dan_IAPD1 = $('#IAPD1').val();
+            datos.U_Dan_Punteo1 = pd1Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 5 && sigAnt == 1) {
+                if (pd2Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Dan_PD2 = pd2Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Dan_ADPD2 = $('#ADPD2').val();
+            datos.U_Dan_IAPD2 = $('#IAPD2').val();
+            datos.U_Dan_Punteo2 = pd2Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 5 && sigAnt == 1) {
+                if (pd3Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Dan_PD3 = pd3Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Dan_ADPD3 = $('#ADPD3').val();
+            datos.U_Dan_IAPD3 = $('#IAPD3').val();
+            datos.U_Dan_Punteo3 = pd3Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 5 && sigAnt == 1) {
+                if (pd4Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Dan_PD4 = pd4Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Dan_ADPD4 = $('#ADPD4').val();
+            datos.U_Dan_IAPD4 = $('#IAPD4').val();
+            datos.U_Dan_Punteo4 = pd4Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 5 && sigAnt == 1) {
+                if (pd5Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Dan_PD5 = pd5Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Dan_ADPD5 = $('#ADPD5').val();
+            datos.U_Dan_IAPD5 = $('#IAPD5').val();
+            datos.U_Dan_Punteo5 = pd5Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 5 && sigAnt == 1) {
+                if (pd6Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Dan_PD6 = pd6Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Dan_ADPD6 = $('#ADPD6').val();
+            datos.U_Dan_IAPD6 = $('#IAPD6').val();
+            datos.U_Dan_Punteo6 = pd6Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 5 && sigAnt == 1) {
+                if (pd7Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_Dan_PD7 = pd7Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_Dan_ADPD7 = $('#ADPD7').val();
+            datos.U_Dan_IAPD7 = $('#IAPD7').val();
+            datos.U_Dan_Punteo7 = pd7Val === 'Y' ? 14.285714285714286 : 0;
+
+            datos.U_PuntajeDaniado = datos.U_Dan_Punteo1 + datos.U_Dan_Punteo2 + datos.U_Dan_Punteo3 + datos.U_Dan_Punteo4 + datos.U_Dan_Punteo5 + datos.U_Dan_Punteo6 + datos.U_Dan_Punteo7;
+
+            // 5S
+
+            if (seccion === 6 && sigAnt == 1) {
+                if (ps1Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_5S_PS1 = ps1Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_5S_ADPS1 = $('#ADPS1').val();
+            datos.U_5S_IAPS1 = $('#IAPS1').val();
+            datos.U_5S_Punteo1 = ps1Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 6 && sigAnt == 1) {
+                if (ps2Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_5S_PS2 = ps2Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_5S_ADPS2 = $('#ADPS2').val();
+            datos.U_5S_IAPS2 = $('#IAPS2').val();
+            datos.U_5S_Punteo2 = ps2Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 6 && sigAnt == 1) {
+                if (ps3Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_5S_PS3 = ps3Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_5S_ADPS3 = $('#ADPS3').val();
+            datos.U_5S_IAPS3 = $('#IAPS3').val();
+            datos.U_5S_Punteo3 = ps3Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 6 && sigAnt == 1) {
+                if (ps4Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_5S_PS4 = ps4Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_5S_ADPS4 = $('#ADPS4').val();
+            datos.U_5S_IAPS4 = $('#IAPS4').val();
+            datos.U_5S_Punteo4 = ps4Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 6 && sigAnt == 1) {
+                if (ps5Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_5S_PS5 = ps5Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_5S_ADPS5 = $('#ADPS5').val();
+            datos.U_5S_IAPS5 = $('#IAPS5').val();
+            datos.U_5S_Punteo5 = ps5Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 6 && sigAnt == 1) {
+                if (ps6Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_5S_PS6 = ps6Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_5S_ADPS6 = $('#ADPS6').val();
+            datos.U_5S_IAPS6 = $('#IAPS6').val();
+            datos.U_5S_Punteo6 = ps6Val === 'Y' ? 14.285714285714286 : 0;
+
+            if (seccion === 6 && sigAnt == 1) {
+                if (ps7Val == undefined) { Toast.fire({ icon: 'error', title: "Debes responder todos los check (Sí o No) antes de continuar" }); return; }
+                else {
+                    datos.U_5S_PS7 = ps7Val === 'Y' ? 'Y' : 'N';
+                }
+            }
+            datos.U_5S_ADPS7 = $('#ADPS7').val();
+            datos.U_5S_IAPS7 = $('#IAPS7').val();
+            datos.U_5S_Punteo7 = ps7Val === 'Y' ? 14.285714285714286 : 0;
+
+            datos.U_Puntaje5S = datos.U_5S_Punteo1 + datos.U_5S_Punteo2 + datos.U_5S_Punteo3 + datos.U_5S_Punteo4 + datos.U_5S_Punteo5 + datos.U_5S_Punteo6 + datos.U_5S_Punteo7
+
+            if (seccionFinal === 1) {
+                datos.U_Estado = 1;
+            }
+            else {
+                datos.U_Estado = 0;
+            }
+
+            $("#globalLoading").show?.();
+
+            $.ajax({
+                url: '@Url.Action("EnviarSeccion", "FormularioCheckList")',
+                type: 'POST',
+                data: datos,
+                success: function (response) {
+
+                    if (response.success) {
+                        Toast.fire({ icon: 'success', title: response.data });
+
+                        if (seccionFinal === 0) {
+
+                            if (sigAnt === 1) {
+                                Siguiente(seccion);
+                            }
+                            else {
+                                Anterior(seccion);
+                            }
+                        }
+                        if (seccionFinal === 1) {
+
+                            mostrarResultados(1, datos);
+                            finalSeccion = 1;
+                        }
+                    }
+                    else {
+                        Toast.fire({ icon: 'error', title: response.data });
+                    }
+                    window.scrollTo(0, 0);
+                    $("#globalLoading").hide?.();
+                },
+                error: function (e) {
+                    Toast.fire({ icon: 'error', title: "No se puede guardar el formulario" });
+                    $("#globalLoading").hide?.();
+                }
+            });
+        } else {
+                if (sigAnt === 1) {
+                    Siguiente(seccion);
+                }
+                else {
+                    Anterior(seccion);
+                }
+            window.scrollTo(0, 0);
+            }
+        }
+
+
+        $(document).ready(function () {
+        if (disabled) {
+            // Esto bloquea todos los inputs, selects y textareas de la página
+            $("input, select, textarea").prop("disabled", true);
+        }
+        });
+
+</script>
+
+<script>
+    function subirArchivo(input) {
+
+        const file = input.files[0];
+
+        if (file) {
+
+            const formData = new FormData();
+            formData.append("Imagen", file);
+            formData.append("Id", input.id);
+            formData.append("Name", input.name);
+            formData.append("IdFormulario", "@Model.U_IdFormulario");
+            formData.append("Code", "@Model.Code");
+            $("#globalLoading").show?.();
+            fetch("/FormularioCheckList/MoverImagen", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data);
+                    $("#globalLoading").hide?.();
+                    Toast.fire({ icon: 'success', title:"Archivo subido con éxito" });
+
+                    //alert("Archivo subido con éxito: " + data.nombre);
+                })
+                .catch(error => {
+                    $("#globalLoading").hide?.();
+                    //console.error("Error al subir:", error);
+                    Toast.fire({ icon: 'error', title: "Error al subir" });
+
+                });
+        }
+    }
+</script>
+<script>
+    function mostrarResultados(seccionFinal = 0, data = null) {
+        let datos = {};
+
+        if (seccionFinal === 0) {
+             datos = @Html.Raw(Json.Encode(Model));
+        }
+        else {
+            datos = data;
+        }
+
+        const resultados = {
+            almacenamiento: datos.U_PuntajeAlmacenaje, // Porcentaje de almacenamiento
+            recepcion: datos.U_PuntajeRecepcion,      // Porcentaje de recepción
+            despacho: datos.U_PuntajeDespacho,       // Porcentaje de despacho
+            danado: datos.U_PuntajeDaniado,         // Porcentaje de dañado
+            '5s': datos.U_Puntaje5S,
+
+            general: (datos.U_PuntajeAlmacenaje + datos.U_PuntajeRecepcion + datos.U_PuntajeDespacho + datos.U_PuntajeDaniado + datos.U_Puntaje5S) / 5,
+            // Porcentaje de 5S (usa comillas por el guion)
+        };
+
+        // Actualiza el texto de cada tarjeta
+        document.getElementById('porcentaje-almacenamiento').innerText = resultados.almacenamiento.toFixed(2) + '%';
+        document.getElementById('porcentaje-recepcion').innerText = resultados.recepcion.toFixed(2) + '%';
+        document.getElementById('porcentaje-despacho').innerText = resultados.despacho.toFixed(2) + '%';
+        document.getElementById('porcentaje-danado').innerText = resultados.danado.toFixed(2) + '%';
+        document.getElementById('porcentaje-5s').innerText = resultados['5s'].toFixed(2) + '%';
+        document.getElementById('porcentaje-general').innerText = resultados.general.toFixed(2) + '%';
+
+         //Muestra el modal
+        //var myModal = new bootstrap.Modal(document.getElementById('modalResultados'));
+        //myModal.show();
+
+        var modalElement = document.getElementById('modalResultados');
+        myModalInstance = new bootstrap.Modal(modalElement);
+        myModalInstance.show();
+    }
+
+    function cerrarModal() {
+        // Busca el elemento del modal por su ID
+        if (myModalInstance) {
+            myModalInstance.hide();
+        }
+
+        if (finalSeccion === 1 ) {
+            window.location.href = '/FormularioCheckList/Index';
+        }
+    }
+
+    function VolverInformacionGeneral(event) {
+        event.preventDefault()  ;
+        window.location.href = '/FormularioCheckList/Index';
+    }
+
+
+    window.addEventListener('beforeunload', (event) => {
+        event.preventDefault(); // necesario para algunos navegadores
+        event.returnValue = "¿Seguro que quieres salir?";
+        return event.returnValue;
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Intercepta el click en cualquier link que abra el modal
+        $(document).on("click", "[data-target='#imagenModal']", function (event) {
+            var imgSrc = $(this).data("src");
+
+            // 🚫 Si la imagen es NoPhoto, cancela la apertura
+            if (imgSrc && imgSrc.toLowerCase().includes("nophoto")) {
+                console.warn("⚠️ Placeholder detectado, no se abrirá el modal");
+                event.preventDefault(); // evita que Bootstrap abra el modal
+                return false;
+            }
+        });
+
+        // Si llega aquí, sí se abre el modal y asigna la imagen
+        $('#imagenModal').on('show.bs.modal', function (event) {
+            var link = $(event.relatedTarget);   // el <a> que abre el modal
+            var imgSrc = link.data('src');       // obtiene data-src
+            console.log("➡️ Asignando al modal:", imgSrc);
+            $('#imagenAmpliada').attr('src', imgSrc);
+        });
+
+        // Debug: ver si la imagen falla
+        $('#imagenAmpliada').on('error', function () {
+            console.error("❌ No se pudo cargar:", $(this).attr('src'));
+        });
+    });
+
+
+</script>
+
+

@@ -1,0 +1,761 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Obra</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            /*padding: 20px;*/
+            color: #333;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom:30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #0077cc;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+            input:focus, select:focus, textarea:focus {
+                border-color: #0077cc;
+                outline: none;
+                box-shadow: 0 0 6px rgba(0, 119, 204, 0.2);
+            }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        .map-photo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .photo-upload {
+            border: 2px dashed #bbb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            cursor: pointer;
+        }
+
+            .photo-upload:hover {
+                border-color: #0077cc;
+                color: #0077cc;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #0077cc;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .btn {
+            background: #0077cc;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+            .btn:hover {
+                background: #005fa3;
+            }
+
+        .btn-mini {
+            
+            font-size: 12px; /* letra/icono más pequeño */
+            line-height: 1; /* altura más compacta */
+        }
+
+
+        /********************************************************************************************/
+        /********************************* PARA CARGAR IMAGENES *************************************/
+        /********************************************************************************************/
+        .photo-upload {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            color: #3498db;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+            .photo-upload.dragover {
+                background-color: #eaf3ff;
+            }
+
+        .photo-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+            .photo-preview .photo-item {
+                position: relative;
+                width: 80px;
+                height: auto; /* Cambié para que acepte el texto debajo */
+                border-radius: 8px;
+                overflow: hidden;
+                cursor: pointer;
+                text-align: center;
+            }
+
+                .photo-preview .photo-item img {
+                    width: 80px;
+                    height: 80px;
+                    object-fit: cover;
+                    border-radius: 6px;
+                }
+
+                .photo-preview .photo-item button {
+                    position: absolute;
+                    top: 2px;
+                    right: 2px;
+                    background: rgba(255,0,0,0.8);
+                    border: none;
+                    border-radius: 50%;
+                    color: white;
+                    width: 20px;
+                    height: 20px;
+                    cursor: pointer;
+                }
+
+            .photo-preview .photo-name {
+                margin-top: 4px;
+                font-size: 12px;
+                color: #555;
+                font-style: italic;
+            }
+
+        /* Modal */
+        .modal-photos {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            text-align: center;
+        }
+
+            .modal-photos img {
+                margin: auto;
+                display: block;
+                max-width: 90%;
+                max-height: 80%;
+                border-radius: 8px;
+            }
+
+            .modal-photos .close {
+                position: absolute;
+                top: 20px;
+                right: 35px;
+                color: #fff;
+                font-size: 40px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+
+        /*********************************************** FIN **********************************************/
+
+        .custom-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+            .custom-checkbox input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 22px;
+            width: 22px;
+            background-color: #eee;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+
+        .custom-checkbox:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: #3498db;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .custom-checkbox .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📋 Registro de Obra</h2>
+
+        <a id="PuntoPartida" style="display:none"></a>
+
+        <div class="form-grid">
+            <div>
+                <label>Fecha</label>
+                <input type="date" id="txtFecha" readonly>
+            </div>
+
+            <script>
+                // Obtener el input
+                const fechaInput = document.getElementById('txtFecha');
+
+                // Obtener la fecha de hoy en formato YYYY-MM-DD
+                const hoy = new Date();
+                const yyyy = hoy.getFullYear();
+                const mm = String(hoy.getMonth() + 1).padStart(2, '0'); // Mes empieza en 0
+                const dd = String(hoy.getDate()).padStart(2, '0');
+
+                const fechaHoy = `${yyyy}-${mm}-${dd}`;
+
+                // Asignar al input
+                fechaInput.value = fechaHoy;
+            </script>
+            <div>
+                <label>Etapa de obra</label>
+                <select id="lstEtapa">
+                </select>
+            </div>
+            <div>
+                <label>Etapa de negociación</label>
+                <select id="lstNegociacion">
+                </select>
+            </div>
+            <div>
+                <label>Nombre del cliente</label>
+                <input type="text" placeholder="Nombre completo" id="txtNombreCliente">
+            </div>
+            <div>
+                <label>Dirección</label>
+                <input type="text" placeholder="Ej: Zona 10, Ciudad de Guatemala" id="txtDireccion">
+            </div>
+            <div>
+                <label>Tipo de construcción</label>
+                <select id="lstTipoConstruccion">
+                </select>
+            </div>
+            <div>
+                <label>Nombre de la obra</label>
+                <input type="text" placeholder="Ej: Torre Reforma" id="txtNombreObra">
+            </div>
+            <div style="grid-column: span 2;">
+                <label>Comentarios</label>
+                <textarea placeholder="Notas adicionales..." id="txtComentarios"></textarea>
+            </div>
+            <div>
+                <label>Próxima visita</label>
+                <input type="date" id="txtProximaVisita">
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🌍 Capturar ubicación y fotografías</h3>
+            <div class="map-photo">
+                <div class="form-group">
+                    <label>Ubicación en Google Maps</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <!-- Botón que cambiará su texto -->
+                        <button type="button" class="btn" id="btnCoordenadas" onclick="obtenerCoordenadas()">
+                            📍 Obtener Coordenadas
+                        </button>
+
+                        <!-- Botón para ir a Google Maps -->
+                        <button type="button" class="btn" onclick="abrirEnGoogleMaps()">
+                            🌍 Ver en Maps
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    let coordsGuardadas = "";
+                    function obtenerCoordenadas() {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                function (position) {
+                                    let lat = position.coords.latitude.toFixed(6);
+                                    let lon = position.coords.longitude.toFixed(6);
+                                    coordsGuardadas = lat + "," + lon;
+
+                                    // Cambia el texto del botón
+                                    document.getElementById("btnCoordenadas").innerText = "📍 " + coordsGuardadas;
+                                },
+                                function () {
+                                    alert("No se pudo obtener la ubicación.");
+                                }
+                            );
+                        } else {
+                            alert("La geolocalización no está soportada en este navegador.");
+                        }
+                    }
+
+                    function abrirEnGoogleMaps() {
+                        if (coordsGuardadas) {
+                            window.open("https://www.google.com/maps?q=" + coordsGuardadas, "_blank");
+                        } else {
+                            alert("Primero obtén las coordenadas.");
+                        }
+                    }
+                </script>
+
+                <div class="photo-section">
+                    <label>Subir fotografías (mínimo 3)</label>
+                    <div id="photoUpload" class="photo-upload">
+                        📸 Arrastra o haz clic para subir
+                        <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
+                    </div>
+                    <div id="photoPreview" class="photo-preview"></div>
+                </div>
+
+                <!-- Modal para ver imagen grande -->
+                <div id="photoModal" class="modal-photos">
+                    <span class="close" onclick="cerrarModal()">&times;</span>
+                    <img class="modal-content" id="imgModal">
+
+                    <!-- Input para nombre de la foto -->
+                    <div style="text-align:center; margin-top:15px;">
+                        <input type="text" id="photoNameInput"
+                               placeholder="Escribe: Sala, Comedor, Cocina..."
+                               autocomplete="off"
+                               style="padding:6px; width:70%; border:1px solid #ccc; border-radius:5px;">
+                        <button onclick="guardarNombreFoto()"
+                                style="margin-top:8px; padding:6px 12px; border:none; border-radius:5px; background:#3498db; color:#fff; cursor:pointer;">
+                            Guardar nombre
+                        </button>
+                    </div>
+                </div>
+                <script>
+                    const photoUpload = document.getElementById('photoUpload');
+                    const fileInput = document.getElementById('fileInput');
+                    const photoPreview = document.getElementById('photoPreview');
+                    let fotoSeleccionada = null; // Guardamos la referencia a la foto actual
+
+                    photoUpload.addEventListener('click', () => fileInput.click());
+
+                    photoUpload.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        photoUpload.classList.add('dragover');
+                    });
+
+                    photoUpload.addEventListener('dragleave', (e) => {
+                        e.preventDefault();
+                        photoUpload.classList.remove('dragover');
+                    });
+
+                    photoUpload.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        photoUpload.classList.remove('dragover');
+                        agregarFotos(e.dataTransfer.files);
+                    });
+
+                    fileInput.addEventListener('change', () => agregarFotos(fileInput.files));
+
+                    function agregarFotos(files) {
+                        Array.from(files).forEach(file => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                const div = document.createElement('div');
+                                div.classList.add('photo-item');
+                                div.innerHTML = `
+                                    <img src="${e.target.result}" onclick="verImagen(this)">
+                                    <button onclick="eliminarFoto(this)">×</button>
+                                    <div class="photo-name">Sin nombre</div>
+                                `;
+                                photoPreview.appendChild(div);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+
+                    // Eliminar foto
+                    function eliminarFoto(btn) {
+                        btn.closest('.photo-item').remove();
+                    }
+
+                    // Modal imagen
+                    function verImagen(imgElement) {
+                        document.getElementById('imgModal').src = imgElement.src;
+                        document.getElementById('photoModal').style.display = 'block';
+
+                        // Guardamos referencia a la miniatura actual
+                        fotoSeleccionada = imgElement.closest('.photo-item');
+
+                        // Mostramos en el input el nombre actual si existe
+                        let nombreActual = fotoSeleccionada.querySelector('.photo-name').innerText;
+                        document.getElementById('photoNameInput').value =
+                            nombreActual === "Sin nombre" ? "" : nombreActual;
+                    }
+
+                    function cerrarModal() {
+                        document.getElementById('photoModal').style.display = 'none';
+                        fotoSeleccionada = null;
+                    }
+
+                    // Guardar nombre de la foto
+                    function guardarNombreFoto() {
+                        if (fotoSeleccionada) {
+                            let nuevoNombre = document.getElementById('photoNameInput').value.trim();
+                            fotoSeleccionada.querySelector('.photo-name').innerText =
+                                nuevoNombre === "" ? "Sin nombre" : nuevoNombre;
+                            cerrarModal();
+                        }
+                    }
+                </script>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>👥 Lista de contactos</h3>
+            <button type="button" class="btn" onclick="agregarContacto()">➕ Nuevo contacto</button>
+
+            <table id="tablaContactos" style="font-size:12px">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cliente/Profesional</th>
+                        <th>Teléfono</th>
+                        <th>Decisor de compra</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="no-data">
+                        <td colspan="5" style="text-align:center; font-style:italic; color:#888;">
+                            No hay datos
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            let Contactos = [];
+            function agregarContacto() {
+                
+                let tbody = document.querySelector("#tablaContactos tbody");
+                let noDataRow = tbody.querySelector(".no-data");
+
+                // Si existe la fila "No hay datos", la quitamos
+                if (noDataRow) {
+                    noDataRow.remove();
+                }
+
+                let fila = document.createElement("tr");
+
+                fila.innerHTML = `
+                    <td><input type="text" class="nombre" placeholder="Nombre"></td>
+                    <td>
+                        <select class="TipoCliente">
+                            <option value="-1" disabled selected>-- Seleccionar --</option>
+                        </select>
+                    </td>
+                    <td><input type="tel" class="telefono" placeholder="+502 5555-5555"></td>
+                    <td>
+                        <label class="custom-checkbox">
+                            <input type="checkbox" class="compradorPrincipal">
+                            <span class="checkmark"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm btn-mini" onclick="eliminarContacto(this)">🗑</button>
+                    </td>
+                `;
+
+                tbody.appendChild(fila);
+
+                // Llenar el select recién creado
+                let $select = $(fila).find(".TipoCliente");
+                cargarListado($select, 4); // 3 es el tipo de cliente, ajusta según tu lógica
+            }
+
+
+            function eliminarContacto(boton) {
+                Swal.fire({
+                    title: '¿Está seguro?',
+                    text: "¿Desea quitar este contacto?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let fila = boton.closest("tr");
+                        let tbody = fila.closest("tbody");
+                        fila.remove();
+
+                        // Revisar si la tabla quedó vacía
+                        if (tbody.children.length === 0) {
+                            let noDataRow = `
+                                                <tr class="no-data">
+                                                    <td colspan="5" style="text-align:center; font-style:italic; color:#888;">
+                                                        No hay datos
+                                                    </td>
+                                                </tr>
+                                            `;
+                            tbody.innerHTML = noDataRow;
+                        }
+
+                        Swal.fire({
+                            title: 'Eliminado',
+                            text: 'El contacto ha sido quitado.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+            }
+
+        </script>
+        <button type="button" class="btn" onclick="guardarRegistro()">💾 Guardar Registro</button>
+    </div>
+</body>
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+        if (code) {
+            document.getElementById("PuntoPartida").textContent = code;
+        }
+    });
+
+    function cargarListado($select, tipo) {
+        $.ajax({
+            url: '@Url.Action("getAllList", "ProspVisita")',
+            type: 'GET',
+            data: { Tipo: tipo },
+            success: function(data) {
+                $select.html(''); // limpiar
+                $select.append('<option value="-1" selected disabled>-- Seleccionar --</option>');
+
+                $.each(data, function(i, item) {
+                    $select.append(`<option value="${item.Codigo}">${item.Nombre}</option>`);
+                });
+            },
+            error: function() {
+                console.error("Error al cargar listado");
+            }
+        });
+    }
+
+    // Uso:
+    $(document).ready(function() {
+        cargarListado($('#lstEtapa'), 1);            // 1 = Etapa de obra
+        cargarListado($('#lstNegociacion'), 2);      // 2 = Etapa de negociación
+        cargarListado($('#lstTipoConstruccion'), 3); // 3 = Tipos de construccion
+    });
+
+    function obtenerContactos() {
+        Contactos = []; // Reiniciamos
+
+        document.querySelectorAll("#tablaContactos tbody tr").forEach((tr) => {
+            if (!tr.classList.contains("no-data")) {
+                let contacto = {                    
+                    U_Nombres: tr.querySelector(".nombre").value,
+                    U_Telefono: tr.querySelector(".telefono").value,
+                    U_IdTipo: tr.querySelector(".TipoCliente").value,
+                    U_CompradorPrincipal: tr.querySelector(".compradorPrincipal").checked ? "Y" : "N",                    
+                };
+                Contactos.push(contacto);
+            }
+        });
+        
+        return Contactos;
+    }
+
+    function obtenerFotografias() {
+        let fotografias = [];
+
+        $("#photoPreview .photo-item").each(function (index, item) {
+            let $item = $(item);
+            let url = $item.find("img").attr("src"); // la imagen en base64 o url
+            let notas = $item.find("input").val();   // el texto que escribió el usuario
+
+            fotografias.push({
+                Code: 0,               // lo puedes dejar 0 para nuevos
+                Name: "Foto_" + (index + 1), // nombre genérico, puedes cambiarlo
+                U_Url: url,
+                U_Notas: notas,
+                U_Estado: "A"          // Activo (ajústalo a tu lógica)
+            });
+        });
+
+        return fotografias;
+    }
+
+    function guardarRegistro() {
+        let data = {
+            U_Fecha: $("#txtFecha").val(),
+            U_IdEtapa: $("#lstEtapa").val(),
+            U_IdPuntoPartida: $('#PuntoPartida').text(),
+            U_IdNegociacion: $("#lstNegociacion").val(),
+            U_NombreCliente: $("#txtNombreCliente").val(),
+            U_Direccion: $("#txtDireccion").val(),
+            U_IdTipoConstruccion: $("#lstTipoConstruccion").val(),
+            U_NombreObra: $("#txtNombreObra").val(),
+            U_Comentarios: $("#txtComentarios").val(),
+            U_ProximaVisita: $("#txtProximaVisita").val(),
+            U_Ubicacion: coordsGuardadas
+        };
+
+        let formData = new FormData();
+        formData.append("jsonData", JSON.stringify(data));
+
+        let files = $("#fileInput")[0].files;
+
+        // Recorremos todas las fotos seleccionadas
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+
+            // Buscamos el nombre en el DOM
+            let nombreFoto = document.querySelectorAll('.photo-preview .photo-item .photo-name')[i]?.textContent || `Foto_${i + 1}`;
+
+            // Subimos la foto
+            formData.append("fotos", file);
+
+            // Subimos también el nombre correspondiente
+            formData.append("nombresFotos", nombreFoto);
+        }
+        formData.append("listaContactos", JSON.stringify(obtenerContactos()));
+
+        Swal.fire({
+            title: '¿Desea guardar la visita?',
+            text: "Se guardará con toda la información y fotografías seleccionadas.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#globalLoading").show();
+
+                $.ajax({
+                    url: '/ProspVisita/Guardar',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (resp) {
+                        $("#globalLoading").hide();
+
+                        Swal.fire({
+                            title: "Guardado",
+                            text: "El registro se guardó correctamente",
+                            icon: "success",
+                            confirmButtonText: "Aceptar"
+                        }).then(() => {
+                            // 🔄 Redirigir a ProspAgenda/Index
+                            window.location.href = '/ProspAgenda/Index';
+                        });
+                    },
+                    error: function () {
+                        $("#globalLoading").hide();
+                        Swal.fire("Error", "No se pudo guardar la visita", "error");
+                    }
+                });
+            }
+        });
+    }
+
+</script>

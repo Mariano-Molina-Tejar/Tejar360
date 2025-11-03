@@ -1,0 +1,399 @@
+﻿<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f4f6f8;
+    }
+
+    .filtros-container {
+        max-width: 1900px;
+        margin: 30px auto 0;
+        padding: 15px 25px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+        .filtros-container div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filtros-container label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .filtros-container input {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 180px;
+            font-size: 14px;
+        }
+
+        .filtros-container button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            height: 36px;
+            margin-top: 20px;
+        }
+
+            .filtros-container button:hover {
+                background-color: #2980b9;
+            }
+
+    .panel-container {
+        max-width: 1900px;
+        margin: 20px auto;
+        padding: 25px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .titulo-panel {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 18px;
+        color: #2c3e50;
+    }
+
+    .tabla-reporte {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+        .tabla-reporte thead {
+            background-color: #111;
+            color: white;
+        }
+
+        .tabla-reporte th, .tabla-reporte td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+    .region-header {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        padding: 10px 16px;
+        color: #333;
+        font-size: 15px;
+        text-align: left; /* <-- este es el importante */
+    }
+
+
+        .region-header i {
+            color: #3498db;
+            margin-right: 8px;
+        }
+
+    .tabla-reporte tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .q {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .progress-bar-container {
+        background-color: #e6e6e6;
+        border-radius: 20px;
+        height: 14px;
+        width: 100%;
+        margin-top: 4px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        border-radius: 20px;
+        text-align: right;
+        padding-right: 5px;
+        color: white;
+        font-size: 11px;
+        line-height: 14px;
+    }
+
+    .cierre-bar {
+        background-color: #27ae60;
+    }
+
+    .generacion-bar {
+        background-color: #e67e22;
+    }
+</style>
+
+<!-- Filtros -->
+<div class="filtros-container">
+    <div>
+        <label for="fechaInicial">Fecha Inicial</label>
+        <input type="date" id="fechaInicial" />
+    </div>
+    <div>
+        <label for="fechaFinal">Fecha Final</label>
+        <input type="date" id="fechaFinal" />
+    </div>
+    <div>
+        <button onclick="buscar()"><i class="fas fa-search"></i> Buscar</button>
+    </div>
+</div>
+
+<!-- Panel principal -->
+<div class="panel-container">
+    <div class="titulo-panel">Reporte por Tienda y Región</div>
+    <table class="tabla-reporte">
+        <thead>
+            <tr>
+                <th rowspan="2" style="border-right: 2px solid #ccc;">Tienda</th>
+                <th colspan="3" style="border-right: 2px solid #ccc;">Cotizaciones</th>
+                <th colspan="3" style="border-right: 2px solid #ccc;">Facturado</th>
+                <th colspan="2" style="border-right: 2px solid #ccc;">Metas</th>
+                <th colspan="4">Clientes</th>
+                <th colspan="5">Crm</th>
+            </tr>
+            <tr>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th style="border-right: 2px solid #ccc;">Abierto</th> <!-- Separador aquí -->
+
+                <th># Tickets</th>
+                <th>Total</th>
+                <th style="border-right: 2px solid #ccc;">Tasa Cierre %</th> <!-- Separador aquí -->
+
+                <th>Meta</th>
+                <th style="border-right: 2px solid #ccc;">Tasa Generación %</th> <!-- Separador aquí -->
+
+                <th>Nuevos</th>
+                <th>Total</th>
+                <th>Retenido</th>
+                <th>Tasa</th>
+
+                <th>Cerradas</th>
+                <th>Abiertos</th>
+                <th>Perdida</th>
+                <th>Seguimiento</th>
+                <th>SinEstatus</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyData">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(function () {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth(); // enero = 0
+
+        // Primer día del mes
+        const firstDay = new Date(year, month, 1);
+        // Último día del mes
+        const lastDay = new Date(year, month + 1, 0);
+
+        // Convertir a formato yyyy-MM-dd
+        const toDateInputFormat = (date) => {
+            return date.toISOString().split('T')[0];
+        };
+
+        $("#fechaInicial").val(toDateInputFormat(firstDay));
+        $("#fechaFinal").val(toDateInputFormat(lastDay));
+    });
+
+    function buscar() {
+        const fechaI = $("#fechaInicial").val();
+        const fechaF = $("#fechaFinal").val();
+
+        $("#globalLoading").show();  // Mostrar loading
+
+        $.ajax({
+            url: '/CrmCotizaciones/getDataMain',
+            type: 'POST',
+            data: JSON.stringify({ fechaI: fechaI, fechaF: fechaF }),
+            contentType: 'application/json',
+            success: function (response) {
+                llenarTabla(response);
+            },
+            error: function (xhr, status, error) {
+                alert('Error al obtener datos: ' + error);
+            },
+            complete: function () {
+                $("#globalLoading").hide();  // Ocultar loading siempre que termina la petición
+            }
+        });
+    }
+
+
+    function formatearQ(valor) {
+        return 'Q' + parseFloat(valor).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatearPorcentaje(valor) {
+        return parseFloat(valor).toFixed(2) + '%';
+    }
+
+    function llenarTabla(data) {
+        let tbody = $("#tbodyData");
+        tbody.empty();
+
+        const regiones = [...new Set(data.map(x => x.Region))];
+
+        regiones.forEach(region => {
+            // Encabezado de región
+            tbody.append(`
+                <tr>
+                    <td colspan="13" class="region-header" style="text-align:left; background-color: #cce5ff; color: #004085; font-weight: bold;">
+                        <i class="fas fa-map-marker-alt" style="color: #004085;"></i> ${region}
+                    </td>
+                </tr>
+            `);
+            const tiendas = data.filter(x => x.Region === region);
+            // Inicializar acumuladores
+            let totalCoti = 0;
+            let lineTotalCoti = 0;
+            let lineTotalCobiAb = 0;
+            let totalFac = 0;
+            let lineTotalFac = 0;
+            let metaCoti = 0;
+            let clientesNuevos = 0;
+            let totalClie = 0;
+            let ClieRetenido = 0;
+            let TasaRetencion = 0;
+
+            tiendas.forEach(item => {
+                totalCoti += item.TotalCoti;
+                lineTotalCoti += item.LineTotalCoti;
+                lineTotalCobiAb += item.LineTotalCobiAb;
+                totalFac += item.TotalFac;
+                lineTotalFac += item.LineTotalFac;
+                metaCoti += item.MetaCoti;
+                clientesNuevos += item.ClientesNuevos;
+                totalClie += item.TotalClie;
+                ClieRetenido += item.totalClieRetenido;
+                TasaRetencion += item.TasaRetencion;
+
+                let fila = `
+                <tr>
+                    <td style='text-align:left'>${item.WhsName}</td>
+                    <td>${item.TotalCoti}</td>
+                    <td class="q">${formatearQ(item.LineTotalCoti)}</td>
+                    <td class="q">${formatearQ(item.LineTotalCobiAb)}</td>
+                    <td>${item.TotalFac}</td>
+                    <td class="q">${formatearQ(item.LineTotalFac)}</td>
+                    <td>${formatearPorcentaje(item.TasaCierre)}</td>
+                    <td class="q">${formatearQ(item.MetaCoti)}</td>
+                    <td>${formatearPorcentaje(item.TasaGeneracion)}</td>
+                    <td>${item.ClientesNuevos}</td>
+                    <td>${item.TotalClie}</td>
+                    <td>${item.totalClieRetenido}</td>
+                    <td>${formatearPorcentaje(item.TasaRetencion)}</td>
+                    <td>${item.Cerradas}</td>
+                    <td>${item.Abiertos}</td>
+                    <td>${item.Perdida}</td>
+                    <td>${item.Seguimiento}</td>
+                    <td>${item.SinEstatus}</td>
+                </tr>
+            `;
+                tbody.append(fila);
+            });
+
+            // Cálculos de tasas acumuladas
+            // Cálculos de tasas acumuladas
+            let tasaCierre = (lineTotalCoti > 0) ? (lineTotalFac / lineTotalCoti) * 100 : 0;
+            let tasaGeneracion = (metaCoti > 0) ? (totalCoti / metaCoti) * 100 : 0;
+            let tasaRetencionRegion = (totalClie > 0) ? (ClieRetenido / totalClie) * 100 : 0;
+
+            // Fila de totales por región
+            let filaTotales = `
+            <tr style="font-weight:bold; background:#f2f2f2">
+                <td style='text-align:left'>TOTAL ${region}</td>
+                <td>${totalCoti}</td>
+                <td class="q">${formatearQ(lineTotalCoti)}</td>
+                <td class="q">${formatearQ(lineTotalCobiAb)}</td>
+                <td>${totalFac}</td>
+                <td class="q">${formatearQ(lineTotalFac)}</td>
+                <td>${formatearPorcentaje(tasaCierre)}</td>
+                <td class="q">${formatearQ(metaCoti)}</td>
+                <td>${formatearPorcentaje(tasaGeneracion)}</td>
+                <td>${clientesNuevos}</td>
+                <td>${totalClie}</td>
+                <td>${ClieRetenido}</td>
+                <td>${formatearPorcentaje(tasaRetencionRegion)}</td>
+            </tr>
+            `;
+
+            tbody.append(filaTotales);
+        });
+
+        // === GRAN TOTAL FINAL ===
+        let totalTotalCoti = 0;
+        let totalLineTotalCoti = 0;
+        let totalLineTotalCobiAb = 0;
+        let totalTotalFac = 0;
+        let totalLineTotalFac = 0;
+        let totalMetaCoti = 0;
+        let totalClientesNuevos = 0;
+        let totalTotalClie = 0;
+        let totalTotalClieRetenido = 0;
+        let totalTotalTasaRetencion = 0;
+
+        data.forEach(item => {
+            totalTotalCoti += item.TotalCoti;
+            totalLineTotalCoti += item.LineTotalCoti;
+            totalLineTotalCobiAb += item.LineTotalCobiAb;
+            totalTotalFac += item.TotalFac;
+            totalLineTotalFac += item.LineTotalFac;
+            totalMetaCoti += item.MetaCoti;
+            totalClientesNuevos += item.ClientesNuevos;
+            totalTotalClie += item.TotalClie;
+            totalTotalClieRetenido += item.totalClieRetenido;
+            totalTotalTasaRetencion += item.TasaRetencion;
+        });
+
+        let tasaRetencionTotal = (totalTotalClie > 0)
+            ? (totalTotalClieRetenido / totalTotalClie) * 100
+            : 0;
+
+        let filaTotal = `
+            <tr style="background-color: #d4edda; color: #155724; font-weight: bold;">
+                <td style='text-align:left'>TOTAL GENERAL</td>
+                <td>${totalTotalCoti}</td>
+                <td class="q">${formatearQ(totalLineTotalCoti)}</td>
+                <td class="q">${formatearQ(totalLineTotalCobiAb)}</td>
+                <td>${totalTotalFac}</td>
+                <td class="q">${formatearQ(totalLineTotalFac)}</td>
+                <td>-</td>
+                <td class="q">${formatearQ(totalMetaCoti)}</td>
+                <td>-</td>
+                <td>${totalClientesNuevos}</td>
+                <td>${totalTotalClie}</td>
+                <td>${totalTotalClieRetenido}</td>
+                <td>${formatearPorcentaje(tasaRetencionTotal)}</td>
+            </tr>
+            `;
+
+
+        tbody.append(filaTotal);
+    }
+
+    $(document).ready(function () {
+        buscar();
+    });
+</script>

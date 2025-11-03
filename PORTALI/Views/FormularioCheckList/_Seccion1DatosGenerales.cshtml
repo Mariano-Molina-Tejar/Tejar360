@@ -1,0 +1,82 @@
+﻿
+@model Entity.FormularioCheckList1Entity
+@{
+    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+}
+
+
+@*@using (Html.BeginForm("GuardarSeccion1", "Checklist", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {*@
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <i class="bi bi-person-lines-fill"></i> Sección 1: Datos Generales
+    </div>
+    <div class="card-body">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="ms-3">
+                    <button type="button" class="btn btn-outline-primary btn-lg shadow-sm rounded-pill @(Model.U_Estado == 1 ? "": "d-none")" onclick="mostrarResultados()">
+                        <i class="bi bi-bar-chart-fill me-2"></i> Detalle de Puntaje
+                    </button>
+                </div>
+                <div class="me-3 text-end">
+                    <span class="text-muted d-block" style="font-size: 1rem;">Formulario No.</span>
+                    <span class="text-primary fw-bold display-6" style="font-size: 24px; font-weight:bold;">@Model.U_IdFormulario</span>
+                    <span class="text-muted d-block" style="font-size: 1rem;">Encargado de relizar la auditoria.</span>
+                    <span class="text-primary fw-bold display-6" style="font-size: 24px; font-weight:bold;">@ViewBag.nombreResponsable</span>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <div class="form-group">
+                        <label>Tienda</label>
+                        @Html.DropDownListFor(m => m.U_DG_CodTienda, ViewBag.Sucursales as SelectList, "-- Seleccione --", new { @class = "form-control", id = "Sucursal" })
+
+                    </div>
+                     
+                    <div class="form-group">
+                        <label>Supervisor Bodega</label>
+                        @Html.DropDownListFor(m => m.U_DG_CodSupBodega, ViewBag.SupBodega as SelectList, "-- Seleccione --", new { @class = "form-control", id = "Supbodega" })
+                    </div>
+                    <div class="form-group">
+                        <label>Supervisor Venta</label>
+                        @Html.DropDownListFor(m => m.U_DG_SupVenta, ViewBag.SupVenta as SelectList, "-- Seleccione --", new { @class = "form-control", id = "SupVenta" })
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Bodega</label>
+                        <select class="form-control" id="Bodega">
+                            <option value=""  @(Model.U_Bodega == null ? "selected" : "")>--Seleccione --</option>
+                            <option value="1" @(Model.U_Bodega == 1 ? "selected" : "") >Principal</option>
+                            <option value="2" @(Model.U_Bodega == 2 ? "selected" : "")>Secundaria</option>
+                        </select>
+
+                    </div>
+                    <div class="form-group">
+                        <label>Gerente Tienda</label>
+                        @Html.DropDownListFor(m => m.U_DG_CodGerenteTienda, ViewBag.GerenteTienda as SelectList, "-- Seleccione --", new { @class = "form-control", id = "GerenteTienda" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Encargado Bodega</label>
+                        @Html.DropDownListFor(m => m.U_DG_CodEncargadoBodega, ViewBag.EncargadoBodega as SelectList, "-- Seleccione --", new { @class = "form-control", id = "EncargadoBodega" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Area</label>
+                        @Html.DropDownListFor(m => m.U_DG_CodArea, ViewBag.Area as SelectList, "-- Seleccione --", new { @class = "form-control", id = "Area" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-footer bg-light d-flex justify-content-between align-items-center">
+    <button type="button" class="btn btn-primary btn-siguiente" onclick="EnviarDatos(event,0,1,1)">
+        Siguiente <i class="bi bi-arrow-right-circle-fill"></i>
+    </button>
+</div>

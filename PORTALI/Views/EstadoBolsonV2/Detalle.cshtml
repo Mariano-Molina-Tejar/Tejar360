@@ -1,0 +1,376 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas y Utilidades por Sucursal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .table thead {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .btn-update {
+            margin-bottom: 1rem;
+        }
+
+        .location-title {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+        }
+
+        .total-row {
+            background-color: #d1ecf1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center my-4" style="font-weight: bold; font-size: 2rem; color: #343a40; border-bottom: 3px solid #007bff; display: inline-block; padding-bottom: 10px;">
+            📊 Estado bolson
+        </h1>
+
+        <div class="row g-2 mb-3">
+            <div class="col-auto">
+                <div class="d-flex align-items-center" style="height: 100%;">
+                    <button class="btn btn-sm btn-dark shadow-sm btn-update" id="btnBuscar" onclick="CargarData()">
+                        <i class="fas fa-sync-alt me-1"></i> Actualizar Datos
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla agrupada por Location -->
+        <div class="table-responsive" style="margin-bottom:30px">
+            <table class="table table-bordered table-hover" id="tablaVentas" style="font-size:12px;">
+                <thead class="text-center" style="background-color: black; color: white;">
+                    <tr>
+                        <th colspan="6">Información General</th>
+                        <th colspan="3">Cotizaciones nuevas</th>
+                        <th colspan="3">Facturación</th>
+                        <th colspan="3">Perdidas</th>
+                    </tr>
+                    <tr>
+                        <th style="width:225px;">Tienda</th>
+                        <th>Afluencia</th>
+                        <th>Bolsón Acumulado U.</th>
+                        <th>Bolsón Nuevo U.</th>
+                        <th>Bolsón Acumulado Q</th>
+                        <th>Bolsón Nuevo Q</th>
+
+                        <th>Total de Cotizaciones </th>
+                        <th>Monto Cotizado Q</th>
+                        <th>Tasa de cotización </th>
+
+                        <th>Total de facturas</th>
+                        <th>Monto Facturado Q</th>
+                        <th>Tasa de Cierre</th>
+
+                        <th>Total de Cotizaciones</th>
+                        <th>Monto Perdido Q</th>
+                        <th>Tasa de Perdida</th>
+                    </tr>
+                </thead>
+
+                <tbody class="text-center" id="tbodyVentas">
+                    <tr>
+                        <td colspan="15">
+                            <img src="/img/loading_circulo.gif" alt="Cargando" style="width:50px; height:50px;"><br />
+                            Cargando datos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+        $("#globalLoading").show();
+        CargarData();
+    });
+
+    function CargarData() {
+        $.ajax({
+            url: '@Url.Action("CargarData", "EstadoBolsonV2")',
+            type: 'POST',
+            beforeSend: function () {
+                $("#globalLoading").show(); // loading global también en el detalle
+            },
+            success: function (response) {
+                if (response.success)
+                {   
+                    let data = response.data;
+                    let html = '';
+                    let Nivel = 0;
+
+                    let grupos = {};
+                    let totalGeneral = {
+                        Afluencia: 0,
+                        Gen_BolsonAcumuladoU: 0,
+                        Gen_BolsonNuevoU: 0,
+                        Gen_BolsonAcumuladoQ: 0.00,
+                        Gen_BolsonNuevoQ: 0.00,
+                        Coti_TotalCoti: 0,
+                        Coti_MontoCoti: 0,
+                        Coti_TasaCoti: 0.00,
+                        Fact_TotalFacturasU: 0.00,
+                        Fact_MontoFactQ: 0.00,
+                        Fact_TasaCierre: 0.00,
+                        Perd_TotalCotiU: 0,
+                        Perd_MontoPerdidoQ: 0.00,
+                        Perd_TasaPerdida: 0.00
+                    };
+
+                    // Agrupar por región
+                    $.each(data, function (i, item) {
+                        Nivel = item.NivelEntrada;
+                        let region = item.Region || "SIN REGION";
+                        if (!grupos[region]) grupos[region] = [];
+                        grupos[region].push(item);
+                        totalGeneral.Gen_BolsonAcumuladoU += item.InfGen_BolsonAcumuladoUni || 0;
+                        totalGeneral.Gen_BolsonNuevoU += item.InfGen_BolsonNuevoUni || 0;
+                        totalGeneral.Gen_BolsonAcumuladoQ += item.InfGen_BolsonAcumuladoQ || 0;
+                        totalGeneral.Gen_BolsonNuevoQ += item.InfGen_BolsonNuevoQ || 0;
+                        totalGeneral.Coti_TotalCoti += item.CotNue_TotalCotizaciones || 0;
+                        totalGeneral.Coti_MontoCoti += item.CotNue_MontoCotizadoQ || 0;
+                        totalGeneral.Coti_TasaCoti += item.TasaDeCotizacion || 0;
+                    });
+
+                    // Recorrer los grupos
+                    $.each(grupos, function (region, items) {
+                        if (Nivel != 2) {
+                            html += `<tr class="location-title">
+                                <td colspan="18" style="text-align: left; padding-left: 20px;">
+                                    <i class="fas fa-map-marked-alt"></i> <strong>${region}</strong>
+                                </td>
+                            </tr>`;
+                        }
+
+                        // Filas por tienda
+                        $.each(items, function (i, item) {
+                            html += `<tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-link p-0 me-2 btn-expandir" data-tienda="${item.WhsCode}" title="Ver detalle" style="margin-right:7px;">
+                                                <i class="fas fa-plus-circle text-primary"></i>
+                                            </button>
+                                            <span>${item.WhsName}</span>
+                                        </div>
+                                    </td>
+                                    <td>0</td>
+                                    <td>${item.InfGen_BolsonAcumuladoUni}</td>
+                                    <td>${item.InfGen_BolsonNuevoUni}</td>
+                                    <td>${formatoQuetzal(item.InfGen_BolsonAcumuladoQ)}</td>
+                                    <td>${formatoQuetzal(item.InfGen_BolsonNuevoQ)}</td>
+
+                                    <td>${item.CotNue_TotalCotizaciones}</td>
+                                    <td>${formatoQuetzal(item.CotNue_MontoCotizadoQ)}</td>                                    
+                                    <td>${item.TasaDeCotizacion}%</td>
+
+                                    <td>${item.Fac_TotalFacturas}</td>
+                                    <td>${formatoQuetzal(item.Fac_MontoFacturasQ)}</td>
+                                    <td>${item.Fac_TasaCierre}%</td>
+
+                                    <td>${item.Per_TotalCoti}</td>
+                                    <td>${formatoQuetzal(item.Per_MontoPerdidoQ)}</td>
+                                    <td>${item.Per_TasaPerdida}%</td>
+
+                                </tr>`;
+
+                            html += `<tr class="detalle-tienda" id="detalle-${item.WhsCode}" style="display: none;">
+                                        <td colspan="14">
+                                            <div class="contenido-detalle">
+                                                Cargando detalle...
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                        });
+
+                        let total = {
+                            Afluencia: 0,
+                            Gen_BolsonAcumuladoU: 0,
+                            Gen_BolsonNuevoU: 0,
+                            Gen_BolsonAcumuladoQ: 0.00,
+                            Gen_BolsonNuevoQ: 0.00,
+                            Coti_TotalCoti: 0,
+                            Coti_MontoCoti: 0,
+                            Coti_TasaCoti: 0.00,
+                            Fact_TotalFacturasU: 0.00,
+                            Fact_MontoFactQ: 0.00,
+                            Fact_TasaCierre: 0.00,
+                            Perd_TotalCotiU: 0,
+                            Perd_MontoPerdidoQ: 0.00,
+                            Perd_TasaPerdida: 0.00
+                        };
+
+                        items.forEach(item => {
+                            total.Gen_BolsonAcumuladoU += item.InfGen_BolsonAcumuladoUni || 0;
+                            total.Gen_BolsonNuevoU += item.InfGen_BolsonNuevoUni || 0;
+                            total.Gen_BolsonAcumuladoQ += item.InfGen_BolsonAcumuladoQ || 0;
+                            total.Gen_BolsonNuevoQ += item.InfGen_BolsonNuevoQ || 0;
+                            total.Coti_TotalCoti += item.CotNue_TotalCotizaciones || 0;
+                            total.Coti_MontoCoti += item.CotNue_MontoCotizadoQ || 0;
+                            total.Coti_TasaCoti += item.TasaDeCotizacion || 0;
+                            total.Fact_TotalFacturasU += item.Fac_TotalFacturas || 0;
+                            total.Fact_MontoFactQ += item.Fac_MontoFacturasQ || 0;
+                            total.Fact_TasaCierre += item.Fac_TasaCierre || 0;
+                            total.Perd_TotalCotiU += item.Per_TotalCoti || 0;
+                            total.Perd_MontoPerdidoQ += item.Per_MontoPerdidoQ || 0;
+                            total.Perd_TasaPerdida += item.Per_TasaPerdida || 0;
+                        });
+
+                        html += `<tr class="total-row">
+                                <td>TOTAL ${region}</td>
+                                <td>${total.Afluencia}</td>
+                                <td>${total.Gen_BolsonAcumuladoU}</td>
+                                <td>${total.Gen_BolsonNuevoU}</td>
+                                <td>${formatoQuetzal(total.Gen_BolsonAcumuladoQ)}</td>
+                                <td>${formatoQuetzal(total.Gen_BolsonNuevoQ)}</td>
+                                <td>${total.Coti_TotalCoti}</td>
+                                <td>${formatoQuetzal(total.Coti_MontoCoti)}</td>
+                                <td>${total.Coti_TasaCoti}%</td>
+                                <td>${total.Fact_TotalFacturasU}</td>
+                                <td>${formatoQuetzal(total.Fact_MontoFactQ)}</td>
+                                <td>--</td>
+                                <td>${total.Perd_TotalCotiU}</td>
+                                <td>${formatoQuetzal(total.Perd_MontoPerdidoQ)}</td>
+                                <td>${total.Perd_TasaPerdida}%</td>
+                            </tr>`;
+                    });
+
+                    html += `<tr class="total-row bg-dark text-white">
+                                    <td><strong>TOTAL GENERAL</strong></td>
+                                    <td>0</td>
+                                    <td>${totalGeneral.Gen_BolsonAcumuladoU}</td>
+                                    <td>${totalGeneral.Gen_BolsonNuevoU}</td>
+                                    <td>${formatoQuetzal(totalGeneral.Gen_BolsonAcumuladoQ)}</td>
+                                    <td>${formatoQuetzal(totalGeneral.Gen_BolsonNuevoQ)}</td>
+                                    <td>${totalGeneral.Coti_TotalCoti}</td>
+                                    <td>${formatoQuetzal(totalGeneral.Coti_MontoCoti)}</td>
+                                    <td>${totalGeneral.Coti_TasaCoti}</td>
+                                    <td>${totalGeneral.Fact_TotalFacturasU}</td>
+                                    <td>${formatoQuetzal(totalGeneral.Fact_MontoFactQ)}</td>
+                                    <td>${totalGeneral.Fact_TasaCierre}</td>
+                                    <td>${totalGeneral.Perd_TotalCotiU}</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>`;
+
+                    $('#tbodyVentas').html(html);
+                    $('.btn-expandir').off('click').on('click', function () {
+                        var tienda = $(this).data('tienda');
+                        var detalleRow = $('#detalle-' + tienda);
+                        var estaVisible = detalleRow.is(':visible');
+                        // Oculta todos los detalles y reinicia íconos
+                        $('.detalle-tienda').hide();
+                        $('.btn-expandir i').removeClass('fa-minus-circle').addClass('fa-plus-circle');
+
+                        if (!estaVisible) {
+                            // Contenido HTML de la tabla
+                            let Detalle = `
+                            <div class="table-responsive" style="margin-bottom:10px; margin-top:15px">
+                                <table class="table table-bordered table-hover" id="tablaVentas-${tienda}">
+                                    <thead class="text-center" style="background-color: #004080; color: white;">
+                                        <tr>
+                                            <th rowspan="2" class="align-middle">Nombre del asesor</th>
+                                            <th rowspan="2" class="align-middle">Bolson activo</th>
+                                            <th colspan="3">Nuevas cotizaciones	</th>
+                                            <th colspan="3">Facturación</th>
+                                            <th colspan="3">Perdidas</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Lineas</th>
+                                            <th>Nuevos Q.</th>
+                                            <th>Tasa generación</th>
+                                            <th>Total Lineas</th>
+                                            <th>Facturado Q.</th>
+                                            <th>Tasa de cierre</th>
+                                            <th>Total Lineas</th>
+                                            <th>Perdidas Q.</th>
+                                            <th>Tasa de perdida</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center" id="tbodyVentas-${tienda}" style="background-color:white">
+                                        <tr>
+                                            <td colspan="13">
+                                                <img src="/img/loading_circulo.gif" alt="Cargando" style="width:25px; height:25px;"><br/>
+                                                Cargando datos...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>`;
+
+                            detalleRow.find('.contenido-detalle').html(Detalle);
+                            detalleRow.show();
+                            $(this).find('i').removeClass('fa-plus-circle').addClass('fa-minus-circle');
+
+                            // Llamada AJAX para llenar la tabla
+                            $.ajax({
+                                url: '/EstadoBolson/DetalleUsuarios',
+                                method: 'POST',
+                                data: { WhsCode: tienda },
+                                success: function (data) {
+                                    let tbody = '';
+                                    $.each(data.data, function (i, item) {
+                                        tbody += `<tr>
+                                            <td>${item.SlpName}</td>
+                                            <td>${formatoQuetzal(item.BolsonActivo)}</td>
+                                            <td>${item.LineasCot}</td>
+                                            <td>${formatoQuetzal(item.DocTotalCot)}</td>
+                                            <td>${item.TasaGeneracion}%</td>
+                                            <td>${item.LineasFac}</td>
+                                            <td>${formatoQuetzal(item.DocTotalFac)}</td>
+                                            <td>${item.TasaCierre}%</td>
+                                            <td>${item.LineasPerd}</td>
+                                            <td>${formatoQuetzal(item.DocTotalPerd)}</td>
+                                            <td>${item.TasaPerd}%</td>
+                                        </tr>`;
+                                    });
+                                    $('#tbodyVentas-' + tienda).html(tbody);
+                                },
+                                error: function () {
+                                    $('#tbodyVentas-' + tienda).html('<tr><td colspan="13">Error al cargar los datos</td></tr>');
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            complete: function () {
+                $("#globalLoading").hide(); // 👈 se cierra hasta que el detalle termina
+            },
+            error: function () {
+                $("#globalLoading").hide();
+                alert("Error al obtener los datos");
+            }
+        });
+    }
+
+    function formatoQuetzal(valor) {
+        return new Intl.NumberFormat('es-GT', {
+            style: 'currency',
+            currency: 'GTQ',
+            minimumFractionDigits: 2
+        }).format(valor);
+    }
+</script>

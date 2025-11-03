@@ -26,6 +26,25 @@ namespace PORTALI.Controllers
             return View();
         }
 
+        //GUARDA LOS CAMBIOS DE LA COTIZACION
+        public ActionResult EditarCoti (EditarCotizacionEntity editarCotizacionEntity)
+        {
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            if(editarCotizacionEntity.Encabezado.Nota == null) 
+            {
+                editarCotizacionEntity.Encabezado.Nota = "";
+            }
+
+            foreach (var item in editarCotizacionEntity.Detalle) 
+            {
+                item.WhsCode = sessions.WhsCode;
+            }
+
+            string contenido = DAL_API.CrearCotizacionVenta("CarritoCompras/Edit/", editarCotizacionEntity);
+            Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
+            return Json(datos, JsonRequestBehavior.AllowGet);            
+        }
+
         public JsonResult CargarSeguimientos(int DocEntry)
         {
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
@@ -39,7 +58,7 @@ namespace PORTALI.Controllers
             crmSeguimientoCotiEntity.UserId = sessions.UserId;
             string contenido = DAL_API.CrearCotizacionVenta("Crm/SeguimientoCotizacion/", crmSeguimientoCotiEntity);
             Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
-            return Json(datos, JsonRequestBehavior.AllowGet);            
+            return Json(datos, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult BuscarCotizaciones(int SlpCode, DateTime FechaI, DateTime FechaF, int TipoCrm)
@@ -185,8 +204,7 @@ namespace PORTALI.Controllers
 
                 return File(memoryStream.ToArray(), "application/pdf", "CotizacionVenta.pdf");
             }
-        }
-
+        }        
         private string foot()
         {
             return $@"
@@ -212,7 +230,7 @@ namespace PORTALI.Controllers
             return string.Empty; // Retorna vacío si no se encuentra el "-"
         }
 
-        public ActionResult Detalle(int DocEntry)
+        public ActionResult Detalle(int DocEntry, int Tipo)
         {
             if (Session["PropertiesEntity"] == null)
             {
@@ -220,8 +238,22 @@ namespace PORTALI.Controllers
             }
 
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
-            CarritoComprasPDFEntity detail = DALPortalCarritoCompras.getAllCotizacionesPendientesDetalle(DocEntry, sessions.SlpCode);
+            CarritoComprasPDFEntity detail = DALPortalCarritoCompras.getAllCotizacionesPendientesDetalle(DocEntry, sessions.SlpCode, Tipo);
             return View(detail);
+        }
+
+        public ActionResult CambiarPrecios(int tipoPrecio, string Codigos)
+        {
+            if (Session["PropertiesEntity"] == null)
+            {
+                return View();
+            }
+
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            List<CambioPreciosEditCotiEntity> _listado = new List<CambioPreciosEditCotiEntity>();
+            _listado = DALCarritoCotizaciones.DetalleCambioPrecios(tipoPrecio, Codigos, sessions.WhsCode);
+
+            return Json(_listado, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult getAllAsesores()
@@ -269,5 +301,67 @@ namespace PORTALI.Controllers
             List<PortalListadoGeneralEntity> lista = DALPortalGenerales.getAllTiposContactoCrm();
             return Json(lista, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult getAllEstadoPerdidas()
+        {
+            var sessions = Session["PropertiesEntity"] as Entity.SessionLoginEntity;
+            if (sessions == null)
+            {
+                return Json(new { mensaje = "Sesión no encontrada" }, JsonRequestBehavior.AllowGet);
+            }
+
+            List<PortalListadoGeneralEntity> lista = DALPortalGenerales.getAllTiposPerdidasCrm();
+            return Json(lista, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult BuscarProductos(string NombreProducto, bool Promos)
+        {
+            if (Session["PropertiesEntity"] == null)
+            {
+                return View();
+            }
+
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            List<BuscarProductoEntity> _listado = new List<BuscarProductoEntity>();
+            _listado = DALPortalInventario.ListadoProductos(NombreProducto, sessions.WhsCode, Promos);
+            DetalleBusquedaProductosEntity detalle = new DetalleBusquedaProductosEntity();            
+
+            return Json(_listado, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ListaDeAsesoresCotizaciones(string WhsCode)
+        {
+            if (Session["PropertiesEntity"] == null)
+            {
+                return View();
+            }
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            List<ListaFiltroAsesoresEntity> lista = DALFiltrosGenerales.ListadoAsesoresCotizaciones(WhsCode);
+            return Json(lista, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult ActualizarAsesor(int asesor, int docEntry)
+        {
+            try
+            {
+                bool resultado = DALPortalCarritoCompras.UpdateAsesorCotizacion(asesor, docEntry);
+
+                if (resultado)
+                {
+                    return Json(new { success = true, message = "Asesor actualizado correctamente." });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "No se pudo actualizar el asesor." });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Opcional: loguear ex.Message
+                return Json(new { success = false, message = "Error: " + ex.Message });
+            }
+        }
+
     }
 }

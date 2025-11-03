@@ -1,0 +1,468 @@
+﻿@model Entity.Filtros.FiltroReporteCheckList
+
+@{
+    ViewBag.Title = "Dashboard - Supervisión de procesos de bodega";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var resultado = ViewBag.Resultado as List<Entity.ReporteCheckListEntity>;
+
+    var promedioAlmacenaje = resultado.Any() ? resultado.Average(r => r.U_PuntajeAlmacenaje) : 0;
+    var promedioRecepcion = resultado.Any() ? resultado.Average(r => r.U_PuntajeRecepcion) : 0;
+    var promedioDespacho = resultado.Any() ? resultado.Average(r => r.U_PuntajeDespacho) : 0;
+    var promedioDaniado = resultado.Any() ? resultado.Average(r => r.U_PuntajeDaniado) : 0;
+    var promedio5S = resultado.Any() ? resultado.Average(r => r.U_Puntaje5S) : 0;
+    var promedioGeneral = resultado.Any() ? resultado.Average(r => r.CalificacionTotal) : 0;
+}
+
+<div class="container-fluid px-4">
+    <!-- Título principal -->
+    <h2 class="mb-4">Supervisión de procesos de bodega</h2>
+
+    <!-- Sección de filtros -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Filtros</h5>
+
+            @using (Html.BeginForm("ReporteBodegas", "ReporteBodegas", FormMethod.Post, new { id = "filterForm" }))
+            {
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="fechaInicio">Fecha Inicio</label>
+                @Html.TextBoxFor(m => m.FechaInicio,
+                 new
+                      {
+                     @class = "form-control",
+                     type = "date",
+                     id = "FechaInicio"
+                 })
+                <small id="fechaInicioHelp" class="form-text text-muted">
+                    Seleccione la fecha desde la cual desea consultar.
+                </small>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="FechaFin">Fecha Fin</label>
+                @Html.TextBoxFor(m => m.FechaFin,
+                    new
+                        {
+                        @class = "form-control",
+                        type = "date",
+                        id = "FechaFin"
+                    })
+                <small id="fechaFinHelp" class="form-text text-muted">
+                    Seleccione la fecha hasta la cual desea consultar.
+                </small>
+            </div>
+
+           
+            <div class="form-group col-md-3">
+                <label for="sucursal" class="form-label">Sucursal</label>
+                <div class="dropdown">
+                    @Html.DropDownListFor(m => m.CodigoTienda,
+                        ViewBag.Tienda as SelectList,
+                        "-- Seleccione una Tienda --",
+                        new
+                        {
+                            @class = "form-select dropdown-toggle form-control",
+                            id = "SucursalDropdown",
+                            aria_label = "Seleccione una sucursal",
+                            data_toggle = "dropdown",
+                            role = "button",
+                            style = " height: 30px; border-radius: 3px; box-shadow: 0 4px 6px rgba(0, 45, 145, 0.5);",
+                            data_bs_placement = "bottom-start"  // Posición del dropdown
+                        })
+                    <small id="TiendaHelp" class="form-text text-muted">
+                        Seleccione la tienda con el que desea filtrar.
+                    </small>
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="area">Área</label>
+                <div class="dropdown">
+                    @Html.DropDownListFor(m => m.CodigoArea,
+                        ViewBag.Area as SelectList,
+                        "-- Seleccione una Area --",
+                        new
+                        {
+                            @class = "form-select dropdown-toggle form-control",
+                            id = "AreaDropdown",
+                            aria_label = "Seleccione un area",
+                            data_toggle = "dropdown",
+                            role = "button",
+                            style = " height: 30px; border-radius: 3px; box-shadow: 0 4px 6px rgba(0, 45, 145, 0.5);",
+                            data_bs_placement = "bottom-start"  // Posición del dropdown
+                        })
+                    <small id="AreaHelp" class="form-text text-muted">
+                        Seleccione un área con el que desea filtrar.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="region">Región</label>
+                        <div class="dropdown">
+                            @Html.DropDownListFor(m => m.CodigoRegion,
+                                ViewBag.Region as SelectList,
+                                "-- Seleccione una Región --",
+                                new
+                                {
+                                    @class = "form-select dropdown-toggle form-control",
+                                    id = "RegionDropdown",
+                                    aria_label = "Seleccione una regìón",
+                                    data_toggle = "dropdown",
+                                    role = "button",
+                                    style = " height: 30px; border-radius: 3px; box-shadow: 0 4px 6px rgba(0, 45, 145, 0.5);",
+                                    data_bs_placement = "bottom-start"  // Posición del dropdown
+                                })
+                            <small id="AreaHelp" class="form-text text-muted">
+                                Seleccione un àrea con el que desea filtrar.
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="form-group col-md-9 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-3" id="btnFiltrar">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                        <a href="@Url.Action("ReporteBodegas", "ReporteBodegas")" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Restablecer
+                        </a>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+
+
+
+
+
+    </div>
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h4 mb-0 text-gray-800">Indicadores Generales</h1>
+    </div>
+
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card bg-primary text-white shadow-lg h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                Objetivo
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold">100% </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-bullseye fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card bg-primary text-white shadow-lg h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                Cumplimiento General
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold">@promedioGeneral.ToString("0.0")%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección KPIs -->
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h4 mb-0 text-gray-800">KPIs</h1>
+    </div>
+    <!-- Sección de KPIs -->
+    <div class="container-fluid">
+        <div class="row ">
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card border-left-primary shadow py-2 text-center kpi-card-compact">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Almacenaje
+                            <i class="fas fa-boxes fa-lg text-gray-300"></i>
+                        </div>
+                        <div class="h6 mb-1 font-weight-bold text-gray-800">@promedioAlmacenaje.ToString("0.0")%</div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card border-left-primary shadow kpi-card-compact py-2 text-center">
+                    <div class="card-body kpi-card">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Recepción
+                            <i class="fas fa-dolly fa-lg text-gray-300"></i>
+                        </div>
+                        <div class="h6 mb-1 font-weight-bold text-gray-800">@promedioRecepcion.ToString("0.0")%</div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card border-left-primary shadow kpi-card-compact py-2 text-center">
+                    <div class="card-body kpi-card">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Despacho
+                            <i class="fas fa-truck-loading fa-lg text-gray-300"></i>
+                        </div>
+                        <div class="h6 mb-1 font-weight-bold text-gray-800">@promedioDespacho.ToString("0.0")%</div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card border-left-primary shadow kpi-card-compact py-2 text-center">
+                    <div class="card-body kpi-card">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Dañado
+                            <i class="fas fa-exclamation-triangle fa-lg text-gray-300"></i>
+                        </div>
+                        <div class="h6 mb-1 font-weight-bold text-gray-800">@promedioDaniado.ToString("0.0")%</div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card border-left-primary shadow kpi-card-compact py-2 text-center">
+                    <div class="card-body kpi-card">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            5S
+                            <i class="bi bi-clipboard-check fa-lg text-gray-300"></i>
+                        </div>
+                        <div class="h6 mb-1 font-weight-bold text-gray-800">@promedio5S.ToString("0.0")%</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Sección de Gráficos -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Cumplimiento por Tienda</h5>
+                    <div style="height: 300px;">
+                        <canvas id="chartPorTienda"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Promedio General</h5>
+                        <div style="height: 300px;">
+                            <canvas id="chartPromedio"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Cumplimiento por Tienda y Sección</h5>
+                    <div style="height: 800px;">
+                        <canvas id="chartPorTiendaSeccion"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Plugin Chart.js para mostrar porcentajes en graficas  -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<!-- Scripts de gráficos e interacción -->
+
+<script>
+
+    /// -------------------Grafica cumplimiento por Tienda------------------------------
+    var dataTienda = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(resultado));
+
+    var labels = dataTienda.map(x => x.Tienda);
+    var puntajes = dataTienda.map(x => x.CalificacionTotal);
+
+    var ctx = document.getElementById('chartPorTienda').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Puntaje General',
+                data: puntajes,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                type: 'line',
+                label: 'Meta (100)',
+                data: labels.map(() => 100),
+                borderColor: 'red',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    color: '#000',
+                    font: { weight: 'bold' },
+                    formatter: function (value) {
+                        return value + '%'; //Muestra porcentaje en cada barra
+                    }
+
+                }
+            },
+            scales: { y: { beginAtZero: true, max: 110 } }
+        },
+        plugins: [ChartDataLabels] //Se activa el plugin
+    });
+
+    //--------------------Grafica Por Tienda y Seccion -----------------------------------------
+    var ctx3 = document.getElementById('chartPorTiendaSeccion').getContext('2d');
+
+    new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: labels, // Tiendas
+            datasets: [
+                {
+                    label: 'Almacenaje',
+                    data: dataTienda.map(x => x.U_PuntajeAlmacenaje),
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'Recepción',
+                    data: dataTienda.map(x => x.U_PuntajeRecepcion),
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                },
+                {
+                    label: 'Despacho',
+                    data: dataTienda.map(x => x.U_PuntajeDespacho),
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                },
+                {
+                    label: 'Dañado',
+                    data: dataTienda.map(x => x.U_PuntajeDaniado),
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                },
+                {
+                    label: '5S',
+                    data: dataTienda.map(x => x.U_Puntaje5S),
+                    backgroundColor: 'rgba(153, 102, 255, 0.7)'
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y', // 🔹 Barras horizontales
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                datalabels: {
+                    anchor: 'center',
+                    align: 'center',
+                    color: '#000',
+                    font: { weight: 'bold', size: 10 },
+                    formatter: function (value, ctx) {
+                        return ctx.dataset.label + " (" + value + "%)"; //Muestra porcentaje dentro de las barras
+                    }
+                }
+            },
+            scales: {
+                x: { beginAtZero: true, max: 110 },
+                y: { stacked: false }
+            }
+        },
+        plugins: [ChartDataLabels] //Activa plugin para etiquetas en graficas
+    });
+
+
+
+    //Grafica Promedio General
+    @*var promedioGeneral = @promedioGeneral;
+
+    var ctx2 = document.getElementById('chartPromedio').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Promedio General'],
+            datasets: [{
+                label: 'Cumplimiento',
+                data: [promedioGeneral],
+                backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }, {
+                type: 'line',
+                label: 'Meta (100)',
+                data: [100],
+                borderColor: 'red',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true, max: 110 } }
+        }
+    });*@
+
+
+</script>
+
+
+
+<style>
+    .kpi-card-compact {
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+</style>

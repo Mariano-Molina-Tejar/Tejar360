@@ -1,0 +1,414 @@
+﻿@using Entity;
+@model List<ReporteFinanciero>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas y Utilidades por Sucursal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+       /* .table thead {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .total-row {
+            background-color: #d1ecf1;
+            font-weight: bold;
+        }*/
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center my-4">
+            <h1 style="font-weight: bold; font-size: 2rem; color: #343a40; border-bottom: 3px solid #007bff; display: inline-block; padding-bottom: 10px; margin: 0;">
+                📊 Reporte de Ventas y Utilidad por Sucursal
+            </h1>
+            <button class="btn btn-primary btn-success" onclick="EnviarCorreo()">
+                <i class="fas fa-envelope"></i> Enviar por correo
+            </button>
+        </div>
+
+        
+        <div id="ReporteGeneral" class="table-responsive" style="margin-bottom:30px">
+            <table class="table-dark">
+                <tr style=" background-color:#000; color:#fff;">
+                    <th style="text-align:left; padding:8px; border:1px solid #dee2e6;">
+                        FECHA INICIO : <strong>@ViewBag.Inicio</strong>
+                    </th>
+                    <th style="text-align:left; padding:8px; border:1px solid #dee2e6;">
+                        FECHA FIN : <strong>@ViewBag.Ayer</strong>
+                    </th>
+                </tr>
+            </table>
+
+            <!-- ================== PRIMERA TABLA ================== -->
+            <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:20px;">
+                <thead style="text-align:center; background-color:#000; color:#fff;">
+                    <tr>
+                        <th colspan="4" style="padding: 8px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">DIARIO</th>
+                        <th colspan="5" style="padding: 8px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">VENTA</th>
+                        <th colspan="6" style="padding:8px; border:1px solid #dee2e6;">UTILIDAD</th>
+                    </tr>
+
+                    <tr>
+                        <th style="padding:8px; border:1px solid #dee2e6;">TIENDA</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">VENTA</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">UTILIDAD</th>
+                        <th style="padding: 8px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD; ">MARGEN</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">META</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">VENTA</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROMEDIO DIARIO</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROYECCIÓN</th>
+                        <th style="padding: 8px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">META DE VENTA (%)</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">META</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">UTILIDAD</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROMEDIO DIARIO</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROYECCIÓN</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">MARGEN</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">META VENTA</th>
+                    </tr>
+                </thead>
+
+                <tbody style="text-align:center;">
+                    @{
+                        var grupos = Model.GroupBy(x => x.Location);
+
+                        decimal totalGeneral_D_Venta = 0;
+                        decimal totalGeneral_D_Utilidad = 0;
+                        decimal totalGeneral_V_Venta = 0;
+                        decimal totalGeneral_V_Meta = 0;
+                        decimal totalGeneral_V_PromedioDiario = 0;
+                        decimal totalGeneral_V_Proyeccion = 0;
+                        decimal totalGeneral_U_Meta = 0;
+                        decimal totalGeneral_U_Utilidad = 0;
+                        decimal totalGeneral_U_PromedioDiario = 0;
+                        decimal totalGeneral_U_Proyeccion = 0;
+                    }
+
+                    @foreach (var grupo in grupos)
+                    {
+                        decimal subtotal_D_Venta = 0, subtotal_D_Utilidad = 0;
+                        decimal subtotal_V_Meta = 0, subtotal_V_Venta = 0, subtotal_V_PromedioDiario = 0, subtotal_V_Proyeccion = 0;
+                        decimal subtotal_U_Meta = 0, subtotal_U_Utilidad = 0, subtotal_U_PromedioDiario = 0, subtotal_U_Proyeccion = 0;
+
+                        foreach (var tabla in grupo)
+                        {
+                            subtotal_D_Venta += tabla.D_Venta;
+                            subtotal_D_Utilidad += tabla.D_Utilidad;
+                            subtotal_V_Meta += tabla.V_Meta;
+                            subtotal_V_Venta += tabla.V_Venta;
+                            subtotal_V_PromedioDiario += tabla.V_PromDiario;
+                            subtotal_V_Proyeccion += tabla.V_Proyeccion;
+                            subtotal_U_Meta += tabla.U_Meta;
+                            subtotal_U_Utilidad += tabla.U_Utilidad;
+                            subtotal_U_PromedioDiario += tabla.U_PromDiario;
+                            subtotal_U_Proyeccion += tabla.U_Proyeccion;
+
+                            totalGeneral_D_Venta += tabla.D_Venta;
+                            totalGeneral_D_Utilidad += tabla.D_Utilidad;
+                            totalGeneral_V_Meta += tabla.V_Meta;
+                            totalGeneral_V_Venta += tabla.V_Venta;
+                            totalGeneral_V_PromedioDiario += tabla.V_PromDiario;
+                            totalGeneral_V_Proyeccion += tabla.V_Proyeccion;
+                            totalGeneral_U_Meta += tabla.U_Meta;
+                            totalGeneral_U_Utilidad += tabla.U_Utilidad;
+                            totalGeneral_U_PromedioDiario += tabla.U_PromDiario;
+                            totalGeneral_U_Proyeccion += tabla.U_Proyeccion;
+
+                            <tr>
+                                @*<td style="padding:6px; border:1px solid #dee2e6;">@tabla.UnidadFinanciera</td>*@
+                                <td style="padding:6px; border:1px solid #dee2e6;">@tabla.WhsName</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.D_Venta)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.D_Utilidad)</td>
+                                <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD; ">@tabla.D_Margen %</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Meta)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Venta)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_PromDiario)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Proyeccion)</td>
+                                <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:N2}", tabla.V_MetaDeVentaPorcentaje) %</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Meta)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Utilidad)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_PromDiario)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Proyeccion)</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:N2}", tabla.U_Margen) %</td>
+                                <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:N2}", tabla.U_MetaVenta) %</td>
+                            </tr>
+                        }
+
+                        <tr style="background-color:beige; font-weight:bold;">
+                            <td style="padding:6px; border:1px solid #dee2e6;">@grupo.Key</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_D_Venta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_D_Utilidad)</td>
+                            <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:P2}", subtotal_D_Utilidad / subtotal_D_Venta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_V_Meta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_V_Venta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_V_PromedioDiario)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_V_Proyeccion)</td>
+                            <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:P2}", subtotal_V_Proyeccion / subtotal_V_Meta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_U_Meta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_U_Utilidad)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_U_PromedioDiario)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", subtotal_U_Proyeccion)</td>
+                               <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", subtotal_U_Proyeccion / subtotal_V_Proyeccion)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", subtotal_U_Proyeccion / subtotal_U_Meta)</td>
+                        </tr>
+                    }
+
+                    <tr style="background-color:#d1ecf1; font-weight:bold;">
+                        <td style="padding:6px; border:1px solid #dee2e6;">TOTAL TIENDAS</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_D_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_D_Utilidad)</td>
+                        <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:P2}", totalGeneral_D_Utilidad / totalGeneral_D_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_V_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_V_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_V_PromedioDiario)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_V_Proyeccion)</td>
+                        <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:P2}", totalGeneral_V_Proyeccion / totalGeneral_V_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_U_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_U_Utilidad)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_U_PromedioDiario)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", totalGeneral_U_Proyeccion)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", totalGeneral_U_Proyeccion / totalGeneral_V_Proyeccion)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", totalGeneral_U_Proyeccion / totalGeneral_U_Meta)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- ================== SEGUNDA TABLA ================== -->
+            <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:20px;">
+                <thead style="text-align:center; background-color:#000; color:#fff;">
+                    <tr>
+                        @*<th style="padding:8px; border:1px solid #dee2e6;">UNIDAD FINANCIERA</th>*@
+                        <th style="padding:8px; border:1px solid #dee2e6;">SUCURSAL</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">VENTA</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">UTILIDAD</th>
+                        <th style="padding: 8px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">MARGEN</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">META</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">VENTA</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROMEDIO DIARIO</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROYECCIÓN</th>
+                        <th style="padding: 8px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">META DE VENTA (%)</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">META</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">UTILIDAD</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROMEDIO DIARIO</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">PROYECCIÓN</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">MARGEN</th>
+                        <th style="padding:8px; border:1px solid #dee2e6;">META VENTA</th>
+                    </tr>
+                </thead>
+                <tbody style="text-align:center;">
+                    @{
+                        decimal total2_D_Venta = 0, total2_D_Utilidad = 0;
+                        decimal total2_V_Meta = 0, total2_V_Venta = 0, total2_V_Promedio = 0, total2_V_Proyeccion = 0;
+                        decimal total2_U_Meta = 0, total2_U_Utilidad = 0, total2_U_Promedio = 0, total2_U_Proyeccion = 0;
+                    }
+
+                    @foreach (var tabla in ViewBag.ReporteCD)
+                    {
+                        total2_D_Venta += tabla.D_Venta;
+                        total2_D_Utilidad += tabla.D_Utilidad;
+                        total2_V_Meta += tabla.V_Meta;
+                        total2_V_Venta += tabla.V_Venta;
+                        total2_V_Promedio += tabla.V_PromDiario;
+                        total2_V_Proyeccion += tabla.V_Proyeccion;
+                        total2_U_Meta += tabla.U_Meta;
+                        total2_U_Utilidad += tabla.U_Utilidad;
+                        total2_U_Promedio += tabla.U_PromDiario;
+                        total2_U_Proyeccion += tabla.U_Proyeccion;
+
+                        <tr>
+                            @*<td style="padding:6px; border:1px solid #dee2e6;">@tabla.UnidadFinanciera</td>*@
+                            <td style="padding:6px; border:1px solid #dee2e6;">@tabla.WhsName</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.D_Venta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.D_Utilidad)</td>
+                            <td style="padding: 6px; border-right: 2px solid #BCC4CD;">@tabla.D_Margen %</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Meta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Venta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_PromDiario)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Proyeccion)</td>
+                            <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:N2}", tabla.V_MetaDeVentaPorcentaje) %</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Meta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Utilidad)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_PromDiario)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Proyeccion)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:N2}", tabla.U_Margen) %</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:N2}", tabla.U_MetaVenta) %</td>
+                        </tr>
+                    }
+
+                    @foreach (var tabla in ViewBag.ReporteInter)
+                    {
+                        total2_D_Venta += tabla.D_Venta;
+                        total2_D_Utilidad += tabla.D_Utilidad;
+                        total2_V_Meta += tabla.V_Meta;
+                        total2_V_Venta += tabla.V_Venta;
+                        total2_V_Promedio += tabla.V_PromDiario;
+                        total2_V_Proyeccion += tabla.V_Proyeccion;
+                        total2_U_Meta += tabla.U_Meta;
+                        total2_U_Utilidad += tabla.U_Utilidad;
+                        total2_U_Promedio += tabla.U_PromDiario;
+                        total2_U_Proyeccion += tabla.U_Proyeccion;
+
+                        <tr>
+                            @*<td style="padding:6px; border:1px solid #dee2e6;">@tabla.UnidadFinanciera</td>*@
+                            <td style="padding:6px; border:1px solid #dee2e6;">@tabla.WhsName</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.D_Venta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.D_Utilidad)</td>
+                            <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@tabla.D_Margen %</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Meta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Venta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_PromDiario)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.V_Proyeccion)</td>
+                            <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:N2}", tabla.V_MetaDeVentaPorcentaje) %</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Meta)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Utilidad)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_PromDiario)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", tabla.U_Proyeccion)</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:N2}", tabla.U_Margen) %</td>
+                            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:N2}", tabla.U_MetaVenta) %</td>
+                        </tr>
+                    }
+
+                    <tr style="background-color:#d1ecf1; font-weight:bold;">
+                        <td style="padding:6px; border:1px solid #dee2e6;">TOTAL TECKNOPAR Y ENTRETIENDAS</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_D_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_D_Utilidad)</td>
+                        <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:P2}", total2_D_Utilidad / total2_D_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_V_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_V_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_V_Promedio)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_V_Proyeccion)</td>
+                        <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">
+                            @string.Format("{0:P2}", total2_V_Meta == 0 ? 0 : (total2_V_Proyeccion / total2_V_Meta))
+                        </td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_U_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_U_Utilidad)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_U_Promedio)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", total2_U_Proyeccion)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", total2_U_Proyeccion / total2_V_Proyeccion)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", total2_U_Meta == 0 ? 0 : (total2_U_Proyeccion / total2_U_Meta))</td>
+                    </tr>
+                    <tr style="background-color:dimgray; color:white; font-weight:bold;">
+                        <th style="padding:8px; border:1px solid #dee2e6;">TOTAL GENERAL</th>
+                        @{
+                            decimal sum_D_Venta = totalGeneral_D_Venta + total2_D_Venta;
+                            decimal sum_D_Utilidad = totalGeneral_D_Utilidad + total2_D_Utilidad;
+                            decimal sum_V_Meta = totalGeneral_V_Meta + total2_V_Meta;
+                            decimal sum_V_Venta = totalGeneral_V_Venta + total2_V_Venta;
+                            decimal sum_V_Promedio = totalGeneral_V_PromedioDiario + total2_V_Promedio;
+                            decimal sum_V_Proyeccion = totalGeneral_V_Proyeccion + total2_V_Proyeccion;
+                            decimal sum_U_Meta = totalGeneral_U_Meta + total2_U_Meta;
+                            decimal sum_U_Utilidad = totalGeneral_U_Utilidad + total2_U_Utilidad;
+                            decimal sum_U_Promedio = totalGeneral_U_PromedioDiario + total2_U_Promedio;
+                            decimal sum_U_Proyeccion = totalGeneral_U_Proyeccion + total2_U_Proyeccion;
+                        }
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_D_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_D_Utilidad)</td>
+                        <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:P2}", sum_D_Utilidad / sum_D_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Venta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Promedio)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Proyeccion)</td>
+                        <td style="padding: 6px; border: 1px solid #dee2e6; border-right: 2px solid #BCC4CD;">@string.Format("{0:P2}", sum_V_Proyeccion / sum_V_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Meta)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Utilidad)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Promedio)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Proyeccion)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", sum_U_Proyeccion / totalGeneral_V_Proyeccion)</td>
+                        <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", sum_U_Proyeccion / sum_V_Proyeccion)</td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+
+            <!-- ================== TOTAL DE AMBAS TABLAS ================== -->
+            <!--<table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:20px;">
+    <thead style="text-align:center;">-->
+            @*<tr style="background-color:dimgray; color:white; font-weight:bold;">
+            <th colspan="2" style="padding:8px; border:1px solid #dee2e6;">TOTAL GENERAL</th>
+            @{
+                decimal sum_D_Venta = totalGeneral_D_Venta + total2_D_Venta;
+                decimal sum_D_Utilidad = totalGeneral_D_Utilidad + total2_D_Utilidad;
+                decimal sum_V_Meta = totalGeneral_V_Meta + total2_V_Meta;
+                decimal sum_V_Venta = totalGeneral_V_Venta + total2_V_Venta;
+                decimal sum_V_Promedio = totalGeneral_V_PromedioDiario + total2_V_Promedio;
+                decimal sum_V_Proyeccion = totalGeneral_V_Proyeccion + total2_V_Proyeccion;
+                decimal sum_U_Meta = totalGeneral_U_Meta + total2_U_Meta;
+                decimal sum_U_Utilidad = totalGeneral_U_Utilidad + total2_U_Utilidad;
+                decimal sum_U_Promedio = totalGeneral_U_PromedioDiario + total2_U_Promedio;
+                decimal sum_U_Proyeccion = totalGeneral_U_Proyeccion + total2_U_Proyeccion;
+            }
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_D_Venta)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_D_Utilidad)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", sum_D_Utilidad / sum_D_Venta)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Meta)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Venta)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Promedio)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_V_Proyeccion)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", sum_V_Proyeccion / sum_V_Meta)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Meta)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Utilidad)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Promedio)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("Q{0:N2}", sum_U_Proyeccion)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", sum_U_Proyeccion / totalGeneral_V_Proyeccion)</td>
+            <td style="padding:6px; border:1px solid #dee2e6;">@string.Format("{0:P2}", sum_U_Proyeccion / sum_U_Meta)</td>
+        </tr>*@
+            <!--</thead>
+    </table>-->
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.3/sweetalert2.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+    });
+
+    function EnviarCorreo() {
+        let reporte = document.getElementById("ReporteGeneral").outerHTML;
+        $("#globalLoading").show();
+    $.ajax({
+        url: '@Url.Action("SendMail", "VentasEmpresa")', // genera la URL correcta
+        type: "POST",
+        data: { Body: reporte }, // debe coincidir con el parámetro de tu acción
+        success: function (resp) {
+            if (resp.success) {
+                $("#globalLoading").hide();
+                Toast.fire({ icon: 'success', title: "Correo enviado con exito" });
+            } else {
+                $("#globalLoading").hide();
+                Toast.fire({ icon: 'warning', title: resp.mensaje });
+            }
+        },
+        error: function (xhr, status, error) {
+            $("#globalLoading").hide();
+            Toast.fire({ icon: 'error', title: xhr.responseText });
+        }
+
+    });
+}
+
+
+</script>

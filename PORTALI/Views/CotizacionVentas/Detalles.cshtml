@@ -500,18 +500,37 @@
                     <div class="col-lg-4" style="padding: 1px;">
                         <div class="product-container" style="margin-left:1px;">
                             <div class="product-specs">
-                                <div style="display: flex; align-items: center; font-family: 'Arial', sans-serif; background-color: #f8f9fa;border: 1px solid #dee2e6; border-radius: 8px; padding: 10px 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                                    <span style="font-size: 18px; font-weight: bold; color: #495057; margin-right: 10px;">
-                                        Stock en mi tienda:
-                                    </span>
-                                    <strong style="font-size: 20px; color: @(Model.Encabezado.Stock == 0 ? "red" : "blue"); margin-right: 10px;">
-                                        @Model.Encabezado.Stock
-                                    </strong>
-                                    @Html.Raw(Model.Encabezado.Stock == 0 ? "<i class='fas fa-exclamation-circle' style='color:red; font-size:18px;'></i>" : "<i class='fas fa-check-circle' style='color:blue; font-size:18px;'></i>")
+                                <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Arial', sans-serif; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 12px; padding: 15px 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                                    <!-- Stock -->
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 18px; font-weight: bold; color: #495057;">
+                                            Stock:
+                                        </span>
+                                        <strong style="font-size: 20px; color: @(Model.Encabezado.Stock == 0 ? "red" : "blue");">
+                                            @Model.Encabezado.Stock
+                                        </strong>
+                                        @Html.Raw(Model.Encabezado.Stock == 0
+                                            ? "<i class='fas fa-exclamation-circle' style='color:red; font-size:18px;'></i>"
+                                            : "<i class='fas fa-check-circle' style='color:blue; font-size:18px;'></i>")
+                                    </div>
+
+                                    <!-- Comprometido -->
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 18px; font-weight: bold; color: #495057;">
+                                            Comprometido:
+                                        </span>
+                                        <strong style="font-size: 20px; color: @(Model.Encabezado.Comprometido == 0 ? "orante" : "red");">
+                                            @Model.Encabezado.Comprometido
+                                        </strong>
+                                        @Html.Raw(Model.Encabezado.Comprometido == 0
+                                            ? "<i class='fas fa-box' style='color:orange; font-size:18px;'></i>"
+                                            : "<i class='fas fa-exclamation-circle' style='color:red; font-size:18px;'></i>")
+                                    </div>
                                 </div>
+
                                 <style>
                                     #tblBusqueda {
-                                        border-collapse: collapse;
+                                        border-collapse: collapse;<
                                         border: none;
                                         color: gray;
                                         width: 100%;
@@ -612,7 +631,7 @@
                 </table>
             </div>
             <div class="modal-footer" style="margin-top: 20px; text-align: right;">
-                <button type="button" class="btn" onclick="cerrarModal()" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer;">Cerrar</button>
+                <button type="button" class="btn" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer;">Cerrar</button>
             </div>
         </div>
     </div>
@@ -1223,8 +1242,9 @@
         const elemento = document.getElementById('iMetrosTotal');
         const cantidadMetros = elemento ? elemento.textContent.replace("Total metros de piso:", "").trim() : "0";
         const linkImg = "@Model.Encabezado.Imagen";
-        const EsPromo = "@Model.Encabezado.EsPromo";        
+        const EsPromo = "@Model.Encabezado.EsPromo";
         let lineId = regresarId();
+        const codigoPromo = "@Model.Encabezado.CodigoPromo";
 
         const producto = {
             DocE: 0,
@@ -1245,7 +1265,8 @@
             DescuentoLpr: 0,
             DescuentoPor: 0.00,
             DescuentoQtz: 0.00,
-            DescuentoNwp: 0.00
+            DescuentoNwp: 0.00,
+            CodPromo: codigoPromo
         };
 
         if (CrearCotizacionCookie(clienteId, producto,0) === true) {
@@ -1253,52 +1274,6 @@
             $("#globalLoading").hide();
         }
     }
-
-    //function CrearCotizacionCookie(clienteId, producto) {
-    //    let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
-    //    var llave = generarNumeroCotizacion();
-    //    // Si no existe una cotización previa, crea una nueva
-
-    //    if (!cookieName) {
-
-    //        cookieName = "T-OneCotizacion-" + llave;
-    //    }
-
-    //    const existingCotizacion = getCookie(cookieName);
-    //    let cotizacion;
-    //    if (existingCotizacion) {
-    //        cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto        
-    //        cotizacion.productos.push(producto); // Agregamos el nuevo producto
-    //    } else {
-    //        cotizacion = {
-    //            DocN: 0,
-    //            Llave: llave,
-    //            NoCotizacion: generarNumeroCotizacion(),
-    //            cliente: clienteId,
-    //            LicTradNum: "",
-    //            CardCode: "",
-    //            CardName: "",
-    //            Direccion: "",
-    //            Email: "",
-    //            Telefono: "",
-    //            Fecha: new Date().toISOString().split('T')[0], // Fecha actual
-    //            PriceId: 9,
-    //            FacturarNit: "",
-    //            FacturarNombre: "",
-    //            FacturarDireccion: "",
-    //            EsCF: "",
-    //            Borrador: "N",
-    //            productos: [producto]
-    //        };
-    //    }
-    //    // Guardar la cotización actualizada
-    //    setCookie(cookieName, JSON.stringify(cotizacion), 7);
-
-    //    // Actualizar el badge del carrito
-    //    actualizarCarritoBadge(cotizacion.productos.length);
-
-    //    return true;
-    //}
 
     function regresarId() {
         let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");

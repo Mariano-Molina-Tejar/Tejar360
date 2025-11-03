@@ -1,0 +1,588 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de seguimientos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .table thead {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .btn-update {
+            margin-bottom: 1rem;
+        }
+
+        .location-title {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+        }
+
+        .total-row {
+            background-color: #d1ecf1;
+            font-weight: bold;
+        }
+
+
+        .filtros-container {
+            padding: 15px;
+            padding-top:5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .filtro-item {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+            flex: 1 1 150px;
+        }
+
+        #btnFiltrar {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        #btnFiltrar-boton:hover {
+            background: linear-gradient(135deg, #66BB6A, #388E3C);
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.3);
+        }
+
+        #btnFiltrar-boton:active {
+            transform: scale(0.97);
+        }
+
+
+        /* Switch estilo */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                left: 2px;
+                bottom: 2px;
+                background-color: white;
+                border-radius: 50%;
+                transition: 0.2s;
+            }
+
+        input:checked + .slider {
+            background-color: #4caf50;
+        }
+
+            input:checked + .slider:before {
+                transform: translateX(20px);
+            }
+
+        .paneles-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel {
+            flex: 1 1 150px;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+            .panel h3 {
+                margin: 0;
+                font-size: 1rem;
+                color: #555;
+            }
+
+            .panel span {
+                display: block;
+                margin-top: 0.5rem;
+                font-size: 1.4rem;
+                font-weight: bold;
+                color: black;
+            }
+
+        .oculto {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center my-4" style="font-weight: bold; font-size: 2rem; color: #343a40; border-bottom: 3px solid #007bff; display: inline-block; padding-bottom: 10px;">
+            📈 Resumen de seguimientos
+        </h1>
+
+        <div class="filtros-container">
+            <div class="filtro-item">
+                <label>Región</label>
+                <select id="filtroRegion" class="form-control form-control-sm shadow-sm border-secondary">
+                    <option value="-101">-- Seleccionar --</option>
+                </select>
+            </div>
+
+            <div class="filtro-item">
+                <label>Tienda</label>
+                <select id="filtroTienda" class="form-control form-control-sm shadow-sm border-secondary">
+                    <option value="-1">-- Seleccionar --</option>
+                </select>
+            </div>
+
+            <div class="filtro-boton">
+                <button id="btnFiltrar">Filtrar</button>
+            </div>
+        </div>
+
+        <!-- Tabla agrupada por Location -->
+        <div class="table-responsive" style="margin-bottom:30px">
+            <table class="table table-bordered table-hover" id="tablaVentas" style="font-size:12px;">
+                <thead class="text-center" style="background-color: black; color: white;">
+                    <tr>
+                        <th rowspan="2">Tienda</th>
+                        <th colspan="2">Activo</th>
+                        <th colspan="3">En Seguimiento</th>
+                        <th colspan="3">Fuera de seguimiento</th>
+                    </tr>
+                    <tr>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Tasa</th>
+
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Tasa</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center" id="tbodyVentas">
+                    <tr>
+                        <td colspan="15">
+                            <img src="/img/loading_circulo.gif" alt="Cargando" style="width:50px; height:50px;"><br />
+                            Cargando datos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {        
+        $("#globalLoading").show();        
+        // Paso 1: cargar regiones
+        CargarRegiones().then(() => {
+            // Paso 2: cargar tiendas después que regiones esté listo
+            let idRegion = $("#filtroRegion").val();
+            return CargarTiendas(idRegion);
+        }).then(() => {
+            // Paso 3: ya están cargados, ahora sí puedo leer valores
+            let idRegion = $("#filtroRegion").val();
+            let whsCode = $("#filtroTienda").val();
+
+            // Paso 4: cargar data con esos IDs
+            CargarData(idRegion, whsCode);
+        });
+    });
+
+    $('#filtroRegion').on('change', function () {
+        let idRegion = $(this).val();
+        CargarTiendas(idRegion);
+    });
+
+    function CargarRegiones() {
+        $('#filtroRegion')
+            .html('')
+            .append($('<option>', { value: '-1', text: '-- Seleccionar --' }))
+            .val('-1')
+            .trigger('change');
+
+        return $.ajax({
+            url:'@Url.Action("ListadoRegiones","BolsonActivo")',
+            type:"POST",
+            success:function(data){
+                if(data&&data.length>0){
+                    $.each(data,function(index,item){
+                        $('#filtroRegion').append($('<option>',{value:item.IdRegion,text:item.Region}));
+                    });
+                    if(data.length===1){
+                        $('#filtroRegion').val(data[0].IdRegion).trigger('change');
+                        CargarTiendas(data[0].IdRegion);
+                        $('#filtroRegion').prop('disabled',true);
+                    }else{
+                        $('#filtroRegion').val('-1').trigger('change');
+                        CargarTiendas(-1);
+                        $('#filtroRegion').prop('disabled',false);
+                    }
+                }else{
+                    $('#filtroRegion').val('-1');
+                }
+            },
+            error:function(xhr,status,error){
+                console.error("Error al cargar las regiones:",error);
+                $('#filtroRegion').val('-1');
+            },
+            complete:function(){
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    $('#filtroTienda').on('change', function() {
+        let idRegion = $('#filtroRegion').val();
+        let WhsCode = $(this).val();
+
+    });
+
+    function CargarTiendas(idRegion) {        
+        $('#filtroTienda')
+            .html('')
+            .append($('<option>', { value: '-1', text: '-- Seleccionar --' }))
+            .val('-1')
+            .trigger('change');
+
+        return $.ajax({
+            url: '@Url.Action("ListadoTiendas","BolsonActivo")',
+            type: "POST",
+            data: { IdRegion: idRegion },
+            success: function(data) {
+                if (data && data.length > 0) {
+                    $.each(data, function(index, item) {
+                        $('#filtroTienda').append(
+                            $('<option>', { value: item.WhsCode, text: item.WhsName })
+                        );
+                    });
+
+                    if (data.length === 1) {
+                        $('#filtroTienda').val(data[0].WhsCode).trigger('change');
+                        $('#filtroTienda').prop('disabled', true);
+                        CargarUsuarios(idRegion, data[0].WhsCode);
+                    } else {
+                        $('#filtroTienda').val('-1').trigger('change');
+                        $('#filtroTienda').prop('disabled', false);
+                    }
+                } else {
+                    $('#filtroTienda').val('-1');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al cargar las tiendas:", error);
+                $('#filtroTienda').val('-1');
+            },
+            complete: function() {
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    function CargarData(idRegion, whsCode)
+    {   
+        /*$("#globalLoading").show();*/
+        $.ajax({
+            url: '@Url.Action("CargarData", "ResumenSeguimientos")',
+            type: 'POST',
+            data: {IdRegion : idRegion, WhsCode: whsCode},
+            success: function (response) {
+                $("#globalLoading").hide();
+                if (response.success)
+                {
+                    let data = response.data;
+                    let html = '';
+                    let Nivel = 0;
+
+                    let grupos = {};
+                    let totalGeneral = {
+                        _ActCantidad: 0,
+                        _ActTotal: 0,
+                        _SegCantidad: 0,
+                        _SegTotal: 0,
+                        _SegTasa: 0,
+                        _FseCantidad: 0,
+                        _FseTotal: 0,
+                        _FseTasa: 0
+                    };
+
+                    // Agrupar por región
+                    $.each(data, function (i, item) {
+                        Nivel = item.NivelEntrada;
+                        let region = item.Region || "SIN REGION";
+                        if (!grupos[region]) grupos[region] = [];
+                        grupos[region].push(item);
+
+                        totalGeneral._ActCantidad += item.CantidadActivo || 0;
+                        totalGeneral._ActTotal += item.TotalActivo || 0;
+
+                        totalGeneral._SegCantidad += item.CantidadSeg || 0;
+                        totalGeneral._SegTotal += item.TotalSeguimiento || 0;
+                        totalGeneral._SegTasa += item.TasaSeg || 0;
+
+                        totalGeneral._FseCantidad += item.CantidadFueraSeg || 0;
+                        totalGeneral._FseTotal += item.TotalFueraDeSeguimiento || 0;
+                        totalGeneral._FseTasa += item.TasaFueraSeg || 0;
+                    });
+
+                    // Recorrer los grupos
+                    $.each(grupos, function (region, items) {
+                        if (Nivel != 2) {
+                            html += `<tr class="location-title">
+                                <td colspan="14" style="text-align: left; padding-left: 20px;">
+                                    <i class="fas fa-map-marked-alt"></i> <strong>${region}</strong>
+                                </td>
+                            </tr>`;
+                        }
+
+                        // Filas por tienda
+                        $.each(items, function (i, item) {
+                            html += `<tr>
+                                    <td class="sticky-col">
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-link p-0 me-2 btn-expandir" data-tienda="${item.WhsCode}" title="Ver detalle" style="margin-right:7px;">
+                                                <i class="fas fa-plus-circle text-primary"></i>
+                                            </button>
+                                            <span>${item.WhsName}</span>
+                                        </div>
+                                    </td>
+                                    <td>${item.CantidadActivo}</td>
+                                    <td>${formatoQuetzal(item.TotalActivo)}</td>
+
+                                    <td>${item.CantidadSeg}</td>
+                                    <td>${formatoQuetzal(item.TotalSeguimiento)}</td>
+                                    <td>${item.TasaSeg}%</td>
+
+                                    <td>${item.CantidadFueraSeg}</td>
+                                    <td>${formatoQuetzal(item.TotalFueraDeSeguimiento)}</td>
+                                    <td>${item.TasaFueraSeg}%</td>
+                                </tr>`;
+
+                            html += `<tr class="detalle-tienda" id="detalle-${item.WhsCode}" style="display: none;">
+                                        <td colspan="14">
+                                            <div class="contenido-detalle">
+                                                Cargando detalle...
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                        });
+
+
+                        // Totales por región
+                        let total = {
+                            _ActCantidad: 0,
+                            _ActTotal: 0,
+                            _SegCantidad: 0,
+                            _SegTotal: 0,
+                            _SegTasa: 0,
+                            _FseCantidad: 0,
+                            _FseTotal: 0,
+                            _FseTasa: 0
+                        };
+
+                        items.forEach(item => {
+                            total._ActCantidad += item.CantidadActivo || 0;
+                            total._ActTotal += item.TotalActivo || 0;
+
+                            total._SegCantidad += item.CantidadSeg || 0;
+                            total._SegTotal += item.TotalSeguimiento || 0;
+                            total._SegTasa += item.TasaSeg || 0;
+
+                            total._FseCantidad += item.CantidadFueraSeg || 0;
+                            total._FseTotal += item.TotalFueraDeSeguimiento || 0;
+                            total._FseTasa += item.TasaFueraSeg || 0;
+                        });
+
+                        if (Nivel != 2)
+                        {
+                            html += `<tr class="total-row">
+                                <td class="sticky-col">TOTAL ${region}</td>
+
+                                <td>${total._ActCantidad}</td>
+                                <td>${formatoQuetzal(total._ActTotal)}</td>
+
+                                <td>${total._SegCantidad}</td>
+                                <td>${formatoQuetzal(total._SegTotal)}</td>
+                                <td>${((total._SegTotal / total._ActTotal) * 100).toFixed(2)}%</td>
+
+                                <td>${total._FseCantidad}</td>
+                                <td>${formatoQuetzal(total._FseTotal)}</td>
+
+                                <td>${((total._FseTotal / total._ActTotal) * 100).toFixed(2)}%</td>
+                            </tr>`;
+                        }
+                    });
+
+                    // Agregar total general
+                    if (Nivel != 2) {
+                        // Agregar total general
+                        html += `<tr class="total-row bg-dark text-white">
+                                    <td class="sticky-col"><strong>TOTAL GENERAL</strong></td>
+                                    <td>${totalGeneral._ActCantidad}</td>
+                                    <td>${formatoQuetzal(totalGeneral._ActTotal)}</td>
+
+                                    <td>${totalGeneral._SegCantidad}</td>
+                                    <td>${formatoQuetzal(totalGeneral._SegTotal)}</td>
+                                    <td>${((totalGeneral._SegTotal / totalGeneral._ActTotal) * 100).toFixed(2)}%</td>
+
+                                    <td>${totalGeneral._FseCantidad}</td>
+                                    <td>${formatoQuetzal(totalGeneral._FseTotal)}</td>
+                                    <td>${((totalGeneral._FseTotal / totalGeneral._ActTotal) * 100).toFixed(2)}%</td>
+                                </tr>`;
+                    }
+
+                    $('#tbodyVentas').html(html);
+
+                    //BOTON DE EXPANDIR DETALLE
+                    $('.btn-expandir').off('click').on('click', function () {
+                        var tienda = $(this).data('tienda');
+                        var detalleRow = $('#detalle-' + tienda);
+                        var estaVisible = detalleRow.is(':visible');
+                        // Oculta todos los detalles y reinicia íconos
+                        $('.detalle-tienda').hide();
+                        $('.btn-expandir i').removeClass('fa-minus-circle').addClass('fa-plus-circle');
+
+                        if (!estaVisible) {
+                            // Contenido HTML de la tabla
+                            let Detalle = `
+                            <div class="table-responsive" style="margin-bottom:10px; margin-top:15px">
+                                <table class="table table-bordered table-hover" id="tablaVentas-${tienda}">
+                                    <thead class="text-center" style="background-color: #004080; color: white;">
+                                        <tr>
+                                            <th rowspan="2">Asesor</th>
+                                            <th colspan="2">Activo</th>
+                                            <th colspan="3">En Seguimiento</th>
+                                            <th colspan="3">Fuera de seguimiento</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Cantidad</th>
+                                            <th>Total</th>
+
+                                            <th>Cantidad</th>
+                                            <th>Total</th>
+                                            <th>Tasa</th>
+
+                                            <th>Cantidad</th>
+                                            <th>Total</th>
+                                            <th>Tasa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center" id="tbodyVentas-${tienda}" style="background-color:white">
+                                        <tr>
+                                            <td colspan="13">
+                                                <img src="/img/loading_circulo.gif" alt="Cargando" style="width:25px; height:25px;"><br/>
+                                                Cargando datos...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>`;
+
+                            detalleRow.find('.contenido-detalle').html(Detalle);
+                            detalleRow.show();
+                            $(this).find('i').removeClass('fa-plus-circle').addClass('fa-minus-circle');
+
+                            // Llamada AJAX para llenar la tabla
+                            $.ajax({
+                                url: '/ResumenSeguimientos/Detalle',
+                                method: 'POST',
+                                data: { WhsCode: tienda },
+                                success: function (data) {
+                                    let tbody = '';
+                                    $.each(data.data, function (i, venta) {
+                                        tbody += `<tr>
+                                            <td>${venta.SlpName}</td>
+                                            <td>${venta.CantidadActivo}</td>
+                                            <td>${formatoQuetzal(venta.TotalActivo)}</td>
+
+                                            <td>${venta.CantidadSeg}</td>
+                                            <td>${formatoQuetzal(venta.TotalSeguimiento)}</td>
+                                            <td>${venta.TasaSeg}%</td>
+
+                                            <td>${venta.CantidadFueraSeg}</td>
+                                            <td>${formatoQuetzal(venta.TotalFueraDeSeguimiento)}</td>
+                                            <td>${venta.TasaFueraSeg}%</td>
+                                        </tr>`;
+                                    });
+                                    $('#tbodyVentas-' + tienda).html(tbody);
+                                },
+                                error: function () {
+                                    $('#tbodyVentas-' + tienda).html('<tr><td colspan="13">Error al cargar los datos</td></tr>');
+                                }
+                            });
+                        }
+                    });
+
+                } else {
+
+                }
+
+                $("#globalLoading").hide();
+            },
+            error: function () {
+                $("#globalLoading").hide();
+
+            }
+        });
+    }
+
+    function formatoQuetzal(valor) {
+        return new Intl.NumberFormat('es-GT', {
+            style: 'currency',
+            currency: 'GTQ',
+            minimumFractionDigits: 2
+        }).format(valor);
+    }
+</script>

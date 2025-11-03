@@ -26,6 +26,7 @@
             </div>
         </div>
         <a id="txtDocEntry" style="display:none">@Model.Encabezado.DocEntry</a>
+        <a id="txtDocNum" style="display:none">@Model.Encabezado.DocNum</a>
         <!-- Detalle de productos -->
         <div class="card mt-3">
             <div class="card-header">📦 Detalle de Productos</div>
@@ -99,32 +100,35 @@
             const estado = document.getElementById("status").value;
             const observaciones = document.getElementById("observaciones").value;
             const docEntry = document.getElementById("txtDocEntry").textContent;
+            const docNum = document.getElementById("txtDocNum").textContent;
             const confirmar = confirm(`¿Está seguro de ${estado == "R" ? "rechazar" : "autorizar"} la cotización?`);
 
-            if (confirmar) {
-                // Realizando la solicitud AJAX
-                $.ajax({
-                    url: '/CotizacionVentasAutoriza/EnviarAutorizacionSAP/', // Asegúrate de que esta ruta esté correcta
-                    type: 'POST',
-                    data: {
-                        DocEntry: docEntry,                        
-                        Estado: estado,
-                        Notas: observaciones
-                    },
-                    success: function (response) {
-                        $("#globalLoading").hide();
-                        window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
-                    },
-                    error: function (xhr, status, error) {
-                        $("#globalLoading").hide();
-                        alert("Error al realizar la solicitud: " + error);
-                    }
-                });
+            alert(docNum);
+            //if (confirmar) {
+            //    // Realizando la solicitud AJAX
+            //    $.ajax({
+            //        url: '/CotizacionVentasAutoriza/EnviarAutorizacionSAP/', // Asegúrate de que esta ruta esté correcta
+            //        type: 'POST',
+            //        data: {
+            //            DocEntry: docEntry,
+            //            DocNum: docNum,
+            //            Estado: estado,
+            //            Notas: observaciones
+            //        },
+            //        success: function (response) {
+            //            $("#globalLoading").hide();
+            //            window.location.assign("/CotizacionVentasAutoriza/Autorizacion");
+            //        },
+            //        error: function (xhr, status, error) {
+            //            $("#globalLoading").hide();
+            //            alert("Error al realizar la solicitud: " + error);
+            //        }
+            //    });
 
-            } else {
-                $("#globalLoading").hide();
-                alert("Operación cancelada.");
-            }
+            //} else {
+            //    $("#globalLoading").hide();
+            //    alert("Operación cancelada.");
+            //}
         }
 
         function regresarLista() {

@@ -11,5 +11,7 @@ namespace Entity
         public string WhsCode { get; set; }
         public string WhsName { get; set; }
         public string Selected { get; set; }
+        public int Series { get; set; }
+        public int IdSucursal { get; set; }
     }
 }

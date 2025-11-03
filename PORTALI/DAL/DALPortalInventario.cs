@@ -7,6 +7,7 @@ using Entity;
 using Connection;
 using System.Data.OleDb;
 using System.Data;
+using Newtonsoft.Json;
 
 namespace DAL
 {
@@ -214,7 +215,7 @@ namespace DAL
                         encabezado.Formato = dt.Rows[0]["Formato"].ToString();
                         encabezado.Imagen = dt.Rows[0]["UrlImagen"].ToString();
                         encabezado.Ambiente = dt.Rows[0]["Ambiente"].ToString();
-                        encabezado.Metraje = dt.Rows[0]["Metraje"].ToString();
+                        encabezado.Metraje = double.Parse(dt.Rows[0]["Metraje"].ToString());
                         encabezado.IdGrupo = int.Parse(dt.Rows[0]["IdGrupo"].ToString());
                         encabezado.MetrosDisp = double.Parse(dt.Rows[0]["MetrosDisp"].ToString());
                         encabezado.EsPromo = int.Parse(dt.Rows[0]["EsPromo"].ToString());
@@ -222,6 +223,8 @@ namespace DAL
                         encabezado.TipoPromo = dt.Rows[0]["TipoPromo"].ToString();
                         encabezado.PLFinal = int.Parse(dt.Rows[0]["LpFinal"].ToString());
                         encabezado.PrecioFinal = double.Parse(dt.Rows[0]["PrecioFinal"].ToString());
+                        encabezado.Comprometido = double.Parse(dt.Rows[0]["Comprometido"].ToString());
+                        encabezado.CodigoPromo = int.Parse(dt.Rows[0]["CodigoPromo"].ToString());
                     }
 
                     return encabezado;
@@ -240,7 +243,7 @@ namespace DAL
             using (OleDbConnection iConnection = new OleDbConnection("Provider=SQLOLEDB;Server=" + pConnection.ServerName + ";Database=" + pConnection.DataBase + ";Uid=" + pConnection.User + ";Pwd=" + pConnection.Password + ";"))
             {
                 OleDbCommand iCommand = null;
-                iCommand = new OleDbCommand("sp_buscar_productos_v2", iConnection);
+                iCommand = new OleDbCommand("sp_buscar_productos_v3", iConnection);
                 iCommand.CommandType = CommandType.StoredProcedure;
                 iCommand.Parameters.AddWithValue("@ItemName", ItemName);
                 iCommand.Parameters.AddWithValue("@WhsCode", WhsCode);
@@ -257,19 +260,21 @@ namespace DAL
                     if (dt.Rows.Count > 0)
                     {
                         listadoProductos = (from row in dt.AsEnumerable()
-                                            select new BuscarProductoEntity()
-                                            {
-                                                ItemCode = row["ItemCode"].ToString(),
-                                                ItemName = row["ItemName"].ToString(),
-                                                WhsCode = row["WhsCode"].ToString(),
-                                                PrecioBeneficio = double.Parse(row["PrecioBeneficio"].ToString()),
-                                                PrecioVenta = double.Parse(row["PrecioVenta"].ToString()),
-                                                Stock = double.Parse(row["Stock"].ToString()),
-                                                PrecioPromocion = double.Parse(row["PrecioPromo"].ToString()),
-                                                DetallePromo = row["Detalle"].ToString(),
-                                                Imagen = row["UrlImagen"].ToString(),
-                                                EsPromo = int.Parse(row["EsPromo"].ToString())
-                                            }).ToList();
+                                                select new BuscarProductoEntity
+                                                {
+                                                    ItemCode = row["ItemCode"].ToString(),
+                                                    ItemName = row["ItemName"].ToString(),
+                                                    WhsCode = row["WhsCode"].ToString(),
+                                                    PrecioBeneficio = double.Parse(row["PrecioBeneficio"].ToString()),
+                                                    PrecioVenta = double.Parse(row["PrecioVenta"].ToString()),
+                                                    Stock = double.Parse(row["Stock"].ToString()),
+                                                    PrecioPromocion = double.Parse(row["PrecioPromo"].ToString()),
+                                                    DetallePromo = row["Detalle"].ToString(),
+                                                    Imagen = row["UrlImagen"].ToString(),
+                                                    EsPromo = int.Parse(row["EsPromo"].ToString()),
+                                                    Metraje = double.Parse(row["Metraje"].ToString()),
+                                                    Almacenes = JsonConvert.DeserializeObject<List<Almacenes>>(row["Almacenes"].ToString())
+                                                }).ToList();
                         return listadoProductos;
                     }
 

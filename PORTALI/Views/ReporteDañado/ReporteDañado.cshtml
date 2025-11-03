@@ -1,0 +1,808 @@
+﻿@model Entity.ViewModels.ReporteDañadoViewModel
+@using Newtonsoft.Json
+
+@{
+    ViewBag.Title = "Reporte Dañados";
+}
+
+<h2>Reporte Dañados</h2>
+
+
+<div class="card mb-4 shadow-sm w-100">
+    <div class="card-body">
+        <h5 class"card-title mb-3">Filtros</h5>
+
+        @using (Html.BeginForm("ReporteDañado", "ReporteDañado", FormMethod.Post))
+        {
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.LabelFor(m => m.Filtro.FechaInicio, "Fecha Inicio")
+                    @Html.TextBoxFor(m => m.Filtro.FechaInicio, new { @class = "form-control", type = "date" })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(m => m.Filtro.FechaFin, "Fecha Fin")
+                    @Html.TextBoxFor(m => m.Filtro.FechaFin, new { @class = "form-control", type = "date" })
+                </div>
+                <div class="col-md-3">
+                    <label>Almacén</label>
+                    @Html.DropDownListFor(m => m.Filtro.AlmacenSeleccionado,
+                        new SelectList(Model.Almacenes ?? new List<string>(), Model.Filtro.AlmacenSeleccionado),
+                        "Todos",
+                        new { @class = "form-control" })
+                </div>
+                <div class="col-md-3">
+                    <label>Transportista</label>
+                    @Html.DropDownListFor(m => m.Filtro.TranportistaSeleccionado,
+                        new SelectList(Model.Transportistas ?? new List<string>(), Model.Filtro.TranportistaSeleccionado),
+                        "Todos",
+                        new { @class = "form-control" })
+                </div>
+            </div>
+            <br />
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="@Url.Action("ReporteDañado", "ReporteDañado")" class="btn btn-secondary ml-2">Restablecer</a>
+
+        }
+    </div>
+</div>
+
+<hr />
+
+@Html.Partial("_Indicadores")
+
+<hr />
+
+@Html.Partial("_Graficos")
+
+@*<div class="container-fluid">
+        <h1 class="h3 mb-2 text-gray-800">Gráficos</h1>
+        <div class="row">
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado en Ruta por PDV</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartDañadoPorTienda" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado por Almacén</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado por Transportista</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartDañadoPorTransportista" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">Monto de Nota Crédito por Mes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartMontoNCMeses" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<hr />
+
+<!--<div class="container-fluid mb-5">
+    <h4 class="text-center mb-4">Gráficas Comparativas</h4>-->
+<!-- Fila 1 -->
+<!--<div class="row gx-3 gy-4">-->
+<!-- Gráfica 1 -->
+<!--<div class="col-md-6">
+    <div class="bg-light p-3 border rounded shadow-sm">
+        <h6 class="text-center mb-2">% Dañado en Ruta por PDV</h6>
+        <div style="overflow-x: auto;">
+            <div style="min-width: 1000px;">
+                <canvas id="chartDañadoPorTienda" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!-- Gráfica 2 -->
+<!--<div class="col-md-6">
+        <div class="bg-light p-3 border rounded shadow-sm">
+            <h6 class="text-center mb-2">% Dañado por Almacén</h6>
+            <div style="overflow-x: auto;">
+                <div style="min-width: 1000px;">
+                    <canvas id="chartDañadoAlmacenMes" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>-->
+<!-- Fila 2 -->
+<!--<div class="row gx-3 gy-4 mt-2">-->
+<!--Grafica 3-->
+<!--<div class="col-md-6">
+    <div class="bg-light p-3 border rounded shadow-sm">
+        <h6 class="text-center mb-2">% Dañado en Rutas</h6>
+        <div style="overflow-x: auto;">
+            <div style="min-width: 1000px;">
+                <canvas id="chartPorcentajeDañadoRutaMes" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!-- Gráfica 4 -->
+<!--<div class="col-md-6">
+        <div class="bg-light p-3 border rounded shadow-sm">
+            <h6 class="text-center mb-2">Relación dañados por proceso</h6>
+            <div style="overflow-x: auto;">
+                <div style="min-width: 1000px;">
+                    <canvas id="chartDañadoMensual" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!-- Fila 3 -->
+<!--<div class="row gx-3 gy-4 mt-2">-->
+<!-- Gráfica 5 -->
+<!--<div class="col-md-6">
+    <div class="bg-light p-3 border rounded shadow-sm">
+        <h6 class="text-center mb-2">% Dañado por transportista </h6>
+        <div style="overflow-x: auto;">
+            <div style="min-width: 1000px;">
+                <canvas id="chartDañadoPorTransportista" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!-- Gráfica 6 -->
+<!--<div class="col-md-6">
+        <div class="bg-light p-3 border rounded shadow-sm">
+            <h6 class="text-center mb-2">Monto de Nota de Crédito por mes</h6>
+            <div style="overflow-x: auto;">
+                <div style="min-width: 1000px;">
+                    <canvas id="chartMontoNCMeses" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!-- Fila 4 -->
+<!--<div class="row gx-3 gy-4 mt-2">-->
+<!-- Gráfica 9 -->
+<!--<div class="col-md-6">
+    <div class="bg-light p-3 border rounded shadow-sm">
+        <h6 class="text-center mb-2">% Dañado por Categoría</h6>
+        <div style="overflow-x: auto;">
+            <div style="min-width: 1000px;">
+                <canvas id="chartDañadoPorCategoria" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!-- Gráfica 8 -->
+<!--<div class="col-md-6">
+            <div class="bg-light p-3 border rounded shadow-sm">
+                <h6 class="text-center mb-2">% Dañado por Ruta</h6>
+                <div style="overflow-x: auto;">
+                    <div style="min-width: 1000px;">
+                        <canvas id="chartDañadoPorRuta" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
+    <!--Script para grafica dañado en ruta por pdv-->
+    <script>
+        // Datos desde el Model a JavaScript
+        const tiendas = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartDañadoPorTienda.Select(x => x.Tienda)));
+        const montoNC = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartDañadoPorTienda.Select(x => x.MontoNC)));
+        const porcentajeDañado = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartDañadoPorTienda.Select(x => x.PorcentajeDañadoRutas * 100)));
+
+        // Crear gráfica combinada: barras (MontoNC) + línea (% dañado rutas)
+        const ctx = document.getElementById('chartDañadoPorTienda').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: tiendas,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Monto NC',
+                        data: montoNC,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        yAxisID: 'y',
+                    },
+                    {
+                        type: 'line',
+                        label: '% Dañado Rutas',
+                        data: porcentajeDañado,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        yAxisID: 'y1',
+                        fill: false,
+                        tension: 0.1,
+                        borderWidth: 3,
+                        pointRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                if (context.dataset.label === '% Dañado Rutas') {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                                }
+                                return context.dataset.label + ': Q ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                stacked: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Monto NC (Q)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        title: {
+                            display: true,
+                            text: '% Dañado Rutas'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(2) + '%';
+                            },
+                            max: 100,
+                            min: 0
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!--Script para Grafico Dañado por categoria-->
+    <script>
+
+    const categorias = @Html.Raw(JsonConvert.SerializeObject(Model.ChartDañadoPorCategoria.Select(x => x.Categoria)));
+    const porcentajeCategoria = @Html.Raw(JsonConvert.SerializeObject(Model.ChartDañadoPorCategoria.Select(x => (x.PorcentajeDañado * 100).ToString("F2"))));
+
+    const ctxCategoria = document.getElementById('chartDañadoPorCategoria').getContext('2d');
+    const chartCategoria = new Chart(ctxCategoria, {
+        type: 'bar',
+        data: {
+            labels: categorias,
+            datasets: [{
+                label: '% Dañado por Categoría',
+                data: porcentajeCategoria,
+                backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 3,
+                    title: {
+                        display: true,
+                        text: '% Dañado'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    </script>
+
+    <!--Script para grafica % Dañado por ruta -->
+    <script>
+        const rutas = @Html.Raw(JsonConvert.SerializeObject(Model.ChartDañadoPorRuta.Select(x => x.NoRutaOV)));
+        const porcentajeDañadoRuta = @Html.Raw(JsonConvert.SerializeObject(Model.ChartDañadoPorRuta.Select(x => Math.Round(x.PorcentajeDañadoRuta, 2))));
+
+
+        const ctxRuta = document.getElementById('chartDañadoPorRuta').getContext('2d');
+        new Chart(ctxRuta, {
+            type: 'bar',
+            data: {
+                labels: rutas,
+                datasets: [{
+                    label: '% Dañado por Ruta',
+                    data: porcentajeDañadoRuta,
+                    backgroundColor: 'rgba(255, 87, 51, 0.7)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 2.5,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '% Dañado'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!--Script para grafica % Dañado por Transportista-->
+    <script>
+            const transportistas = @Html.Raw(JsonConvert.SerializeObject(Model.ChartDañadoPorTransportista.Select(x => x.Transportista)));
+            const porcentajePorTransportista = @Html.Raw(JsonConvert.SerializeObject(Model.ChartDañadoPorTransportista.Select(x => x.PorcentajeDañadoTransportista.ToString("F2"))));
+
+            const ctxTransportista = document.getElementById('chartDañadoPorTransportista').getContext('2d');
+            const chartTransportista = new Chart(ctxTransportista, {
+                type: 'bar',
+                data: {
+                    labels: transportistas,
+                    datasets: [{
+                        label: '% Dañado',
+                        data: porcentajePorTransportista,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: '% Dañado'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '% Dañado: ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+    </script>
+
+
+
+
+    <!--Script para grafica Monto Nota Credito por mes-->
+    <script>
+        const meses = @Html.Raw(JsonConvert.SerializeObject(Model.ChartMontoNCPorMes.Select(x => x.Mes)));
+        const montosNcMes = @Html.Raw(JsonConvert.SerializeObject(Model.ChartMontoNCPorMes.Select(x => x.MontoNC.ToString("F2"))));
+
+        const ctxMes = document.getElementById('chartMontoNCMeses').getContext('2d');
+        const chartMes = new Chart(ctxMes, {
+            type: 'bar',
+            data:
+            {
+                labels: meses,
+                datasets: [{
+                    label: 'Monto NC',
+                    data: montosNcMes,
+                    backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Monto NC (Q)'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const valor = parseFloat(context.parsed.y).toFixed(2);
+                                return context.dataset.label + ': Q ' + valor;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+
+    <!--Script para grafica Dañado en Ruta-->
+    <script>
+
+
+            const dataRutaMes = {
+                labels: @Html.Raw(Json.Encode(Model.ChartPorcentajeDañadoRutaMes.Select(x => x.Mes))),
+                datasets: [{
+                    label: '% Dañado en Ruta por Mes',
+                    data: @Html.Raw(Json.Encode(Model.ChartPorcentajeDañadoRutaMes.Select(x => Math.Round(x.PorcentajeDañdoRutaMensual, 2)))),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+            const ctxRutaMes = document.getElementById('chartPorcentajeDañadoRutaMes').getContext('2d');
+
+            const configRutaMes = {
+                type: 'bar',
+                data: dataRutaMes,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: '% Dañado'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Mes'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(ctxRutaMes, configRutaMes);
+    </script>
+
+    <!--Para Grafica % Dañado en Almacen -->
+    @*<script>
+            const labels = @Html.Raw(JsonConvert.SerializeObject(Model.ChartPorcentajeDañadoAlmacenMes.Select(x => x.Mes)));
+                const data = @Html.Raw(JsonConvert.SerializeObject(Model.ChartPorcentajeDañadoAlmacenMes.Select(x => Math.Round(x.PorcentajeMensual, 2))));
+                console.log(data);
+
+            const ctx = document.getElementById('chartDañadoAlmacenMes').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '% Dañado en Almacén',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: '% Dañado'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Mes'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>*@
+
+    <script>
+    const labelsDañadoAlmacenMes = @Html.Raw(JsonConvert.SerializeObject(Model.ChartPorcentajeDañadoAlmacenMes.Select(x => x.Mes)));
+    const dataDañadoAlmacenMes = @Html.Raw(JsonConvert.SerializeObject(Model.ChartPorcentajeDañadoAlmacenMes.Select(x => Math.Round(x.PorcentajeMensual, 2))));
+    console.log(dataDañadoAlmacenMes);
+
+    const ctxDañadoAlmacenMes = document.getElementById('chartDañadoAlmacenMes').getContext('2d');
+    new Chart(ctxDañadoAlmacenMes, {
+        type: 'bar',
+        data: {
+            labels: labelsDañadoAlmacenMes,
+            datasets: [{
+                label: '% Dañado en Almacén',
+                data: dataDañadoAlmacenMes,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: '% Dañado'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Mes'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    </script>
+
+    @*<script>
+        const labelsStacked = @Html.Raw(JsonConvert.SerializeObject(Model.ChartRelacionDañadoProcesos.Select(x => x.Mes)));
+        const dataRuta = @Html.Raw(JsonConvert.SerializeObject(Model.ChartRelacionDañadoProcesos.Select(x => Math.Round(x.PorcentajeRuta, 2))));
+        const dataAlmacen = @Html.Raw(JsonConvert.SerializeObject(Model.ChartRelacionDañadoProcesos.Select(x => Math.Round(x.PorcentajeAlmacen, 2))));
+
+        const ctxStacked = document.getElementById('chartStackedDañado').getContext('2d');
+        new Chart(ctxStacked, {
+            type: 'bar',
+            data: {
+                labels: labelsStacked,
+                datasets: [
+                    {
+                        label: '% Dañado en Ruta',
+                        data: dataRuta,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                    },
+                    {
+                        label: '% Dañado en Almacén',
+                        data: dataAlmacen,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: 'Porcentaje (%)'
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: 'Mes'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '% Dañado Total por Mes (Ruta + Almacén)'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw.toFixed(2) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        </script>*@
+
+
+    <canvas id="chartStackedDañado" width="400" height="300"></canvas>
+
+    <script>
+    const labelsStacked = @Html.Raw(JsonConvert.SerializeObject(Model.ChartRelacionDañadoProcesos.Select(x => x.Mes)));
+    const dataRuta = @Html.Raw(JsonConvert.SerializeObject(Model.ChartRelacionDañadoProcesos.Select(x => Math.Round(x.PorcentajeRuta, 2))));
+    const dataAlmacen = @Html.Raw(JsonConvert.SerializeObject(Model.ChartRelacionDañadoProcesos.Select(x => Math.Round(x.PorcentajeAlmacen, 2))));
+
+    const ctxStacked = document.getElementById('chartStackedDañado').getContext('2d');
+    new Chart(ctxStacked, {
+        type: 'bar',
+        data: {
+            labels: labelsStacked,
+            datasets: [
+                {
+                    label: '% Dañado en Ruta',
+                    data: dataRuta,
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                },
+                {
+                    label: '% Dañado en Almacén',
+                    data: dataAlmacen,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y',
+            plugins: {
+                title: {
+                    display: true,
+                    text: '% Dañado Total por Mes (Ruta + Almacén)'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw.toFixed(2) + '%';
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#000',
+                    anchor: 'center',
+                    align: 'center',
+                    font: {
+                        weight: 'bold'
+                    },
+                    formatter: function(value) {
+                        return value.toFixed(2) + '%';
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Porcentaje (%)'
+                    }
+                },
+                y: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Mes'
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+    </script>
+
+
+
+
+
+
+}
+
+

@@ -64,7 +64,9 @@ namespace DAL
                                 select new PortalTiendasEntity()
                                 {
                                     WhsCode = row["WhsCode"].ToString(),
-                                    WhsName = row["WhsName"].ToString()
+                                    WhsName = row["WhsName"].ToString(),
+                                    Series = int.Parse(row["Series"].ToString()),
+                                    IdSucursal = int.Parse(row["IdSucursal"].ToString())
                                 }).ToList();
                     return bono;
                 }

@@ -1,0 +1,92 @@
+﻿@*@model List<Entity.ReporteInterTiendasEstatusRutaEntity>*@
+
+@model Entity.ViewModels.DetalleRutaViewModel
+
+
+
+@*@if (Model != null && Model.Any())*@
+@if (Model?.Detalles != null && Model.Detalles.Any())
+{
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary">
+            <h5 class="mb-0">Detalle de Estatus por Ruta</h5>
+            <div class="col-md-2 d-flex align-items-end ">
+                @using (Html.BeginForm("ExportarExcelDetalle", "ReporteInterTiendas", FormMethod.Post))
+                {
+                    @*<input type="hidden" name="Ruta" value="@ViewBag.Ruta" />
+                      <input type="hidden" name="FechaInicio" value="@ViewBag.FechaInicio?.ToString(" yyyy-MM-dd")" />
+                      <input type="hidden" name="FechaFin" value="@ViewBag.FechaFin?.ToString(" yyyy-MM-dd")" />*@
+
+                    @*<input type="hidden" name="Ruta" value="@Model.Detalles.FirstOrDefault()?.NoRuta" />
+                      <input type="hidden" name="FechaInicio" value="@ViewBag.FechaInicio?.ToString(" yyyy-MM-dd")" />
+                      <input type="hidden" name="FechaFin" value="@ViewBag.FechaFin?.ToString(" yyyy-MM-dd")" />*@
+                    <input type="hidden" name="Ruta" value="@Model.Ruta" />
+                    <input type="hidden" name="FechaInicio" value="@Model.FechaInicio?.ToString(" yyyy-MM-dd")" />
+                    <input type="hidden" name="FechaFin" value="@Model.FechaFin?.ToString(" yyyy-MM-dd")" />
+
+
+                    <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm">
+                        <i class="bi bi-file-earmark-excel-fill me-1"></i> Exportar Excel
+                    </button>
+                }
+            </div>
+        </div>
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Indicador</h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Promedio Dias transcurridos
+                                </div>
+                                <div class="h4 mb-0 font-weight-bold text-gray-800">@Model.PromedioDiasTranscurridos días </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clock-o fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-bordered mt-3  table">
+                <thead class="bg-behance text-white">
+                    <tr>
+                        <th>No.Ruta</th>
+                        <th>Estado Ruta</th>
+                        <th>Fecha Inicio</th>
+                        <th>Hora Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Hora Fin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Detalles)
+                    {
+                        <tr>
+                            <td>@item.NoRuta</td>
+                            <td>@item.EstadoRuta</td>
+                            <td>@item.FechaInicio.ToShortDateString()</td>
+                            <td>@item.HoraInicio</td>
+                            <td>@item.FechaFin.ToShortDateString()</td>
+                            <td>@item.HoraFin</td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+
+
+    <div class="alert alert-warning mt-3">No hay información de estatus para esta ruta.</div>
+
+}

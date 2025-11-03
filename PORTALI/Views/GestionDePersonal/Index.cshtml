@@ -1,0 +1,491 @@
+﻿@using Entity;
+@model IEnumerable<DatosEmpleados>
+@{
+    ViewData["Title"] = "Gestión de Personal";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        .text-secondary-perfil {
+            color: dimgray;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .buttonMarcado {
+            background-color: #6C757D;
+            color: white;
+        }
+    </style>
+</head>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>Gestión de Personal</h4>
+        <button class="btn btn-primary" id="btnNuevaPlaza" data-bs-toggle="modal" data-bs-target="#modalNuevaPlaza">
+            <i class="bi bi-person-plus-fill me-1"></i> Nueva Plaza
+        </button>
+    </div>
+
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-striped align-middle text-center">
+            @if (ViewData["Error"] != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError" style="display:none;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="msgError">@ViewData["Error"]</span>
+                </div>
+            }
+            <thead class="table-dark">
+                <tr>
+                    <th>Codigo</th>
+                    <th>Nombres</th>
+                    <th>Puesto</th>
+                    <th>Requisición de uniforme</th>
+                    <th>Viáticos</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var empleados in Model)
+                    {
+                        <tr>
+                            <td>@empleados.EmpID</td>
+                            <td>@empleados.Nombre</td>
+                            <td>@empleados.Puesto</td>
+                            <td>
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            </td>
+                            <td>@empleados.Viaticos</td>
+                            <td>
+                                <i class="fas fa-check-circle @(empleados.Activo == "Y" ? "text-success" : "d-none")"></i>
+                                <i class="fas fa-times-circle @(empleados.Activo == "N" ? "text-danger" : "d-none")"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary"
+                                        onclick="verPerfil(this)"
+                                        data-nombre="@empleados.Nombre"
+                                        data-id="@empleados.EmpID"
+                                        data-puesto="@empleados.Puesto"
+                                        data-departamento="@empleados.Departamento"
+                                        data-activo="@empleados.Activo"
+                                        data-telefono="@empleados.Telefono"
+                                        data-correo="@empleados.Correo"
+                                        data-sexo="@empleados.Sexo"
+                                        data-creadoSAP="@empleados.CreadoSAP.ToString("dd-MM-yyyy")">
+                                    <i class="bi bi-person-vcard"></i> Ver Perfil
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNuevaPlaza" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Encabezado -->
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="miModalLabel">
+                    <i class="bi bi-person-fill-add me-2"></i> Registrar nueva plaza
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="modal-body">
+                <form id="formNuevaPlaza">
+                    <div class="mb-3">
+                        <label class="form-label">Puesto</label>
+                        <select class="form-control" id="selectNuevaPlaza">
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea id="PerfilObservaciones" class="form-control" rows="5" placeholder="Observaciones..." required></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Pie -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-success" id="btnGuardar">
+                    <i class="bi bi-check-circle"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal del perfil -->
+<div class="modal fade" id="modalPerfilEmpleado" tabindex="-1" aria-labelledby="perfilEmpleadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-2">
+
+            <!-- Encabezado -->
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="perfilEmpleadoLabel">
+                    <i class="bi bi-person-badge-fill me-2"></i> Perfil del Empleado
+                </h5>
+                <button onclick="cerrarModalPerfil()" type="button" class="btn-close btn-close-white" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Cuerpo del modal -->
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-4 text-center">
+                        <img src="~/Img/perfil.png" class="img-fluid rounded-circle border shadow-sm mb-3" width="120" alt="Foto empleado">
+                        <h5 id="perfilNombre">María López</h5>
+                        <span class="badge bg-success" id="perfilActivo">Activo</span>
+                        <span id="perfilSexo"></span>
+                        <span id="perfilId" hidden></span>
+                    </div>
+
+                    <div class="col-md-8">
+                        <table class="table table-borderless align-middle mb-0">
+                            <tr>
+                                <th class="text-secondary-perfil">Puesto:</th>
+                                <td id="perfilPuesto">Supervisora de Producción</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary-perfil">Departamento:</th>
+                                <td id="perfilDepartamento">Producción</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary-perfil">Fecha de Registro SAP:</th>
+                                <td id="perfilCreadoSAP">15/03/2022</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary-perfil">Correo:</th>
+                                <td id="perfilCorreo">maria.lopez@empresa.com</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary-perfil">Teléfono:</th>
+                                <td id="perfilTelefono">5555-1234</td>
+                            </tr>
+                            <tr>
+                                <th class="text-secondary-perfil">Observaciones:</th>
+                                <td>
+                                    <textarea class="form-control form-control-sm" id="perfilObservaciones" rows="3" readonly>Empleado con excelente desempeño y liderazgo en su equipo.
+                  </textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie del modal -->
+            <div class="modal-footer d-flex justify-content-between">
+                <button onclick="cerrarModalPerfil()" type="button" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Cerrar
+                </button>
+
+                <button type="button" class="btn btn-danger" onclick="verSolicitudBaja()">
+                    <i class="bi bi-box-arrow-down"></i> Solicitar Baja
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalSolicitudBaja" tabindex="-1" aria-labelledby="modalSolicitudBajaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-2">
+
+            <!-- Encabezado -->
+            <div class="modal-header  text-white" style="background-color:darkred">
+                <h5 class="modal-title fw-semibold" id="modalSolicitudBajaLabel">
+                    <i class="bi bi-person-x-fill me-2"></i> Solicitud de baja
+                </h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" onclick="cerrarModalSolicitud()"></button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="modal-body px-4">
+                <form id="formSolicitudBaja" class="row g-3">
+
+                    <!-- Id y nombre -->
+                    <div class="col-md-6">
+                        <label for="idEmpleadoSolicitud" class="form-label">Id Empleado</label>
+                        <input type="text" id="idEmpleadoSolicitud" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nombreEmpleadoSolicitud" class="form-label">Nombre</label>
+                        <input type="text" id="nombreEmpleadoSolicitud" class="form-control" readonly>
+                    </div>
+
+                    <!-- Motivo -->
+                    <div class="col-md-6">
+                        <label for="motivo" class="form-label">Motivo</label>
+                        <select id="motivo" class="form-control">
+                            <option value="">Seleccione un motivo</option>
+                            <option value="1">Renuncia</option>
+                            <option value="2">Despido</option>
+                            <option value="3">Abandono</option>
+                        </select>
+                    </div>
+
+                    <!-- Causas -->
+                    <div class="col-md-6 mt-3 hidden-input" id="causasInput">
+                        <label class="form-label">Causas</label>
+                        <div class="border rounded-3 p-3">
+                            <div class="d-flex flex-wrap gap-2" id="contenedorCausas">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 hidden-input" id="cartaInput">
+                        <label for="cartaRenuncia" class="form-label">Carta de renuncia</label>
+                        <input type="file" class="form-control" id="cartaRenuncia" name="cartaRenuncia" accept=".pdf">
+                    </div>
+
+
+                    <!-- Observaciones -->
+                    <div class="col-12">
+                        <label for="observaciones" class="form-label">Observaciones</label>
+                        <textarea id="observaciones" class="form-control" rows="3" placeholder="Ingrese observaciones adicionales..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Pie -->
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary" onclick="cerrarModalSolicitud()">
+                    <i class="bi bi-x-circle me-1"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarBaja">
+                    <i class="bi bi-send-fill me-1"></i> Solicitar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@section Scripts {
+    <script>
+
+        const modalPerfil = new bootstrap.Modal(document.getElementById('modalPerfilEmpleado'));
+        const modalSolicitud = new bootstrap.Modal(document.getElementById('modalSolicitudBaja'));
+        const listaCausas = [];
+
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true
+        })
+
+
+        async function obtenerPuestos() {
+
+            Toast.fire({ icon: 'warning', title: 'La creación de una plaza nueva debe ser autorizada por gerencia.' });
+            const select = document.getElementById("selectNuevaPlaza");
+            try {
+                const response = await fetch('/GestionDePersonal/ObtenerPuestos', {
+                    method: 'GET'
+                });
+
+                const reply = await response.json();
+
+                let option = '<option value="-1" disabled selected>--Seleccionar--</option> ';
+
+                reply.data.forEach(puesto => {
+                    option += `<option value = '${puesto.Id}'>${puesto.Nombre}</option>`;
+                });
+
+                select.innerHTML = option;
+            } catch (error) {
+                Toast.fire({ icon: 'error', title: 'Hubo un error al cargar los puestos, por favor comunicarse al area de Sistemas' });
+            }
+        }
+
+        async function ObtenerCausasDespido() {
+            const select = document.getElementById("contenedorCausas");
+            try {
+                const response = await fetch('/GestionDePersonal/ObtenerCausasDespido',
+                    {
+                        method: "GET"
+                    });
+
+                const reply = await response.json();
+
+                let button = '';
+
+                reply.data.forEach(causa => {
+                    button += `<button id="causa-${causa.Code}" type="button" class="btn btn-outline-secondary btn-sm" data-IdCausa="${causa.Code}" onclick="marcarCausa(this)">${causa.Name}</button>`;
+                });
+
+                select.innerHTML = button;
+            }
+            catch (error) {
+
+            }
+        }
+
+        function marcarCausa(button) {
+            const idCausa = button.getAttribute("Id");
+            const classCausa = button.getAttribute("Class");
+            const causasAgregadas = button.getAttribute("data-IdCausa");//
+
+
+            if (classCausa.includes("buttonMarcado")) {
+                document.getElementById(idCausa).classList.remove("buttonMarcado");
+
+                const indice = listaCausas.indexOf(causasAgregadas);
+
+                if (indice !== -1) {
+                    listaCausas.splice(indice, 1);
+                }
+            }
+            else {
+                document.getElementById(idCausa).classList.add("buttonMarcado");
+                listaCausas.push(causasAgregadas);
+            }
+
+            console.log(listaCausas);
+        }
+
+        function verPerfil(button) {
+
+            document.getElementById("perfilId").innerText = button.getAttribute("data-id");
+            document.getElementById("perfilNombre").innerText = button.getAttribute("data-nombre");
+            document.getElementById("perfilPuesto").innerText = button.getAttribute("data-puesto");
+            document.getElementById("perfilDepartamento").innerText = button.getAttribute("data-departamento");
+            document.getElementById("perfilActivo").innerText = button.getAttribute("data-activo");
+            document.getElementById("perfilTelefono").innerText = button.getAttribute("data-telefono");
+            document.getElementById("perfilCorreo").innerText = button.getAttribute("data-correo");
+            document.getElementById("perfilSexo").innerText = button.getAttribute("data-sexo");
+            document.getElementById("perfilCreadoSAP").innerText = button.getAttribute("data-creadoSAP");
+
+            modalPerfil.show();
+        };
+
+        function cerrarModalPerfil() {
+            modalPerfil.hide();
+        };
+
+        function cerrarModalSolicitud() {
+            modalSolicitud.hide();
+        };
+
+        function verSolicitudBaja() {
+
+            document.getElementById('idEmpleadoSolicitud').value = document.getElementById("perfilId").textContent;
+            document.getElementById('nombreEmpleadoSolicitud').value = document.getElementById("perfilNombre").textContent;
+
+            ObtenerCausasDespido()
+            cerrarModalPerfil();
+            modalSolicitud.show();
+        };
+
+        function cambiarInputs() {
+            const causas = document.getElementById('causasInput');
+            const carta = document.getElementById('cartaInput');
+            const motivo = document.getElementById('motivo').value;
+
+            if (motivo == 1) {
+                carta.classList.remove("hidden-input");
+                causas.classList.add("hidden-input");
+            }
+            else if (motivo == 2) {
+                carta.classList.add("hidden-input");
+                causas.classList.remove("hidden-input");
+            }
+            else {
+                carta.classList.add("hidden-input");
+                causas.classList.add("hidden-input");
+            }
+        };
+
+        async function confimacionDeBaja() {
+            try {
+                Swal.fire({
+                    title: 'Creando la solicitud...',
+                    text: 'Por favor espere',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                //let params = {
+                //    id: document.getElementById('idEmpleadoSolicitud').value,
+                //    motivo: document.getElementById('motivo').value,
+                //    observaciones: document.getElementById('observaciones').value,
+                //    causas: listaCausas,
+                //    carta: document.getElementById("cartaRenuncia").value
+                //};
+
+                const formData = new FormData();
+                formData.append("id", document.getElementById("idEmpleadoSolicitud").value);
+                formData.append("motivo", document.getElementById("motivo").value);
+                formData.append("observaciones", document.getElementById("observaciones").value);
+                formData.append("carta", document.getElementById("cartaRenuncia").files[0]); // archivo
+                formData.append("causas", JSON.stringify(listaCausas)); // array convertido a JSON
+
+                //const formData = new FormData();
+                //for (const key in params) formData.append(key, params[key]);
+
+                const response = await fetch('/GestionDePersonal/EnviarSolicitudDeBaja',
+                    {
+                        method: "POST", 
+                        body: formData
+                    });
+
+                if (response.ok) {
+                    listaCausas.length = 0;
+                    const reply = await response.json();
+
+                    console.log("Reply");
+                    console.log(reply);
+
+                    if (reply.successS) {
+                        Swal.close();
+                        cerrarModalSolicitud();
+                        document.getElementById('formSolicitudBaja').reset();
+                        Toast.fire({ icon: 'success', title: "Se creo la solicitud de baja de personal con exito" });
+                    }
+                    else {
+                        Swal.close();
+                        Toast.fire({ icon: 'error', title: "Ocurrio un error al crear la solicitud" });
+                    }
+                }
+                else {
+                    Swal.close();
+                    Toast.fire({ icon: 'error', title: "Ocurrio un error al conectarse con el servidor" });
+                }
+            }
+            catch (error) {
+                Swal.close();
+                Toast.fire({ icon: 'error', title: error });
+            }
+        };
+
+        document.getElementById("btnNuevaPlaza").addEventListener("click", () => obtenerPuestos());
+        document.getElementById("motivo").addEventListener("change", () => cambiarInputs());
+        document.getElementById("btnConfirmarBaja").addEventListener("click", () => confimacionDeBaja());
+
+    </script>
+
+}

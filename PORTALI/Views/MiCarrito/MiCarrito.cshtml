@@ -3,7 +3,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
     h3 {
-        font-size: 16px;
+        font-size: 15px;
     }
 
     .text-navy {
@@ -12,7 +12,7 @@
 
     .cart-product-imitation {
         text-align: center;
-        padding-top: 30px;
+        padding-top: 20px;
         height: 80px;
         width: 80px;
         background-color: #f8f8f9;
@@ -23,7 +23,7 @@
     }
 
     .product-desc {
-        padding: 20px;
+        padding: 10px;
         position: relative;
     }
 
@@ -63,7 +63,7 @@
 
     .ibox {
         clear: both;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         margin-top: 0;
         padding: 0;
     }
@@ -96,7 +96,7 @@
     .ibox-content {
         background-color: #ffffff;
         color: inherit;
-        padding: 15px 20px 20px 20px;
+        
         border-color: #e7eaec;
         border-image: none;
         border-style: solid solid none;
@@ -126,18 +126,18 @@
         }
 
         .botones_pago .boton.active {
-            background-color: #007bff;  color cuando está seleccionado 
+            background-color: #007bff;  /*color cuando está seleccionado */
             color: #fff;
             border: 1px solid #0056b3;
         }
 
 </style>
 
-<div class="container">
+<div class="container-fluid" >
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="metodoPago text-center">
-            <h3 class="mb-1">Método de pago</h3>
-            <div class="botones_pago mt-3">
+            @*<h3 class="mb-1">Método de pago</h3>*@
+            <div class="botones_pago mt-1">
                 <button class="boton" onclick="CargarData(9, this);">
                     <span class="icon">💳</span> Precio Normal
                 </button>
@@ -155,7 +155,7 @@
                 padding: 20px;
                 border-radius: 10px;
                 box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-                text-align: center;
+                text-align: center; 
             }
 
                 .metodoPago h3 {
@@ -198,28 +198,76 @@
 
         <br />
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="ibox">
                     <div class="ibox-title">
-                        <span class="pull-right">(<strong><a id="totalItems"></a></strong>) items</span>
+                        @*<span class="pull-right">(<strong><a id="totalItems"></a></strong>) items</span>*@
                         <h5 style="font-size:20px">
                             <i class="fa fa-shopping-cart"></i> Tu carrito
                         </h5>
                     </div>
                     <div id="tbldetalle" class="tbldetalle"></div>
-                    <div class="ibox-content">
+                    <div class="ibox-content" style="margin-top:10px; margin-bottom:30px">
                         <button class="btn btn-white" onclick="window.location.href='/CotizacionVentas/Cotizacion';">
                             <i class="fa fa-arrow-left"></i> Continuar comprando
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="ibox">
                     <div class="ibox-title">
-                        <h5>Resumen de compra</h5>
+                        <h5>
+                            <i class="fas fa-box-open" style="margin-right: 8px; color: #555;"></i>
+                            Artículos complementarios
+                        </h5>
+
+                    </div>
+                    <div class="ibox-content" style="max-height: 400px; overflow-y: auto;">
+                        <table style="width: 100%;">
+                            <thead style="display: none;">
+                                <tr>
+                                    <th style="text-align: left; padding: 10px;">Producto</th>
+                                    <th style="text-align: center; padding: 10px;">Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="Complementarios">
+                                <tr>
+                                    <td colspan="2" style="text-align: center; padding: 10px;">No hay datos</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="ibox-title">
+                        <h5>
+                            <i class="fas fa-gift" style="margin-right: 8px; color: #d48806;"></i>
+                            Premios por promoción
+                        </h5>
                     </div>
                     <div class="ibox-content">
+                        <table id="tablaPremios" style="width: 100%; border: none; border-collapse: collapse;">
+                            <thead style="display: none;">
+                                <tr>
+                                    <th style="text-align: left; padding: 10px;">Producto</th>
+                                    <th style="text-align: center; padding: 10px;">Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="premios">
+                                <tr>
+                                    <td colspan="2" style="text-align: center; padding: 10px;">No hay datos</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="ibox-title">
+                        <h5>
+                            <i class="fas fa-receipt" style="margin-right: 8px; color: #4a4a4a;"></i>
+                            Resumen de compra
+                        </h5>
+
+                    </div>
+                    <div class="ibox-content" style="padding:20px">
                         <div style="display: flex; align-items: center; font-size: 15px; color: red;">
                             <strong style="margin-right: 5px;">Descuento: </strong>
                             <h2 id="iDescuentoT" class="font-bold" style="font-size: 15px; margin: 0; color: red;">
@@ -236,12 +284,23 @@
                     </div>
                     <div class="ibox-title">
                         <button type="submit" class="btn-buscar" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: #ff8c00; margin-bottom:10px;
-                                border: none; border-radius: 12px; cursor: pointer;" onclick="loadStep(1)">
+                                border: none; border-radius: 12px; cursor: pointer;" onclick="Siguiente()">
                             Continuar  &#8594;
                         </button>
-                        <button id="btnGuardarComoBorrador" type="submit" class="btn-buscar d-none" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: green;
+                        <script>
+                            function Siguiente() {
+                                ValidarRegalitos();
+                                loadStep(1);
+                            }
+                        </script>
+                        <button id="btnGuardarComoBorrador" type="submit" class="btn-buscar" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: green;
                                 border: none; border-radius: 12px; cursor: pointer;" onclick="GuardarBorrador()">
                             Guardar como borrador
+                        </button>
+                        <br />
+                        <button id="btnCancelar" type="submit" class="btn-buscar" style="width: 100%; padding: 10px 20px; font-size: 16px; color: white; background-color: red; margin-top:10px;
+                                border: none; border-radius: 12px; cursor: pointer;" onclick="Cancelar()">
+                            Cancelar
                         </button>
                     </div>
                 </div>
@@ -270,6 +329,35 @@
     </div>
 </div>
 <script>
+
+    function Cancelar() {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se borraran los datos",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const cookies = document.cookie.split(";");
+                const nombre = cookies.map(cookie => cookie.trim()).find(cookie => cookie.startsWith("T-OneCotizacion-"))?.split("=")[0];
+                EliminarCookie(nombre);
+                Swal.fire({
+                    title: 'Cancelado',
+                    text: 'Los cambios han sido cancelados.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Redirección después de cerrar el mensaje de confirmación
+                    window.location.href = '/CotizacionVentas/Cotizacion';
+                });
+            }
+        });
+    }
+
     function GuardarBorrador() {
         const respuesta = confirm("¿Deseas guardar la cotización como borrador?");
         if (respuesta) {
@@ -278,21 +366,50 @@
         }
     }
 
+    function ValidarRegalitos()
+    {
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+        EliminarCookie("tejar360.Premios");
+        const cookieData = getCookie(cookieName);
+        const parsedData = JSON.parse(cookieData);
+        const cartItems = parsedData.productos.map(item => ({
+            Identity: item.Identity,
+            LineId: item.LineId,
+            ItemCode: item.ItemCode,
+            Dscription: item.Dscription,
+            Quantity: item.Quantity,
+            Price: (parseFloat(item.Price) - parseFloat(item.DescuentoU)),
+            LineTotal: item.LineTotal,
+            ListPrice: item.ListPrice,
+            LinkImg: item.LinkImg,
+            Dscto: item.Dscto,
+            Saving: item.Saving,
+            CantidadMetros: item.CantidadMetros,
+            EsPromo: item.EsPromo,
+            DescuentoU: item.DescuentoU,
+            DescuentoLpr: item.DescuentoLpr,
+            DescuentoNwp: item.DescuentoNwp,
+            DescuentoPor: item.DescuentoPor,
+            DescuentoQtz: item.DescuentoQtz
+        }));
+        CargarPremiosPromocion(cartItems);
+    }
+
     $(document).ready(function () {
-        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");        
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
         // Si no hay cookies existentes, salir de la función
         if (!cookieName) {
             console.warn("No se encontró ninguna cookie de cotización.");
             return;
         }
 
-        const cookieData = getCookie(cookieName);        
+        const cookieData = getCookie(cookieName);
         precioLista = 0;
         if (cookieData) {
             const parsedData = JSON.parse(cookieData);
-            precioLista = parsedData.PriceId;            
-        }        
-        CargarData(precioLista);        
+            precioLista = parsedData.PriceId;
+        }
+        CargarData(precioLista);
     });
 
     /* CAMBIA LOS PRECIOS DE LOS PRODUCTOS CON LA LISTA DE PRECIOS */
@@ -319,7 +436,6 @@
 
             let _docNum = parsedData.NoCotizacion || 0;
             let _docEntry = parsedData.DocN || 0;
-
 
             const cartItems = parsedData.productos.map(item => ({
                 DocNum: _docNum,
@@ -364,6 +480,10 @@
                     if (data) {
                         $('#tbldetalle').html(data);
                         updateSoloQuantity(pList);
+
+                        CargarPremiosPromocion(cartItems);
+
+                        CargrComplementarios(cartItems, pList);
                         $("#globalLoading").hide();
                     } else {
                         console.error('Error del backend:', data);
@@ -384,11 +504,263 @@
         }
     }
 
+    function CargarPremiosPromocion(_detalle) {
+        EliminarCookie("tejar360.Premios");
+        $.ajax({
+            url: '/MiCarrito/PremiosPromo',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ Detalle: _detalle }),
+            success: function (response) {
+                // Limpiamos el tbody antes de agregar contenido nuevo
+                $('#premios').empty();
+
+                if (!Array.isArray(response) || response.length === 0) {
+                    const fila = `<tr><td colspan="2" style="text-align: center; padding: 10px;">No hay datos</td></tr>`;
+                    $('#premios').append(fila);
+                    return;
+                }
+
+                // Suponiendo que 'response' es una lista de productos
+                response.forEach(function (item) {
+                    const fila = `
+                    <tr style="border: none;">
+                        <td style="display: flex; align-items: center; gap: 10px; padding: 5px; border: none;">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <img src="${item.UrlImagen || '/Img/imagen-no-disponible.png'}" alt="Producto"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                <div style="color: gray; font-size: 10px; margin-top: 5px;">${item.ItemCode}</div>
+                            </div>
+                            <div>
+                                <div style="font-weight: bold;">${item.ItemName}</div>
+                                Cantidad: ${item.Regalito}
+                            </div>
+                        </td>
+                    </tr>`;
+                    $('#premios').append(fila);
+                });
+                CrearCookieRegalos(response);
+            },
+            error: function () {
+                alert("Hubo un error al buscar el socio de negocio. Intente nuevamente.");
+            }
+        });
+    }
+
+    function CargrComplementarios(_detalle, pList) {
+        $.ajax({
+            url: '/MiCarrito/Complementarios',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ Detalle: _detalle, PriceList: pList }),
+            success: function (response) {
+                // Limpiamos el tbody antes de agregar contenido nuevo
+                $('#Complementarios').empty();
+
+                if (!Array.isArray(response) || response.length === 0) {
+                    const fila = `<tr><td colspan="2" style="text-align: center; padding: 10px;">No hay datos</td></tr>`;
+                    $('#Complementarios').append(fila);
+                    return;
+                }
+
+
+                // Suponiendo que 'response' es una lista de productos
+                response.forEach(function (item) {
+
+                    let sugeridoReal;
+
+                    if (item.Sugerido > item.Stock) {
+                        sugeridoReal = item.Stock;
+                    } else {
+                        sugeridoReal = item.Sugerido;
+                    }
+
+                    const fila = `
+<tr style="border: none;">
+    <td style="padding: 6px 4px; border: none;">
+        <!-- Card del producto -->
+        <div class="card-producto" data-precio="${item.Precio}"
+             style="display: flex; align-items: flex-start; gap: 10px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 8px; margin-bottom: 8px;">
+
+            <!-- Contenedor de imagen + código -->
+            <div style="display: flex; flex-direction: column; align-items: center; min-width: 60px;">
+                <img src="${item.UrlImagen || '/Img/imagen-no-disponible.png'}" alt="Producto"
+                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background:#fafafa;">
+                <div style="color: #888; font-size: 10px; margin-top: 4px; text-align: center;">${item.ItemCode}</div>
+            </div>
+
+            <!-- Contenedor de detalles -->
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                <div style="font-weight: 600; font-size: 13px; color: #333; line-height: 1.2;">${item.ItemName}</div>
+
+                <!-- Stock -->
+                <div style="font-size: 12px; color: #666;">
+                    <span style="font-weight: 500; color: #555;">Stock: </span>
+                    <span style="font-weight: 600; color: ${item.Stock > 0 ? '#28a745' : '#d9534f'};" id="Stock${item.ItemCode}">${item.Stock}</span>
+                </div>
+
+                <!-- Precio -->
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555;">
+                    <span>Precio:</span>
+                    <span style="font-weight: 600; color: #2c7;">
+                        Q${(item.Precio).toLocaleString('es-GT', { minimumFractionDigits: 2 })}
+                    </span>
+                </div>
+
+                <!-- Cantidad -->
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555;">
+                    <label style="flex: 1;">Cantidad</label>
+                    <input type="number" min="0" value="${sugeridoReal}" id="Quantity${item.ItemCode}"
+                        style="width: 70px; text-align: right; font-size: 13px; padding: 3px; border: 1px solid #ddd; border-radius: 4px; outline: none; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='#007bff'"
+                        onblur="this.style.borderColor='#ddd'"
+                        oninput="actualizarTotal(this,'${item.itemCode}')" />
+                </div>
+
+                <!-- Total -->
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555; border-top: 1px dashed #ccc; padding-top: 4px; margin-top: 3px;">
+                    <span>Total:</span>
+                    <span class="total-producto" style="font-weight: bold; color: #d9534f;">
+                        Q${(item.Precio * item.Sugerido).toLocaleString('es-GT', { minimumFractionDigits: 2 })}
+                    </span>
+                </div>
+
+                <!-- Botón -->
+                <div style="margin-top: 4px; text-align: right;">
+                    <button onclick="agregarProductoDesdeVista('${item.ItemCode}')"
+                            style="background: #007bff; color: #fff; font-size: 12px; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                        <i class="fa fa-cart-plus"></i> Agregar al carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>`;
+
+
+
+                    $('#Complementarios').append(fila);
+                });
+            },
+            error: function () {
+                alert("Hubo un error al buscar el socio de negocio. Intente nuevamente.");
+            }
+        });
+    }
+
     // Implementación de la función getCookie
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function actualizarTotal(input, _ItemCode) {
+        const card = input.closest(".card-producto");
+        const precio = parseFloat(card.getAttribute("data-precio"));
+        const cantidad = parseFloat(input.value) || 0;
+        const total = precio * cantidad;
+        const totalSpan = card.querySelector(".total-producto");
+        //const quantity = parseFloat(document.getElementById('Quantity' + _ItemCode).value);
+        //const stock = parseFloat(document.getElementById('Stock' + _ItemCode).value);
+
+
+        totalSpan.textContent = "Q" + total.toLocaleString("es-GT", { minimumFractionDigits: 2 });
+    }
+
+    function regresarId() {
+        let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
+        const cookieData = getCookie(cookieName);
+        let lineId = 1; // Valor inicial en caso de que no exista la cookie
+
+        if (cookieData) {
+            try {
+                const cotizacion = JSON.parse(cookieData);
+                // Acceder al array de productos
+                if (Array.isArray(cotizacion.productos) && cotizacion.productos.length > 0) {
+                    // Obtener el último producto en la lista
+                    const ultimoProducto = cotizacion.productos[cotizacion.productos.length - 1];
+
+                    // Obtener el último LineId y sumar 1
+                    return (ultimoProducto.LineId || 0) + 1;
+                }
+            } catch (error) {
+                console.error('Error al parsear la cookie:', error);
+                return -1
+            }
+        }
+        return 1;
+    }
+
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0,
+                v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+
+    function agregarProductoDesdeVista(_ItemCode) {
+
+        $.ajax({
+            url: '/MiCarrito/Detalles', // Cambia 'TuControlador' por el nombre de tu controlador
+            type: 'GET',
+            data: { ItemCode: _ItemCode }, // Envía el Nit al controlador
+            success: function (response) {
+                const precioNo = response.data.Encabezado.PrecioVenta;
+                const precioOf = response.data.Encabezado.PrecioBeneficio;
+                const clienteId = 'A1';
+                const itemCode = response.data.Encabezado.ItemCode;
+                const itemName = response.data.Encabezado.ItemName;
+                const quantity = parseFloat(document.getElementById('Quantity' + _ItemCode).value);
+                const price = response.data.Encabezado.PrecioFinal;
+                const dscto = "0.00";
+                const savings = "0.00";
+                const descuentoU = parseFloat(precioOf - precioNo).toFixed(2);
+                const listPrice = response.data.Encabezado.PLFinal;
+                const lineTotal = parseFloat((price * quantity).toFixed(2)) - parseFloat(savings).toFixed(2);
+                const elemento = document.getElementById('iMetrosTotal');
+                const cantidadMetros = elemento ? elemento.textContent.replace("Total metros de piso:", "").trim() : "0";
+                const linkImg = response.data.Encabezado.Imagen;
+                const EsPromo = response.data.Encabezado.EsPromo;
+                let lineId = regresarId();
+                const codigoPromo = response.data.Encabezado.CodigoPromo;
+
+
+                const producto = {
+                    DocE: 0,
+                    LineN: -1,
+                    Identity: generateUUID(),
+                    LineId: lineId,
+                    ItemCode: itemCode,
+                    Dscription: itemName.replace(/&#160;/g, ' '),
+                    Quantity: quantity,
+                    ListPrice: parseInt(listPrice),
+                    Price: (parseFloat(price) - parseFloat(descuentoU)),
+                    DescuentoU: parseFloat(descuentoU),
+                    Dscto: parseFloat(dscto.replace("%", "")),
+                    LineTotal: lineTotal,
+                    CantidadMetros: parseFloat(cantidadMetros),
+                    LinkImg: linkImg,
+                    EsPromo: EsPromo,
+                    DescuentoLpr: 0,
+                    DescuentoPor: 0.00,
+                    DescuentoQtz: 0.00,
+                    DescuentoNwp: 0.00,
+                    CodPromo: codigoPromo
+                };
+
+                if (CrearCotizacionCookie(clienteId, producto, 0) === true) {
+                    $('#miModal').modal('show').addClass('fade-in');
+                    $("#globalLoading").hide();
+                }
+
+                location.reload();
+            },
+            error: function () {
+                alert("Hubo un error al obtener informacion del producto");
+            }
+        });
     }
 
     $(document).ready(function () {

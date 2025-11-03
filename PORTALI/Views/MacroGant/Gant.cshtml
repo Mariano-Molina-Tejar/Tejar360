@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Macro Gantt</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        h2 {
+            font-size: 28px;
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+            color: #333;
+        }
+
+        .gantt {
+            max-width: 100%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            .gantt th {
+                background-color: #e0e0e0;
+                padding: 8px;
+                text-align: center;
+                border: 1px solid #ccc;
+            }
+
+            .gantt td {
+                border: 1px solid #ddd;
+                height: 30px;
+                position: relative;
+            }
+
+                /* Ancho ajustado para columna actividad */
+                .gantt th:first-child,
+                .gantt td.tarea {
+                    width: 320px;
+                }
+
+                /* Ancho para columna Departamento */
+                .gantt th:nth-child(2),
+                .gantt td:nth-child(2) {
+                    width: 90px;
+                    text-align: center;
+                    font-weight: 600;
+                    border-right: 2px solid #ccc;
+                    font-size: 14px;
+                }
+
+        .tarea {
+            
+        }
+
+            /*.tarea:hover {
+                background-color: #e6f0ff;
+                border-left-color: #2196f3;
+                cursor: default;
+            }*/
+
+        .gantt tbody tr:hover td.tarea,
+        .gantt tbody tr:hover td:nth-child(2) {
+            background-color: #e6f0ff;
+            border-left-color: #2196f3;
+            cursor: default;
+        }
+
+
+        tr:nth-child(1) .tarea {
+            border-left-color: #2196f3;
+        }
+
+        tr:nth-child(2) .tarea {
+            border-left-color: #4caf50;
+        }
+
+        tr:nth-child(3) .tarea {
+            border-left-color: #ff9800;
+        }
+
+        tr:nth-child(4) .tarea {
+            border-left-color: #9c27b0;
+        }
+
+        tr:nth-child(5) .tarea {
+            border-left-color: #ffc107;
+        }
+
+        .barra {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            background-color: #2196f3;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .azul {
+            background-color: #2196f3;
+        }
+
+        .verde {
+            background-color: #4caf50;
+        }
+
+        .naranja {
+            background-color: #ff9800;
+        }
+
+        .morado {
+            background-color: #9c27b0;
+        }
+
+        .amarillo {
+            background-color: #ffc107;
+        }
+
+        .tarea.nivel-papa {
+            padding-left: 10px;
+            font-weight: 700;
+            color: #222;
+            border-left: 5px solid #2196f3; /* barra azul para papá */
+        }
+
+        .tarea.nivel-hijo {
+            padding-left: 30px; /* más sangría */
+            font-weight: 600;
+            color: #444;
+            border-left: 5px solid #4caf50; /* barra verde para hijo */
+        }
+
+        .tarea.nivel-nieto {
+            padding-left: 50px; /* aún más sangría */
+            font-weight: 500;
+            color: #777;
+            border-left: 5px solid #ff9800; /* barra naranja para nieto */
+        }
+    </style>
+</head>
+<body>
+    <h2>Macro Gantt del Proyecto</h2>
+    <div style="padding:15px;">
+        <table class="gantt">
+            <thead>
+                <tr>
+                    <th rowspan="2">Actividad</th>
+                    <th rowspan="2">Departamento</th>
+                    <th colspan="15" style="border-bottom: 2px solid #999; background-color: #d0d0d0;">Mayo</th>
+                    <th colspan="15" style="border-bottom: 2px solid #999; background-color: #c0c0c0;">Junio</th>
+                    <th colspan="15" style="border-bottom: 2px solid #999; background-color: #c0c0c0;">Julio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="tarea nivel-papa">Inicio del proyecto</td>
+                    <td>RH</td>
+                    <td colspan="1"><div class="barra azul" style="left: 0; right: 0;">1 día</div></td>
+                    <td colspan="44"></td>
+                </tr>
+                <tr>
+                    <td class="tarea nivel-hijo">Recolección de requerimientos</td>
+                    <td>Finanzas</td>
+                    <td></td>
+                    <td colspan="2"><div class="barra verde" style="left: 0; right: 0;">Análisis</div></td>
+                    <td colspan="58"></td>
+                </tr>
+                <tr>
+                    <td class="tarea nivel-nieto">Diseño</td>
+                    <td>Comercial</td>
+                    <td colspan="5"></td>
+                    <td colspan="3"><div class="barra naranja" style="left: 0; right: 0;">Mockups</div></td>
+                    <td colspan="22"></td>
+                </tr>
+                <tr>
+                    <td class="tarea nivel-papa">Desarrollo</td>
+                    <td>IT</td>
+                    <td colspan="8"></td>
+                    <td colspan="5"><div class="barra morado" style="left: 0; right: 0;">Código</div></td>
+                    <td colspan="17"></td>
+                </tr>
+                <tr>
+                    <td class="tarea nivel-hijo">Pruebas y Demo</td>
+                    <td>RH</td>
+                    <td colspan="13"></td>
+                    <td colspan="2"><div class="barra amarillo" style="left: 0; right: 0;">Presentación</div></td>
+                    <td colspan="15"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+
+</body>
+</html>

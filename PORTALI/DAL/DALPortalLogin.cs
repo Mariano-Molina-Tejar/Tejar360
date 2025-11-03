@@ -10,7 +10,68 @@ using Entity;
 namespace DAL
 {
     public class DALPortalLogin
-    {        
+    {
+        public static bool ValidarMismaContrasena(string Usuario, string NewPassword)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection($"Provider=SQLOLEDB;Server={pConnection.ServerName};Database={pConnection.DataBase};Uid={pConnection.User};Pwd={pConnection.Password};"))
+            {
+                using (OleDbCommand iCommand = new OleDbCommand("sp_buscar_password_usuario", iConnection))
+                {
+                    iCommand.CommandType = CommandType.StoredProcedure;
+                    iCommand.Parameters.AddWithValue("@Usuario", Usuario);
+                    iCommand.Parameters.AddWithValue("@Password", NewPassword);
+
+                    try
+                    {
+                        OleDbDataAdapter iDAResult = null;
+                        DataTable dt = new DataTable();
+                        iDAResult = new OleDbDataAdapter();
+                        iDAResult.SelectCommand = iCommand;
+                        iDAResult.Fill(dt);
+
+                        if (dt.Rows.Count > 0)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static bool CambioContrasena(string Usuario, string NewPassword)
+        {
+            ConnectionEntity pConnection = Connection.Conexion.ConexionDB();
+            using (OleDbConnection iConnection = new OleDbConnection($"Provider=SQLOLEDB;Server={pConnection.ServerName};Database={pConnection.DataBase};Uid={pConnection.User};Pwd={pConnection.Password};"))
+            {
+                using (OleDbCommand iCommand = new OleDbCommand("sp_portal_cambio_password", iConnection))
+                {
+                    iCommand.CommandType = CommandType.StoredProcedure;
+                    iCommand.Parameters.AddWithValue("@Usuario", Usuario);
+                    iCommand.Parameters.AddWithValue("@Password", NewPassword);
+
+                    try
+                    {
+                        iConnection.Open();
+                        int rowsAffected = iCommand.ExecuteNonQuery();
+
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Puedes loguear el error si quieres
+                        return false;
+                    }
+                }
+            }
+        }
+
         public static bool ValidarPasswordOld(string User, string Password)
         {
             SessionLoginEntity sessionLoginEntity = new SessionLoginEntity();
@@ -82,6 +143,9 @@ namespace DAL
                         sessionLoginEntity.Descto = double.Parse(dt.Rows[0]["Descto"].ToString());
                         sessionLoginEntity.ClienteCf = dt.Rows[0]["ClienteCf"].ToString();
                         sessionLoginEntity.Serie = int.Parse(dt.Rows[0]["Serie"].ToString());
+                        sessionLoginEntity.CambiarContrasena = dt.Rows[0]["CambioContrasena"].ToString();
+                        sessionLoginEntity.SuperUser = dt.Rows[0]["SuperUser"].ToString();
+                        sessionLoginEntity.Region = int.Parse(dt.Rows[0]["IdRegion"].ToString());
 
                         return sessionLoginEntity;
                     }

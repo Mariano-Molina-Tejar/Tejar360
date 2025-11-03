@@ -1,0 +1,590 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado bolson v2</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .table thead {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .btn-update {
+            margin-bottom: 1rem;
+        }
+
+        .location-title {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+        }
+
+        .total-row {
+            background-color: #d1ecf1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center my-4" style="font-weight: bold; font-size: 2rem; color: #343a40; border-bottom: 3px solid #007bff; display: inline-block; padding-bottom: 10px;">
+            📊 Estado bolson
+        </h1>
+
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+
+            <!-- Combo Año -->
+            <select id="cmbAnio"
+                    style="width: 100px; padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc;
+                   background-color: #fff; font-size: 14px; cursor: pointer; transition: all 0.3s ease;">
+            </select>
+
+            <!-- Combo Semana -->
+            <select id="cmbSemana"
+                    style="width: 200px; padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc;
+                   background-color: #fff; font-size: 14px; cursor: pointer; transition: all 0.3s ease;">
+            </select>
+
+            <!-- Label dinámico -->
+            <label id="lblSemana"
+                   style="font-size: 14px; font-weight: 500; color: #333; padding: 4px 8px;
+                  background: #f3f4f6; border-radius: 4px;">
+                @*Semana 1 (2025): del 01/01/2025 al 07/01/2025*@
+            </label>
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <label for="fechaInicio" class="form-label">Fecha inicio</label>
+                    <input type="date" id="fechaInicio" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="fechaFinal" class="form-label">Fecha final</label>
+                    <input type="date" id="fechaFinal" class="form-control">
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary w-100 px-4" onclick="cargarProgramacion()">
+                        Buscar
+                    </button>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end" onclick="ExportarExcel()">
+                    <button type="button" class="btn btn-outline-success w-150 px-4">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <a id="Tipo" style="display:none"></a>
+        <!-- Tabla agrupada por Location -->
+        <div class="table-responsive" style="margin-bottom:30px">
+            <table class="table table-bordered table-hover" id="tablaVentas" style="font-size:12px;">
+                <thead class="text-center" style="background-color: black; color: white;">
+                    <tr>
+                        <th></th>
+                        <th colspan="3">Cotizaciones Generadas</th>
+                        <th colspan="4">Cotizaciones Facturadas</th>
+                        <th colspan="4">Cotizaciones Abiertas</th>
+                        <th colspan="4">Cotizaciones Perdidas</th>
+                    </tr>
+                    <tr>
+                        <th class="align-middle sticky-col" style="width:225px;">Tienda</th>
+                        <th>Total U.</th>
+                        <th>Total Q.</th>
+                        <th>Ticket Promedio</th>
+
+                        <th>Total U.</th>
+                        <th>Total Q.</th>
+                        <th>Ticket Prom.</th>
+
+                        <th>Tasa Cierre</th>
+                        <th>Total U.</th>
+                        <th>Total Q.</th>
+                        <th>Ticket Prom.</th>
+                        <th>Tasa abiertas</th>
+
+                        <th>Total U.</th>
+                        <th>Total Q.</th>
+                        <th>Ticket Prom.</th>
+                        <th>Tasa Perdidas</th>
+                    </tr>
+                </thead>
+
+                <tbody class="text-center" id="tbodyVentas">
+                    <tr>
+                        <td colspan="16">
+                            <img src="/img/loading_circulo.gif" alt="Cargando" style="width:50px; height:50px;"><br />
+                            Cargando datos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#globalLoading").show();
+
+        $.getJSON('/EstadoBolsonV3/CargarFechas', { Tipo: 1, Anio: 0 }, function (data) {
+            $('#cmbAnio').append(data.map(a => `<option value="${a.Anio}">${a.Anio}</option>`));
+
+            // Si ya hay un año seleccionado al cargar, disparar el cambio
+            const anioSeleccionado = $('#cmbAnio').val();
+            if (anioSeleccionado) {
+                cargarSemanas(anioSeleccionado);
+            }
+        });
+
+        // Al cambiar año, cargar semanas
+        $('#cmbAnio').on('change', function () {
+            const anio = $(this).val();
+            $('#lblSemana').text('Semana seleccionada aparecerá aquí');
+            if (anio) {
+                cargarSemanas(anio);
+            }
+        });
+
+        // Al cambiar semana, mostrar texto en el label
+        $('#cmbSemana').on('change', function () {
+            const texto = $('#cmbSemana option:selected').data('texto'); // texto completo
+            const numeroSemana = $(this).val(); // <-- aquí obtienes el número de semana seleccionado
+
+            // Ahora puedes usar numeroSemana
+            $("#Tipo").text("1");
+            CargarData(numeroSemana, 1); // ejemplo: pasar al método CargarData
+            $('#lblSemana').text(texto || 'Semana seleccionada aparecerá aquí');
+        });
+
+
+        // Función para cargar semanas
+        function cargarSemanas(anio) {
+            $.getJSON('/EstadoBolsonV3/CargarFechas', { Tipo: 2, Anio: anio }, function (data) {
+                $('#cmbSemana').html('<option value="">-- Seleccionar Semana --</option>'); // reset
+                data.forEach(function (s) {
+                    $('#cmbSemana').append(`<option value="${s.Semana}" data-texto="${s.Texto}">${"Semana " + s.Semana}</option>`);
+                });
+
+                // Si quieres seleccionar la primera semana automáticamente:
+                if (data.length > 0) {
+                    $('#cmbSemana').val(data[0].Semana).trigger('change');
+                }
+            });
+        }        
+    });
+
+    function cargarProgramacion() {
+        $("#Tipo").text("2");
+        CargarData(-1, 2);
+    }
+
+    function ExportarExcel() {
+        var tabla = document.getElementById("tablaVentas");
+        var filas = tabla.querySelectorAll("tr");
+        var data = [];
+        var merges = [];
+
+        filas.forEach((tr, rowIndex) => {
+            let row = [];
+            let colIndex = 0;
+
+            tr.querySelectorAll("th, td").forEach(td => {
+                let valor = td.innerText.trim();
+
+                // Ignorar "Cargando detalle..."
+                if (valor === "Cargando detalle...") {
+                    valor = "";
+                }
+
+                // Quitar "Q" y comas → números reales
+                let limpio = valor.replace(/Q|\s|,/g, "");
+                if (limpio !== "" && !isNaN(limpio)) {
+                    valor = parseFloat(limpio);
+                }
+
+                row[colIndex] = valor;
+
+                // 👇 Solo aplicar merges en la primera fila (rowIndex == 0)
+                if (rowIndex <= 1) {
+                    let colspan = td.colSpan || 1;
+                    let rowspan = td.rowSpan || 1;
+
+                    if (colspan > 1 || rowspan > 1) {
+                        merges.push({
+                            s: { r: rowIndex, c: colIndex },
+                            e: { r: rowIndex + rowspan - 1, c: colIndex + colspan - 1 }
+                        });
+                    }
+
+                    colIndex += colspan;
+                } else {
+                    colIndex++;
+                }
+            });
+
+            if (row.some(c => c !== "")) {
+                data.push(row);
+            }
+        });
+
+        // Crear hoja
+        var ws = XLSX.utils.aoa_to_sheet(data);
+
+        // Aplicar solo los merges de la primera fila
+        ws['!merges'] = merges;
+
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+
+        // Nombre dinámico con fecha
+        var fecha = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+        var nombreArchivo = "EstadoBolson_" + fecha + ".xlsx";
+
+        XLSX.writeFile(wb, nombreArchivo);
+    }
+
+
+
+
+    function CargarData(NoSemana, tipo) {
+        $.ajax({
+            url: '@Url.Action("CargarData", "EstadoBolsonV3")',
+            type: 'POST',
+            data: { Anio: $('#cmbAnio').val(), NoSemana: NoSemana, Tipo: tipo, FechaI: $('#fechaInicio').val(), FechaFinal: $('#fechaFinal').val()},
+            beforeSend: function () {
+                $("#globalLoading").show(); // loading global también en el detalle
+            },
+            success: function (response) {
+                if (response.success)
+                {
+                    console.log(response.data);
+                    let data = response.data;
+                    let html = '';
+                    let Nivel = 0;
+
+                    let grupos = {};
+
+                    let totalGeneral = {
+                        CotGen_TotalU: 0,
+                        CotGen_TotalQ: 0,
+                        TicketPromedio: 0,
+
+                        CotiFac_TotalU: 0,
+                        CotiFac_TotalQ: 0,
+                        CotiFac_TicketPromedio: 0,
+                        CotiFac_Tasa: 0,
+
+                        CotiPer_TotalU: 0,
+                        CotiPer_TotalQ: 0,
+                        CotiPer_TicketPromedio: 0,
+                        CotiPer_Tasa: 0,
+
+                        TotalAb_TotalU: 0,
+                        TotalAb_TotalQ: 0,
+                        TotalAb_TicketPromedio: 0,
+                        TotalAb_Tasa: 0
+                    };
+
+                    let countTotal = 0;
+
+                    // Agrupar por región
+                    $.each(data, function (i, item) {
+                        Nivel = item.NivelEntrada;
+                        let region = item.Region || "SIN REGION";
+                        if (!grupos[region]) grupos[region] = [];
+                        grupos[region].push(item);
+
+                        totalGeneral.CotGen_TotalU += item.CotGen_TotalU || 0;
+                        totalGeneral.CotGen_TotalQ += item.CotGen_TotalQ || 0;
+                        totalGeneral.TicketPromedio += item.TicketPromedio || 0;
+
+                        totalGeneral.CotiFac_TotalU += item.CotiFac_TotalU || 0;
+                        totalGeneral.CotiFac_TotalQ += item.CotiFac_TotalQ || 0;
+                        totalGeneral.CotiFac_TicketPromedio += item.CotiFac_TicketPromedio || 0;
+
+                        totalGeneral.CotiPer_TotalU += item.CotiPer_TotalU || 0;
+                        totalGeneral.CotiPer_TotalQ += item.CotiPer_TotalQ || 0;
+                        totalGeneral.CotiPer_TicketPromedio += item.CotiPer_TicketPromedio || 0;
+                        totalGeneral.CotiPer_Tasa += item.CotiPer_Tasa || 0;
+
+                        totalGeneral.TotalAb_TotalU += item.TotalAb_TotalU || 0;
+                        totalGeneral.TotalAb_TotalQ += item.TotalAb_TotalQ || 0;
+                        totalGeneral.TotalAb_TicketPromedio += item.TotalAb_TicketPromedio || 0;
+                        totalGeneral.TotalAb_Tasa += item.TotalAb_Tasa || 0;
+                        
+                    });
+
+                    // Recorrer los grupos
+                    $.each(grupos, function (region, items) {
+                        if (Nivel != 2) {
+                            html += `<tr class="location-title">
+                                <td colspan="18" style="text-align: left; padding-left: 20px;">
+                                    <i class="fas fa-map-marked-alt"></i> <strong>${region}</strong>
+                                </td>
+                            </tr>`;
+                        }
+                        // Filas por tienda
+                        $.each(items, function (i, item) {
+                            html += `<tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-link p-0 me-2 btn-expandir" data-tienda="${item.WhsCode}" title="Ver detalle" style="margin-right:7px;">
+                                                <i class="fas fa-plus-circle text-primary"></i>
+                                            </button>
+                                            <span>${item.WhsName}</span>
+                                        </div>
+                                    </td>
+                                    <td>${item.CotGen_TotalU}</td>
+                                    <td>${formatoQuetzal(item.CotGen_TotalQ)}</td>
+                                    <td>${formatoQuetzal(item.TicketPromedio)}</td>
+                                    <td>${item.CotiFac_TotalU}</td>
+                                    <td>${formatoQuetzal(item.CotiFac_TotalQ)}</td>
+                                    <td>${formatoQuetzal(item.CotiFac_TicketPromedio)}</td>
+                                    <td>${item.CotiFac_Tasa.toFixed(2)}%</td>
+
+                                    <td>${item.TotalAb_TotalU}</td>
+                                    <td>${formatoQuetzal(item.TotalAb_TotalQ)}</td>
+                                    <td>${formatoQuetzal(item.TotalAb_TicketPromedio)}</td>
+                                    <td>${item.TotalAb_Tasa.toFixed(2)}%</td>
+
+                                    <td>${item.CotiPer_TotalU}</td>
+                                    <td>${formatoQuetzal(item.CotiPer_TotalQ)}</td>
+                                    <td>${formatoQuetzal(item.CotiPer_TicketPromedio)}</td>
+                                    <td>${item.CotiPer_Tasa.toFixed(2)}%</td>                                    
+                                </tr>`;
+
+                            html += `<tr class="detalle-tienda" id="detalle-${item.WhsCode}" style="display: none;">
+                                        <td colspan="16">
+                                            <div class="contenido-detalle">
+                                                Cargando detalle...
+                                            </div>
+                                        </td>
+                                    </tr>`;
+
+                            countTotal++;
+                        });
+
+                        let total = {
+                            CotGen_TotalU: 0,
+                            CotGen_TotalQ: 0,
+                            TicketPromedio: 0,
+
+                            CotiFac_TotalU: 0,
+                            CotiFac_TotalQ: 0,
+                            CotiFac_TicketPromedio: 0,
+                            CotiFac_Tasa: 0,
+
+                            CotiPer_TotalU: 0,
+                            CotiPer_TotalQ: 0,
+                            CotiPer_TicketPromedio: 0,
+                            CotiPer_Tasa: 0,
+
+                            TotalAb_TotalU: 0,
+                            TotalAb_TotalQ: 0,
+                            TotalAb_TicketPromedio: 0,
+                            TotalAb_Tasa: 0
+                        };
+
+                        let countWhs = 0;
+                        items.forEach(item => {
+                            total.CotGen_TotalU += item.CotGen_TotalU || 0;
+                            total.CotGen_TotalQ += item.CotGen_TotalQ || 0;
+                            total.TicketPromedio += item.TicketPromedio || 0;
+
+                            total.CotiFac_TotalU += item.CotiFac_TotalU || 0;
+                            total.CotiFac_TotalQ += item.CotiFac_TotalQ || 0;
+                            total.CotiFac_TicketPromedio += item.CotiFac_TicketPromedio || 0;
+
+                            total.CotiPer_TotalU += item.CotiPer_TotalU || 0;
+                            total.CotiPer_TotalQ += item.CotiPer_TotalQ || 0;
+                            total.CotiPer_TicketPromedio += item.CotiPer_TicketPromedio || 0;
+
+                            total.TotalAb_TotalU += item.TotalAb_TotalU || 0;
+                            total.TotalAb_TotalQ += item.TotalAb_TotalQ || 0;
+                            total.TotalAb_TicketPromedio += item.TotalAb_TicketPromedio || 0;
+
+                            countWhs++;
+                        });                        
+
+
+                        html += `<tr class="total-row">
+                                <td>TOTAL ${region}</td>
+                                <td>${total.CotGen_TotalU}</td>
+                                <td>${formatoQuetzal(total.CotGen_TotalQ)}</td>
+                                <td>${formatoQuetzal(total.TicketPromedio = countWhs > 0 ? total.TicketPromedio / countWhs : 0)}</td>
+                                <td>${total.CotiFac_TotalU}</td>
+                                <td>${formatoQuetzal(total.CotiFac_TotalQ)}</td>
+                                <td>${formatoQuetzal(total.CotiFac_TicketPromedio)}</td>
+                                <td>${((total.CotiFac_TotalQ / total.CotGen_TotalQ) * 100).toFixed(2)}%</td>
+
+                                <td>${total.TotalAb_TotalU}</td>
+                                <td>${formatoQuetzal(total.TotalAb_TotalQ)}</td>
+                                <td>${formatoQuetzal(total.TotalAb_TicketPromedio = countWhs > 0 ? total.TotalAb_TicketPromedio / countWhs : 0)}</td>
+                                <td>${((total.TotalAb_TotalQ / total.CotGen_TotalQ) * 100).toFixed(2)}%</td>
+
+                                <td>${total.CotiPer_TotalU}</td>
+                                <td>${formatoQuetzal(total.CotiPer_TotalQ)}</td>
+                                <td>${formatoQuetzal(total.CotiPer_TicketPromedio = countWhs > 0 ? total.CotiPer_TicketPromedio / countWhs : 0)}</td>
+                                <td>${((total.CotiPer_TotalQ / total.CotGen_TotalQ) * 100).toFixed(2)}%</td>
+                            </tr>`;
+                        
+                    });
+
+                    html += `<tr class="total-row bg-dark text-white">
+                                    <td><strong>TOTAL GENERAL</strong></td>                                    
+                                    <td>${totalGeneral.CotGen_TotalU}</td>
+                                    <td>${formatoQuetzal(totalGeneral.CotGen_TotalQ)}</td>
+                                    <td>${formatoQuetzal(totalGeneral.TicketPromedio = countTotal > 0 ? totalGeneral.TicketPromedio / countTotal : 0)}</td>
+                                    <td>${totalGeneral.CotiFac_TotalU}</td>
+                                    <td>${formatoQuetzal(totalGeneral.CotiFac_TotalQ)}</td>
+                                    <td>${formatoQuetzal(totalGeneral.CotiFac_TicketPromedio)}</td>
+                                    <td>${((totalGeneral.CotiFac_TotalQ / totalGeneral.CotGen_TotalQ) * 100).toFixed(2)}%</td>
+
+                                    <td>${totalGeneral.TotalAb_TotalU}</td>
+                                    <td>${formatoQuetzal(totalGeneral.TotalAb_TotalQ)}</td>
+                                    <td>${formatoQuetzal(totalGeneral.TotalAb_TicketPromedio = countTotal > 0 ? totalGeneral.TotalAb_TicketPromedio / countTotal : 0)}</td>
+                                    <td>${((totalGeneral.TotalAb_TotalQ / totalGeneral.CotGen_TotalQ) * 100).toFixed(2)}%</td>
+
+                                    <td>${totalGeneral.CotiPer_TotalU}</td>
+                                    <td>${formatoQuetzal(totalGeneral.CotiPer_TotalQ)}</td>
+                                    <td>${formatoQuetzal(totalGeneral.CotiPer_TicketPromedio = countTotal > 0 ? totalGeneral.CotiPer_TicketPromedio / countTotal : 0)}</td>
+                                    <td>${((totalGeneral.CotiPer_TotalQ / totalGeneral.CotGen_TotalQ) * 100).toFixed(2)}%</td>
+                                </tr>`;
+
+                    $('#tbodyVentas').html(html);
+                    $('.btn-expandir').off('click').on('click', function () {
+                        var tienda = $(this).data('tienda');
+                        var detalleRow = $('#detalle-' + tienda);
+                        var estaVisible = detalleRow.is(':visible');
+                        // Oculta todos los detalles y reinicia íconos
+                        $('.detalle-tienda').hide();
+                        $('.btn-expandir i').removeClass('fa-minus-circle').addClass('fa-plus-circle');
+
+                        if (!estaVisible) {
+                            // Contenido HTML de la tabla
+                            let Detalle = `
+                            <div class="table-responsive" style="margin-bottom:10px; margin-top:15px">
+                                <table class="table table-bordered table-hover" id="tablaVentas-${tienda}">
+                                    <thead class="text-center" style="background-color: #004080; color: white;">
+                                        <tr>
+                                            <th rowspan="2" class="align-middle sticky-col" style="width:225px;">Asesor</th>
+                                            <th colspan="3">Cotizaciones Generadas</th>
+                                            <th colspan="4">Cotizaciones Facturadas</th>
+                                            <th colspan="4">Cotizaciones Abiertas</th>
+                                            <th colspan="4">Cotizaciones Perdidas</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Total U.</th>
+                                            <th>Total Q.</th>
+                                            <th>Ticket Promedio</th>
+
+                                            <th>Total U.</th>
+                                            <th>Total Q.</th>
+                                            <th>Ticket Prom.</th>
+
+                                            <th>Tasa Cierre</th>
+                                            <th>Total U.</th>
+                                            <th>Total Q.</th>
+                                            <th>Ticket Prom.</th>
+                                            <th>Tasa abiertas</th>
+
+                                            <th>Total U.</th>
+                                            <th>Total Q.</th>
+                                            <th>Ticket Prom.</th>
+                                            <th>Tasa Perdidas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center" id="tbodyVentas-${tienda}" style="background-color:white">
+                                        <tr>
+                                            <td colspan="16">
+                                                <img src="/img/loading_circulo.gif" alt="Cargando" style="width:25px; height:25px;"><br/>
+                                                Cargando datos...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>`;
+
+                            detalleRow.find('.contenido-detalle').html(Detalle);
+                            detalleRow.show();
+                            $(this).find('i').removeClass('fa-plus-circle').addClass('fa-minus-circle');
+
+                            // Llamada AJAX para llenar la tabla
+                            $.ajax({
+                                url: '/EstadoBolsonV3/DetalleUsuarios',
+                                method: 'POST',
+                                data: { WhsCode: tienda, Anio: $('#cmbAnio').val(), Semana: $('#cmbSemana').val(), Tipo: $("#Tipo").text(), FechaI: $('#fechaInicio').val(), FechaFinal: $('#fechaFinal').val()},
+                                success: function (data) {                                    
+                                    let tbody = '';
+                                    $.each(data, function (i, item) {
+                                        tbody += `<tr>
+                                            
+                                            <td>${item.SlpName}</td>
+                                            <td>${item.CotGen_TotalU}</td>
+                                            <td>${formatoQuetzal(item.CotGen_TotalQ)}</td>
+                                            <td>${formatoQuetzal(item.TicketPromedio)}</td>
+                                            <td>${item.CotiFac_TotalU}</td>
+                                            <td>${formatoQuetzal(item.CotiFac_TotalQ)}</td>
+                                            <td>${formatoQuetzal(item.CotiFac_TicketPromedio)}</td>
+                                            <td>${item.CotiFac_Tasa.toFixed(2)}%</td>
+
+                                            <td>${item.TotalAb_TotalU}</td>
+                                            <td>${formatoQuetzal(item.TotalAb_TotalQ)}</td>
+                                            <td>${formatoQuetzal(item.TotalAb_TicketPromedio)}</td>
+                                            <td>${item.TotalAb_Tasa.toFixed(2)}%</td>
+
+                                            <td>${item.CotiPer_TotalU}</td>
+                                            <td>${formatoQuetzal(item.CotiPer_TotalQ)}</td>
+                                            <td>${formatoQuetzal(item.CotiPer_TicketPromedio)}</td>
+                                            <td>${item.CotiPer_Tasa.toFixed(2)}%</td>                                            
+                                        </tr>`;
+                                    });
+                                    $('#tbodyVentas-' + tienda).html(tbody);
+                                },
+                                error: function () {
+                                    $('#tbodyVentas-' + tienda).html('<tr><td colspan="16">Error al cargar los datos</td></tr>');
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            complete: function () {
+                $("#globalLoading").hide(); // 👈 se cierra hasta que el detalle termina
+            },
+            error: function () {
+                $("#globalLoading").hide();
+                alert("Error al obtener los datos");
+            }
+        });
+    }
+
+    function formatoQuetzal(valor) {
+        return new Intl.NumberFormat('es-GT', {
+            style: 'currency',
+            currency: 'GTQ',
+            minimumFractionDigits: 2
+        }).format(valor);
+    }
+</script>

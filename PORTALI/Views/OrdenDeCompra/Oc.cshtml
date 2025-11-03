@@ -1,0 +1,359 @@
+﻿@model Entity.OcPrintEntity
+@{
+    Layout = null;
+    var simbolo = Model.DocCur == "USD" ? "$" : "Q";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Orden de Compra</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* Encabezado */
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #1e3d59;
+            padding-bottom: 15px;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: 32px;
+                color: #1e3d59;
+                letter-spacing: 2px;
+            }
+
+            .header p {
+                font-size: 18px;
+                margin: 8px 0 0;
+                font-weight: 600;
+                color: #555;
+            }
+
+            .header h2 {
+                margin-top: 10px;
+                font-size: 18px;
+                color: #1e3d59;                
+                border-bottom: 2px solid #ffb84d;
+                display: inline-block;
+                padding-bottom: 5px;
+            }
+
+        /* Datos generales */
+        .info-table {
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 15px;
+            border-collapse: collapse;
+            color: #444;
+        }
+
+            .info-table td {
+                padding: 2px 12px;
+                vertical-align: top;
+                width: 33%;
+            }
+
+                .info-table td strong {
+                    color: #1e3d59;
+                }
+
+        /* Sección Proveedor */
+        .section {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+            .section h3 {
+                font-size: 18px;
+                color: #1e3d59;
+                margin-bottom: 15px;
+                border-left: 6px solid #ffb84d;
+                padding-left: 10px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+            }
+
+            .section p {
+                margin: 5px 0;
+                font-size: 14.5px;
+                color: #555;
+            }
+
+                .section p strong {
+                    color: #333;
+                    width: 160px;
+                    display: inline-block;
+                }
+
+        /* Tabla productos */
+        table.products-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14.5px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgb(0 0 0 / 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+            table.products-table thead tr {
+                background-color: #1e3d59;
+                color: white;
+                text-align: left;
+                font-weight: 600;
+            }
+
+            table.products-table th, table.products-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            table.products-table tbody tr:hover {
+                background-color: #f5faff;
+            }
+
+            table.products-table td {
+                color: #444;
+            }
+
+                table.products-table td:nth-child(3), /* Cantidad */
+                table.products-table td:nth-child(4), /* Precio Unitario */
+                table.products-table td:nth-child(5) /* Total */ {
+                    text-align: right;
+                    font-variant-numeric: tabular-nums;
+                }
+
+        /* Totales */
+        .totals {
+            text-align: right;
+            font-size: 15px;
+            margin-bottom: 40px;
+            color: #222;
+        }
+
+            .totals p {
+                margin: 6px 0;
+            }
+
+                .totals p strong {
+                    font-weight: 700;
+                    color: #1e3d59;
+                }
+
+                .totals p.total-amount {
+                    font-size: 20px;
+                    margin-top: 12px;
+                    color: #ffb84d;
+                    font-weight: 900;
+                    letter-spacing: 1px;
+                }
+
+        /* Dirección entrega */
+        .delivery-address {
+            margin-bottom: 25px;
+        }
+
+            .delivery-address h3 {
+                font-size: 17px;
+                color: #1e3d59;
+                margin-bottom: 12px;
+                font-weight: 700;
+            }
+
+            .delivery-address p {
+                font-size: 14.5px;
+                color: #444;
+                line-height: 1.4;
+            }
+
+        /* Comentarios */
+        .comment {
+            font-size: 14.5px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+            .comment strong {
+                color: #333;
+            }
+
+        /* Notas */
+        .notes {
+            font-size: 10px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            color: #666;
+        }
+
+            .notes h4 {
+                font-weight: 700;
+                margin-bottom: 10px;
+                color: #1e3d59;
+            }
+
+            .notes ol {
+                padding-left: 20px;
+                line-height: 1.6;
+            }
+
+        /* Footer */
+        .footer {
+            margin-top: 10px;
+            font-size: 10px;
+            color: #777;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="header">
+            <h1> <img src="http://tejar360.eltejar.com.gt/img/tejar-ico.png" width="40" height="40" /> EL TEJAR</h1>            
+            <p>@Model.NombreSucursal</p>
+            <h2>
+                ORDEN DE COMPRA <br />
+                <strong style="font-size:15px">NIT: @Model.NitSucursal</strong>
+            </h2>
+        </div>
+
+        <!-- Datos generales -->
+        <table class="info-table">
+            <tr>
+                <td><strong>Número:</strong> @Model.DocNum</td>
+                <td><strong>Fecha Emisión:</strong> @Model.DocDate.ToString("dd/MM/yyyy")</td>
+                <td><strong>Fecha Entrega:</strong> @Model.DocDueDate.ToString("dd/MM/yyyy")</td>
+            </tr>
+            <tr>
+                <td><strong>Solicitante:</strong> @Model.U_Name</td>
+                <td><strong>Moneda:</strong> @Model.DocCur</td>
+            </tr>
+        </table>
+
+        <!-- Proveedor -->
+        <div class="section">
+            <h3>DATOS DEL PROVEEDOR</h3>
+            <p><strong>Cliente:</strong> @Model.CardCode | @Model.CardName</p>
+            <p><strong>Teléfono:</strong> - </p>
+            <p><strong>Correo:</strong> @Model.E_Mail</p>
+            <p><strong>Dirección:</strong> @Model.Address2</p>
+            <p><strong>Condición pago:</strong> @Model.PymntGroup</p>
+        </div>
+
+        <!-- Detalle productos -->        
+        <style>
+            .products-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 10px;
+                margin-top: 20px;
+            }
+
+                .products-table thead {
+                    font-size:13px;
+                    background-color: #f2f2f2;
+                }
+
+                .products-table th,
+                .products-table td {
+                    font-size: 13px;
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: center;
+                }
+
+                .products-table th {                    
+                    font-weight: bold;
+                }
+
+                .products-table tbody tr:nth-child(even) {
+                    font-size: 12px;
+                    background-color: #f9f9f9;
+                }
+
+                .products-table tbody tr:hover {
+                    background-color: #f1f1f1;
+                }
+        </style>
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Almacén</th>
+                    <th>Medida</th>
+                    <th style="width:75px">Cantidad</th>
+                    <th style="width:75px">Precio U.</th>
+                    <th style="width:75px">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Detalle)
+                {
+                    <tr>
+                        <td>@item.ItemCode</td>
+                        <td style="text-align: left;">@item.Dscription</td>
+                        <td>@item.Almacen</td>
+                        <td>@item.UnidadMed</td>
+                        <td>@String.Format("{0:N2}", item.Quantity)</td>
+                        <td>@String.Format(simbolo + " {0:N2}", item.PrecioU)</td>
+                        <td>@String.Format(simbolo + " {0:N2}", item.LineTotal)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Totales -->
+        <div class="totals">
+            <p><strong>Subtotal:</strong> @String.Format(simbolo + " {0:N2}", Model.Subtotal)</p>
+            <p><strong>IVA (12%):</strong> @String.Format(simbolo + " {0:N2}", Model.Iva)</p>
+            <p class="total-amount"><strong>Total General:</strong> @String.Format(simbolo + " {0:N2}", Model.DocTotal)</p>
+        </div>
+
+        <!-- Dirección entrega -->
+        <div class="delivery-address">
+            <h3>DIRECCIÓN DE ENTREGA</h3>
+            <p>Pargue Industrial Tecnopak, CA-2 Km. 67.5, Taxisco, Escuintla, Guatemala</p>
+        </div>
+
+        <!-- Comentario -->
+        <div class="comment">
+            <p><strong>Comentario:</strong> @Model.Comments</p>
+        </div>
+
+        <!-- Notas -->
+        <div class="notes">
+            <h4>NOTAS IMPORTANTES</h4>
+            <ol>
+                <li>Este documento constituye un contrato entre comprador y vendedor. El despacho de la mercadería se considera una aceptación del proveedor a las condiciones establecidas en el mismo (Destino, producto, cantidad y precio).</li>
+                <li>El único documento que respalda la entrega de su producto es el Ingreso a Bodega emitido por El Tejar (Firmado y Sellado), No se retire de la bodega sin su documento.</li>
+                <li>La reposición de su ingreso a bodega por extravío, sin responsabilidad de El Tejar, tiene un costo de Q500.00 por gastos administrativos.</li>
+                <li>Para que su factura sea recibida por Tesorería para pago, debe hacer referencia a la orden de compra de El Tejar, cuadrar con su ingreso a bodega y adjuntar el ingreso y la O.C.</li>
+                <li>Los días crédito correrán a partir de la emisión de la contraseña.</li>
+            </ol>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Km 67.5 CA2 RUTA A TAXISCO, COMPLEJO INDUSTRIAL TECNOPARK 3RA AVENIDA BODEGA 227, ESCUINTLA | Tel: 2327-6200
+        </div>
+
+    </div>
+</body>
+</html>

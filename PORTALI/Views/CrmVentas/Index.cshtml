@@ -1,0 +1,522 @@
+﻿<style>
+    body {
+        background-color: white;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+    }
+
+    .filtros-container {
+        padding:15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: flex-end;
+    }
+
+    .filtro-item {
+        display: flex;
+        flex-direction: column;
+        min-width: 150px;
+        flex: 1 1 150px;
+    }
+
+    .filtro-boton {
+        align-self: center;
+    }
+
+    /* Switch estilo */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        border-radius: 20px;
+        transition: 0.2s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+    input:checked + .slider {
+        background-color: #4caf50;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+    .paneles-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel {
+        flex: 1 1 150px;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+        .panel h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .panel span {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: black;
+        }
+
+    .oculto {
+        display: none;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+        .tab-content.active {
+            display: block;
+        }
+
+    .tab-buttons {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .tab-button {
+        padding: 8px 16px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        background-color: #f0f0f0;
+    }
+
+        .tab-button.active {
+            background-color: #d0d0d0;
+            font-weight: bold;
+        }
+</style>
+
+<div class="filtros-container">
+    <div class="filtro-item">
+        <label>Fecha inicio</label>
+        <input type="date" id="FechaI" class="form-control form-control-sm shadow-sm border-secondary" />
+    </div>
+
+    <div class="filtro-item">
+        <label>Fecha final</label>
+        <input type="date" id="FechaF" class="form-control form-control-sm shadow-sm border-secondary" />
+    </div>
+
+    <div class="filtro-item">
+        <label>Región</label>
+        <select id="filtroRegion" class="form-control form-control-sm shadow-sm border-secondary">
+            <option value="-101">-- Seleccionar --</option>
+        </select>
+    </div>
+
+    <div class="filtro-item">
+        <label>Tienda</label>
+        <select id="filtroTienda" class="form-control form-control-sm shadow-sm border-secondary">
+            <option value="-1">-- Seleccionar --</option>
+        </select>
+    </div>
+
+    <div class="filtro-item">
+        <label>Asesor</label>
+        <select id="filtroAsesor" class="form-control form-control-sm shadow-sm border-secondary">
+            <option value="">-- Seleccionar --</option>
+        </select>
+    </div>
+
+    <div class="filtro-item filtro-checkbox">
+        <label>Referidos de SAC</label>
+        <label class="switch">
+            <input type="checkbox" id="chkReferidos">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="filtro-item filtro-boton">
+        <button id="btnFiltrar">Filtrar</button>
+    </div>
+</div>
+
+
+
+<style>
+    /* --- ESTILO DE TABLA CON BORDES Y LETRA MÁS PEQUEÑA --- */
+    .tabla-container {
+        padding: 20px;
+        overflow-x: auto; /* Scroll horizontal en pantallas pequeñas */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse; /* Para que los bordes no se dupliquen */
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        font-size: 0.85rem; /* 👈 Letra más pequeña */
+    }
+
+    thead {
+        background-color: #222;
+        color: white;
+    }
+
+    th, td {
+        padding: 8px 12px; /* 👈 Padding más compacto */
+        text-align: left;
+        border: 1px solid #ccc; /* Borde en todas las celdas */
+    }
+
+    tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    th {
+        font-weight: bold;
+        font-size: 0.9rem; /* 👈 Un poco más grande que el cuerpo */
+    }
+
+    td {
+        color: #333;
+        font-size: 0.85rem; /* 👈 Tamaño reducido */
+    }
+
+    /* Responsivo */
+    @*@media (max-width: 768px) {
+        th, td {
+            padding: 6px 8px;
+            font-size: 0.8rem;
+        }
+    }*@
+
+    /* Botón dentro de la tabla */
+    .btn-accion {
+        padding: 4px 8px;
+        border: none;
+        border-radius: 6px;
+        background: black;
+        color: white;
+        cursor: pointer;
+        font-size: 0.8rem; /* 👈 Botón con letra más pequeña */
+        transition: background 0.2s;
+    }
+
+    .btn-accion:hover {
+        background: #444;
+    }
+</style>
+
+<!-- Contenedor de tabla -->
+<div class="tabla-container" style="margin-bottom:50px;">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Región</th>
+                <th>Tienda</th>
+                <th>Asesor</th>
+                <th>Factura</th>
+                <th>Folio</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>No. Cotización</th>
+            </tr>
+        </thead>
+        <tbody id="tablaDatos">           
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        CargarRechas();
+        CargarRegiones();
+    });
+
+    $('#filtroRegion').on('change', function () {
+        let idRegion = $(this).val();
+        CargarTiendas(idRegion);
+    });
+
+    function CargarRegiones(){
+        $.ajax({
+            url:'@Url.Action("ListadoRegiones","BolsonActivo")',
+            type:"POST",
+            success:function(data){
+                if(data&&data.length>0){
+                    $.each(data,function(index,item){
+                        $('#filtroRegion').append($('<option>',{value:item.IdRegion,text:item.Region}));
+                    });
+                    if(data.length===1){
+                        $('#filtroRegion').val(data[0].IdRegion).trigger('change');
+                        CargarTiendas(data[0].IdRegion);
+                        $('#filtroRegion').prop('disabled',true);
+                    }else{
+                        $('#filtroRegion').val('-1').trigger('change');
+                        CargarTiendas(-1);
+                        $('#filtroRegion').prop('disabled',false);
+                    }
+                }else{
+                    $('#filtroRegion').val('-1');
+                }
+            },
+            error:function(xhr,status,error){
+                console.error("Error al cargar las regiones:",error);
+                $('#filtroRegion').val('-1');
+            },
+            complete:function(){
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    $('#filtroTienda').on('change', function() {
+        let idRegion = $('#filtroRegion').val();
+        let WhsCode = $(this).val();
+        CargarUsuarios(idRegion, WhsCode);
+    });
+
+    function CargarTiendas(idRegion) {
+        $('#filtroTienda')
+            .html('')
+            .append($('<option>', { value: '-1', text: '-- Seleccionar --' }))
+            .val('-1')
+            .trigger('change');
+
+        $.ajax({
+            url: '@Url.Action("ListadoTiendas","BolsonActivo")',
+            type: "POST",
+            data: { IdRegion: idRegion },
+            success: function(data) {
+                if (data && data.length > 0) {
+                    $.each(data, function(index, item) {
+                        $('#filtroTienda').append(
+                            $('<option>', { value: item.WhsCode, text: item.WhsName })
+                        );
+                    });
+
+                    if (data.length === 1) {
+                        $('#filtroTienda').val(data[0].WhsCode).trigger('change');
+                        $('#filtroTienda').prop('disabled', true);
+                        CargarUsuarios(idRegion, data[0].WhsCode);
+                    } else {
+                        $('#filtroTienda').val('-1').trigger('change');
+                        $('#filtroTienda').prop('disabled', false);
+                        CargarUsuarios(idRegion, -1);
+                    }
+                } else {
+                    $('#filtroTienda').val('-1');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al cargar las tiendas:", error);
+                $('#filtroTienda').val('-1');
+            },
+            complete: function() {
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    function CargarUsuarios(idRegion, whsCode) {
+        $('#filtroAsesor').html('');
+
+        $.ajax({
+            url: '@Url.Action("ListaDeAsesores","BolsonActivo")',
+            type: "POST",
+            data: { IdRegion: idRegion, WhsCode: whsCode },
+            success: function(data) {
+                if (data && data.length > 0) {
+
+                    if (data.length > 1) {
+                        $('#filtroAsesor').append(
+                            $('<option>', { value: '-101', text: '-- Seleccionar --' })
+                        );
+                    }
+
+                    $.each(data, function(index, item) {
+                        $('#filtroAsesor').append(
+                            $('<option>', { value: item.SlpCode, text: item.SlpName })
+                        );
+                    });
+
+                    if (data.length === 1) {
+                        $('#filtroAsesor').val(data[0].SlpCode).trigger('change');
+                        $('#filtroAsesor').prop('disabled', true);
+                    } else {
+                        $('#filtroAsesor').val('-101').trigger('change');
+                        $('#filtroAsesor').prop('disabled', false);
+                    }
+
+                } else {
+                    $('#filtroAsesor')
+                        .html('')
+                        .append($('<option>', { value: '-101', text: '-- Seleccionar --' }))
+                        .val('-101')
+                        .prop('disabled', false);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al cargar los asesores:", error);
+                $('#filtroAsesor').val('-101').prop('disabled', false);
+            },
+            complete: function() {
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    $('#btnFiltrar').on('click', function () {
+        let idRegion = $('#filtroRegion').val();
+        let whsCode = $('#filtroTienda').val();
+        let slpCode = $('#filtroAsesor').val();
+        let fechaInicio = $('#FechaI').val();
+        let fechaFin = $('#FechaF').val();
+        let refSac = $('#chkReferidos').prop('checked');
+
+        // Ejecutar la carga de datos
+        cargarTabla(idRegion, whsCode, slpCode, fechaInicio, fechaFin, refSac);
+    });
+
+    function CargarRechas() {
+        const today = new Date();
+
+        // Fecha inicial: primer día del mes actual
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        // Fecha final: último día del mes actual
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        // Función para formatear la fecha en formato yyyy-mm-dd
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Asignar a los inputs
+        $('#FechaI').val(formatDate(firstDay));
+        $('#FechaF').val(formatDate(lastDay));
+    }
+
+    function cargarTabla(idRegion, whsCode, slpCode, fechai, fechaf, refSac) {
+        // Mostrar loading si lo usas
+        $("#globalLoading").show();
+
+        $.ajax({
+            url: '@Url.Action("CargarData", "CrmVentas")',
+            type: "POST",
+            data: {
+                IdRegion: idRegion,
+                WhsCode: whsCode,
+                SlpCode: slpCode,
+                FechaI: fechai,
+                FechaF: fechaf,
+                ReferidoSac: refSac == true ? -2000 : null
+            },
+            success: function (data) {
+                $("#tablaDatos").html('');
+
+                if (data && data.length > 0) {
+                    let totalGeneral = 0; // variable para acumular el total
+
+                    $.each(data, function (index, item) {
+
+                        // Convertir fecha de formato /Date(1754028000000)/ a dd/MM/yyyy con ceros
+                        let timestamp = parseInt(item.DocDate.replace(/\/Date\((\d+)\)\//, "$1"));
+                        let fecha = new Date(timestamp);
+                        let dia = String(fecha.getDate()).padStart(2, '0');
+                        let mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                        let anio = fecha.getFullYear();
+                        let fechaFormateada = `${dia}/${mes}/${anio}`;
+
+                        // Formatear número como Q1,258.00
+                        let totalFormateado = item.LineTotal.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' });
+
+                        // Acumular total
+                        totalGeneral += parseFloat(item.LineTotal);
+
+                        let fila = `
+                            <tr>
+                                <td style="text-align:center;">${index + 1}</td>
+                                <td>${item.Region}</td>
+                                <td>${item.WhsName}</td>
+                                <td>${item.SlpName}</td>
+                                <td style="text-align:center;">${item.DocNumFac}</td>
+                                <td>${item.Folio}</td>
+                                <td style="text-align:right;">${fechaFormateada}</td>
+                                <td>${item.CardName}</td>
+                                <td style="text-align:right;">${totalFormateado}</td>
+                                <td style="text-align:center;">${item.DocNumCot}</td>
+                            </tr>
+                        `;
+                        $("#tablaDatos").append(fila);
+                    });
+
+                    // Agregar fila de total al final
+                    let totalFormateado = totalGeneral.toLocaleString('es-GT', { style: 'currency', currency: 'GTQ' });
+                    let filaTotal = `
+                        <tr style="font-weight:bold; background-color:#f1f1f1;">
+                            <td colspan="8" style="text-align:right;">Total</td>
+                            <td style="text-align:right;">${totalFormateado}</td>
+                            <td colspan="1"></td>
+                        </tr>
+                    `;
+                    $("#tablaDatos").append(filaTotal);
+
+                } else {
+                    $("#tablaDatos").append('<tr><td colspan="11" style="text-align:center;">No hay datos</td></tr>');
+                }
+
+                $("#globalLoading").hide();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al cargar datos:", error);
+                $("#tablaDatos").html('<tr><td colspan="11" style="text-align:center;">Error al cargar datos</td></tr>');
+                $("#globalLoading").hide();
+            }
+        });
+    }
+</script>

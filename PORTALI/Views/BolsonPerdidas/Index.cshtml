@@ -1,0 +1,974 @@
+﻿@model Entity.BolsonActivoEntity
+@{
+    ViewBag.Title = "Bolson perdidas";
+
+    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+    }
+
+    .filtros-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+        .filtros-container label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            display: block;
+            color: black;
+        }
+
+        .filtros-container select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .filtros-container .derecha {
+            display: flex;
+            align-items: end;
+            gap: 0.5rem;
+        }
+
+        .filtros-container button {
+            padding: 0.55rem 1.2rem;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: background 0.3s ease;
+        }
+
+            .filtros-container button:hover {
+                background-color: black;
+            }
+
+    .paneles-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel {
+        flex: 1 1 150px;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+        .panel h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .panel span {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: black;
+        }
+
+    .oculto {
+        display: none;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+        .tab-content.active {
+            display: block;
+        }
+
+    .tab-buttons {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .tab-button {
+        padding: 8px 16px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        background-color: #f0f0f0;
+    }
+
+        .tab-button.active {
+            background-color: #d0d0d0;
+            font-weight: bold;
+        }
+</style>
+<h1 class="text-center my-4" style="font-weight: bold; font-size: 1.5rem; color: #343a40; border-bottom: 3px solid #007bff; display: inline-block; padding-bottom: 10px;">
+    ❗Bolson de cotizaciones perdidas
+</h1>
+
+
+<div style="padding:20px;padding-bottom:40px">
+    <div class="row g-2 mb-3">
+        <div class="col-auto">
+            <div class="d-flex align-items-center">
+                <input type="date" id="fechaI" class="form-control form-control-sm shadow-sm border-secondary" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="d-flex align-items-center">
+                <input type="date" id="fechaF" class="form-control form-control-sm shadow-sm border-secondary" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="d-flex align-items-center" style="height: 100%;">
+                <button class="btn btn-sm btn-dark shadow-sm btn-update" id="btnFiltrar">
+                    <i class="fas fa-sync-alt me-1"></i> Actualizar Datos
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="filtros-container">
+        <div>
+            <label>Región</label>
+            <select id="filtroRegion">
+                <option value="-101">-- Seleccionar --</option>
+            </select>
+            <script>
+                $(document).ready(function () {
+                    CargarRegiones();
+                });
+
+                $('#filtroRegion').on('change', function () {
+                    let idRegion = $(this).val();
+                    CargarTiendas(idRegion);
+                });
+
+                function CargarRegiones(){
+                    $.ajax({
+                        url: '@Url.Action("ListadoRegiones", "BolsonActivo")',
+                        type: "POST",
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                $.each(data, function (index, item) {
+                                    $('#filtroRegion').append(
+                                        $('<option>', {
+                                            value: item.IdRegion,
+                                            text: item.Region
+                                        })
+                                    );
+                                });
+
+                                if (data.length === 1) {
+                                    // Solo una opción, seleccionarla y bloquear el select
+                                    $('#filtroRegion').val(data[0].IdRegion).trigger('change');
+                                    CargarTiendas(data[0].IdRegion);
+                                    $('#filtroRegion').prop('disabled', true); // bloquear select
+                                } else {
+                                    // Más de una opción, seleccionar '-1' y desbloquear el select
+                                    $('#filtroRegion').val('-1').trigger('change');
+                                    CargarTiendas(-1);
+                                    $('#filtroRegion').prop('disabled', false); // desbloquear select
+                                }
+
+                            } else {
+                                // No hay datos, mantener seleccionado el -1
+                                $('#filtroRegion').val('-1');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar las regiones:", error);
+                            $('#filtroRegion').val('-1');
+                        },
+                        complete: function () {
+                            $("#globalLoading").hide(); // Oculta el loading si lo estás usando
+                        }
+                    });
+                }
+            </script>
+        </div>
+        <div>
+            <label>Tienda</label>
+            <select id="filtroTienda">
+                <option value="-1">-- Seleccionar --</option>
+            </select>
+
+            <script>
+
+                $(document).ready(function () {
+                    const today = new Date();
+
+                    // Fecha inicial: primer día del mes actual
+                    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+                    // Fecha final: último día del mes actual
+                    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+                    // Función para formatear la fecha en formato yyyy-mm-dd
+                    function formatDate(date) {
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+
+                    // Asignar a los inputs
+                    $('#FechaI').val(formatDate(firstDay));
+                    $('#FechaF').val(formatDate(lastDay));
+
+                    CargarData();
+                    $('.btn-expandir').first().click();
+                    //setTimeout(function () {
+                    //    $('.btn-expandir').first().click(); // Expande el primer panel después de cargar la data
+                    //}, 600); // Pequeño retraso para asegurar que los datos estén listos
+                });
+
+                $('#filtroTienda').on('change', function () {
+                    let idRegion = $('#filtroRegion').val();
+                    let WhsCode = $(this).val();
+                    CargarUsuarios(idRegion, WhsCode);
+                });
+
+                function CargarTiendas(idRegion) {
+                    $('#filtroTienda')
+                        .html('') // limpiar todo
+                        .append($('<option>', { value: '-1', text: '-- Seleccionar --' }))
+                        .val('-1')
+                        .trigger('change');
+
+                    $.ajax({
+                        url: '@Url.Action("ListadoTiendas", "BolsonActivo")',
+                        type: "POST",
+                        data: { IdRegion: idRegion },
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                $.each(data, function (index, item) {
+                                    $('#filtroTienda').append(
+                                        $('<option>', {
+                                            value: item.WhsCode,
+                                            text: item.WhsName
+                                        })
+                                    );
+                                });
+
+                                    if (data.length === 1) {
+                                        $('#filtroTienda').val(data[0].WhsCode).trigger('change');
+                                        $('#filtroTienda').prop('disabled', true);
+                                        CargarUsuarios(idRegion, data[0].WhsCode);
+                                    } else {
+                                        $('#filtroTienda').val('-1').trigger('change');
+                                        $('#filtroTienda').prop('disabled', false);
+                                        CargarUsuarios(idRegion, -1);
+                                    }
+                                } else {
+                                    $('#filtroTienda').val('-1');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error al cargar las tiendas:", error);
+                                $('#filtroTienda').val('-1');
+                            },
+                            complete: function () {
+                                $("#globalLoading").hide();
+                            }
+                    });
+                }
+            </script>
+        </div>
+
+        <div class="derecha">
+            <div style="flex: 1;">
+                <label>Asesor</label>
+                <select id="filtroAsesor">
+                    <option value="">-- Seleccionar --</option>
+                </select>
+                <script>
+                    function CargarUsuarios(idRegion, whsCode) {
+                        $('#filtroAsesor').html(''); // limpiar todo
+
+                        $.ajax({
+                            url: '@Url.Action("ListaDeAsesores", "BolsonActivo")',
+                            type: "POST",
+                            data: { IdRegion: idRegion, WhsCode: whsCode },
+                            success: function (data) {
+                                if (data && data.length > 0) {
+
+                                    // Si NO son 2, agregar "-- Seleccionar --"
+                                    if (data.length > 1) {
+                                        $('#filtroAsesor')
+                                            .append($('<option>', { value: '-101', text: '-- Seleccionar --' }));
+                                    }
+
+                                    $.each(data, function (index, item) {
+                                        $('#filtroAsesor').append(
+                                            $('<option>', {
+                                                value: item.SlpCode,
+                                                text: item.SlpName
+                                            })
+                                        );
+                                    });
+
+                                    if (data.length === 1) {
+                                        // Seleccionar automáticamente el único valor útil
+                                        $('#filtroAsesor').val(data[1].SlpCode).trigger('change');
+                                        $('#filtroAsesor').prop('disabled', true); // si quieres bloquearlo
+                                    } else {
+                                        $('#filtroAsesor').val('-101').trigger('change');
+                                        $('#filtroAsesor').prop('disabled', false);
+                                    }
+                                } else {
+                                    $('#filtroAsesor')
+                                        .html('')
+                                        .append($('<option>', { value: '-101', text: '-- Seleccionar --' }))
+                                        .val('-101')
+                                        .prop('disabled', false);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error al cargar los asesores:", error);
+                                $('#filtroAsesor').val('-101').prop('disabled', false);
+                            },
+                            complete: function () {
+                                $("#globalLoading").hide();
+                            }
+                        });
+                    }
+                </script>
+
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <label style="margin-bottom: 6px; font-weight: bold; text-align: center;">Referidos de SAC</label>
+
+                <label style="display: inline-flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="chkReferidos" style="display: none;">
+                    <span id="switchReferidos" style="
+                width: 40px;
+                height: 20px;
+                background-color: #ccc;
+                border-radius: 20px;
+                position: relative;
+                transition: background-color 0.2s;
+                display: inline-block;
+            ">
+                        <span style="
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 16px;
+                height: 16px;
+                background-color: white;
+                border-radius: 50%;
+                transition: left 0.2s;
+            "></span>
+                    </span>
+                </label>
+            </div>
+
+            <script>
+                const chk = document.getElementById("chkReferidos");
+                const knob = document.getElementById("switchReferidos").firstElementChild;
+                const bg = document.getElementById("switchReferidos");
+
+                chk.addEventListener("change", function () {
+                    if (this.checked) {
+                        bg.style.backgroundColor = "#4CAF50";
+                        knob.style.left = "22px";
+                    } else {
+                        bg.style.backgroundColor = "#ccc";
+                        knob.style.left = "2px";
+                    }
+                });
+            </script>
+            @*<button id="btnFiltrar">Filtrar</button>*@
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const today = new Date();
+
+            // Fecha inicial: primer día del mes actual
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            // Fecha final: último día del mes actual
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            // Función para formatear la fecha en formato yyyy-mm-dd
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // Asignar a los inputs
+            $('#fechaI').val(formatDate(firstDay));
+            $('#fechaF').val(formatDate(lastDay));
+
+            CargarData();
+            $('.btn-expandir').first().click();
+            //setTimeout(function () {
+            //    $('.btn-expandir').first().click(); // Expande el primer panel después de cargar la data
+            //}, 600); // Pequeño retraso para asegurar que los datos estén listos
+        });
+    </script>
+
+    <style>
+        .contenedor-tabla {
+            max-height: 70vh;
+            overflow-y: auto;
+            background-color: white;
+        }
+
+        .tablaBolson {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            .tablaBolson th, .tablaBolson td {
+                padding: 8px;
+                text-align: center;
+                border: 1px solid #dee2e6;
+            }
+
+            .tablaBolson thead th {
+                position: sticky;
+                top: 0;
+                background-color: #f8f9fa;
+                z-index: 1;
+            }
+    </style>
+
+    <div style="max-height: 70vh; overflow-y: auto; background-color:white">
+        <table class="tablaBolson" style="width: 100%; border-collapse: collapse; font-size:12px" border="1">
+            <thead style="background-color: #f8f9fa; color: #212529; font-weight: bold; text-align: center; border-bottom: 2px solid #dee2e6;">
+                <tr>
+                    <th style="padding: 8px; text-align: center">-</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">DocEntry</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">DocNum</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">IdRegion</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">Región</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">WhsCode</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">Tienda</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">SlpCode</th>
+                    <th style="padding: 8px; text-align: center">Asesor</th>
+                    <th style="padding: 8px; text-align: center">NIT</th>
+                    <th style="padding: 8px; text-align: center">Nombre</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Teléfono</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Total</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Fecha</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Fecha perdida</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Motivo perdida</th>
+                    <th style="padding: 8px; text-align:center">Opciones</th>
+                </tr>
+            </thead>
+            <tbody id="BolsonActivo" class="BolsonActivo">
+            </tbody>
+        </table>
+        <script>
+            // Mostrar/ocultar el filtro de fechas
+            function toggleFiltroFechas(event) {
+                event.stopPropagation(); // evita que el clic cierre el panel
+                const filtro = document.getElementById("filtroFechas");
+                filtro.style.display = (filtro.style.display === "none" || filtro.style.display === "") ? "block" : "none";
+            }
+
+            // Escucha clics en el documento para cerrar si hacen clic afuera
+            document.addEventListener("click", function (event) {
+                const filtro = document.getElementById("filtroFechas");
+                const boton = event.target.closest("button");
+                const dentroDelFiltro = filtro.contains(event.target);
+
+                // Si no se hizo clic dentro del filtro ni en el botón del filtro, ocultar
+                if (!dentroDelFiltro && !(boton && boton.innerHTML.includes('fa-filter'))) {
+                    filtro.style.display = "none";
+                }
+            });
+
+            // Esta función se llama cuando haces clic en el botón "Filtrar"
+            function filtrarPorFechas() {
+                let idRegion = $('#filtroRegion').val();
+                let whsCode = $('#filtroTienda').val();
+                let slpCode = $('#filtroAsesor').val();
+                let fechaInicio = $('#fechaI').val();
+                let fechaFin = $('#fechaF').val();
+
+                // Ejecutar la carga de datos
+                cargarTabla(idRegion, whsCode, slpCode, fechaInicio, fechaFin);
+
+
+                //const inicio = document.getElementById("fechaInicio").value;
+                //const fin = document.getElementById("fechaFin").value;
+
+                //// Luego de filtrar, cerrar el filtro
+                document.getElementById("filtroFechas").style.display = "none";
+            }
+
+            function quitarFiltroFechas() {
+
+            }
+        </script>
+    </div>
+</div>
+
+<script>
+    let sortDirection = {};
+
+    function sortTable(colIndex) {
+        const table = document.querySelector(".tablaBolson");
+        const tbody = table.tBodies[0];
+
+        // OCULTAMOS TODAS LAS FILAS EXPANDIDAS para que no queden visibles
+        document.querySelectorAll('.fila-expandida').forEach(expandedRow => {
+            expandedRow.style.display = 'none';
+        });
+
+        // RECOLECTAMOS filas principales y sus filas expandidas
+        const rows = [];
+        const allRows = Array.from(tbody.querySelectorAll("tr"));
+
+        for (let i = 0; i < allRows.length; i++) {
+            const row = allRows[i];
+            if (!row.classList.contains('fila-expandida')) {
+                rows.push({
+                    mainRow: row,
+                    expandedRows: []
+                });
+                let j = i + 1;
+                while (j < allRows.length && allRows[j].classList.contains('fila-expandida')) {
+                    rows[rows.length - 1].expandedRows.push(allRows[j]);
+                    j++;
+                }
+            }
+        }
+
+        // ORDENAMOS filas principales
+        const dir = sortDirection[colIndex] === "asc" ? "desc" : "asc";
+        sortDirection[colIndex] = dir;
+
+        rows.sort((a, b) => {
+            let aText = a.mainRow.cells[colIndex]?.innerText.trim() || '';
+            let bText = b.mainRow.cells[colIndex]?.innerText.trim() || '';
+
+            const parseMonto = val => parseFloat(val.replace(/[Q,]/g, '').trim()) || 0;
+            const parseFecha = val => {
+                const parts = val.split('/');
+                return parts.length === 3 ? new Date(parts[2], parts[1] - 1, parts[0]) : new Date(val);
+            };
+
+            const isMonto = aText.startsWith('Q') && bText.startsWith('Q');
+            const isFecha = aText.includes('/') && bText.includes('/');
+
+            if (isMonto) {
+                let aVal = parseMonto(aText);
+                let bVal = parseMonto(bText);
+                return dir === "asc" ? aVal - bVal : bVal - aVal;
+            }
+
+            if (isFecha) {
+                let aDate = parseFecha(aText);
+                let bDate = parseFecha(bText);
+                return dir === "asc" ? aDate - bDate : bDate - aDate;
+            }
+
+            return dir === "asc"
+                ? aText.localeCompare(bText)
+                : bText.localeCompare(aText);
+        });
+
+        // LIMPIAMOS el tbody y REINSERTAMOS filas principales y expandidas (expandidas ocultas)
+        tbody.innerHTML = '';
+
+        rows.forEach(item => {
+            tbody.appendChild(item.mainRow);
+            item.expandedRows.forEach(expRow => {
+                expRow.style.display = 'none';  // nos aseguramos que estén ocultas
+                tbody.appendChild(expRow);
+            });
+        });
+    }
+
+        $('#btnFiltrar').on('click', function () {
+            let idRegion = $('#filtroRegion').val();
+            let whsCode = $('#filtroTienda').val();
+            let slpCode = $('#filtroAsesor').val();
+            let fechaInicio = $('#fechaI').val();
+            let fechaFin = $('#fechaF').val();
+            let refSac = $('#chkReferidos').prop('checked');
+
+            // Ejecutar la carga de datos
+            cargarTabla(idRegion, whsCode, slpCode, fechaInicio, fechaFin, refSac);
+        });
+
+    function cargarTabla(idRegion, whsCode, slpCode, fechai, fechaf, refSac) {
+        console.log(refSac);
+    // Mostrar loading si lo usas
+        $("#globalLoading").show();
+
+        $.ajax({
+            url: '@Url.Action("CargarData", "BolsonPerdidas")',
+            type: "POST",
+            data: { IdRegion: idRegion, WhsCode: whsCode, SlpCode: slpCode, FechaI: fechai, FechaF: fechaf, ReferidoSac: refSac == true ? -2000 : null },
+            success: function (data) {
+                const $tbody = $('tbody.BolsonActivo');
+                $tbody.empty();
+
+                $('#txtActivos').text("Q 0.00");
+                $('#txtNuevos').text("Q 0.00");
+                $('#txtFacturados').text("Q 0.00");
+                $('#txtPerdidos').text("Q 0.00");
+
+                if (data && data.length > 0) {
+                    $.each(data, function (index, item) {
+                        const fila = $('<tr class="fila-principal">');
+
+                        // Botón expandir
+                        fila.append(`
+                            <td style="text-align: center;">
+                                <button class="btn btn-sm btn-expandir" type="button" title="Expandir" style="background-color: #0d6efd; color: white; border: none; width: 34px; height: 34px;
+                                           font-weight: bold; font-size: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: background-color 0.2s ease;">
+                                    +
+                                </button>
+                            </td>
+                        `);
+
+                        fila.append(`<td class="oculto">${item.DocEntry}</td>`);
+                        fila.append(`<td class="oculto">${item.DocNum}</td>`);
+                        fila.append(`<td class="oculto">${item.IdRegion}</td>`);
+                        fila.append(`<td class="oculto">${item.Region}</td>`);
+                        fila.append(`<td class="oculto">${item.WhsCode}</td>`);
+                        fila.append(`<td class="oculto">${item.WhsName}</td>`);
+                        fila.append(`<td class="oculto">${item.SlpCode}</td>`);
+                        fila.append(`<td>${item.SlpName}</td>`);
+                        fila.append(`<td>${item.Nit}</td>`);
+                        fila.append(`<td>${item.Nombre}</td>`);
+                        fila.append(`<td>${item.Telefono ? item.Telefono : '--'}</td>`);                        
+                        fila.append(`<td style="text-align:right">${formatearTotal(item.DocTotal)}</td>`);
+                        fila.append(`<td style="text-align:center">${formatearFecha(item.DocDate)}</td>`);
+                        fila.append(`<td style="text-align:center">${formatearFecha(item.FechaPerdida)}</td>`);
+                        let icono = '';
+                        switch (item.Estado) {
+                            case 'Aprobado':
+                                icono = '<i class="fas fa-check-circle text-success"></i>'; // verde
+                                break;                            
+                            default:
+                                icono = '<i class="fas fa-question-circle text-secondary"></i>'; // gris
+                                break;
+                        }
+
+                        fila.append(`<td style="text-align:center" title="${item.NotaPerdida}">${icono} ${item.MotivoPerdida}</td>`);
+
+                        fila.append(`<td style="text-align: center; vertical-align: middle;">
+                                      <div style="display: inline-flex; gap: 5px; justify-content: center; align-items: center;">
+                                        <button type="button" class="btn btn-sm btn-danger btn-btnDetalle" title="Recuperar">🔄</button>
+                                      </div>
+                                    </td>`);
+
+                        $tbody.append(fila);
+                        // Fila expandida oculta
+                        const filaExpandida = $(`
+                            <tr class="fila-expandida" style="display: none;">
+                                <td colspan="15" class="bg-light">
+                                    <div class="contenido-expandido">
+                                        <div>Cargando detalles...</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                        $tbody.append(filaExpandida);                     
+                    });
+                } else {
+                    $tbody.append(`<tr><td colspan="15" class="text-center">No hay resultados</td></tr>`);
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al cargar los datos:", error);
+            },
+            complete: function () {
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    // Escuchar el click en los botones con clase btn-btnDetalle
+    $(document).on("click", ".btn-btnDetalle", function () {
+        Swal.fire({
+            title: "¿Desea recuperar esta cotización?",
+            text: "Una vez recuperada, se actualizará el estado.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Sí, recuperar",
+            cancelButtonText: "No, cancelar",
+            confirmButtonColor: "#28a745", // verde
+            cancelButtonColor: "#d33" // rojo
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Aquí va tu lógica de recuperación
+                Swal.fire("Recuperada", "La cotización ha sido recuperada.", "success");
+            }
+        });
+    });
+
+
+    document.getElementById("txtMotivoPerdida").disabled = true;
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Ventas/getAllTiposCrm", // Ajusta la URL según tu backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $select = $("#txtMedioContacto");
+                $select.empty(); // Limpiar el select antes de agregar opciones
+                $select.append('<option value="-1">-- Seleccione --</option>');
+                // Recorrer los datos y agregarlos al select
+                $.each(data, function (index, item) {
+                    $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                });
+            },
+            error: function () {
+                console.error("Error al cargar los estados.");
+            }
+        });
+
+        $.ajax({
+            url: "/Ventas/getAllEstadoPerdidas", // Ajusta la URL según tu backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $select = $("#txtMotivoPerdida");
+                $select.empty(); // Limpiar el select antes de agregar opciones
+                $select.append('<option value="-1">-- Seleccione --</option>');
+                // Recorrer los datos y agregarlos al select
+                $.each(data, function (index, item) {
+                    $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                });
+            },
+            error: function () {
+                console.error("Error al cargar los estados.");
+            }
+        });
+    });
+
+
+
+        document.getElementById('btnCerrarModaSeguimiento').addEventListener('click', function () {
+            $("#modalSeguimiento").modal('hide');
+        });
+
+
+
+
+
+        document.getElementById('btnSaveSeguimiento').addEventListener('click', function () {
+        const chkPerdida = document.getElementById('chkPerdida');
+        const medioContacto = document.getElementById('txtMedioContacto');
+        const notas = document.getElementById('txtNotas');
+        const fechaCompra = document.getElementById('txtFechaCompra');
+        const proximoSeg = document.getElementById('txtProximoSeg');
+        const motivoPerdida = document.getElementById('txtMotivoPerdida');
+
+        if (!notas.value.trim()) {
+            alert("Escribe alguna observación o acción realizada.");
+            notas.focus();
+            return;
+        }
+
+        if (chkPerdida.checked) {
+            // Validaciones solo para cotización perdida
+            if (!motivoPerdida.value || motivoPerdida.value === "0" || motivoPerdida.value === "-1") {
+                alert("Si marcaste que se perdió, dime por qué… ¡Vamos! selecciona el motivo de la cotización perdida");
+                motivoPerdida.focus();
+                return;
+            }
+        } else {
+            // Validaciones normales
+            if (!medioContacto.value || medioContacto.value === "0" || medioContacto.value == "-1") {
+                alert("Selecciona un medio de contacto.");
+                medioContacto.focus();
+                return;
+            }
+            if (!fechaCompra.value) {
+                alert("No olvides seleccionar la posible fecha de compra.");
+                fechaCompra.focus();
+                return;
+            }
+            if (!proximoSeg.value) {
+                alert("¿Y cuándo le vas a dar seguimiento? Selecciona la fecha.");
+                proximoSeg.focus();
+                return;
+            }
+        }
+
+        if (chkPerdida.checked) {
+            Swal.fire({
+                title: '¡Atención!',
+                text: '¿Estás seguro de marcar esta cotización como perdida? Esta acción indica que no continuarás con el proceso.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, estoy seguro',
+                cancelButtonText: 'No, cancelar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true,
+                backdrop: `rgba(255,0,0,0.1)`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guardarSeguimiento();
+                } else {
+                    Swal.fire({
+                        title: 'Cotización NO marcada como perdida',
+                        icon: 'info',
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        } else {
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: '¿Desea guardar el seguimiento?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guardarSeguimiento();
+                }
+            });
+        }
+    });
+
+    function guardarSeguimiento() {
+            $("#globalLoading").show();
+            // Capturar los valores de los inputs
+            var data = {
+                DocEntry: document.getElementById("txtDocEntry").value,
+                DocNum: document.getElementById("txtDocNum").value,
+                MedioContacto: document.getElementById("txtMedioContacto").value,
+                Notas: document.getElementById("txtNotas").value,
+                PosFechaCompra: document.getElementById("txtFechaCompra").value,
+                FechaSeguimiento: document.getElementById("txtProximoSeg").value,
+                EstadoPerdida: document.getElementById("chkPerdida").checked ? "Y" : "N",
+                MotivoPerdida: document.getElementById("txtMotivoPerdida").value
+            };
+
+            // Enviar datos con AJAX
+            $.ajax({
+                url: "/Ventas/SaveSeguimiento", // Ruta a tu backend en ASP.NET
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (response.result === 1) {
+                        $("#globalLoading").hide();
+
+                        Swal.fire({
+                            title: 'Se guardó correctamente',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false
+                        }).then(() => {
+                            let idRegion = $('#filtroRegion').val();
+                            let whsCode = $('#filtroTienda').val();
+                            let slpCode = $('#filtroAsesor').val();
+                            let fechaInicio = $('#fechaInicio').val();
+                            let fechaFin = $('#fechaFin').val();
+
+                            // Ejecutar la carga de datos
+                            cargarTabla(idRegion, whsCode, slpCode, fechaInicio, fechaFin);
+                            limpiarCampos();
+
+                            $("#modalSeguimiento").modal('hide');
+                            $("#globalLoading").hide();
+                        });
+
+                    } else {
+                        alert("Error: " + response.message);
+                        $("#globalLoading").hide();
+                    }
+                },
+                error: function () {
+                    alert("Error al enviar la solicitud.");
+                    $("#globalLoading").hide();
+                }
+            });
+    }
+
+    function limpiarCampos() {
+        document.getElementById("txtDocEntry").value = "";
+        document.getElementById("txtDocNum").value = "";
+        document.getElementById("txtMedioContacto").value = "-1";
+        document.getElementById("txtMedioContacto").disabled = false;
+        document.getElementById("txtNotas").value = "";
+        document.getElementById("txtFechaCompra").value = "";
+        document.getElementById("txtFechaCompra").disabled = false;
+        document.getElementById("txtProximoSeg").value = "";
+        document.getElementById("txtProximoSeg").disabled = false;
+        document.getElementById("chkPerdida").checked = false;
+        document.getElementById("txtMotivoPerdida").disabled = true;
+        document.getElementById("txtMotivoPerdida").value = "-1";
+
+    }
+
+
+    function formatearTotal(valor) {
+        if (valor == null || isNaN(valor)) return 'Q0.00';
+        return new Intl.NumberFormat('es-GT', {
+            style: 'currency',
+            currency: 'GTQ',
+            minimumFractionDigits: 2
+        }).format(valor);
+    }
+
+    function formatearFecha(fechaJson) {
+        if (!fechaJson) return '--'; // Si viene null, undefined o vacío
+        try {
+            const timestamp = parseInt(fechaJson.match(/\d+/)[0]);
+            const fecha = new Date(timestamp);
+            const dia = fecha.getDate().toString().padStart(2, '0');
+            const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+            const anio = fecha.getFullYear();
+            return `${dia}/${mes}/${anio}`;
+        } catch (e) {
+            return '--'; // Si falla el parseo, también muestra --
+        }
+    }
+
+// Función para ocultar columnas por índice
+    function ocultarColumnas(indices) {
+        $('table thead tr th').each(function (index) {
+            if (indices.includes(index)) {
+                $(this).hide();
+            }
+        });
+
+        $('table tbody tr').each(function () {
+            $(this).find('td').each(function (index) {
+                if (indices.includes(index)) {
+                    $(this).hide();
+                }
+            });
+        });
+    }
+
+</script>

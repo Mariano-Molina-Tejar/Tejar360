@@ -33,6 +33,7 @@ namespace DAL
                         DataTable dt = new DataTable();
                         iDAResult = new OleDbDataAdapter();
                         iDAResult.SelectCommand = iCommand;
+                        iCommand.CommandTimeout = 120;
                         iDAResult.Fill(dt);
                         Liga = (from row in dt.AsEnumerable()
                                 select new PortalComisionAsesoresEntity()

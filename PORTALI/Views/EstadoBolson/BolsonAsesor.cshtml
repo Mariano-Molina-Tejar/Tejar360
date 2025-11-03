@@ -1,0 +1,220 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cotizaciones</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #f4f6f8;            
+            color: #333;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .bolson-panel {
+            background-color:black;
+            color: white;
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+            .bolson-panel h1 {
+                font-size: 2rem;
+                font-weight: 800;
+                margin-bottom: 0.5rem;
+            }
+
+            .bolson-panel p {
+                font-size: 1.5rem;
+                font-weight: 800;
+                letter-spacing: -1px;
+            }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            padding: 2rem;
+            transition: transform 0.3s;
+        }
+
+            .panel:hover {
+                transform: translateY(-5px);
+            }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        canvas {
+            max-height: 180px;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="padding:25px;">
+        <!-- Panel Superior del Bolsón -->
+        <div class="bolson-panel">
+            <h1>Bolsón Activo</h1>
+            <p id="txtBolsonActivo">0.00</p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Cotizaciones Nuevas -->
+            <div class="panel">
+                <h2>Cotizaciones Nuevas</h2>
+                <div class="stats">
+                    <div class="stat"><span>Total líneas:</span> <span id="txtTotalLineasCot">0</span></div>
+                    <div class="stat"><span>Nuevos:</span> <span id="txtNuevosCoti">0.00</span></div>
+                    <div class="stat"><span>Tasa de generación:</span> <span id="txtTasaGeneracion">0.00%</span></div>
+                </div>
+                <canvas id="chartNuevas"></canvas>
+            </div>
+
+            <!-- Facturación -->
+            <div class="panel">
+                <h2>Facturación</h2>
+                <div class="stats">
+                    <div class="stat"><span>Total líneas:</span> <span id="txtTotalLineasFac">0</span></div>
+                    <div class="stat"><span>Facturado:</span> <span id="txtNuevosFac">0.00</span></div>
+                    <div class="stat"><span>Tasa de cierre:</span> <span id="txtTasaCierre">0.00%</span></div>
+                </div>
+                <canvas id="chartFacturacion"></canvas>
+            </div>
+
+            <!-- Pérdidas -->
+            <div class="panel">
+                <h2>Pérdidas</h2>
+                <div class="stats">
+                    <div class="stat"><span>Total líneas:</span> <span id="txtTotalLineasPerd">0</span></div>
+                    <div class="stat"><span>Perdidas:</span> <span id="txtNuevosPerd">0.00</span></div>
+                    <div class="stat"><span>Tasa de pérdida:</span> <span id="txtTasaPerdida">0.00%</span></div>
+                </div>
+                <canvas id="chartPerdidas"></canvas>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        $(document).ready(function () {
+            cargarBolson(); // Llama la función AJAX al iniciar la pantalla
+        });
+
+        function cargarBolson() {
+            $("#globalLoading").show();
+            $.ajax({
+                url: '/EstadoBolson/ObtenerBolsonAsesor',
+                type: 'GET',
+                success: function (response) {
+                    $("#globalLoading").hide();
+                    if (response.success) {
+                        document.getElementById("txtBolsonActivo").textContent = formatoQuetzal(response.data.BolsonActivo);
+
+                        document.getElementById("txtTotalLineasCot").textContent = response.data.LineasCot;
+                        document.getElementById("txtNuevosCoti").textContent = formatoQuetzal(response.data.DocTotalCot);
+                        document.getElementById("txtTasaGeneracion").textContent = response.data.TasaGeneracion.toFixed(2) + '%';
+
+                        document.getElementById("txtTotalLineasFac").textContent = response.data.LineasFac;
+                        document.getElementById("txtNuevosFac").textContent = formatoQuetzal(response.data.DocTotalFac);
+                        document.getElementById("txtTasaCierre").textContent = response.data.TasaCierre.toFixed(2) + '%';
+
+                        document.getElementById("txtTotalLineasPerd").textContent = response.data.LineasPerd;
+                        document.getElementById("txtNuevosPerd").textContent = formatoQuetzal(response.data.DocTotalPerd);
+                        document.getElementById("txtTasaPerdida").textContent = response.data.TasaPerd.toFixed(2) + '%';
+
+                        crearGrafico(document.getElementById('chartNuevas'), 'Nuevos', response.data.DocTotalCot, (response.data.BolsonActivo + response.data.DocTotalCot).toFixed(), '#3b82f6');
+                        crearGrafico(document.getElementById('chartFacturacion'), 'Facturado', response.data.DocTotalFac, (response.data.BolsonActivo + response.data.DocTotalFac).toFixed(), '#10b981');
+                        crearGrafico(document.getElementById('chartPerdidas'), 'Perdidas', response.data.DocTotalPerd, (response.data.BolsonActivo + response.data.DocTotalPerd).toFixed(), '#ef4444');
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#globalLoading").hide();
+                    console.error("Error al cargar datos del bolsón:", error);
+                }
+            });
+        }
+
+        function formatoQuetzal(valor) {
+            return new Intl.NumberFormat('es-GT', {
+                style: 'currency',
+                currency: 'GTQ',
+                minimumFractionDigits: 2
+            }).format(valor);
+        }
+
+        const crearGrafico = (ctx, titulo, valor, total, color) => {
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: [titulo, 'Bolson Activo'],
+                    datasets: [{
+                        data: [valor, total - valor],
+                        backgroundColor: [color, '#e0e0e0'],
+                        borderWidth: 5
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let val = context.parsed;
+                                    return `${context.label}: ${val.toLocaleString()} (${((val / total) * 100).toFixed(1)}%)`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        //crearGrafico(document.getElementById('chartNuevas'), 'Nuevos', 50000, 100000, '#3b82f6');
+        //crearGrafico(document.getElementById('chartFacturacion'), 'Facturado', 35000, 100000, '#10b981');
+        //crearGrafico(document.getElementById('chartPerdidas'), 'Perdidas', 10000, 100000, '#ef4444');
+    </script>
+</body>
+</html>

@@ -6,6 +6,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,7 +87,10 @@
         <!-- Contenedor para Gantt y gráfico -->
         <div style="display: flex; justify-content: space-between; width: 100%;">
             <div class="info-card">
-                <h2>Proyecto ROCA PRINCIPAL (CRM)</h2>
+                <h2>
+                    <i class="fa fa-check-circle" style="color: green;"></i> Proyecto ROCA PRINCIPAL (CRM)
+                </h2>
+
                 <h3>📋 Información del Proyecto</h3>
                 <ul>
                     <li><strong>👤 Asignado a:</strong> Bayron Lopez</li>
@@ -112,16 +117,18 @@
 
         <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 40px;">
             <!-- Info del proyecto -->
-            <div class="info-card alerta">
-                <h2 style="color: #c0392b;">⚠️ Proyecto ROCA RUTAS (MÓDULO DE RUTAS)</h2>
+            <div class="info-card alerta">                
+                <h2>
+                    <i class="fa fa-check-circle" style="color: green;"></i> Proyecto ROCA RUTAS (MÓDULO DE RUTAS)
+                </h2>
                 <h3>📋 Información del Proyecto</h3>
                 <ul>
                     <li><strong>👤 Asignado a:</strong> Mariano Molina</li>
                     <li><strong>📅 Fecha inicial:</strong> 07 de febrero de 2025</li>
-                    <li><strong>📅 Fecha final:</strong> 04 de abril de 2025 (🕒 16/05/2025 se entrega este viernes)</li>
+                    <li><strong>📅 Fecha final:</strong> 16/05/2025</li>
                 </ul>
                 <p class="comentarios">
-                    🛑 <strong>Comentarios:</strong> El proyecto está completo y listo para su publicación este viernes. A pesar de algunos retrasos debido a cambios inesperados, hemos logrado finalizar todas las etapas y ahora estamos preparados para implementarlo en producción.
+                    🛑 <strong>Comentarios:</strong> El proyecto ha sido entregado. Aunque inicialmente se presentaron algunos errores, estos han sido corregidos progresivamente mediante tareas de mantenimiento y ajustes. Actualmente, nos encontramos afinando los últimos detalles para su correcta finalización.
                 </p>
             </div>
 
@@ -136,33 +143,7 @@
             </div>
         </div>
 
-        <div style="border-top: 2px solid #ccc; margin: 40px 0;"></div>
-
-        <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 40px;">
-            <!-- Info del proyecto -->
-            <div class="info-card alerta">
-                <h2 style="color: #c0392b;">⚠️ Proyecto PLAN DE ESPECIALISTAS</h2>
-                <h3>📋 Información del Proyecto</h3>
-                <ul>
-                    <li><strong>👤 Asignado a:</strong> Mariano Molina</li>
-                    <li><strong>📅 Fecha inicial:</strong> 21 de abril de 2025</li>
-                    <li><strong>📅 Fecha final:</strong> 13 de junio de 2025</li>
-                </ul>
-                <p class="comentarios">
-                    🛑 <strong>Comentarios:</strong>  Proyecto con atraso, en 2 semanas nos ponemos en al día, este retraso fue por la roca de rutas, no podemos cambiar fechas por tema de rocas en otro departamento.
-                </p>
-            </div>
-
-            <!-- Gantt -->
-            <div class="gantt-container" style="overflow: auto; max-width: 70%; max-height: 500px;">
-                <svg id="ganttEspecialista"></svg>
-            </div>
-
-            <!-- Gráfico -->
-            <div class="chart-container" style="width: 70%;">
-                <canvas id="graficoEspecialista" style="width: 100%; height: 200px;"></canvas>
-            </div>
-        </div>
+        <div style="border-top: 2px solid #ccc; margin: 40px 0;"></div>        
 
         <div style="border-top: 2px solid #ccc; margin: 40px 0;"></div>
         <div style="display: flex; justify-content: space-between; width: 100%;">

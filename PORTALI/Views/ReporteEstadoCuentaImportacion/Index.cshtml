@@ -1,0 +1,159 @@
+﻿@model Entity.Filtros.FiltroEstadoCuentaEntity
+
+@{
+    ViewBag.Title = "Reporte Estado de Cuenta de Importación";
+    var resultados = ViewBag.Resultado as List<Entity.ReporteEstadoCuentaImportacionEntity>;
+}
+
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">Reporte Estado de Cuenta de Importación</h2>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filtros de búsqueda</h5>
+        </div>
+
+        <div class="card-body">
+            @using (Html.BeginForm("Index", "ReporteEstadoCuentaImportacion", FormMethod.Post, new { @class = "row g-3 mb-4" }))
+            {
+                <div class="col-12 col-md-4">
+                    <label for="FechaInicio" class="form-label">Fecha de Inicio</label>
+                    <input type="date"
+                           id="FechaInicio"
+                           name="FechaInicio"
+                           class="form-control"
+                           value="@ViewBag.FechaInicio"
+                           aria-describedby="fechaInicioHelp" />
+                    <small id="fechaInicioHelp" class="form-text text-muted">
+                        Seleccione la fecha desde la cual desea consultar.
+                    </small>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label for="FechaFin" class="form-label">Fecha de Fin</label>
+                    <input type="date"
+                           id="FechaFin"
+                           name="FechaFin"
+                           class="form-control"
+                           value="@ViewBag.FechaFin"
+                           aria-describedby="fechaFinHelp" />
+                    <small id="fechaFinHelp" class="form-text text-muted">
+                        Seleccione la fecha hasta la cual desea consultar.
+                    </small>
+                </div>
+
+                @*<div class="col-md-3">
+                        <label for="Proveedor" class="form-label">Proveedor</label>
+                        @Html.DropDownListFor(model => model.Proveedor,
+                            ViewBag.Proveedores as SelectList,
+                            "Seleccione un proveedor",
+                            new { @class = "form-control" })
+                    </div>*@
+
+                <div class="col-12 col-md-4">
+                    <label for="Proveedor" class="form-label">Proveedor</label>
+                    @Html.DropDownListFor(m => m.Proveedor,
+                         ViewBag.Proveedores as SelectList,
+                            "-- Seleccione un Proveedor --",
+                     new
+                     {
+                         @class = "form-select form-control",
+                         aria_label = "Seleccione Proveedor",
+                         style = "border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 45, 145, 0.3);"
+                     })
+                    <small id="proveedorHelp" class="form-text text-muted">
+                        Seleccione el proveedor con el que desea realizar la transacción.
+                    </small>
+                </div>
+
+                <div class="col-12 text-end mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 py-2 me-2 shadow-sm">
+                        <i class="bi bi-funnel-fill me-1"></i> Filtrar
+                    </button>
+
+                    <a href="@Url.Action("Index", "ReporteEstadoCuentaImportacion")" class="btn btn-outline-secondary btn-lg px-4 py-2 shadow-sm">
+                        <i class="bi bi-arrow-repeat me-1"></i> Restablecer
+                    </a>
+                </div>
+
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body text-end">
+            <div class="row g-3 mb-4">
+                <div class="col-md-2 d-flex align-items-end">
+                    @using (Html.BeginForm("ExportarExcel", "ReporteEstadoCuentaImportacion", FormMethod.Post))
+                    {
+                        @Html.HiddenFor(m => m.FechaInicio)
+                        @Html.HiddenFor(m => m.FechaFin)
+                        @Html.HiddenFor(m => m.Proveedor)
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm">
+                            <i class="bi bi-file-earmark-excel-fill me-1"></i> Exportar Excel
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @if (resultados != null && resultados.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped table-sm align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Proveedor</th>
+                        <th>Fecha OC</th>
+                        <th>Orden Compra</th>
+                        <th>Monto OC</th>
+                        <th>Fecha FacProveedor</th>
+                        <th>Factura Proveedor</th>
+                        <th>Monto FP</th>
+                        <th>Serie</th>
+                        <th>Factura</th>
+                        <th>FechaPago</th>
+                        <th>Pago</th>
+                        <th>Monto Pagado</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in resultados)
+                    {
+                        <tr>
+                            <td>@item.Codigo</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.FechaOC.ToString("dd/MM/yyyy")</td>
+                            <td>@item.OrdenCompra</td>
+                            <td>@item.MontoOC.ToString("C")</td>
+                            <td>@item.FechaFacProv.ToString("dd/MM/yyyy")</td>
+                            <td>@item.FacProv</td>
+                            <td>@item.MontoFP.ToString("C")</td>
+                            <td>@item.Serie</td>
+                            <td>@item.Factura</td>
+                            <td>@item.FechaPago.ToString("dd/MM/yyyy")</td>
+                            <td>@item.Pago</td>
+                            <td>@item.MontoPagado.ToString("C")</td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (Request.HttpMethod == "POST")
+    {
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            No se encontraron resultados para los filtros aplicados.
+        </div>
+    }
+</div>
+
+

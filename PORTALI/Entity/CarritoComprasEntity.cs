@@ -8,6 +8,11 @@ namespace Entity
 {
     public class CarritoComprasEntity
     {
+        public string LicTradNum { get; set; }
+        public string Cliente { get; set; }
+        public int NoCotizacion { get; set; }
+        public string Llave { get; set; }
+        public int DocN { get; set; }
         public int DocNum { get; set; }
         public int DocEntry { get; set; }
         public int NoCotizacionV { get; set; }
@@ -15,6 +20,7 @@ namespace Entity
         public string CardCode { get; set; }
         public string CardName { get; set; }
         public string Telefono { get; set; }
+        public string Contacto { get; set; }
         public string Correo { get; set; }
         public string Direccion { get; set; }
         public string FormaPago { get; set; }
@@ -31,7 +37,16 @@ namespace Entity
         public bool AplicaSAC { get; set; }
         public string WhsCodeSAC { get; set; }
         public int SlpCodeSAC { get; set; }
+        public int EsUsuSac { get; set; }
         public List<DetalleCarritoEntity> Detalle { get; set; }
+        public List<Regalo> Regalo { get; set; }
+
+    }
+
+    public class Regalo 
+    {
+        public string ItemCode { get; set; }
+        public double Cantidad { get; set; }
     }
 
     public class DetalleCarritoEntity
@@ -50,7 +65,8 @@ namespace Entity
         public double CantMetros { get; set; }
         public double LineTotal { get; set; }
         public string LinkImg { get; set; }
-        public int EsPromo { get; set; }        
+        public int EsPromo { get; set; }
+        public int CodPromo { get; set; }
         public int DescuentoLpr { get; set; }
         public double DescuentoNwp { get; set; }
         public double DescuentoPor { get; set; }

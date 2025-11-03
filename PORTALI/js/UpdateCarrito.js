@@ -12,6 +12,7 @@
         document.cookie = `Cotizacion_A1=${JSON.stringify(parsedData)};path=/`;
     }
 }
+
 /*ACTUALIZA LA LISTA DE PRECIOS*/
 function updateListaProductos(ListaPrecios) {
     const rows = document.querySelectorAll("table.shoping-cart-table tbody tr");    
@@ -80,9 +81,7 @@ function updateSoloQuantity(pList) {
                 item.DescuentoU = descuento;
                 item.Price = (priceUnit - descuento);
                 item.LineTotal = ((priceUnit - descuento) * quantity);
-            }
-
-            console.log("Precios", item);
+            }            
         });
 
         // Actualiza la cookie una vez después del bucle
@@ -97,8 +96,16 @@ function updateSoloQuantity(pList) {
 
 /*UPDATE SOLO CANTIDADES*/
 function ModificarCantidades(llave, cantidad, Descuento) {
+    if (cantidad == 0 || cantidad == 0.00) {
+        cantidad = 1.00;
+    }
+
     let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
     const cookieData = getCookie(cookieName);
+
+    console.log("llave", llave);
+    console.log("cantidad", cantidad);
+    console.log("Descuento", Descuento);
 
     if (cookieData) {
         const parsedData = JSON.parse(cookieData);
@@ -131,6 +138,11 @@ function ModificarCantidades(llave, cantidad, Descuento) {
     }
 }
 
+/* CREA LA FUCK COOKIE DE REGALOS JEJEJEJE*/
+function CrearCookieRegalos(ListadoProductos) {
+    setCookie("tejar360.Premios", JSON.stringify(ListadoProductos), 7);
+}
+
 
 /*CREA EL COOKIE DE COTIZACION*/
 function CrearCotizacionCookie(clienteId, producto, docEntry) {
@@ -145,8 +157,7 @@ function CrearCotizacionCookie(clienteId, producto, docEntry) {
     const existingCotizacion = getCookie(cookieName);
     let cotizacion;
     if (existingCotizacion) {        
-        cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto        
-        console.log(cotizacion)
+        cotizacion = JSON.parse(existingCotizacion); // Convertimos el JSON a un objeto                
         cotizacion.productos.push(producto); // Agregamos el nuevo producto
 
         // Guardar la cotización actualizada
@@ -160,11 +171,9 @@ function CrearCotizacionCookie(clienteId, producto, docEntry) {
                 url: '/Generales/ObtenerCotizacion', // cambia "TuControlador" por el nombre real
                 type: 'GET',
                 data: { DocEntry: docEntry },
-                success: function (data) {
+                success: function (data) {                    
                     cotizacion = data;
-                    // Guardar la cotización actualizada
                     setCookie(cookieName, JSON.stringify(cotizacion), 7);
-                    // Actualizar el badge del carrito
                     actualizarCarritoBadge(cotizacion.productos.length);
                 },
                 error: function (xhr, status, error) {
@@ -181,15 +190,14 @@ function CrearCotizacionCookie(clienteId, producto, docEntry) {
                 CardCode: "",
                 CardName: "",
                 Direccion: "",
+                Contacto: "",
                 Email: "",
                 Telefono: "",
                 Fecha: new Date().toISOString().split('T')[0], // Fecha actual
-                PriceId: 9,
-                FacturarNit: "",
-                FacturarNombre: "",
-                FacturarDireccion: "",
+                PriceId: 9,                
                 EsCF: "",
                 Borrador: "N",
+                NoRegistro: "",
                 productos: [producto]
             };
 
@@ -219,26 +227,24 @@ function setCookie(name, value, days) {
 /*UPDATE SOCIO DE NEGOCIO*/
 function updateSocioNegocio(socioNegocio) {
     let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
-
     if (!cookieName) {
         console.warn("No se encontró ninguna cookie de cotización.");
         return;
     }
-
+    
     const cookieData = getCookie(cookieName);
     if (cookieData) {
         const parsedData = JSON.parse(decodeURIComponent(cookieData)); // ← Aquí decodificamos la cookie
 
-        parsedData.Address = socioNegocio.Address;
+        parsedData.Direccion = socioNegocio.Direccion;
         parsedData.CardCode = socioNegocio.CardCode;
         parsedData.CardName = socioNegocio.CardName;
         parsedData.Email = socioNegocio.Email;
-        parsedData.Phone = socioNegocio.Phone;
+        parsedData.Telefono = socioNegocio.Telefono;
+        parsedData.Contacto = socioNegocio.Contacto;
         parsedData.LicTradNum = socioNegocio.LicTradNum;
-        parsedData.FacturarNit = socioNegocio.FacturarNit;
-        parsedData.FacturarNombre = socioNegocio.FacturarNombre;
-        parsedData.FacturarDireccion = socioNegocio.FacturarDireccion;
         parsedData.EsCF = socioNegocio.EsCF;
+        parsedData.NoRegistro = socioNegocio.NoRegistro;
 
         // Configurar la expiración de la cookie (7 días)
         const expires = new Date();
@@ -295,33 +301,30 @@ function updateDescuentos(Identity, Descuentos) {
 /*OBTIENE EL SOCIO DE NEGOCIO*/
 function getSocioNegocio() {
     let cookieName = obtenerNombreCookieMasReciente("T-OneCotizacion-");
-    const cookieData = getCookie(cookieName); // Obtiene la cookie.
+    const cookieData = getCookie(cookieName);
     if (cookieData) {
-        const parsedData = JSON.parse(cookieData); // Convierte la cookie en objeto.
-
-        // Crea un nuevo objeto con solo las propiedades que necesitas.
+        const parsedData = JSON.parse(cookieData);
         const filteredData = {
-            Address: parsedData?.Address ?? "",  // Usa optional chaining y coalescencia nula
             CardCode: parsedData?.CardCode ?? "",
             CardName: parsedData?.CardName ?? "",
             Direccion: parsedData?.Direccion ?? "",
             Email: parsedData?.Email ?? "",
             Fecha: parsedData?.Fecha ?? "",
             LicTradNum: parsedData?.LicTradNum ?? "",
-            NoCotizacion: parsedData?.NoCotizacion ?? "",
-            Phone: parsedData?.Phone ?? "",
+            NoCotizacion: parsedData?.NoCotizacion ?? "",            
             PriceId: parsedData?.PriceId ?? "",
             Telefono: parsedData?.Telefono ?? "",
             cliente: parsedData?.cliente ?? "",
-            FacturarNit: parsedData?.FacturarNit ?? "",
-            FacturarNombre: parsedData?.FacturarNombre ?? "",
-            FacturarDireccion: parsedData?.FacturarDireccion ?? "",
-            EsCF: parsedData?.EsCF ?? ""
+            Contacto: parsedData?.Contacto ?? "",
+            EsCF: parsedData?.EsCF ?? "",
+            NoRegistro: parsedData?.NoRegistro ?? "",
+            NomOb: parsedData?.NomOb ?? "",
+            FproV: parsedData?.FproV ?? ""
         };
 
-        return filteredData; // Retorna el objeto filtrado.
+        return filteredData;
     }
-    return null; // Retorna null si la cookie no existe.
+    return null;
 }
 
 /*ELIMINA LA FILA DEL LISTADO DE PRODUCTOS*/
@@ -379,6 +382,16 @@ function getAllCookieCotizacion() {
     const cookieData = getCookie(cookieName); // Obtiene la cookie.
     if (cookieData) {
         const parsedData = JSON.parse(cookieData); 
+        return parsedData; // Retorna el objeto filtrado.
+    }
+    return null;
+}
+
+function getAllCookieRegalitos() {
+    let cookieName = "tejar360.Premios";
+    const cookieData = getCookie(cookieName); // Obtiene la cookie.
+    if (cookieData) {
+        const parsedData = JSON.parse(cookieData);
         return parsedData; // Retorna el objeto filtrado.
     }
     return null;

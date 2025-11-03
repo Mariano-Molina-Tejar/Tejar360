@@ -65,10 +65,10 @@
 
         <!-- Tabla agrupada por Location -->
         <div class="table-responsive" style="margin-bottom:30px">
-            <table class="table table-bordered table-hover" id="tablaVentas">
+            <table class="table table-bordered table-hover" id="tablaVentas" style="font-size:12px">
                 <thead class="text-center" style="background-color: black; color: white;">
                     <tr>
-                        <th rowspan="2" class="align-middle">Tienda</th>
+                        <th rowspan="2" class="align-middle sticky-col">Tienda</th>
                         <th colspan="5">Venta</th>
                         <th colspan="4">Utilidad</th>
                         <th colspan="3">Diario</th>
@@ -97,7 +97,30 @@
 </body>
 </html>
 
+<style>
+    /*.sticky-col {
+        position: sticky;
+        left: 0;
+        z-index: 2;*/ /* lo suficiente para sobreponerse */
+    /*}*/
+
+</style>
+
 <script>
+    $(document).ready(function () {
+        const container = document.getElementById('scrollContainer');
+        const stickyCols = document.querySelectorAll('.sticky-col');
+
+        container.addEventListener('scroll', () => {
+            if (container.scrollLeft > 0) {
+                stickyCols.forEach(td => td.style.backgroundColor = '#f8f9fa'); // fondo al hacer scroll
+            } else {
+                stickyCols.forEach(td => td.style.backgroundColor = 'transparent'); // sin scroll
+            }
+        });
+    });
+
+
     $(document).ready(function () {
         const today = new Date();
 
@@ -121,9 +144,9 @@
 
         CargarData();
         $('.btn-expandir').first().click();
-        setTimeout(function () {
-            $('.btn-expandir').first().click(); // Expande el primer panel después de cargar la data
-        }, 600); // Pequeño retraso para asegurar que los datos estén listos
+        //setTimeout(function () {
+        //    $('.btn-expandir').first().click(); // Expande el primer panel después de cargar la data
+        //}, 600); // Pequeño retraso para asegurar que los datos estén listos
     });
 
     function formatoQuetzal(valor) {
@@ -200,7 +223,7 @@
                         // Filas por tienda
                         $.each(items, function (i, item) {
                             html += `<tr>
-                                    <td>
+                                    <td class="sticky-col">
                                         <div class="d-flex align-items-center">
                                             <button class="btn btn-sm btn-link p-0 me-2 btn-expandir" data-tienda="${item.WhsCode}" title="Ver detalle" style="margin-right:7px;">
                                                 <i class="fas fa-plus-circle text-primary"></i>
@@ -219,7 +242,7 @@
                                     <td>${(item.U_Proyeccion / item.V_Proyeccion * 100).toFixed(2)}%</td> <!-- Proyección de Utilidad / Proyección de Venta -->
                                     <td>${formatoQuetzal(item.D_Venta)}</td>
                                     <td>${formatoQuetzal(item.D_Utilidad)}</td>
-                                    <td>${(item.U_PromDiario / item.V_PromDiario * 100).toFixed(2)}%</td> <!-- Utilidad / Venta en Diario -->
+                                    <td>${(item.D_Utilidad / item.D_Venta * 100).toFixed(2)}%</td> <!-- Utilidad / Venta en Diario -->
                                 </tr>`;
 
                             html += `<tr class="detalle-tienda" id="detalle-${item.WhsCode}" style="display: none;">
@@ -252,12 +275,10 @@
                             total.U_PromDiario += item.U_PromDiario || 0;
                         });
 
-
-
                         if (Nivel != 2)
                         {
                             html += `<tr class="total-row">
-                                <td>TOTAL ${region}</td>
+                                <td class="sticky-col">TOTAL ${region}</td>
                                 <td>${formatoQuetzal(total.V_Meta)}</td>
                                 <td>${formatoQuetzal(total.V_Venta)}</td>
                                 <td>${formatoQuetzal(total.V_PromDiario)}</td>
@@ -269,16 +290,15 @@
                                 <td>${(total.U_Proyeccion / total.V_Proyeccion * 100).toFixed(2)}%</td> <!-- Proyección de Utilidad / Proyección de Venta -->
                                 <td>${formatoQuetzal(total.D_Venta)}</td>
                                 <td>${formatoQuetzal(total.D_Utilidad)}</td>
-                                <td>${(total.U_PromDiario / total.V_PromDiario * 100).toFixed(2)}%</td> <!-- Utilidad / Venta en Diario -->
+                                <td>${(total.D_Utilidad / total.D_Venta * 100).toFixed(2)}%</td> <!-- Utilidad / Venta en Diario -->
                             </tr>`;
                         }
                     });
 
-                    // Agregar total general
                     if (Nivel != 2) {
-                        // Agregar total general
+
                         html += `<tr class="total-row bg-dark text-white">
-                                    <td><strong>TOTAL GENERAL</strong></td>
+                                    <td class="sticky-col"><strong>TOTAL GENERAL</strong></td>
                                     <td>${formatoQuetzal(totalGeneral.V_Meta)}</td>
                                     <td>${formatoQuetzal(totalGeneral.V_Venta)}</td>
                                     <td>${formatoQuetzal(totalGeneral.V_PromDiario)}</td>
@@ -290,12 +310,11 @@
                                     <td>${(totalGeneral.U_Proyeccion / totalGeneral.V_Proyeccion * 100).toFixed(2)}%</td> <!-- Proyección de Utilidad / Proyección de Venta -->
                                     <td>${formatoQuetzal(totalGeneral.D_Venta)}</td>
                                     <td>${formatoQuetzal(totalGeneral.D_Utilidad)}</td>
-                                    <td>${(totalGeneral.U_PromDiario / totalGeneral.V_PromDiario * 100).toFixed(2)}%</td> <!-- Utilidad / Venta en Diario -->
+                                    <td>${((totalGeneral.D_Utilidad / totalGeneral.D_Venta) * 100).toFixed(2)}%</td> <!-- Utilidad / Venta en Diario -->
                                 </tr>`;
                     }
 
                     $('#tbodyVentas').html(html);
-
 
                     //BOTON DE EXPANDIR DETALLE
                     $('.btn-expandir').off('click').on('click', function () {

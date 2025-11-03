@@ -1,0 +1,1031 @@
+﻿@using Entity;
+@model List<MarcajeEntity>
+
+@{
+    ViewBag.Title = "Control de marcaje";
+    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+}
+
+<style>
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --accent-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #34495e;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --info-color: #1abc9c;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f5f7fa;
+        margin: 0;
+        /*padding: 20px;*/
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header styles */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-title i {
+        color: var(--primary-color);
+    }
+
+    .page-subtitle {
+        font-size: 14px;
+        color: #7f8c8d;
+        font-weight: 400;
+    }
+
+    /* Filter card */
+    .filter-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 25px;
+        overflow: hidden;
+    }
+
+    .filter-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filter-body {
+        padding: 20px;
+    }
+
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark-color);
+        font-size: 14px;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+    .filter-input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        background-color: #f8f9fa;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-right: none;
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+        color: #7f8c8d;
+    }
+
+    .filter-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-button:hover {
+        background-color: #2980b9;
+    }
+
+    /* Table styles */
+    .table-container {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .data-table th {
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .data-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .data-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-danger {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .action-button {
+        padding: 6px 12px;
+        border-radius: var(--border-radius);
+        font-size: 13px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--primary-color);
+        background-color: transparent;
+        color: var(--primary-color);
+    }
+
+    .action-button:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    /* Detail card */
+    .detail-card {
+        border-left: 4px solid var(--dark-color);
+        background: white;
+        margin: 10px 0;
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+    }
+
+    .detail-header {
+        background-color: var(--dark-color);
+        color: white;
+        padding: 10px 15px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .detail-body {
+        padding: 15px;
+    }
+
+    .detail-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .detail-table thead {
+        background-color: #f8f9fa;
+    }
+
+    .detail-table th {
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 500;
+        font-size: 13px;
+        color: var(--dark-color);
+    }
+
+    .detail-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+    }
+
+    .export-button {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .export-button:hover {
+        background-color: #27ae60;
+    }
+
+    /* Stats cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+        transition: var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-title {
+        font-size: 13px;
+        color: #7f8c8d;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color);
+    }
+
+    /* Chart container */
+    .chart-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 30px;
+    }
+
+    .chart-header {
+        background-color: var(--info-color);
+        color: white;
+        padding: 12px 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chart-body {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Alert messages */
+    .alert {
+        padding: 12px 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-warning {
+        background-color: #fef3e6;
+        border-left: 4px solid var(--warning-color);
+        color: var(--dark-color);
+    }
+
+    .alert-danger {
+        background-color: #fdecea;
+        border-left: 4px solid var(--accent-color);
+        color: var(--dark-color);
+    }
+
+    .alert i {
+        font-size: 18px;
+    }
+
+    /* Modal styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+    }
+
+    .modal.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        width: 100%;
+        max-width: 500px;
+        transform: translateY(-20px);
+        transition: var(--transition);
+    }
+
+    .modal.active .modal-content {
+        transform: translateY(0);
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-weight: 500;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #7f8c8d;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark-color);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .form-text {
+        font-size: 12px;
+        color: #7f8c8d;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background-color: #27ae60;
+    }
+
+    .btn-secondary {
+        background-color: #bdc3c7;
+        color: var(--dark-color);
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #95a5a6;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #7f8c8d;
+    }
+
+    .empty-state i {
+        font-size: 40px;
+        margin-bottom: 15px;
+        color: #bdc3c7;
+    }
+
+    /@** Responsive adjustments */
+    @media (max-width: 768px) {
+        .filter-row {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }*@
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-clock"></i>
+                Control de Marcaje
+            </h1>
+            <span class="page-subtitle">Incumplimientos</span>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Index", "RRHH", FormMethod.Get))
+    {
+        <div class="filter-card">
+            <div class="filter-header">
+                <i class="fas fa-filter"></i>
+                Filtros de Búsqueda
+            </div>
+            <div class="filter-body">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Inicio</label>
+                        <div class="input-group">                            
+                            <input type="date" class="filter-input" id="fechaInicio" name="fechaInicio" value="@ViewBag.FechaInicio" />
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Fin</label>
+                        <div class="input-group">                            
+                            <input type="date" class="filter-input" id="fechaFin" name="fechaFin" value="@ViewBag.FechaFin" />
+                        </div>
+                    </div>
+
+                    @if (sessions.CodeEmpleado == 178)
+                    {
+                        <div class="filter-group">
+                            <label class="filter-label">Área</label>
+                            <div class="input-group">
+                                <select id="area" name="area" class="filter-input">
+                                    <option value="" selected>-- Todas --</option>
+                                    @foreach (var area in ViewBag.Areas)
+                                    {
+                                        <option value="@area.Codigo">@area.Descripcion</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button type="submit" class="filter-button">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Área</th>
+                        <th>Departamento/Tienda</th>
+                        <th>Incumplimientos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <i class="fas fa-info-circle"></i>
+                                <div>No se encontraron registros</div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var lista in Model)
+                        {
+                            <tr>
+                                <td>@lista.Area</td>
+                                <td>@lista.DepartamentoTienda</td>
+                                <td>
+                                    <span class="badge badge-danger">@lista.Incumplimientos</span>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="action-button"
+                                            data-id="@lista.DepartamentoTienda"
+                                            onclick="verDetalle(this, '@lista.DepartamentoTienda', '@lista.Area')">
+                                        <i class="fas fa-clipboard-list"></i> Ver Detalle
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("GuardarCompensacionDeTiempo", "RRHH", FormMethod.Post))
+    {
+        <div class="modal" id="modalCompensacionTiempo">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-clock"></i>
+                        Compensación de Tiempo
+                    </h3>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Nombre empleado</label>
+                        <input type="text" class="form-control" id="empleadoNombreInput" disabled>
+                        <input type="hidden" id="empleadoIdInput" name="IdEmpleado">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fecha de compensación</label>
+                        <input type="date" class="form-control" name="Fecha" id="fechaIdInput">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hora inicio compensada</label>
+                        <input type="time" class="form-control" name="HoraInicioCompensada">
+                        <small class="form-text">Formato 24 horas (ej. 14:30 para 2:30 PM)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hora fin compensada</label>
+                        <input type="time" class="form-control" name="HoraFinCompensada">
+                        <small class="form-text">Formato 24 horas (ej. 14:30 para 2:30 PM)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Comentario</label>
+                        <textarea class="form-control" name="Comentario" rows="2" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (sessions.CodeEmpleado == 178 || sessions.CodeEmpleado == 0)
+    {
+        <div class="chart-card">
+            <div class="chart-header">
+                <i class="fas fa-chart-pie"></i>
+                Porcentaje de Incumplimientos por Departamento
+            </div>
+            <div class="chart-body">
+                <canvas id="graficaIncumplimientos" style="max-width: 500px; max-height: 500px;"></canvas>
+            </div>
+        </div>
+    }
+
+    <!-- Mensajes de error -->
+    @if (Model != null && Model.Any() && Model[0].ErrorMessage != null)
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            @Model[0].ErrorMessage
+        </div>
+    }
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            @ViewBag.ErrorMessage
+        </div>
+    }
+</div>
+
+<script>
+    // Datos desde el servidor
+    const datos = @Html.Raw(Json.Encode(Model.Select(m => new {
+        area = m.DepartamentoTienda,
+        valor = m.Incumplimientos
+    })));
+
+    const labels = datos.map(d => d.area);
+    const valores = datos.map(d => d.valor);
+
+    const total = valores.reduce((a, b) => a + b, 0);
+    const porcentajes = valores.map(v => ((v / total) * 100).toFixed(1));
+
+    const ctx = document.getElementById('graficaIncumplimientos').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels.map((l, i) => `${l} (${porcentajes[i]}%)`),
+            datasets: [{
+                data: valores,
+                backgroundColor: [
+                    '#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f',
+                    '#edc949', '#af7aa1', '#ff9da7', '#9c755f', '#bab0ab'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed;
+                            const porcentaje = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${value} (${porcentaje}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<!-- Script AJAX -->
+<script>
+    function parseJsonDate(jsonDate) {
+        const timestamp = parseInt(jsonDate.replace(/\/Date\((\d+)\)\//, '$1'));
+        const date = new Date(timestamp);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function parseJsonDateCompensacion(jsonDate) {
+        const timestamp = parseInt(jsonDate.replace(/\/Date\((\d+)\)\//, '$1'));
+        const date = new Date(timestamp);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
+    }
+
+    let detalleActual = null;
+    let detalleActualEmpleado = null;
+
+    function verDetalle(button, idArea, _area) {
+        const tr = button.closest("tr");
+        const idBoton = button.getAttribute("data-id");
+
+        // Si ya hay un detalle abierto y es del mismo botón, ciérralo
+        if (detalleActual && detalleActual.id === idBoton) {
+            document.querySelector(".fila-detalle")?.remove();
+            detalleActual = null;
+            return;
+        }
+
+        // Elimina detalle anterior si es otro
+        document.querySelector(".fila-detalle")?.remove();
+        detalleActual = { id: idBoton };
+
+        const fechaInicio = document.getElementById("fechaInicio").value;
+        const fechaFin = document.getElementById("fechaFin").value;
+
+        $("#globalLoading").show();
+        $.ajax({
+            url: '@Url.Action("ObtenerDetalleIncumplimientos", "RRHH")',
+            method: 'POST',
+            data: {
+                FechaInicio: fechaInicio,
+                FechaFin: fechaFin,
+                CodigoDepartamento: idArea,
+                areaDescripcion : _area
+            },
+            success: function (response) {
+                if (response.success) {
+                    let html = `
+                        <tr class="fila-detalle">
+                            <td colspan="4">
+                                <div class="detail-card">
+                                    <div class="detail-header">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>Detalle de Marcajes</span>
+                                    </div>
+                                    <div class="detail-body">
+                                        <div class="table-responsive">
+                                            <table class="detail-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Cod. Empleado</th>
+                                                        <th>Empleado</th>
+                                                        <th>Puesto</th>
+                                                        <th>Incumplimientos</th>
+                                                        <th>Horas Trabajadas</th>
+                                                        <th>Horas Registradas</th>
+                                                        <th>Accion</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>`;
+
+                    response.data.forEach(item => {
+                        html += `
+                            <tr>
+                                <td>${item.Rw ?? ''}</td>
+                                <td>${item.U_CodEmpleado}</td>
+                                <td>${item.Empleado}</td>
+                                <td>${item.Posicion}</td>
+                                <td>${item.Incumplimientos}</td>
+                                <td>${item.TotalHorasLaboradas}</td>
+                                <td>${item.TotalHorasLaborales}</td>
+                                <td>
+                                    <button type="button"
+                                           class="action-button"
+                                           data-id="${item.U_CodEmpleado}"
+                                           onclick="verDetalleEmpleado(this,${item.U_CodEmpleado},'${item.Empleado}')">
+                                           <i class="fas fa-exclamation-triangle"></i> Incumplimientos
+                                    </button>
+                                </td>
+                            </tr>`;
+                    });
+
+                    html += `</tbody>
+                                            </table>
+                                        </div>
+                                        <div style="text-align: right; margin-top: 15px;">
+                                            <form method="post" action="/RRHH/ExportarDetalleExcel" target="_blank">
+                                                <input type="hidden" name="FechaInicio" value="${fechaInicio}">
+                                                <input type="hidden" name="FechaFin" value="${fechaFin}">
+                                                <input type="hidden" name="CodigoDepartamento" value="${idArea}">
+                                                <button type="submit" class="export-button">
+                                                    <i class="fas fa-file-excel"></i> Exportar a Excel
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>`;
+
+                    tr.insertAdjacentHTML('afterend', html);
+                } else {
+                    alert(response.message);
+                    detalleActual = null;
+                    $("#globalLoading").hide();
+                }
+            },
+            complete: function () {
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+    function verDetalleEmpleado(Button, IdEmpleado, nombreEmpleado) {
+        const tr = Button.closest("tr");
+        const idBoton = Button.getAttribute("data-id");
+
+        // Si ya hay un detalle abierto y es del mismo botón, ciérralo
+        if (detalleActualEmpleado && detalleActualEmpleado.id === idBoton) {
+            document.querySelector(".fila-detalleEmpleado")?.remove();
+            detalleActualEmpleado = null;
+            return;
+        }
+
+        // Elimina detalle anterior si es otro
+        document.querySelector(".fila-detalleEmpleado")?.remove();
+        detalleActualEmpleado = { id: idBoton };
+        const fechaInicio = document.getElementById("fechaInicio").value;
+        const fechaFin = document.getElementById("fechaFin").value;
+
+        $("#globalLoading").show();
+         $.ajax({
+            url: '@Url.Action("ObtenerDetalleIncumplimientosPorEmpleado", "RRHH")',
+            method: 'POST',
+            data: {
+                FechaInicio: fechaInicio,
+                FechaFin: fechaFin,
+                CodigoEmpleado: IdEmpleado
+            },
+            success: function (response) {
+                if (response.success) {
+                    let html = `
+                        <tr class="fila-detalleEmpleado">
+                            <td colspan="8">
+                                <div class="detail-card">
+                                    <div class="detail-header" style="background-color: var(--primary-color);">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>Detalle de incumplimientos | ${nombreEmpleado}</span>
+                                    </div>
+                                    <div style="padding: 20px;">
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                            <div class="stat-card">
+                                                <div class="stat-title">Horas Trabajadas</div>
+                                                <div class="stat-value" style="color: var(--primary-color);">${response.data[0].TotalHorasLaboradas}</div>
+                                            </div>
+                                            <div class="stat-card">
+                                                <div class="stat-title">Horas Registradas</div>
+                                                <div class="stat-value" style="color: var(--success-color);">${response.data[0].TotalHorasLaborales}</div>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="detail-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Fecha</th>
+                                                        <th>Hora Entrada</th>
+                                                        <th>Hora Salida</th>
+                                                        <th>Hora Entrada Rol</th>
+                                                        <th>Hora Salida Rol</th>
+                                                        <th>Incumplimiento</th>
+                                                        <th>Accion</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>`;
+
+                    response.data.forEach(item => {
+                        html += `
+                            <tr>
+                                <td>${item.Rw ?? ''}</td>
+                                <td>${parseJsonDate(item.Fecha)}</td>
+                                <td>${item.HoraEntrada}</td>
+                                <td>${item.HoraSalida}</td>
+                                <td>${item.HoraEntradaROL}</td>
+                                <td>${item.HoraSalidaROL}</td>
+                                <td>${item.Incumplimiento}</td>
+                                <td>`;
+
+                        //if (item.incumplimiento == "retraso" || item.incumplimiento == "salida anticipada") {
+                        //    html += `
+                        //        <button type="button" class="action-button" style="background-color: var(--warning-color); color: white; border-color: var(--warning-color);"
+                        //            data-idt="${item.u_codempleado}" data-nombret="${item.empleado}" data-fechat ="${parseJsonDateCompensacion(item.fecha)}">
+                        //            <i class="fas fa-clock"></i> Compensar tiempo
+                        //        </button>`;
+                        //}
+                        html += `</td></tr>`;
+                    });
+
+                    tr.insertAdjacentHTML('afterend', html);
+
+                } else {
+                    alert(response.message);
+                    $("#globalLoading").hide();
+                    detalleActual = null;
+                    detalleActualEmpleado = null;
+                }
+             },
+             complete: function () {
+                 $("#globalLoading").hide();
+             }
+        });
+    };
+
+    // Modal functionality
+    const modal = document.getElementById('modalCompensacionTiempo');
+    const modalClose = document.querySelector('.modal-close');
+
+    // Show modal
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('[data-bs-toggle="modal"]') || e.target.closest('[data-bs-target="#modalCompensacionTiempo"]')) {
+            const button = e.target.closest('button');
+            const empleadoId = button.getAttribute('data-idt');
+            const empleadoNombre = button.getAttribute('data-nombret');
+            const fecha = button.getAttribute('data-fechat');
+
+            document.getElementById('empleadoIdInput').value = empleadoId;
+            document.getElementById('empleadoNombreInput').value = empleadoNombre;
+            document.getElementById('fechaIdInput').value = fecha;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    });
+
+    // Close modal
+    modalClose.addEventListener('click', function() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // Close when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+</script>

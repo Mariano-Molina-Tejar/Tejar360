@@ -1,0 +1,918 @@
+﻿@using Entity;
+@model List<DetallePresupuestoN1>
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Gastos</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqgqVj/35uQ5Jgq+gI5K2kT/1eN7p7p0M2bI9tJ2o7A==" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Bootstrap 5 JS + Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            background-color: #ffe600;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .logo-right {
+            height: 30px;
+        }
+
+        .title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .top-nav {
+            background-color: #fff;
+            border-bottom: 2px solid #ddd;
+        }
+
+            .top-nav .nav-link {
+                padding: 1rem;
+                color: #555;
+                font-weight: bold;
+            }
+
+            .top-nav .nav-item.active .nav-link {
+                border-bottom: 3px solid #ffe600;
+                color: #000;
+            }
+
+        .metric-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .metric-title {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .sidebarMenu {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-row, .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -5px;
+            margin-left: -5px;
+        }
+
+            .form-row .col-md-3, .row .col-md-3 {
+                padding-right: 5px;
+                padding-left: 5px;
+            }
+
+        .btn-sap {
+            background: #ffec99;
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 4px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000;
+            box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,.2);
+            cursor: pointer;
+        }
+
+            .btn-sap:hover {
+                background: #ffe066;
+            }
+
+        .input-sap {
+            background: white;
+            max-width: 250px;
+            border: 1px solid #bbb;
+            border-radius: 3px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+
+        /*button:hover {
+            background-color: #0056b3;
+        }*/
+    </style>
+</head>
+<body>
+    <header class="header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <h1 class="title h4 mb-0">INFORME DE GASTOS</h1>
+        </div>
+    </header>
+
+    <main class="container-fluid py-4">
+        <section class="row mb-4">
+            <!-- Card Gastos -->
+            <div class="col-md-3 mb-3">
+                <div class="metric-card bg-white p-3 text-center"
+                     style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.2s ease; min-height: 130px;">
+                    <div class="metric-title mb-1 fw-bold text-secondary" style="font-size: 14px;">
+                        <i class="fas fa-wallet me-1 text-primary"></i> Gastos
+                    </div>
+                    <div class="metric-value fs-5 fw-bold text-dark">
+                        <span id="gastos-value">@string.Format("Q{0:N2}", Model[0].TotalEjecutado)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Presupuesto Planificado -->
+            <div class="col-md-3 mb-3">
+                <div class="metric-card bg-white p-3 text-center"
+                     style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.2s ease; min-height: 130px; ">
+                    <div class="metric-title mb-1 fw-bold text-secondary" style="font-size: 14px;">
+                        <i class="fas fa-file-invoice-dollar me-1 text-success"></i> Presupuesto Planificado
+                    </div>
+                    <div class="metric-value fs-5 fw-bold text-dark">
+                        @string.Format("Q{0:N2}", Model[0].TotalPresupuesto)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card OC Abiertas -->
+            <div class="col-md-3 mb-3">
+                <div class="metric-card bg-white p-3 text-center"
+                     style="border-radius: 12px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+                    transition: transform 0.2s ease;
+                    min-height: 130px;">
+                    <div class="metric-title mb-1 fw-bold text-secondary" style="font-size: 14px;">
+                        <i class="fas fa-folder-open me-1 text-warning"></i> OC Abiertas
+                    </div>
+                    <div class="metric-value fs-5 fw-bold text-dark">
+                        @string.Format("Q{0:N2}", ViewBag.SaldoFururo)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card % Ejecutado -->
+            <div class="col-md-3 mb-3">
+                <div class="metric-card bg-white p-3 text-center"
+                     style="border-radius: 12px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+                    transition: transform 0.2s ease;
+                    min-height: 130px;">
+                    <div class="metric-title mb-1 fw-bold text-secondary" style="font-size: 14px;">
+                        <i class="fas fa-chart-line me-1 text-danger"></i> % Ejecutado
+                    </div>
+                    <div class="metric-value fs-5 fw-bold text-dark mb-2">
+                        @{
+                            decimal porcentaje = Model[0].PorcentajeEjecutado;
+                            string colorClass = "bg-warning"; // Amarillo por defecto
+
+                            if (porcentaje >= 1.0M)
+                            {
+                                colorClass = "bg-danger"; // Rojo si >= 100%
+                            }
+                            else if (porcentaje >= 0.8M)
+                            {
+                                colorClass = "bg-success"; // Verde si >= 80%
+                            }
+                        }
+                        @string.Format("{0:P2}", porcentaje)
+                    </div>
+                    <div class="progress" style="height: 10px; border-radius: 5px; overflow: hidden;">
+                        <div class="progress-bar @colorClass" role="progressbar"
+                             style="width: @(porcentaje * 100)%;"
+                             aria-valuenow="@(porcentaje * 100)" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row mb-4">
+            <div class="col-12">
+                <form>
+                    <div class="sidebarMenu d-flex flex-wrap justify-content-start align-items-center">
+
+                        <div class="form-group mb-2 mr-3">
+                            <label class="mb-0">Año</label>
+                            <select class="form-control" id="costos-select">
+                                @*<option value="2023" @(anio == 1 ? "Selected" : "")>2024</option>*@
+                                @*<option value="2024" @(anio == 1 ? "Selected" : "")>2023</option>*@
+                                <option value="2025" selected>2025</option>
+                                @*<option value="2026" @(anio == 1 ? "Selected" : "")>2026</option>*@
+                            </select>
+                        </div>
+                        <div class="form-group mb-2 mr-3">
+                            <label class="mb-0">Mes</label>
+
+                            @{ // Lee el mes que el controlador te pasó.
+                                // Si no se pasó nada (en la primera carga), tu controlador ya estableció el mes actual.
+                                int? mes = ViewBag.MesSeleccionado;
+                                int anio = DateTime.Now.Year; }
+                            <select class="form-control" id="mes-select" name="Mes">
+                                @*<option value="0">Todos</option>*@
+                                <option value="1" @(mes == 1 ? "Selected" : "")>Enero</option>
+                                <option value="2" @(mes == 2 ? "Selected" : "")>Febrero</option>
+                                <option value="3" @(mes == 3 ? "Selected" : "")>Marzo</option>
+                                <option value="4" @(mes == 4 ? "Selected" : "")>Abril</option>
+                                <option value="5" @(mes == 5 ? "Selected" : "")>Mayo</option>
+                                <option value="6" @(mes == 6 ? "Selected" : "")>Junio</option>
+                                <option value="7" @(mes == 7 ? "Selected" : "")>Julio</option>
+                                <option value="8" @(mes == 8 ? "Selected" : "")>Agosto</option>
+                                <option value="9" @(mes == 9 ? "Selected" : "")>Septiembre</option>
+                                <option value="10" @(mes == 10 ? "Selected" : "")>Octubre</option>
+                                <option value="11" @(mes == 11 ? "Selected" : "")>Noviembre</option>
+                                <option value="12" @(mes == 12 ? "Selected" : "")>Diciembre</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-2 mr-3">
+                            <label class="mb-0">Area</label>
+                            <select class="form-control" name="acctCode">
+                                @{ 
+                                    int? areaS = ViewBag.AreaSeleccionada;
+                                }
+                                @foreach (var area in ViewBag.Areas)
+                                {
+                                    <option value="@area.AcctCode" @(areaS == area.AcctCode ? "Selected" : "") >@area.AcctName</option>
+                                }
+                            </select>   
+                        </div>
+                        <div class="ml-auto d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary mr-2">Aplicar filtro</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section class="row">
+            <div class="col-12">
+                <div class="card p-3">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Cuenta</th>
+                                    <th>Ejecutado</th>
+                                    <th>Presupuesto</th>
+                                    <th>Diferencia</th>
+                                    <th>%Ejecutado%</th>
+                                    @*<th>OC abiertas</th>*@
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-body">
+                                @foreach (var tabla in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <button class="btn btn-sm btn-link toggle-sub-table" style="background: none; border: none; padding: 0; cursor: pointer;"
+                                                    onclick="VerDetallePresupuesN2((@tabla.AcctCode),this)"
+                                                    data-AcctCode="@tabla.AcctCode">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </td>
+                                        <td>@tabla.Cuenta</td>
+                                        <td>@string.Format("Q{0:N2}", tabla.TotalEjecutadoCt)</td>
+                                        <td>@string.Format("Q{0:N2}", tabla.TotalPresupuestoCt)</td>
+                                        <td>@string.Format("Q{0:N2}", tabla.DifenciaCt)</td>
+                                        <td>
+                                            @*@string.Format("{0:P2}", tabla.EjecutadoCt)*@
+                                            <div>
+                                                @{
+                                                    decimal porcentaje2 = tabla.EjecutadoCt;
+                                                    string colorClass2 = "bg-warning"; // Amarillo por defecto
+
+                                                    if (porcentaje2 > 1.001M)
+                                                    {
+                                                        colorClass2 = "bg-danger"; // Rojo si >= 100%
+                                                    }
+                                                    else if (porcentaje2 >= 0.8M)
+                                                    {
+                                                        colorClass2 = "bg-success"; // Verde si >= 80%
+                                                    }
+                                                }
+                                                @string.Format("{0:P2}", tabla.EjecutadoCt)
+                                            </div>
+                                            <div class="progress" style="height: 10px; border-radius: 5px; overflow: hidden;">
+                                                <div class="progress-bar @colorClass2" role="progressbar"
+                                                     style="width: @(tabla.EjecutadoCt * 100)%;"
+                                                     aria-valuenow="@(tabla.EjecutadoCt * 100)" aria-valuemin="0" aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensajes de error -->
+            @if (Model != null && Model.Any() && Model[0].ErrorMessage != null)
+            {
+                <div class="alert alert-warning" role="alert">
+                    @Model[0].ErrorMessage
+                </div>
+            }
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> @ViewBag.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            }
+        </section>
+    </main>
+
+
+
+</body>
+
+<!-- Modal -->
+<div class="modal fade" id="modalFactura" tabindex="1" aria-hidden="false">
+    <div tabindex="1" aria-hidden="false">
+        <div class="modal-dialog modal-xl" role="document" style="max-width:60%;">
+            <div class="modal-content">
+
+                <!-- Encabezado -->
+                <div class="modal-header p-2" style="background: linear-gradient(#316ac5, #274b8a); color:white;">
+                    <h5 class="modal-title" id="Titulo" style="font-weight:bold;"></h5>
+                    <button type="button" class="close text-white" aria-label="Close" onclick="cerrarModalFactura()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <!-- Cuerpo -->
+                <div class="modal-body" style="background:#f2f5f9; font-size:14px;">
+                    <div class="mr-0 ml-0">
+
+                        <div class="form-row mb-2 ml-0 mr-0">
+                            <!-- Columna izquierda -->
+                            <div class="col-md-6">
+                                <div class="form-group d-flex align-items-end">
+                                    <label class="col-2 text-left">Proveedor</label>
+                                    <input type="text" class="form-control form-control-sm input-sap" id="FacturaProveedor" value="" disabled>
+                                </div>
+                                <div class="form-group d-flex align-items-end">
+                                    <label class="col-2 text-right">Nombre</label>
+                                    <input type="text" class="form-control form-control-sm input-sap" id="FacturaNombre" disabled>
+                                </div>
+                                <div class="form-group d-flex align-items-end">
+                                    <label class="col-2 text-right">Sucursal</label>
+                                    <input type="text" class="form-control form-control-sm input-sap" id="FacturaSucursal" disabled>
+                                </div>
+                            </div>
+
+                            <!-- Columna derecha -->
+                            <div class="col-md-6 d-flex flex-column align-items-end">
+                                <div class="form-group d-flex align-items-center">
+                                    <label class="col-3 text-right">N°</label>
+                                    <input type="text" class="form-control form-control-sm input-sap" id="FacturaDocNum" disabled>
+                                </div>
+                                <div class="form-group d-flex align-items-center">
+                                    <label class="col-6 text-right">Fecha contabilización</label>
+                                    <input type="text" class="form-control form-control-sm input-sap" id="FacturaFechaContabilizacion" disabled>
+                                </div>
+
+                                <div class="form-group d-flex align-items-center">
+                                    <label class="col-6 text-right">Fecha de documento</label>
+                                    <input type="text" class="form-control form-control-sm input-sap" id="FacturaFechaDocumento" disabled>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Pestaña Contenido -->
+                        <ul class="nav nav-tabs mb-2">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#contenido">Contenido</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div style="max-height:400px; overflow-y:auto;">
+                                <table class="table table-bordered table-hover text-center align-middle">
+                                    <thead style="background:#f8f9fa; position:sticky; top:0; z-index:2;">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Código</th>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="BodyHtml">
+                                        <!-- Filas dinámicas aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                        <!-- Comentarios y Totales -->
+                        <div class="form-row mt-3">
+                            <div class="form-group col-md-3">
+                                <label>Comentarios</label>
+                                <textarea class="form-control form-control-sm" id="FacturaComentarios" rows="5" style="background:#fff9d6;" disabled></textarea>
+                            </div>
+                            <div class="form-group col-md-6">
+
+                            </div>
+                            <div class="form-group col-md-3">
+                                <table class="table table-sm mb-0" style="font-size:13px;">
+                                    <tbody>
+                                        <tr><td>Total cuenta seleccionada </td><td><input style="font-weight:bold" type="text" id="FacturaTotalCuenta" class="form-control form-control-sm" value="" disabled></td></tr>
+                                        <tr><td>Total del documento</td><td><input type="text" id="FacturaTotal" class="form-control form-control-sm" value="" disabled></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer" style="background:#f2f5f9; border-top:1px solid #bbb;">
+                    <button type="button" class="btn-sap" onclick="cerrarModalFactura()">Cerrar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVbnQ6E/gI1I3G5zXo3Cg7Z0tZq3w==" crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        function parseJsonDate(jsonDate) {
+            const timestamp = parseInt(String(jsonDate).replace(/\/Date\((\d+)\)\//, '$1'));
+            const date = new Date(timestamp);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.3/sweetalert2.min.js"></script>
+    <script>
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+    });
+        let detalleActual = null;
+        let detalleActualEmpleado = null;
+
+        function VerDetallePresupuesN2(_code,_button) {
+            const _mes = document.querySelector("#mes-select").value;
+            const tr = _button.closest("tr");
+
+            //const tr = button.closest("tr");
+            const idBoton = _button.getAttribute("data-AcctCode");
+
+        //// Toggle si es el mismo
+        if (detalleActual && detalleActual.id === idBoton) {
+            document.querySelector(".fila-detalle")?.remove();
+            detalleActual = null;
+            return;
+        }
+
+        // Cierra detalle anterior
+        document.querySelector(".fila-detalle")?.remove();
+        detalleActual = { id: idBoton };
+
+        $("#globalLoading").show?.();
+        $.ajax({
+            url: '@Url.Action("ObtenerDetalleCuentasN2", "Presupuesto")',
+            method: 'POST',
+            data: {
+                Cuenta: _code,
+                Mes: _mes
+            },
+            success: function (response) {
+                if (response.success) {
+
+
+
+
+                    let tbody = '';
+                    response.data.forEach(tabla => {
+                      tbody += `
+                        <tr>
+                            <td>
+                                <button class="btn btn-sm btn-link toggle-sub-table"
+                                  onclick="VerDetallePresupuesN3('${tabla.AcctCode}',this)"
+                                   data-AcctCode2="${tabla.AcctCode}"
+                                        >
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </td>
+                            <td>${tabla.Cuenta}</td>
+                            <td>Q${tabla.TotalEjecutadoCt.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>Q${tabla.TotalPresupuestoCt.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>Q${tabla.DifenciaCt.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>${(tabla.EjecutadoCt * 100).toFixed(2)}%</td>
+                            <td>
+                                <textarea rows="1" cols="40" id= "${tabla.AcctCode}"
+                                    style="
+                                        border: 1px solid #ccc;
+                                        border-radius: 8px;
+                                        padding: 8px;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                                        outline: none;
+                                        text-align: left;   /* texto empieza desde la izquierda */
+                                        vertical-align: top; /* asegura que el texto arranque arriba */
+                                    ">${tabla.Nota || ''}</textarea>
+                                <!-- Botón Guardar -->
+                                        <button style="
+                                            background-color: #f8f9fa;
+                                            border: 1px solid #ced4da;
+                                            color: #495057;
+                                            padding: 6px 10px;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            transition: background-color 0.2s ease, color 0.2s ease;
+                                        "
+                                        onclick="GuardarNotaPto('${tabla.AcctCode}',${tabla.Code})">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+
+                                        <!-- Botón Eliminar -->
+                                        <button style="
+                                            background-color: #f8f9fa; 
+                                            border: 1px solid #ced4da;
+                                            color: #dc3545;
+                                            padding: 6px 10px;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            transition: background-color 0.2s ease, color 0.2s ease;
+                                        "
+                                        onclick="BorrarNotaPto('${tabla.Cuenta}',${tabla.Code},'${tabla.AcctCode}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+
+                            </td>
+
+                        </tr>`;
+                    });
+
+                    const html = `
+                      <tr class="fila-detalle">
+                        <td colspan="6">
+                          <div class="soft-card detail-wrapper">
+                            <div class="card-body p-3">
+                              <div class="table-responsive">
+                                <table class="table table-sm table-modern table-striped mb-0 align-middle">
+                                  <thead>
+                                    <tr>
+                                        <th colspan="2">Cuenta</th>
+                                        <th>Ejecutado</th>
+                                        <th>Presupuesto</th>
+                                        <th>Diferencia</th>
+                                        <th>%Ejecutado%</th>
+                                        <th>Notas</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>${tbody}</tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>`;
+
+
+                    const prev = tr.nextElementSibling;
+                    //if (prev && prev.classList.contains('fila-detalle')) prev.remove();
+                    tr.insertAdjacentHTML('afterend', html);
+                } else {
+                    alert(response.message);
+                    detalleActual = null;
+                    $(".fila-detalle").remove();
+                }
+            },
+            complete: function () {
+                //alert("Fallo");
+                $("#globalLoading").hide?.();
+            }
+        });
+
+    }
+
+
+        let detalleActual2 = null;
+        //let detalleActualEmpleado2 = null;
+
+        function VerDetallePresupuesN3(_code, _button) {
+            console.log(_button);
+
+            const _mes = document.querySelector("#mes-select").value;
+            const tr = _button.closest("tr");
+
+            //const tr = button.closest("tr");
+            const idBoton = _button.getAttribute("data-AcctCode2");
+
+        // Toggle si es el mismo
+            if (detalleActual2 && detalleActual2.id === idBoton) {
+            document.querySelector(".fila-detalle2")?.remove();
+                detalleActual2 = null;
+            return;
+        }
+
+         //Cierra detalle anterior
+        document.querySelector(".fila-detalle2")?.remove();
+        detalleActual2 = { id: idBoton };
+
+        $("#globalLoading").show?.();
+        $.ajax({
+            url: '@Url.Action("ObtenerDetalleCuentasN3", "Presupuesto")',
+            method: 'POST',
+            data: {
+                Cuenta: _code,
+                Mes: _mes
+            },
+            success: function (response) {
+
+                console.log(response);
+                if (response.success) {
+
+                    let tbody = '';
+                    response.data.forEach(tabla => {
+                        tbody += `
+                        <tr style="max-height:100px; overflow-y:auto;">
+                            <td>${parseJsonDate(tabla.DocDate || '')}</td>
+                            <td>${tabla.TipoDocumento || ''}</td>
+                            <td>
+                            ${
+                                 tabla.DocNum
+                            ? `<button class="btn btn-sm btn-link"
+
+                                onclick="VerDocumento(${tabla.DocNum}, '${tabla.AcctCode}', ${tabla.IdDocumento})">
+                                 <i class="fas fa-file-alt"></i> ${tabla.DocNum}
+                                 </button>`
+                                 : ''
+                            }
+                            </td>
+                            <td>
+                                ${
+                                   tabla.DocNumOC
+                            ? `<button class="btn btn-sm btn-link"
+                                onclick="VerDocumento(${tabla.DocNumOC}, '${tabla.AcctCode}', 3)">
+                                   <i class="fas fa-file-invoice"></i> ${tabla.DocNumOC}
+                                   </button>`
+                                   : ''
+                                }
+                            </td>
+                            <td>${tabla.CardName || ''}</td>
+                            <td>Q${tabla.MontoFactura.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        </tr>`;
+                    });
+                    const html = `
+                      <tr class="fila-detalle2">
+                        <td colspan="7">
+                          <div class="soft-card detail-wrapper">
+                            <div class="card-body p-3">
+                              <div class="table-responsive">
+                                <table class="table table-hover table-bordered text-center align-middle"
+                                       style="
+                                           border-collapse: separate;
+                                           border-spacing: 0;
+                                           border-radius: 12px;
+                                           overflow: hidden;
+                                           box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                                           background-color: #ffffff;
+                                       ">
+                                  <thead style="background-color: #007bff; color: white;">
+                                    <tr>
+                                        <th style="padding: 12px;">Fecha</th>
+                                        <th style="padding: 12px;">Tipo de documento</th>
+                                        <th style="padding: 12px;">No. Documento</th>
+                                        <th style="padding: 12px;">No. Orden compra</th>
+                                        <th style="padding: 12px;">Proveedor</th>
+                                        <th style="padding: 12px;">Total</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>${tbody}</tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>`;
+
+
+                    const prev = tr.nextElementSibling;
+                    //if (prev && prev.classList.contains('fila-detalle')) prev.remove();
+                    tr.insertAdjacentHTML('afterend', html);
+                } else {
+                    alert(response.message);
+                    detalleActual = null;
+                    $(".fila-detalle2").remove();
+                }
+            },
+            complete: function () {
+                //alert("Fallo");
+                $("#globalLoading").hide?.();
+            }
+        });
+
+    }
+    </script>
+    <script>
+
+        async function postJson(url, data) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json().catch(() => ({}));
+        }
+
+        async function VerDocumento(DocNum, CodigoCuenta,Id) {
+            console.log(DocNum + " " + CodigoCuenta);
+
+            try {
+                const response = await postJson('/Presupuesto/VerDetalleFactura', { DocNum: DocNum, CodigoCuenta: CodigoCuenta, IdDocumento: Id });
+
+                console.log(response);
+                document.getElementById('FacturaProveedor').value = response.data[0].Proveedor;
+                document.getElementById('FacturaNombre').value = response.data[0].Nombre;
+                document.getElementById('FacturaSucursal').value = response.data[0].Sucursal;
+                document.getElementById('FacturaDocNum').value = response.data[0].DocNum;
+                document.getElementById('FacturaFechaContabilizacion').value = parseJsonDate(response.data[0].FechaContabilizacion);
+                document.getElementById('FacturaFechaDocumento').value = parseJsonDate(response.data[0].FechaDocumento);
+                document.getElementById('FacturaComentarios').value = response.data[0].Comentarios;
+                document.getElementById('FacturaTotal').value = 'Q' + response.data[0].TotalDocumento.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('FacturaTotalCuenta').value = 'Q' + response.data[0].TotalCuenta.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                let tbody = '';
+                let contador = 1;
+                let titulo = "";
+                response.data.forEach(tabla => {
+
+                    tbody += ` <tr style="background-color:${tabla.Color};">
+                                            <td style="background-color:${tabla.Color};">${contador}</td>
+                                            <td style="background-color:${tabla.Color};">${tabla.ItemCode}</td>
+                                            <td style="background-color:${tabla.Color};">${tabla.Dscription}</td>
+                                            <td style="background-color:${tabla.Color};">${tabla.Quantity}</td>
+                                            <td style="background-color:${tabla.Color};">Q${tabla.LineTotal.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                            <td style="background-color:${tabla.Color};">Q${tabla.Total.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+
+                                        </tr>`;
+                    contador = contador + 1;
+                });
+
+                if (Id === 1) {
+                    document.getElementById("Titulo").innerHTML = "Factura proveedores";
+                }
+                else if (Id === 2) {
+                    document.getElementById("Titulo").innerHTML = "Nota de crédito";
+
+                } else {
+                    document.getElementById("Titulo").innerHTML = "Orden de compra";
+                }
+
+                document.getElementById("BodyHtml").innerHTML = tbody;
+                $('#modalFactura').modal('show');
+            }
+            catch (e) {
+                console.log(e);
+            }
+        };
+
+
+    function cerrarModalFactura() {
+        $('#modalFactura').modal('hide');
+    }
+
+    function GuardarNotaPto(Codigo,CodeNote) {
+        const anio = @anio;
+        const mes = @mes;
+        const id = "#" + Codigo;
+        const nota = document.querySelector(id).value;
+
+        const _nota = {
+            U_Anio : anio,
+            U_Mes : mes,
+            U_Nota: nota,
+            U_Cuenta: Codigo,
+            Code : CodeNote
+        }
+
+        console.log(_nota);
+
+        if (_nota.U_Nota == '') {
+            return null;
+        }
+
+       $("#globalLoading").show?.();
+        document.body.style.cursor = 'wait';
+        $.ajax({
+            url: '@Url.Action("GuardarNotas", "Presupuesto")',
+            method: 'POST',
+            data: {
+                nota: _nota
+            },
+            success: function (response) {
+
+                console.log(response);
+                if (response.success) {
+                    Toast.fire({ icon: 'success', title: 'Nota guardada correctamente.' });
+                    location.reload();
+                } else {
+                    Toast.fire({ icon: 'error', title: 'Ocurrio un error al guardar la nota.' + response.message });
+                }
+            },
+            complete: function () {
+                $("#globalLoading").hide?.();
+                document.body.style.cursor = 'default'; // Vuelve a normal
+
+            }
+        });
+    }
+
+
+    function BorrarNotaPto(Nomrbre, _Code, Id) {
+
+        Swal.fire({
+            title: '¿Eliminar Nota?',
+            text: `Se eliminará la nota de la cuenta "${Nomrbre}"`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            reverseButtons: true
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                document.body.style.cursor = 'wait';
+                console.log(result);
+                try {
+                    //$("#globalLoading").show?.();
+                    document.body.style.cursor = 'wait';
+
+                    await postJson('/Presupuesto/BorrarNotas', { code: _Code });
+                    const id = "#" + Id;
+                    const nota = document.querySelector(id).value;
+                    document.querySelector(id).value = '';
+
+                    Toast.fire({ icon: 'success', title: 'Nota Eliminada' });
+                    location.reload();
+                } catch (e) {
+                    console.log(e);
+                    Toast.fire({ icon: 'error', title: 'No se pudo eliminar la nota'} );
+
+                } finally {
+                    $("#globalLoading").hide?.();
+                    document.body.style.cursor = 'default'; // Vuelve a normal
+                }
+            }
+        });
+    }
+    </script>
+</html>

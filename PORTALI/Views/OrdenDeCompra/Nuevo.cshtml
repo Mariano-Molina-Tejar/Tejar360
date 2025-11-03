@@ -1,0 +1,1961 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Orden de Compra - SAP</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            color: #34495e;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .input-icon {
+            position: relative;
+            width: 100%;
+        }
+
+            .input-icon input {
+                width: 100%;
+                padding-right: 40px;
+                box-sizing: border-box;
+            }
+
+        .btn-icono {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+            .btn-icono:hover {
+                background-color: #2c80b4;
+            }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+            table thead {
+                background-color: #2c3e50;
+                color: white;
+            }
+
+            table th, table td {
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ccc;
+            }
+
+        .btn-agregar {
+            background-color: #2980b9;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+            .btn-agregar:hover {
+                background-color: #1c5980;
+            }
+
+        .totales {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            padding-right: 10px;
+        }
+
+        .total-linea {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+            .total-linea label {
+                min-width: 80px;
+                text-align: right;
+                color: #2c3e50;
+                font-weight: 500;
+            }
+
+            .total-linea input {
+                width: 120px;
+                padding: 6px 10px;
+                font-size: 14px;
+                background-color: #f1f1f1;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                text-align: right;
+            }
+
+        .grupo-proveedor {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .campo-con-label {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .boton-align {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .btn-buscar {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            height: 38px;
+        }
+
+            .btn-buscar:hover {
+                background-color: #2c80b4;
+            }
+    </style>
+
+    @*MODAL BUSCAR OSEA FILTRAR*@
+    <style>
+        .modal-custom {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .close:hover {
+                color: #000;
+            }
+    </style>
+</head>
+<body>
+    <div class="container" style="margin-bottom:25px;">
+        <h2>Orden de Compra - SAP</h2>
+
+        @*<button type="button" onclick="window.location.href='@Url.Action("GenerarPDF", "OrdenDeCompra")'" class="btn btn-primary">
+            <i class="fa fa-download"></i> Descargar PDF
+        </button>*@
+
+        @*<button type="button" onclick="generarPDF()" class="btn btn-primary">
+            <i class="fa fa-download"></i> Descargar PDF
+        </button>*@
+
+        <script>
+            function generarPDF() {
+                window.location.href = '/OrdenDeCompra/GenerarPDF?DocNum=126973';
+            }
+        </script>
+        @*Encabezado*@
+        <style>
+            .formulario-container {
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 14px;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                max-width: 100%;
+            }
+
+            .fila {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                align-items: flex-end;
+            }
+
+            .campo {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                min-width: 160px;
+            }
+
+            .campo-corto {
+                min-width: 100px;
+                max-width: 130px;
+                flex: none;
+            }
+
+            .boton-align {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+            }
+
+            .input-full {
+                width: 100%;
+            }
+
+            textarea {
+                width: 100%;
+                resize: vertical;
+            }
+        </style>
+        <div class="formulario-container">
+            <!-- Documento -->
+            <div class="fila">
+                <div class="campo campo-corto">
+                    <label for="DocNum">Documento</label>
+                    <input type="text" id="DocNum" placeholder="00000" readonly />
+                </div>
+            </div>
+
+            <!-- Proveedor -->
+            <div class="fila">
+                <div class="campo campo-corto">
+                    <label for="codigoProveedor">Código <span style="color: red;">*</span></label>
+                    <input type="text" id="codigoProveedor" placeholder="PRV001" readonly />
+                </div>
+
+                <div class="boton-align">
+                    <label style="visibility: hidden;">Buscar</label>
+                    <button class="btn-buscar" type="button" onclick="abrirModalProveedor()">🔍</button>
+                </div>
+
+                <div class="campo">
+                    <label for="proveedor">Nombre Proveedor <span style="color: red;">*</span></label>
+                    <input type="text" id="proveedor" placeholder="Nombre del proveedor" readonly />
+                </div>
+            </div>
+
+            <!-- Sucursal, Tipo de cambio, Fecha, Fecha comprometido -->
+            <div class="fila">
+                <div class="campo">
+                    <label for="sucursal">Sucursal <span style="color: red;">*</span></label>
+                    <select id="sucursalSelect">
+                        <option value="-1">Seleccione una sucursal</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="tipoCambio">Tipo de cambio <span style="color: red;">*</span></label>
+                    <select id="tipoCambioSelect">
+                        <option value="-1">Selecciona Tipo de cambio</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="fecha">Fecha <span style="color: red;">*</span></label>
+                    <input type="date" id="fecha" />
+                </div>
+
+                <div class="campo">
+                    <label for="fechaComprometido">Fecha Comprometido <span style="color: red;">*</span></label>
+                    <input type="date" id="fechaComprometido" />
+                </div>
+            </div>
+
+            <!-- Observaciones -->
+            <div class="campo input-full">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" rows="3" placeholder="Observaciones adicionales..."></textarea>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script>
+            // Setear fecha actual
+            $(document).ready(function () {
+                const hoy = new Date();
+                const yyyy = hoy.getFullYear();
+                const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+                const dd = String(hoy.getDate()).padStart(2, '0');
+                const fechaActual = `${yyyy}-${mm}-${dd}`;
+                $('#fecha').val(fechaActual);
+            });
+
+            // Cambiar símbolo de moneda
+            document.getElementById('tipoCambioSelect').addEventListener('change', function () {
+                const tipoMoneda = this.value;
+                const simbolo = tipoMoneda === 'USD' ? '$' : 'Q';
+
+                document.querySelectorAll('#tablaProductos tbody tr').forEach(fila => {
+                    const inputTotal = fila.querySelector('.input-total');
+                    if (inputTotal) {
+                        let valorNumerico = parseFloat(inputTotal.value.replace(/[^\d.-]/g, '')) || 0;
+                        inputTotal.value = simbolo + ' ' + valorNumerico.toFixed(2);
+                    }
+                });
+            });
+        </script>
+
+        <br />
+        <h3 style="color: #2c3e50;">Detalle de Productos</h3>
+
+        <style>
+            .tabla-con-scroll {
+                max-height: 300px;
+                overflow-y: auto;
+                overflow-x: auto;
+                position: relative;
+            }
+
+            .tabla-productos {
+                border-collapse: collapse;
+                width: max-content;
+                min-width: 100%;
+            }
+
+                .tabla-productos th {
+                    position: sticky;
+                    top: 0;
+                    background-color: #343a40;
+                    color: white;
+                    z-index: 2;
+                    text-align: center;
+                }
+
+                .tabla-productos th,
+                .tabla-productos td {
+                    border: 1px solid #dee2e6;
+                    padding: 8px;
+                    vertical-align: middle;
+                    text-align: center;
+                    white-space: nowrap;
+                }
+        </style>
+
+        <div class="tabla-con-scroll">
+            <table id="tablaProductos" class="tabla-productos">
+                <thead>
+                    <tr>
+                        <th style="min-width: 200px;">Código</th>
+                        <th style="min-width: 400px;">Descripción</th>
+                        <th style="min-width: 120px;">Cantidad</th>
+                        <th style="min-width: 150px;">Precio Unitario</th>
+                        <th style="min-width: 180px;">Centro Costo</th>
+                        <th style="min-width: 100px;">IVA</th>
+                        <th style="min-width: 180px;">Proyecto</th>
+                        <th style="min-width: 180px;">Etapa</th>
+                        <th style="min-width: 180px;">Tipo de Artículo</th>
+                        <th style="min-width: 150px;">Total</th>
+                        <th style="min-width: 100px;">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProductos">
+                    <tr>
+                        <td>
+                            <div style="position: relative; width: 100%; display: inline-block;">
+                                <input type="text"
+                                       class="input-codigo"
+                                       placeholder="P001"
+                                       readonly
+                                       style="width: 100%; padding-right: 36px; box-sizing: border-box; font-size: 14px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; vertical-align: middle;outline: none;"
+                                       onfocus="this.style.outline='none'; this.style.boxShadow='none';" />
+
+                                <button type="button"
+                                        onclick="abrirModalProducto(this)"
+                                        style="
+                                        position: absolute;
+                                        top: 0;
+                                        right: 0;
+                                        height: 100%; /* toma toda la altura del contenedor */
+                                        width: 36px;
+                                        background-color: #ffb84d;
+                                        border: 1px solid #ccc;
+                                        border-left: none; /* quita el borde izquierdo para unirse al input */
+                                        border-radius: 0 4px 4px 0; /* solo redondea a la derecha */
+                                        cursor: pointer;
+                                        padding: 0;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        color: white;
+                                        transition: background-color 0.3s ease;"
+                                        onmouseover="this.style.backgroundColor='#e69e1d'"
+                                        onmouseout="this.style.backgroundColor='#ffb84d'"
+                                        aria-label="Buscar producto"
+                                        title="Buscar producto">
+                                    🔍
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text"
+                                   placeholder="Descripción del producto"
+                                   class="input-descripcion"
+                                   style="text-transform: uppercase; width: 100%; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline: none; "
+                                   onfocus="this.style.outline='none'; this.style.boxShadow='none';" />
+                        </td>
+                        <td><input class="input-cantidad" type="number" value="1" min="1" style="width: 100%;" /></td>
+                        <td><input class="input-precioU" type="number" step="0.01" value="0.00" style="width: 100%; text-align: right" /></td>
+                        <td>
+                            <select class="centro-costo" style="width: 100%;">
+                            </select>
+                        </td>
+                        <td>
+                            <select class="select-impuesto" style="width: 100%;">
+                                <option value="IVA">IVA</option>
+                                <option value="EXE">EXE</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="select-proyecto" style="width: 100%;">
+                            </select>
+                        </td>
+                        <td>
+                            <select class="select-etapas" style="width: 100%;">
+                            </select>
+                        </td>
+                        <td>
+                            <select class="select-tipoarticulo" style="width: 100%;">
+                            </select>
+                        </td>
+                        <td><input class="input-total" type="text" disabled value="0.00" style="width: 100%;text-align:right" /></td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <button type="button" onclick="eliminarFila(this)" style="
+                            background-color: #dc3545; color: white; border: none; border-radius: 20%; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: auto; transition: background-color 0.3s ease;">
+                                🗑
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+
+            // Escucha los eventos de cambio en cantidad y precio unitario
+            document.addEventListener('input', function (event) {
+                if (event.target.classList.contains('input-cantidad') || event.target.classList.contains('input-precioU')) {
+                    const fila = event.target.closest('tr');
+                    const cantidadInput = fila.querySelector('.input-cantidad');
+                    const precioUInput = fila.querySelector('.input-precioU');
+                    const totalInput = fila.querySelector('.input-total');
+
+                    const cantidad = parseFloat(cantidadInput.value) || 0;
+                    const precioU = parseFloat(precioUInput.value) || 0;
+                    const total = cantidad * precioU;
+
+                    totalInput.value = total.toLocaleString('es-GT', {
+                        style: 'currency',
+                        currency: 'GTQ',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+                calcularTotales();
+            });
+
+            function cargarCentrosCostoSelect(selectElement, elemento) {
+                $.ajax({
+                    url: '/OrdenDeCompra/ListadoCentroDeCosto',
+                    type: 'POST',
+                    success: function (data) {
+                        if (data && data.length > 0) {
+                            // Limpiar opciones anteriores
+                            selectElement.innerHTML = '';
+
+                            // Opción vacía como predeterminada
+                            const opcionPredeterminada = document.createElement('option');
+                            opcionPredeterminada.value = '';
+                            opcionPredeterminada.textContent = '-- Seleccione --';
+                            opcionPredeterminada.disabled = true;
+                            opcionPredeterminada.selected = true;
+                            selectElement.appendChild(opcionPredeterminada);
+
+                            // Agregar nuevas opciones
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.sCodigo;
+                                option.textContent = item.Descripcion;
+                                selectElement.appendChild(option);
+                            });
+
+                            if (elemento != null && elemento !== '') {
+                                selectElement.value = elemento;
+                            }
+                        } else {
+                            selectElement.innerHTML = '<option>No hay centros de costo</option>';
+                        }
+                    },
+                    error: function () {
+                        selectElement.innerHTML = '<option>Error al cargar</option>';
+                    }
+                });
+            }
+
+            function TipoDeArticulo(selectElement, elemento) {
+                $.ajax({
+                    url: '/OrdenDeCompra/TipoArticulo',
+                    type: 'POST',
+                    success: function (data) {
+                        if (data && data.length > 0) {
+                            // Limpiar opciones anteriores
+                            selectElement.innerHTML = '';
+
+                            // Agregar nuevas opciones
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.sCodigo;
+                                option.textContent = item.Descripcion;
+
+                                // Si coincide con el valor pasado o con "BB", lo selecciona
+                                if ((elemento && item.sCodigo === elemento) || (!elemento && item.sCodigo === 'BB')) {
+                                    option.selected = true;
+                                }
+
+                                selectElement.appendChild(option);
+                            });
+                        } else {
+                            selectElement.innerHTML = '<option>No hay centros de costo</option>';
+                        }
+                    },
+                    error: function () {
+                        selectElement.innerHTML = '<option>Error al cargar</option>';
+                    }
+                });
+            }
+
+            function cargarProyectos(selectElement, elemento) {
+                $.ajax({
+                    url: '/OrdenDeCompra/ListasLineasProducto',
+                    type: 'POST',
+                    success: function (data) {
+                        if (data && data.length > 0) {
+                            // Limpiar opciones anteriores
+                            selectElement.innerHTML = '';
+
+                            // Opción vacía como predeterminada
+                            const opcionPredeterminada = document.createElement('option');
+                            opcionPredeterminada.value = '';
+                            opcionPredeterminada.textContent = '-- Seleccione --';
+                            opcionPredeterminada.disabled = true;
+                            opcionPredeterminada.selected = true;
+                            selectElement.appendChild(opcionPredeterminada);
+
+                            // Agregar nuevas opciones
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.sCodigo;
+                                option.textContent = item.Descripcion;
+                                selectElement.appendChild(option);
+                            });
+
+                            if (elemento != null && elemento !== '') {
+                                selectElement.value = elemento;
+                            }
+                        } else {
+                            selectElement.innerHTML = '<option>No hay data</option>';
+                        }
+                    },
+                    error: function () {
+                        selectElement.innerHTML = '<option>Error al cargar</option>';
+                    }
+                });
+            }
+
+            function cargarEtapas(selectElement, elemento) {
+                $.ajax({
+                    url: '/OrdenDeCompra/ListadoEtapas',
+                    type: 'POST',
+                    success: function (data) {
+                        if (data && data.length > 0) {
+                            // Limpiar opciones anteriores
+                            selectElement.innerHTML = '';
+
+                            // Opción vacía como predeterminada
+                            const opcionPredeterminada = document.createElement('option');
+                            opcionPredeterminada.value = '';
+                            opcionPredeterminada.textContent = '-- Seleccione --';
+                            opcionPredeterminada.disabled = true;
+                            opcionPredeterminada.selected = true;
+                            selectElement.appendChild(opcionPredeterminada);
+
+                            // Agregar nuevas opciones
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.sCodigo;
+                                option.textContent = item.Descripcion;
+                                selectElement.appendChild(option);
+                            });
+
+                            if (elemento != null && elemento !== '') {
+                                selectElement.value = elemento;
+                            }
+                        } else {
+                            selectElement.innerHTML = '<option>No hay data</option>';
+                        }
+                    },
+                    error: function () {
+                        selectElement.innerHTML = '<option>Error al cargar</option>';
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                document.querySelectorAll('.centro-costo').forEach(select => {
+                    cargarCentrosCostoSelect(select, null);
+                });
+
+                document.querySelectorAll('.select-tipoarticulo').forEach(select => {
+                    TipoDeArticulo(select, null);
+                });
+            });
+        </script>
+
+        <button class="btn-agregar" onclick="agregarFila()">+ Agregar Producto</button>
+
+        <div class="totales">
+            <div class="total-linea">
+                <label for="subtotal">Subtotal:</label>
+                <input type="text" id="subtotal" value="0.00" disabled />
+            </div>
+            <div class="total-linea">
+                <label for="impuesto">Impuesto:</label>
+                <input type="text" id="impuesto" value="0.00" disabled />
+            </div>
+            <div class="total-linea">
+                <label for="total"><strong>Total:</strong></label>
+                <input type="text" id="total" value="0.00" disabled />
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="button"
+                    onclick="guardarDatos()"
+                    style="background-color: #28a745; color: white; border: none; padding: 10px 25px; font-size: 16px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.3s ease;">
+                💾 Guardar
+            </button>
+
+            <button type="button"
+                    onclick="document.getElementById('inputExcel').click();"
+                    style="margin-left: 10px; background-color: #fd7e14; color: white; border: none; padding: 10px 25px; font-size: 16px; border-radius: 8px; cursor: pointer;">
+                📊 Cargar Excel
+            </button>
+            <input type="file" id="inputExcel" accept=".xls,.xlsx" style="display: none;" onchange="cargarExcel(this)">
+
+            <script>
+                function cargarExcel(input) {
+                    const archivo = input.files[0];
+                    if (archivo) {
+                        console.log("Archivo seleccionado:", archivo.name);
+                    }
+                }
+
+                async function cargarExcel(input) {
+                    const archivo = input.files[0];
+                    if (!archivo) return;
+
+                    $("#globalLoading").show();
+
+                    const lector = new FileReader();
+
+                    lector.onload = async function (e) {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const hoja = workbook.Sheets[workbook.SheetNames[0]];
+                        const json = XLSX.utils.sheet_to_json(hoja, { defval: '' });
+
+                        const tabla = document.getElementById("tablaProductos").getElementsByTagName("tbody")[0];
+                        tabla.innerHTML = '';
+
+                        // Creamos una lista de promesas para cada fila que necesita nombre
+                        const promesas = json.map((item) => {
+                            return new Promise((resolve) => {
+                                getNombreArticulo(item.Codigo, function (nombre) {
+                                    const fila = document.createElement("tr");
+
+                                    fila.innerHTML = `
+                                                                                                                                                                                        <td>
+                                                                                                                                                                                            <div style="position: relative; width: 100%; display: inline-block;">
+                                                                                                                                                                                                <input type="text" class="input-codigo" value="${item.Codigo}" readonly style="width: 100%; padding-right: 36px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px 0 0 4px;" />
+                                                                                                                                                                                                <button type="button" onclick="abrirModalProducto(this)" style="position: absolute; top: 0; right: 0; height: 100%; width: 36px; background-color: #ffb84d; border: 1px solid #ccc; border-left: none; border-radius: 0 4px 4px 0; cursor: pointer;">🔍</button>
+                                                                                                                                                                                            </div>
+                                                                                                                                                                                        </td>
+                                                                                                                                                                                        <td><input type="text" class="input-descripcion" value="${nombre}" style="width: 100%; text-transform: uppercase; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;" /></td>
+                                                                                                                                                                                        <td><input type="number" class="input-cantidad" value="${item.Cantidad}" style="width: 100%;" /></td>
+                                                                                                                                                                                        <td><input type="text" class="input-precioU" value="${item.PrecioUnitario}" style="width: 100%; text-align: right" /></td>
+                                                                                                                                                                                        <td><select class="centro-costo" style="width: 100%;"></select></td>
+                                                                                                                                                                                        <td>
+                                                                                                                                                                                            <select class="select-impuesto" style="width: 100%;">
+                                                                                                                                                                                                <option value="IVA" ${item.Impuesto === 'IVA' ? 'selected' : ''}>IVA</option>
+                                                                                                                                                                                                <option value="EXE" ${item.Impuesto === 'EXE' ? 'selected' : ''}>EXE</option>
+                                                                                                                                                                                            </select>
+                                                                                                                                                                                        </td>
+                                                                                                                                                                                        <td><select class="select-proyecto" style="width: 100%;"></select></td>
+                                                                                                                                                                                        <td><select class="select-etapas" style="width: 100%;"></select></td>
+                                                                                                                                                                                        <td><select class="select-tipoarticulo" style="width: 100%;"></select></td>
+                                                                                                                                                                                        <td>
+                                                                                                                                                                                          <input class="input-total" type="text"
+                                                                                                                                                                                                 value="${formatearQuetzal((item.Cantidad * item.PrecioUnitario).toFixed(2))}"
+                                                                                                                                                                                                 disabled style="width: 100%; text-align:right" />
+                                                                                                                                                                                        </td>
+                                                                                                                                                                                        <td style="text-align: center;">
+                                                                                                                                                                                            <button type="button" onclick="eliminarFila(this)" style="background-color: #dc3545; color: white; border: none; border-radius: 20%; width: 32px; height: 32px; font-size: 16px;">🗑</button>
+                                                                                                                                                                                        </td>
+                                                                                                                                                                                    `;
+
+                                    tabla.appendChild(fila);
+                                    // Cargar select
+                                    const selectCentroCosto = fila.querySelector('.centro-costo');
+                                    cargarCentrosCostoSelect(selectCentroCosto, item.Centro_De_Costo);
+
+                                    const nuevoSelect2 = fila.querySelector('.select-tipoarticulo');
+                                    TipoDeArticulo(nuevoSelect2, item.Tipo_Articulo);
+
+                                    resolve(); // Termina esta promesa
+                                });
+                            });
+                        });
+
+                        // Esperamos a que todas las filas se agreguen
+                        await Promise.all(promesas);
+                        calcularTotales();
+
+                        // Ahora sí: ocultamos el loading
+                        $("#globalLoading").hide();
+                    };
+
+                    lector.readAsArrayBuffer(archivo);
+                }
+
+                function formatearQuetzal(valor) {
+                    const num = parseFloat(valor);
+                    const monto = isNaN(num) ? 0 : num;
+
+                    return document.getElementById("tipoCambioSelect").value === 'USD'
+                        ? '$ ' + monto.toFixed(2)
+                        : 'Q ' + monto.toFixed(2);
+                }
+
+
+                function getNombreArticulo(ItemCode, callback) {
+                    $.ajax({
+                        url: '/OrdenDeCompra/getItemName',
+                        type: 'POST',
+                        data: { ItemCode: ItemCode },
+                        success: function (data) {
+                            if (data && data.Descripcion) {
+                                callback(data.Descripcion);
+                            } else {
+                                callback("");
+                            }
+                        },
+                        error: function () {
+                            callback("");
+                        }
+                    });
+                }
+
+            </script>
+
+            <button type="button"
+                    onclick="document.getElementById('modalBuscar').style.display='block';"
+                    style="margin-left: 10px; background-color: #007bff; color: white; border: none; padding: 10px 25px; font-size: 16px; border-radius: 8px; cursor: pointer;">
+                🔍 Buscar
+            </button>
+
+            <button type="button"
+                    onclick="generarPDF()"
+                    style="margin-left: 10px; background-color: #dc3545; color: white; border: none; padding: 10px 25px; font-size: 16px; border-radius: 8px; cursor: pointer;">
+                🧾 Generar PDF
+            </button>
+
+            <script>
+                function generarPDF() {
+                    const docNum = document.getElementById('DocNum').value.trim();
+
+                    if (!docNum) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Número de documento vacío',
+                            text: 'No se puede generar el PDF sin un número de documento.',
+                            confirmButtonText: 'Entendido'
+                        });
+                        return;
+                    }
+
+                    window.open('/OrdenDeCompra/GenerarPDF?DocNum=' + docNum, '_blank');
+                }
+            </script>
+
+            <button type="button"
+                    onclick="cancelarFormulario()"
+                    style="margin-left: 10px; background-color: #dc3545; color: white; border: none; padding: 10px 25px; font-size: 16px; border-radius: 8px; cursor: pointer;">
+                ❌ Anular
+            </button>
+
+            <script>
+                function cancelarFormulario() {
+                    $.ajax({
+                        url: '/OrdenDeCompra/Anular',
+                        type: 'POST',
+                        success: function (data) {
+                            
+                        },
+                        error: function () {
+                            
+                        }
+                    });
+                }
+            </script>
+        </div>
+    </div>
+
+    <!-- Modal Proveedores -->
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-contenido {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .modal-cerrar {
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #888;
+        }
+
+            .modal-cerrar:hover {
+                color: #000;
+            }
+
+        .modal-busqueda {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+            .modal-busqueda input {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .modal-busqueda button {
+                padding: 8px 14px;
+                background-color: #3498db;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+        .tabla-modal {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .tabla-modal th, .tabla-modal td {
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: left;
+            }
+
+            .tabla-modal button {
+                background-color: #2ecc71;
+                border: none;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+    </style>
+
+    <div id="modalProveedor" class="modal">
+        <div class="modal-contenido">
+            <span class="modal-cerrar" onclick="cerrarModalProveedor()">&times;</span>
+            <h3>Buscar Proveedor</h3>
+
+            <div class="modal-busqueda">
+                <input type="text" id="buscarProveedorInput" placeholder="Ingrese nombre o código..." />
+                <button onclick="buscarProveedor()">Buscar</button>
+            </div>
+
+            <table class="tabla-modal">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Seleccionar</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProveedores">
+                    <tr><td colspan="3" class="text-center">Ingrese un criterio de búsqueda</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <style>
+        #modalProductos {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            /*
+            display: flex;*/
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+            #modalProductos .modal-contenido {
+                background-color: #fff;
+                width: 90%;
+                max-width: 900px;
+                border-radius: 8px;
+                padding: 20px;
+                position: relative;
+                max-height: 95vh; /* evita que el modal sea más alto que la pantalla */
+                overflow: hidden;
+            }
+
+            #modalProductos .modal-cerrar {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                font-size: 28px;
+                font-weight: bold;
+                color: #555;
+                cursor: pointer;
+            }
+
+                #modalProductos .modal-cerrar:hover {
+                    color: #000;
+                }
+
+            #modalProductos .modal-busqueda {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            /* Scroll solo sobre el cuerpo de la tabla */
+            #modalProductos .tabla-modal {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+                #modalProductos .tabla-modal thead th,
+                #modalProductos .tabla-modal tbody td {
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                }
+
+            #modalProductos .tabla-wrapper {
+                max-height: 300px; /* altura máxima visible de la tabla */
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+    </style>
+
+    <div id="modalProductos" class="modal">
+        <div class="modal-contenido">
+            <span class="modal-cerrar" onclick="cerrarModalProducto()">&times;</span>
+            <h3>Buscar producto</h3>
+
+            <div class="modal-busqueda">
+                <input type="text" id="buscarProductoInput" placeholder="Ingrese nombre o código..." style="text-transform:uppercase" />
+                <button onclick="buscarProducto()">Buscar</button>
+            </div>
+
+            <div class="tabla-wrapper">
+                <table class="tabla-modal">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Código</th>
+                            <th style="width: 70%;">Nombre del artículo</th>
+                            <th style="width: 10%; text-align: center;">✔</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPrd">
+                        <tr>
+                            <td colspan="3" class="text-center">Ingrese un criterio de búsqueda</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->    
+    <div id="modalBuscar" class="modal-custom" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('modalBuscar').style.display='none';">&times;</span>
+            <h2>Buscar Documentos</h2>
+
+            <div style="margin-bottom: 15px;">
+                <label><strong>Socio de Negocio:</strong></label><br>
+                <input type="text" id="socioInput" style="width: 100%; padding: 8px; font-size: 14px;text-transform:uppercase" autocomplete="off" />
+                <input type="hidden" id="codigoSocio" />
+                <div id="sugerencias" style="border: 1px solid #ccc; display: none; max-height: 150px; overflow-y: auto; position: absolute; background: white; z-index: 1001;"></div>
+            </div>            
+            <script>
+                $(document).ready(function () {
+                    // Función que genera sugerencias
+                    function buscarSugerencias(texto) {
+                        if (texto.length >= 2) {
+                            $.ajax({
+                                url: '/OrdenDeCompra/ListadoProveedores',
+                                type: 'GET',
+                                data: { SocioDeNegocio: texto },
+                                success: function (data) {
+                                    var sugerencias = $("#sugerencias");
+
+                                    sugerencias.empty();
+                                    var anchoInput = $("#socioInput").outerWidth();
+                                    sugerencias.css({
+                                        width: anchoInput + "px",
+                                        display: "block"
+                                    });
+
+                                    data.forEach(function (item) {
+                                        sugerencias.append(`
+                                            <div class="item-sugerencia" style="
+                                                display: table;
+                                                width: 100%;
+                                                padding: 6px 8px;
+                                                border-bottom: 1px solid #eee;
+                                                cursor: pointer;
+                                                font-size: 14px;">
+                                                <div style="display: table-cell; width: 40%; text-align: center; color: #555;">
+                                                    ${item.CardCode}
+                                                </div>
+                                                <div style="display: table-cell; width: 60%; text-align: left; color: #333; font-weight: 500;">
+                                                    ${item.CardName}
+                                                </div>
+                                            </div>
+                                        `);
+                                    });
+                                }
+                            });
+                        } else {
+                            $("#sugerencias").hide();
+                        }
+                    }
+
+                    // Asignamos evento input normalmente
+                    $("#socioInput").on("input", function () {
+                        buscarSugerencias($(this).val());
+                    });
+
+                    // Cuando se hace clic en una sugerencia
+                    $(document).on("click", ".item-sugerencia", function () {
+                        const cardCode = $(this).find("div").eq(0).text().trim();
+                        const cardName = $(this).find("div").eq(1).text().trim();
+
+                        // Detenemos temporalmente el input
+                        $("#socioInput").off("input");
+
+                        $("#socioInput").val(cardName);
+                        $("#codigoSocio").val(cardCode);
+                        $("#sugerencias").hide();
+
+                        // Reactivamos el input luego de un pequeño delay
+                        setTimeout(() => {
+                            $("#socioInput").on("input", function () {
+                                buscarSugerencias($(this).val());
+                            });
+                        }, 100);
+                    });
+                });
+            </script>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div style="flex: 1;">
+                    <label><strong>Fecha Inicio:</strong></label><br>
+                    <input id="fechaInicio" type="date" style="width: 100%; padding: 8px; font-size: 14px;" />
+                </div>
+
+                <div style="flex: 1;">
+                    <label><strong>Fecha Final:</strong></label><br>
+                    <input id="fechaFin" type="date" style="width: 100%; padding: 8px; font-size: 14px;" />
+                </div>
+                <div style="flex: 1;">
+                    <label><strong>Documento:</strong></label><br>
+                    <input id="docNum" type="number" style="width: 100%; padding: 8px; font-size: 14px;" />
+                </div>
+            </div>
+
+            <button type="button"
+                    id="btnBuscar"
+                    style="background-color: #28a745; color: white; border: none; padding: 8px 20px; font-size: 14px; border-radius: 6px; cursor: pointer;">
+                Buscar
+            </button>
+            <script>
+                $("#btnBuscar").on("click", function () {
+                    var codigo = $("#codigoSocio").val();
+                    var fechaInicio = $("#fechaInicio").val();
+                    var fechaFin = $("#fechaFin").val();
+                    var docNum = $("#docNum").val();
+
+                    if (codigo) {
+                        $.ajax({
+                            url: '/OrdenDeCompra/Filtro',
+                            type: 'GET',
+                            data: {
+                                CardCode: codigo,
+                                FechaI: fechaInicio || null,
+                                FechaF: fechaFin || null,
+                                DocNum: docNum || null
+                            },
+                            success: function (resultado) {
+                                var tbody = $("#tablaFilto tbody");
+                                tbody.empty(); // Limpiamos las filas anteriores
+
+                                if (resultado && resultado.length > 0) {
+                                    resultado.forEach(function (item) {
+                                        var date = new Date(parseInt(item.DocDate.replace(/\/Date\((\d+)\)\//, "$1")));
+                                        var fechaFormateada = ('0' + date.getDate()).slice(-2) + '/' +
+                                            ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
+                                            date.getFullYear();
+
+                                        var totalFormateado = parseFloat(item.DocTotal).toLocaleString('es-GT', {
+                                            style: 'currency',
+                                            currency: 'GTQ',
+                                            minimumFractionDigits: 2
+                                        });
+
+                                        var fila = `
+                                        <tr>
+                                            <td style="padding: 8px; border: 1px solid #ccc; text-align:center;">
+                                                <button class="btnSeleccionar" style="background-color: #007bff; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </button>
+                                            </td>
+                                            <td style="padding: 8px; border: 1px solid #ccc;">${item.DocNum}</td>
+                                            <td style="padding: 8px; border: 1px solid #ccc;">${item.CardCode}</td>
+                                            <td style="padding: 8px; border: 1px solid #ccc;">${item.CardName}</td>
+                                            <td style="padding: 8px; border: 1px solid #ccc; text-align:center;">${fechaFormateada}</td>
+                                            <td style="padding: 8px; border: 1px solid #ccc; text-align:right;">${totalFormateado}</td>
+                                            <td style="padding: 8px; border: 1px solid #ccc;">${item.Estado}</td>
+                                        </tr>`;
+                                        tbody.append(fila);
+                                    });
+                                } else {
+                                    tbody.append(`<tr><td colspan="7" style="text-align:center; padding: 8px;">No se encontraron resultados.</td></tr>`);
+                                }
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Hubo un problema al obtener los datos.'
+                                });
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Atención',
+                            text: 'Por favor selecciona un socio de negocio válido.'
+                        });
+                    }
+                });
+
+                $(document).ready(function () {                    
+                    $("#tablaFilto").on("click", ".btnSeleccionar", function () {
+                        var fila = $(this).closest("tr");
+                        var docNum = fila.find("td").eq(1).text(); // Columna DocNum
+                        // Ejemplo: Pasar docNum a un input fuera del modal
+                        $("#docNumSeleccionado").val(docNum);
+
+                        document.getElementById('modalBuscar').style.display = 'none';                        
+                        $('#codigoSocio').val('');
+                        $('#fechaInicio').val('');
+                        $('#fechaFin').val('');
+                        $('#docNum').val('');
+                        $('#tablaFilto tbody').empty();
+                        $("#globalLoading").show();
+
+                        $.ajax({
+                            url: '/OrdenDeCompra/getOc',
+                            type: 'POST',
+                            data: { DocNum: docNum },
+                            success: function (data) {
+                                $("#globalLoading").hide();
+                                $('#DocNum').val(data.DocNum);
+                                $('#codigoProveedor').val(data.CardCode);
+                                $('#proveedor').val(data.CardName);
+                                $('#sucursalSelect').val(data.BPLId);                                
+                                $('#observaciones').val(data.Comments)                                
+                                $('#fecha').val(formatearFechaJson(data.DocDate));
+                                $('#fechaComprometido').val(formatearFechaJson(data.DocDueDate));
+
+                                // Limpiar tabla
+                                const tabla = document.getElementById("tablaProductos").getElementsByTagName("tbody")[0];
+                                tabla.innerHTML = ""; // Limpia todas las filas
+
+                                // Llenar tabla con cada producto
+                                data.Detalle.forEach(function (item) {
+                                    const fila = document.createElement("tr");
+                                    fila.innerHTML = `
+                                    <td>
+                                        <div style="position: relative; width: 100%; display: inline-block;">
+                                            <input type="text" class="input-codigo" value="${item.ItemCode}" readonly style="width: 100%; padding-right: 36px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px 0 0 4px;" />
+                                            <button type="button" onclick="abrirModalProducto(this)" style="position: absolute; top: 0; right: 0; height: 100%; width: 36px; background-color: #ffb84d; border: 1px solid #ccc; border-left: none; border-radius: 0 4px 4px 0; cursor: pointer;">🔍</button>
+                                        </div>
+                                    </td>
+                                    <td><input type="text" class="input-descripcion" value="${item.Dscription}" style="width: 100%; text-transform: uppercase; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;" /></td>
+                                    <td><input type="number" class="input-cantidad" value="${item.Quantity}" style="width: 100%;" /></td>
+                                    <td><input type="text" class="input-precioU" value="${formatearQuetzal(item.PriceAfVat)}" style="width: 100%; text-align: right" readonly /></td>
+
+                                    <td>
+                                        <select class="centro-costo" style="width: 100%;"></select>
+                                    </td>
+                                    <td>
+                                        <select class="select-impuesto" style="width: 100%;">
+                                            <option value="IVA" ${item.TaxCode === 'IVA' ? 'selected' : ''}>IVA</option>
+                                            <option value="EXE" ${item.TaxCode === 'EXE' ? 'selected' : ''}>EXE</option>
+                                        </select>
+                                    </td>
+                                    <td><input class="input-total" type="text" value="${item.GTotal.toFixed(2)}" disabled style="width: 100%; text-align:right" /></td>
+                                    <td style="text-align: center;">
+                                        <button type="button" onclick="eliminarFila(this)" style="background-color: #dc3545; color: white; border: none; border-radius: 20%; width: 32px; height: 32px; font-size: 16px;">🗑</button>
+                                    </td>
+                                `;
+
+                                    tabla.appendChild(fila);
+
+                                    // Cargar centro de costo en el select
+                                    const selectCentroCosto = fila.querySelector('.centro-costo');
+                                    cargarCentrosCostoSelect(selectCentroCosto, item.OcrCode);
+                                });
+
+
+
+
+                            },
+                            error: function () {
+                                $("#globalLoading").hide();
+                                $('#tablaProductos').html('<tr><td colspan="8" class="text-center text-danger">Error al obtener datos.</td></tr>');
+                            }
+                        });
+                        
+                    });
+                    // Convierte "/Date(1719208800000)/" a "MM/DD/YYYY"
+                    function formatearFechaJson(fechaJson) {
+                        var timestamp = parseInt(fechaJson.replace(/\/Date\((\d+)\)\//, '$1'));
+                        var fecha = new Date(timestamp);
+
+                        var mes = ('0' + (fecha.getMonth() + 1)).slice(-2);
+                        var dia = ('0' + fecha.getDate()).slice(-2);
+                        var año = fecha.getFullYear();
+
+                        return `${año}-${mes}-${dia}`; // MM/DD/YYYY
+                    }
+                });
+
+                //function formatearMoneda(valor) {
+                //    const tipoCambio = document.getElementById("tipoCambioSelect").value;
+                //    const formato = new Intl.NumberFormat('es-GT', {
+                //        style: 'currency',
+                //        currency: tipoCambio === 'USD' ? 'USD' : 'GTQ',
+                //        minimumFractionDigits: 2
+                //    });
+                //    return formato.format(valor || 0);
+                //}
+
+            </script>
+            <div style="margin-top: 20px; overflow: auto; max-height: 300px; border: 1px solid #ccc;">
+                <table id="tablaFilto" style="width: 100%; min-width: 800px; border-collapse: collapse;">
+                    <thead style="background-color: black">
+                        <tr>
+                            <th style="padding: 8px; border: 1px solid #ccc;"></th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">Documento</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">Código</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">Nombre</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">Fecha</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">Total</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>                   
+                        <tr><td colspan="7" style="text-align:center; padding: 8px;">No se encontraron resultados.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function armarObjetoOC() {
+            var ocEncabezado = {
+                CardCode: document.getElementById("codigoProveedor").value.trim(),
+                IdSucursal: parseInt(document.getElementById("sucursalSelect").value),
+                FechaDocumento: document.getElementById("fecha").value,
+                FechaComprometido: document.getElementById("fechaComprometido").value,
+                Moneda: document.getElementById("tipoCambioSelect").value,
+                Notas: document.getElementById("observaciones").value.trim(),
+                Detalle: []
+            };
+
+            const filas = document.querySelectorAll("#tablaProductos tbody tr");
+            filas.forEach(fila => {
+                const ItemCode = fila.querySelector(".input-codigo").value.trim();
+                const ItemName = fila.querySelector(".input-descripcion").value.trim();
+                const Quantity = parseFloat(fila.querySelector(".input-cantidad").value) || 0;
+                const PriceU = parseFloat(fila.querySelector(".input-precioU").value) || 0;
+                const CentroCosto = fila.querySelector(".centro-costo").value;
+                const TipoArticulo = fila.querySelector(".select-tipoarticulo").value;
+                const TipoImpuesto = fila.querySelector(".select-impuesto").value;
+                
+                if (ItemCode !== "" && Quantity > 0) {
+                    ocEncabezado.Detalle.push({
+                        ItemCode,
+                        ItemName,
+                        Quantity,
+                        PriceU,
+                        CentroCosto,
+                        TipoArticulo,
+                        TipoImpuesto
+                    });
+                }
+            });
+
+            return ocEncabezado;
+        }
+
+        function guardarDatos() {
+            if (validarFormulario() === false) {
+                return;
+            } else if (validarTablaProductos() === false) {
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Desea guardar?',
+                text: "Se guardarán los datos ingresados.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#globalLoading").show();
+                    var ocEncabezado = armarObjetoOC();                    
+                    $.ajax({
+                        url: '/OrdenDeCompra/GuardarOC',
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(ocEncabezado),
+                        success: function (data) {
+                            if (data.data.DocNum > 0) {
+                                $("#globalLoading").hide();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.message,
+                                    html: `
+                                            <div>
+                                                <strong>No. Documento</strong><br />
+                                                <span style="
+                                                    display: inline-block;
+                                                    background-color: #fff3cd;
+                                                    color: #856404;
+                                                    padding: 5px 12px;
+                                                    border-radius: 8px;
+                                                    margin-top: 5px;
+                                                    font-weight: bold;
+                                                    font-size: 16px;">
+                                                    ${data.data.DocNum}
+                                                </span>
+                                            </div>`,
+                                    showCancelButton: true,
+                                    confirmButtonText: '📄 PDF Orden compra',
+                                    cancelButtonText: '❌ Cerrar',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Abrir el PDF en nueva pestaña
+                                        window.open('/OrdenDeCompra/GenerarPDF?DocNum=' + data.data.DocNum, '_blank');
+
+                                        // Esperar 3 segundos antes de recargar
+                                        setTimeout(function () {
+                                            location.reload();
+                                        }, 10000); // 3000 ms = 3 segundos
+                                    } else {
+                                        location.reload();
+                                    }
+
+                                });
+                            } else {
+                                $("#globalLoading").hide();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error al guardar',
+                                    text: data.message,
+                                    confirmButtonText: 'Aceptar',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false
+                                });
+                            }
+                        },
+                        error: function () {
+                            $("#globalLoading").hide();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error de comunicación',
+                                text: 'No se pudo conectar con el servidor.',
+                                confirmButtonText: 'Aceptar',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function validarFormulario() {
+            const codigoProveedor = document.getElementById('codigoProveedor').value.trim();
+            const nombreProveedor = document.getElementById('proveedor').value.trim();
+            const sucursal = document.getElementById('sucursalSelect').value;
+            const fecha = document.getElementById('fecha').value;
+            const fechaComprometido = document.getElementById('fechaComprometido').value;
+
+            let errores = [];
+
+            if (!codigoProveedor) {
+                errores.push("El campo 'Código Proveedor' es obligatorio.");
+            }
+
+            if (!nombreProveedor) {
+                errores.push("El campo 'Nombre Proveedor' es obligatorio.");
+            }
+
+            if (sucursal === "-1" || sucursal === "") {
+                errores.push("Debe seleccionar una sucursal.");
+            }
+
+            if (!fecha) {
+                errores.push("La fecha es obligatoria.");
+            }
+
+            if (!fechaComprometido) {
+                errores.push("La fecha comprometido es obligatoria.");
+            }
+
+            if (errores.length > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos obligatorios',
+                    html: errores.join('<br>'),
+                    confirmButtonText: 'Aceptar'
+                });
+                return false;
+            }
+
+            // Si pasa todas las validaciones
+            Swal.fire({
+                icon: 'success',
+                title: 'Validación exitosa',
+                text: 'Todos los campos obligatorios están completos.'
+            });
+
+            return true;
+        }
+
+        function validarTablaProductos() {
+            const tabla = document.getElementById("tablaProductos").getElementsByTagName("tbody")[0];
+            const filas = tabla.getElementsByTagName("tr");
+
+            if (filas.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Productos requeridos',
+                    text: 'Debe ingresar al menos un producto.'
+                });
+                return false;
+            }
+
+            let errores = [];
+
+            for (let i = 0; i < filas.length; i++) {
+                const fila = filas[i];
+
+                const codigo = fila.querySelector(".input-codigo")?.value.trim();
+                const descripcion = fila.querySelector(".input-descripcion")?.value.trim();
+                const cantidad = parseFloat(fila.querySelector(".input-cantidad")?.value);
+                const precio = parseFloat(fila.querySelector(".input-precioU")?.value);
+                const centroCosto = fila.querySelector(".centro-costo")?.value.trim();
+
+                if (!codigo) {
+                    errores.push(`Fila ${i + 1}: El código del producto es obligatorio.`);
+                }
+                if (!descripcion) {
+                    errores.push(`Fila ${i + 1}: La descripción del producto es obligatoria.`);
+                }
+                if (isNaN(cantidad) || cantidad <= 0) {
+                    errores.push(`Fila ${i + 1}: La cantidad debe ser mayor a 0.`);
+                }
+                if (isNaN(precio) || precio <= 0) {
+                    errores.push(`Fila ${i + 1}: El precio unitario debe ser mayor a 0.00.`);
+                }
+                if (!centroCosto) {
+                    errores.push(`Fila ${i + 1}: Debe seleccionar un centro de costo.`);
+                }
+            }
+
+            if (errores.length > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Errores en productos',
+                    html: errores.join('<br>'),
+                    confirmButtonText: 'Revisar'
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        document.addEventListener('change', function (event) {
+            if (event.target.classList.contains('select-impuesto')) {
+                calcularTotales();
+            }
+        });
+
+        function calcularTotales() {
+            let subtotal = 0;
+            let impuesto = 0;
+            let totalGeneral = 0;
+            document.querySelectorAll('#tablaProductos tbody tr').forEach(fila => {
+                const totalInput = fila.querySelector('.input-total');
+                const impuestoSelect = fila.querySelector('.select-impuesto');
+
+                let total = 0;
+
+                if (totalInput) {
+                    // Quitar símbolo y comas
+                    total = parseFloat(totalInput.value.replace(/[Q,]/g, '').replace(/[$,]/g, '')) || 0;
+                }
+
+                if (impuestoSelect && impuestoSelect.value === 'IVA') {
+                    // Si tiene IVA, dividir entre 1.12 para obtener subtotal
+                    const subSinIva = total / 1.12;
+                    const iva = total - subSinIva;
+                    subtotal += subSinIva;
+                    impuesto += iva;
+                } else {
+                    // Si es EXENTO
+                    subtotal += total;
+                }
+
+                totalGeneral += total;
+            });
+
+            // Mostrar en inputs formateado
+            const tipoMoneda = document.getElementById('tipoCambioSelect').value;
+            const moneda = tipoMoneda === 'USD' ? 'USD' : 'GTQ';
+
+            document.getElementById('subtotal').value = subtotal.toLocaleString('es-GT', {
+                style: 'currency',
+                currency: moneda,
+                minimumFractionDigits: 2
+            });
+
+
+            document.getElementById('impuesto').value = impuesto.toLocaleString('es-GT', {
+                style: 'currency',
+                currency: moneda,
+                minimumFractionDigits: 2
+            });
+
+            document.getElementById('total').value = totalGeneral.toLocaleString('es-GT', {
+                style: 'currency',
+                currency: moneda,
+                minimumFractionDigits: 2
+            });
+        }
+
+        let filaActual = null; // variable global para guardar la fila activa
+
+        function eliminarFila(boton) {
+            const fila = boton.closest('tr');
+            fila.remove();
+            calcularTotales();
+        }
+
+        function abrirModalProveedor() {
+            document.getElementById('modalProveedor').style.display = 'block';
+        }
+
+        function cerrarModalProveedor() {
+            document.getElementById('modalProveedor').style.display = 'none';
+        }
+
+        function abrirModalProducto(btn) {
+            filaActual = btn.closest('tr'); // guarda la fila desde donde se abrió el modal
+            document.getElementById('modalProductos').style.display = 'block';
+        }
+
+        function seleccionarProducto(codigo, nombre) {
+            if (!filaActual) return;
+
+            // Llenar los campos de la fila activa
+            filaActual.querySelector('.input-codigo').value = codigo;
+            filaActual.querySelector('.input-descripcion').value = nombre;
+
+            // Cerrar el modal
+            document.getElementById('modalProductos').style.display = 'none';
+            filaActual = null; // Limpiar la referencia
+        }
+
+        function cerrarModalProducto() {
+            document.getElementById('modalProductos').style.display = 'none';
+        }
+
+        function buscarProveedor() {
+            $("#globalLoading").show();
+            const valor = $('#buscarProveedorInput').val().trim();
+
+            $.ajax({
+                url: '/OrdenDeCompra/ListadoProveedores',
+                type: 'POST',
+                data: { SocioDeNegocio: valor },
+                success: function (data) {
+                    const tbody = $('#tablaProveedores');
+                    tbody.empty(); // Limpiar la tabla
+                    $("#globalLoading").hide();
+
+                    if (data && data.length > 0) {
+                        data.forEach(p => {
+                            const row = `
+                                            <tr>
+                                                <td>${p.CardCode}</td>
+                                                <td>${p.CardName}</td>
+                                                <td>
+                                                    <button onclick="seleccionarProveedor('${p.CardCode}', '${p.CardName}')">✔</button>
+                                                </td>
+                                            </tr>`;
+                            tbody.append(row);
+                        });
+                    } else {
+                        tbody.append('<tr><td colspan="3" class="text-center">No hay datos disponibles.</td></tr>');
+                    }
+                },
+                error: function () {
+                    $('#tablaProveedores').html('<tr><td colspan="3" class="text-center text-danger">Error al obtener datos.</td></tr>');
+                }
+            });
+        }
+
+        function buscarProducto() {
+            $("#globalLoading").show();
+            const valor = $('#buscarProductoInput').val().trim();
+
+            $.ajax({
+                url: '/OrdenDeCompra/ListadoProductos',
+                type: 'POST',
+                data: { Producto: valor },
+                success: function (data) {
+                    const tbody = $('#tablaPrd');
+                    tbody.empty(); // Limpiar la tabla
+                    $("#globalLoading").hide();
+
+                    if (data && data.length > 0) {
+                        data.forEach(p => {
+                            const row = `
+                                            <tr>
+                                                <td>${p.ItemCode}</td>
+                                                <td>${p.ItemName}</td>
+                                                <td style='text-align:center'>
+                                                    <button onclick="seleccionarProducto('${p.ItemCode}', '${p.ItemName}')">✔</button>
+                                                </td>
+                                            </tr>`;
+                            tbody.append(row);
+                        });
+                    } else {
+                        tbody.append('<tr><td colspan="3" class="text-center">No hay datos disponibles.</td></tr>');
+                    }
+                },
+                error: function () {
+                    $('#tablaProveedores').html('<tr><td colspan="3" class="text-center text-danger">Error al obtener datos.</td></tr>');
+                }
+            });
+        }
+
+        function seleccionarProveedor(codigo, nombre) {
+            document.getElementById('codigoProveedor').value = codigo;
+            document.getElementById('proveedor').value = nombre;
+            cerrarModalProveedor();
+        }
+
+        // Cierra el modal si se hace clic fuera del contenido
+        window.onclick = function (event) {
+            const modal = document.getElementById('modalProveedor');
+            //if(event.target === modal) {
+            //    const input = modal.querySelector('buscarProductoInput');
+            //    if (input) {
+            //        input.focus();
+            //    }
+            //}
+
+            //const modal2 = document.getElementById('modalProductos');
+            //if (event.target === modal2) {
+            //    modal2.style.display = "none";
+            //}
+        };
+
+        $(document).ready(function () {
+            $.ajax({
+                url: '/OrdenDeCompra/ListadoSucursales',
+                type: 'POST',
+                success: function (data) {
+                    $("#globalLoading").hide();
+
+                    const select = $('#sucursalSelect');
+                    select.empty(); // Limpiar el combo
+
+                    // Agregar opción por defecto
+                    select.append('<option value="">Seleccione una sucursal</option>');
+
+                    if (data && data.length > 0) {
+                        data.forEach(function (item) {
+                            select.append(`<option value="${item.Codigo}">${item.Descripcion}</option>`);
+                        });
+                    } else {
+                        select.append('<option disabled>No hay sucursales disponibles</option>');
+                    }
+                },
+                error: function () {
+                    $('#tablaProveedores').html('<tr><td colspan="3" class="text-center text-danger">Error al obtener datos.</td></tr>');
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $.ajax({
+                url: '/OrdenDeCompra/TipoDeCambio',
+                type: 'POST',
+                success: function (data) {
+                    $("#globalLoading").hide();
+
+                    const select = $('#tipoCambioSelect');
+                    select.empty(); // Limpiar el combo
+
+                    // Agregar opción por defecto
+                    select.append('<option value="">Seleccione un tipo de cambio</option>');
+
+                    if (data && data.length > 0) {
+                        data.forEach(function (item) {
+                            select.append(`<option value="${item.sCodigo}">${item.Descripcion}</option>`);
+                        });
+                    } else {
+                        select.append('<option disabled>No tipo de cambio disponibles</option>');
+                    }
+                },
+                error: function () {
+                    $('#tablaProveedores').html('<tr><td colspan="3" class="text-center text-danger">Error al obtener datos.</td></tr>');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function agregarFila() {
+            const tabla = document.getElementById("tablaProductos").getElementsByTagName("tbody")[0];
+            const nuevaFila = document.createElement("tr");
+            nuevaFila.innerHTML = `
+                                        <td>
+                                    <div style="position: relative; width: 100%; display: inline-block;">
+                                        <input type="text"
+                                               class="input-codigo"
+                                               placeholder="P001"
+                                               readonly
+                                               style="width: 100%; padding-right: 36px; box-sizing: border-box; font-size: 14px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; vertical-align: middle;outline: none;"
+                                               onfocus="this.style.outline='none'; this.style.boxShadow='none';" />
+
+                                        <button type="button"
+                                                onclick="abrirModalProducto(this)"
+                                                style="
+                                                position: absolute;
+                                                top: 0;
+                                                right: 0;
+                                                height: 100%; /* toma toda la altura del contenedor */
+                                                width: 36px;
+                                                background-color: #ffb84d;
+                                                border: 1px solid #ccc;
+                                                border-left: none; /* quita el borde izquierdo para unirse al input */
+                                                border-radius: 0 4px 4px 0; /* solo redondea a la derecha */
+                                                cursor: pointer;
+                                                padding: 0;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                color: white;
+                                                transition: background-color 0.3s ease;"
+                                                onmouseover="this.style.backgroundColor='#e69e1d'"
+                                                onmouseout="this.style.backgroundColor='#ffb84d'"
+                                                aria-label="Buscar producto"
+                                                title="Buscar producto">
+                                            🔍
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text"
+                                           placeholder="Descripción del producto"
+                                           class="input-descripcion"
+                                           style="text-transform: uppercase; width: 100%; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline: none; "
+                                           onfocus="this.style.outline='none'; this.style.boxShadow='none';" />
+                                </td>
+                                <td><input class="input-cantidad" type="number" value="1" min="1" style="width: 100%;" /></td>
+                                <td><input class="input-precioU" type="number" step="0.01" value="0.00" style="width: 100%; text-align: right" /></td>
+                                <td>
+                                    <select class="centro-costo" style="width: 100%;">
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="select-impuesto" style="width: 100%;">
+                                        <option value="IVA">IVA</option>
+                                        <option value="EXE">EXE</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="select-proyecto" style="width: 100%;">
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="select-etapas" style="width: 100%;">
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="select-tipoarticulo" style="width: 100%;">
+                                    
+                                    </select>
+                                </td>
+                                <td><input class="input-total" type="text" disabled value="0.00" style="width: 100%;text-align:right" /></td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <button type="button" onclick="eliminarFila(this)" style="
+                                    background-color: #dc3545; color: white; border: none; border-radius: 20%; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: auto; transition: background-color 0.3s ease;">
+                                        🗑
+                                    </button>
+                                </td>
+                                      `;
+            tabla.appendChild(nuevaFila);
+
+            const nuevoSelect = nuevaFila.querySelector('.centro-costo');
+            cargarCentrosCostoSelect(nuevoSelect);
+
+            const nuevoSelect2 = nuevaFila.querySelector('.select-tipoarticulo');
+            TipoDeArticulo(nuevoSelect2);
+        }
+    </script>
+</body>
+</html>

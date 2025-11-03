@@ -1,0 +1,1443 @@
+﻿@model Entity.BolsonActivoEntity
+@{
+    ViewBag.Title = "Seguimiento de Cotizaciones";
+
+    var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;        
+    }
+
+    .filtros-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+        .filtros-container label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            display: block;
+            color: black;
+        }
+
+        .filtros-container select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .filtros-container .derecha {
+            display: flex;
+            align-items: end;
+            gap: 0.5rem;
+        }
+
+        .filtros-container button {
+            padding: 0.55rem 1.2rem;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: background 0.3s ease;
+        }
+
+            .filtros-container button:hover {
+                background-color: black;
+            }
+
+    .paneles-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel {
+        flex: 1 1 150px;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+        .panel h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .panel span {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: black;
+        }
+
+    .oculto {
+        display: none;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+        .tab-content.active {
+            display: block;
+        }
+
+    .tab-buttons {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .tab-button {
+        padding: 8px 16px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        background-color: #f0f0f0;
+    }
+
+        .tab-button.active {
+            background-color: #d0d0d0;
+            font-weight: bold;
+        }
+
+</style>
+<div style="padding:20px;padding-bottom:40px">
+    <div class="filtros-container">
+        <div>
+            <label>Región</label>
+            <select id="filtroRegion">
+                <option value="-101">-- Seleccionar --</option>
+            </select>
+            <script>
+                $(document).ready(function () {
+                    CargarRegiones();
+                });
+
+                $('#filtroRegion').on('change', function () {
+                    let idRegion = $(this).val();
+                    CargarTiendas(idRegion);
+                });
+
+                function CargarRegiones(){
+                    $.ajax({
+                        url: '@Url.Action("ListadoRegiones", "BolsonActivo")',
+                        type: "POST",
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                $.each(data, function (index, item) {
+                                    $('#filtroRegion').append(
+                                        $('<option>', {
+                                            value: item.IdRegion,
+                                            text: item.Region
+                                        })
+                                    );
+                                });
+
+                                if (data.length === 1) {
+                                    // Solo una opción, seleccionarla y bloquear el select
+                                    $('#filtroRegion').val(data[0].IdRegion).trigger('change');
+                                    CargarTiendas(data[0].IdRegion);
+                                    $('#filtroRegion').prop('disabled', true); // bloquear select
+                                } else {
+                                    // Más de una opción, seleccionar '-1' y desbloquear el select
+                                    $('#filtroRegion').val('-1').trigger('change');
+                                    CargarTiendas(-1);
+                                    $('#filtroRegion').prop('disabled', false); // desbloquear select
+                                }
+
+                            } else {
+                                // No hay datos, mantener seleccionado el -1
+                                $('#filtroRegion').val('-1');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar las regiones:", error);
+                            $('#filtroRegion').val('-1');
+                        },
+                        complete: function () {
+                            $("#globalLoading").hide(); // Oculta el loading si lo estás usando
+                        }
+                    });
+                }
+            </script>
+        </div>
+        <div>
+            <label>Tienda</label>
+            <select id="filtroTienda">
+                <option value="-1">-- Seleccionar --</option>
+            </select>
+
+            <script>
+                $('#filtroTienda').on('change', function () {
+                    let idRegion = $('#filtroRegion').val();
+                    let WhsCode = $(this).val();
+                    CargarUsuarios(idRegion, WhsCode);
+                });
+
+                function CargarTiendas(idRegion) {
+                    $('#filtroTienda')
+                        .html('') // limpiar todo
+                        .append($('<option>', { value: '-1', text: '-- Seleccionar --' }))
+                        .val('-1')
+                        .trigger('change');
+
+                    $.ajax({
+                        url: '@Url.Action("ListadoTiendas", "BolsonActivo")',
+                        type: "POST",
+                        data: { IdRegion: idRegion },
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                $.each(data, function (index, item) {
+                                    $('#filtroTienda').append(
+                                        $('<option>', {
+                                            value: item.WhsCode,
+                                            text: item.WhsName
+                                        })
+                                    );
+                                });
+
+                                    if (data.length === 1) {
+                                        $('#filtroTienda').val(data[0].WhsCode).trigger('change');
+                                        $('#filtroTienda').prop('disabled', true);
+                                        CargarUsuarios(idRegion, data[0].WhsCode);
+                                    } else {
+                                        $('#filtroTienda').val('-1').trigger('change');
+                                        $('#filtroTienda').prop('disabled', false);
+                                        CargarUsuarios(idRegion, -1);
+                                    }
+                                } else {
+                                    $('#filtroTienda').val('-1');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error al cargar las tiendas:", error);
+                                $('#filtroTienda').val('-1');
+                            },
+                            complete: function () {
+                                $("#globalLoading").hide();
+                            }
+                    });
+                }
+            </script>
+        </div>
+
+        <div class="derecha">
+            <div style="flex: 1;">
+                <label>Asesor</label>
+                <select id="filtroAsesor">
+                    <option value="">-- Seleccionar --</option>
+                </select>
+                <script>
+                    function CargarUsuarios(idRegion, whsCode) {
+                        $('#filtroAsesor').html(''); // limpiar todo
+
+                        $.ajax({
+                            url: '@Url.Action("ListaDeAsesores", "BolsonActivo")',
+                            type: "POST",
+                            data: { IdRegion: idRegion, WhsCode: whsCode },
+                            success: function (data) {
+                                if (data && data.length > 0) {
+
+                                    // Si NO son 2, agregar "-- Seleccionar --"
+                                    if (data.length > 1) {
+                                        $('#filtroAsesor')
+                                            .append($('<option>', { value: '-101', text: '-- Seleccionar --' }));
+                                    }
+
+                                    $.each(data, function (index, item) {
+                                        $('#filtroAsesor').append(
+                                            $('<option>', {
+                                                value: item.SlpCode,
+                                                text: item.SlpName
+                                            })
+                                        );
+                                    });
+
+                                    if (data.length === 1) {
+                                        // Seleccionar automáticamente el único valor útil
+                                        $('#filtroAsesor').val(data[1].SlpCode).trigger('change');
+                                        $('#filtroAsesor').prop('disabled', true); // si quieres bloquearlo
+                                    } else {
+                                        $('#filtroAsesor').val('-101').trigger('change');
+                                        $('#filtroAsesor').prop('disabled', false);
+                                    }
+                                } else {
+                                    $('#filtroAsesor')
+                                        .html('')
+                                        .append($('<option>', { value: '-101', text: '-- Seleccionar --' }))
+                                        .val('-101')
+                                        .prop('disabled', false);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error al cargar los asesores:", error);
+                                $('#filtroAsesor').val('-101').prop('disabled', false);
+                            },
+                            complete: function () {
+                                $("#globalLoading").hide();
+                            }
+                        });
+                    }
+                </script>
+
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <label style="margin-bottom: 6px; font-weight: bold; text-align: center;">Referidos de SAC</label>
+
+                <label style="display: inline-flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="chkReferidos" style="display: none;">
+                    <span id="switchReferidos" style="
+                width: 40px;
+                height: 20px;
+                background-color: #ccc;
+                border-radius: 20px;
+                position: relative;
+                transition: background-color 0.2s;
+                display: inline-block;
+            ">
+                        <span style="
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 16px;
+                height: 16px;
+                background-color: white;
+                border-radius: 50%;
+                transition: left 0.2s;
+            "></span>
+                    </span>
+                </label>
+            </div>
+
+            <script>
+                const chk = document.getElementById("chkReferidos");
+                const knob = document.getElementById("switchReferidos").firstElementChild;
+                const bg = document.getElementById("switchReferidos");
+
+                chk.addEventListener("change", function () {
+                    if (this.checked) {
+                        bg.style.backgroundColor = "#4CAF50";
+                        knob.style.left = "22px";
+                    } else {
+                        bg.style.backgroundColor = "#ccc";
+                        knob.style.left = "2px";
+                    }
+                });
+            </script>
+            <button id="btnFiltrar">Filtrar</button>
+        </div>
+    </div>
+
+    <div class="paneles-container">
+        <div class="panel">
+            <h3>Activos</h3>
+            <span id="txtActivos">Q0.00</span>
+        </div>
+        <div class="panel">
+            <h3>Nuevos</h3>
+            <span id="txtNuevos">Q0.00</span>
+        </div>
+        <div class="panel">
+            <h3>Facturado</h3>
+            <span id="txtFacturados">Q0.00</span>
+        </div>
+        <div class="panel">
+            <h3>Perdidos</h3>
+            <span id="txtPerdidos">Q0.00</span>
+        </div>
+    </div>
+    <style>
+        .contenedor-tabla {
+            max-height: 70vh;
+            overflow-y: auto;
+            background-color: white;
+        }
+
+        .tablaBolson {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            .tablaBolson th, .tablaBolson td {
+                padding: 8px;
+                text-align: center;
+                border: 1px solid #dee2e6;
+            }
+
+            .tablaBolson thead th {
+                position: sticky;
+                top: 0;
+                background-color: #f8f9fa;
+                z-index: 1;
+            }
+    </style>
+
+    <div style="max-height: 70vh; overflow-y: auto; background-color:white">
+        <table class="tablaBolson" style="width: 100%; border-collapse: collapse; font-size:12px" border="1">
+            <thead style="background-color: #f8f9fa; color: #212529; font-weight: bold; text-align: center; border-bottom: 2px solid #dee2e6;">
+                <tr>
+                    <th style="padding: 8px; text-align: center">-</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">DocEntry</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">DocNum</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">IdRegion</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">Región</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">WhsCode</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">Tienda</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">SlpCode</th>
+                    <th style="padding: 8px; text-align: center">Asesor</th>
+                    <th style="padding: 8px; text-align: center">NIT</th>
+                    <th style="padding: 8px; text-align: center">Nombre</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Teléfono</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Fecha</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Total</th>
+                    <th style="cursor:pointer; padding:8px; text-align:center;">
+                        Fecha Posible Compra
+                        <button onclick="toggleFiltroFechas(event)" style="border:none; background:none; cursor:pointer;">
+                            <i class="fa fa-filter" style="margin-left:5px; color:gray;"></i>
+                        </button>
+
+                        <!-- Filtro de fechas emergente -->
+                        <div id="filtroFechas" style="display:none; position:absolute; top:100%; right:0; background:white; border:1px solid #ccc; padding:10px; z-index:1000; box-shadow: 0 0 10px rgba(0,0,0,0.2); border-radius:5px;">
+                            <label style="font-size: 12px;">Desde:</label>
+                            <input type="date" id="fechaInicio" style="width:100%; margin-bottom:5px;"><br>
+                            <label style="font-size: 12px;">Hasta:</label>
+                            <input type="date" id="fechaFin" style="width:100%; margin-bottom:5px;"><br>
+
+                            <div style="display: flex; justify-content: space-between; gap: 5px;">
+                                <button onclick="filtrarPorFechas()" title="Filtrar" style="flex: 1; background:#007bff; color:white; border:none; padding:5px; border-radius:3px; font-size: 12px;">
+                                    Filtrar
+                                </button>
+                                <button onclick="quitarFiltroFechas()" title="Quitar filtro" style="background:#dc3545; color:white; border:none; padding:5px; border-radius:3px; font-size: 12px;">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Estado</th>
+                    <th onclick="sortTable(this.cellIndex)" style="cursor:pointer; padding:8px; text-align:center">Fecha Seguimiento</th>
+                    <th class="oculto" style="padding: 8px; text-align: center">Tipo</th>
+                    <th style="padding: 8px; text-align:center">Opciones</th>
+                </tr>
+            </thead>
+            <tbody id="BolsonActivo" class="BolsonActivo">
+            </tbody>
+        </table>       
+        <script>
+            // Mostrar/ocultar el filtro de fechas
+            function toggleFiltroFechas(event) {
+                event.stopPropagation(); // evita que el clic cierre el panel
+                const filtro = document.getElementById("filtroFechas");
+                filtro.style.display = (filtro.style.display === "none" || filtro.style.display === "") ? "block" : "none";
+            }
+
+            // Escucha clics en el documento para cerrar si hacen clic afuera
+            document.addEventListener("click", function (event) {
+                const filtro = document.getElementById("filtroFechas");
+                const boton = event.target.closest("button");
+                const dentroDelFiltro = filtro.contains(event.target);
+
+                // Si no se hizo clic dentro del filtro ni en el botón del filtro, ocultar
+                if (!dentroDelFiltro && !(boton && boton.innerHTML.includes('fa-filter'))) {
+                    filtro.style.display = "none";
+                }
+            });
+
+            // Esta función se llama cuando haces clic en el botón "Filtrar"
+            function filtrarPorFechas() {
+                let idRegion = $('#filtroRegion').val();
+                let whsCode = $('#filtroTienda').val();
+                let slpCode = $('#filtroAsesor').val();
+                let fechaInicio = $('#fechaInicio').val();
+                let fechaFin = $('#fechaFin').val();
+
+                // Ejecutar la carga de datos
+                cargarTabla(idRegion, whsCode, slpCode, fechaInicio, fechaFin);
+
+
+                //const inicio = document.getElementById("fechaInicio").value;
+                //const fin = document.getElementById("fechaFin").value; 
+
+                //// Luego de filtrar, cerrar el filtro
+                document.getElementById("filtroFechas").style.display = "none";
+            }
+
+            function quitarFiltroFechas() {
+
+            }
+        </script>
+    </div>
+</div>
+
+<div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-confirm" style="max-width: 700px; margin: auto;">
+        <div class="modal-content" style="border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+
+            <!-- Header -->
+            <div class="modal-header" style="display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #ddd; padding: 15px;">
+                <h5 class="modal-title" id="miModalLabel" style="margin: 0; font-weight: bold; display: flex; align-items: center;">
+                    <i class="fas fa-tasks" style="color: #007bff; margin-right: 10px;"></i> Seguimiento
+                </h5>
+            </div>
+
+            <div class="modal-body" style="background-color: #fdfdfd; padding: 20px; border-radius: 8px;">
+                <form id="formSeguimiento">
+
+                    <div style="margin-bottom: 15px; display:none">
+                        <label for="txtDocEntry" style="font-weight: bold; display: block; margin-bottom: 4px;">DocEntry <a style="color:red">*</a></label>
+                        <input type="text" id="txtDocEntry"
+                               style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px;" disabled>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="txtDocNum" style="font-weight: bold; display: block; margin-bottom: 4px;">No. Documento <a style="color:red">*</a></label>
+                        <input type="text" id="txtDocNum"
+                               style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px;" disabled>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="txtMedioContacto" style="font-weight: bold; display: block; margin-bottom: 4px;">Medio de Contacto <a style="color:red">*</a></label>
+                        <select id="txtMedioContacto"
+                                style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px;">
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="txtNotas" style="font-weight: bold; display: block; margin-bottom: 4px;">Observaciones<a style="color:red">*</a></label>
+                        <textarea id="txtNotas" rows="2"
+                                  style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+                    </div>
+
+                    <style>
+                        .list-container {
+                            display: flex;
+                            gap: 20px;
+                            margin: 5px 0;
+                            font-size: 12px;
+                        }
+
+                        .list {
+                            flex: 1;
+                            min-height: 150px;
+                            border: 2px dashed #aaa;
+                            border-radius: 8px;
+                            padding: 5px;
+                            background: #f9f9f9;
+                        }
+
+                            .list h4 {
+                                text-align: center;
+                                margin-bottom: 10px;
+                                font-size: 12px;
+                                font-family: sans-serif;
+                            }
+
+                        .flag {
+                            display: inline-block;
+                            padding: 4px 6px;
+                            margin: 5px;
+                            border-radius: 6px;
+                            background: #eaeaea;
+                            cursor: grab;
+                            font-size: 12px;
+                            font-weight: bold;
+                            transition: 0.2s;
+                        }
+
+                            .flag:active {
+                                cursor: grabbing;
+                                opacity: 0.6;
+                            }
+
+                        .acciones {
+                            width: 200px; /* Ancho del contenedor */
+                            height: 150px; /* Alto fijo */
+                            border: 1px solid #ccc;
+                            border-radius: 8px;
+                            padding: 10px;
+                            overflow-y: auto; /* Scroll vertical */
+                            background: #f9f9f9;
+                        }
+
+                        .accion {
+                            padding: 8px;
+                            margin: 5px 0;
+                            background: #fff;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            cursor: grab; /* Para que se vea arrastrable */
+                        }
+                    </style>
+
+                    <div class="list-container">
+                        <div class="list" id="list1">
+                            <h4>Disponibles</h4>
+                        </div>
+
+                        <div class="list" id="list2">
+                            <h4>Acciones implementadas</h4>
+                        </div>
+
+                        <script>
+                            $(document).ready(function () {
+                                $.ajax({
+                                    url: "/BolsonActivo/GetAcciones", // <-- tu endpoint
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (data) {
+                                        const tbody = $('#list1');
+
+                                        data.forEach(item => {
+                                            // Si item.Icono no existe o está vacío, asignar un icono por defecto
+                                            const icono = item.Icono && item.Icono.trim() !== "" ? item.Icono : "fas fa-question-circle";
+
+                                            const fila = $(`
+                                                            <div class="flag accion" draggable="true" style="margin:5px;" data-codigo="${item.Codigo}">
+                                                                <i class="${icono}"></i> ${item.Nombre}
+                                                            </div>
+                                                        `);
+                                            tbody.append(fila);
+                                        });
+
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Error cargando acciones:", error);
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+
+                    <script>
+                        // Drag start y drag end para elementos .flag, incluso los dinámicos
+                        document.addEventListener("dragstart", function (e) {
+                            if (e.target.classList.contains("flag")) {
+                                e.dataTransfer.setData("text/plain", e.target.outerHTML);
+                                e.dataTransfer.effectAllowed = "move";
+                                e.target.classList.add("dragging");
+                            }
+                        });
+
+                        document.addEventListener("dragend", function (e) {
+                            if (e.target.classList.contains("flag")) {
+                                e.target.classList.remove("dragging");
+                            }
+                        });
+
+                        // Dragover y drop para listas
+                        document.querySelectorAll('.list').forEach(list => {
+                            list.addEventListener('dragover', e => {
+                                e.preventDefault();
+                                e.dataTransfer.dropEffect = "move";
+                            });
+
+                            list.addEventListener('drop', e => {
+                                e.preventDefault();
+                                const draggedEl = document.querySelector(".dragging");
+
+                                if (draggedEl && draggedEl.parentNode !== list) {
+                                    list.appendChild(draggedEl);
+                                }
+                            });
+                        });
+
+                    </script>
+
+                    <div style="margin-bottom: 15px; margin-top:6px;">
+                        <label for="txtFechaCompra" style="font-weight: bold; display: block; margin-bottom: 6px;">Posible Fecha de Compra <a style="color:red">*</a></label>
+                        <input type="date" id="txtFechaCompra"
+                               style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="txtProximoSeg" style="font-weight: bold; display: block; margin-bottom: 6px;">Fecha Próximo Seguimiento <a style="color:red">*</a></label>
+                        <input type="date" id="txtProximoSeg"
+                               style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="chkPerdida" style="font-weight: bold; display: flex; align-items: center; font-size: 1.05rem;">
+                            <input type="checkbox" id="chkPerdida"
+                                   style="margin-right: 10px; transform: scale(1.3); width: 16px; height: 16px;">
+                            Cotización perdida
+                        </label>
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <label for="txtMotivoPerdida" style="font-weight: bold; display: block; margin-bottom: 6px;">Motivo de la cotización perdida <a style="color:red">*</a></label>
+                        <select id="txtMotivoPerdida"
+                                disabled
+                                style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px;">
+                        </select>
+                    </div>
+                    <script>
+                        document.getElementById("chkPerdida").addEventListener("change", function () {
+                            const isChecked = this.checked;
+
+                            const camposAControlar = [
+                                "txtFechaCompra",
+                                "txtProximoSeg",
+                                "crmEstado",
+                                "txttipoContacto",
+                                "txtaccionRealizada",
+                                "txtMedioContacto",
+                                "txtMotivoPerdida"
+                            ];
+
+                            camposAControlar.forEach(id => {
+                                const el = document.getElementById(id);
+                                if (el) {
+                                    el.disabled = isChecked;
+                                    el.style.backgroundColor = isChecked ? "#f5f5f5" : "#ffffff";
+                                    el.style.opacity = isChecked ? "0.6" : "1";
+
+                                    // Limpiar si está marcado
+                                    if (isChecked) {
+                                        if (el.tagName === "INPUT" && el.type === "date") {
+                                            el.value = "";
+                                        }
+                                        if (el.id === "txtMedioContacto") {
+                                            el.value = "-1";
+                                        }
+                                    } else {
+                                        if (el.id === "txtMotivoPerdida") {
+                                            el.value = "-1";
+                                        }
+                                    }
+                                }
+                            });
+
+                            // Activar txtMotivoPerdida solo si el checkbox está marcado
+                            const motivoPerdida = document.getElementById("txtMotivoPerdida");
+                            motivoPerdida.disabled = !isChecked;
+                            motivoPerdida.style.backgroundColor = isChecked ? "#ffffff" : "#f5f5f5";
+                            motivoPerdida.style.opacity = isChecked ? "1" : "0.6";
+                        });
+                    </script>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer" style="border-top: none; text-align: center;">
+                <button id="btnCerrarModaSeguimiento" type="button"
+                        class="btn btn-secondary"
+                        style="padding: 10px 20px; font-size: 16px; border-radius: 4px; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fa fa-times"></i> Cerrar
+                </button>
+
+                <button id="btnSaveSeguimiento" type="button"
+                        class="btn btn-success"
+                        style="padding: 10px 20px; font-size: 16px; border-radius: 4px; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    input:disabled {
+        background-color: #e9ecef; /* gris por defecto */
+    }
+
+    input:enabled {
+        background-color: white !important;
+    }
+
+    select:disabled {
+        background-color: #e9ecef; /* gris por defecto */
+    }
+
+    select:enabled {
+        background-color: white !important;
+    }
+
+</style>
+
+<script>
+    let sortDirection = {};
+
+    function sortTable(colIndex) {
+        const table = document.querySelector(".tablaBolson");
+        const tbody = table.tBodies[0];
+
+        // OCULTAMOS TODAS LAS FILAS EXPANDIDAS para que no queden visibles
+        document.querySelectorAll('.fila-expandida').forEach(expandedRow => {
+            expandedRow.style.display = 'none';
+        });
+
+        // RECOLECTAMOS filas principales y sus filas expandidas
+        const rows = [];
+        const allRows = Array.from(tbody.querySelectorAll("tr"));
+
+        for (let i = 0; i < allRows.length; i++) {
+            const row = allRows[i];
+            if (!row.classList.contains('fila-expandida')) {
+                rows.push({
+                    mainRow: row,
+                    expandedRows: []
+                });
+                let j = i + 1;
+                while (j < allRows.length && allRows[j].classList.contains('fila-expandida')) {
+                    rows[rows.length - 1].expandedRows.push(allRows[j]);
+                    j++;
+                }
+            }
+        }
+
+        // ORDENAMOS filas principales
+        const dir = sortDirection[colIndex] === "asc" ? "desc" : "asc";
+        sortDirection[colIndex] = dir;
+
+        rows.sort((a, b) => {
+            let aText = a.mainRow.cells[colIndex]?.innerText.trim() || '';
+            let bText = b.mainRow.cells[colIndex]?.innerText.trim() || '';
+
+            const parseMonto = val => parseFloat(val.replace(/[Q,]/g, '').trim()) || 0;
+            const parseFecha = val => {
+                const parts = val.split('/');
+                return parts.length === 3 ? new Date(parts[2], parts[1] - 1, parts[0]) : new Date(val);
+            };
+
+            const isMonto = aText.startsWith('Q') && bText.startsWith('Q');
+            const isFecha = aText.includes('/') && bText.includes('/');
+
+            if (isMonto) {
+                let aVal = parseMonto(aText);
+                let bVal = parseMonto(bText);
+                return dir === "asc" ? aVal - bVal : bVal - aVal;
+            }
+
+            if (isFecha) {
+                let aDate = parseFecha(aText);
+                let bDate = parseFecha(bText);
+                return dir === "asc" ? aDate - bDate : bDate - aDate;
+            }
+
+            return dir === "asc"
+                ? aText.localeCompare(bText)
+                : bText.localeCompare(aText);
+        });
+
+        // LIMPIAMOS el tbody y REINSERTAMOS filas principales y expandidas (expandidas ocultas)
+        tbody.innerHTML = '';
+
+        rows.forEach(item => {
+            tbody.appendChild(item.mainRow);
+            item.expandedRows.forEach(expRow => {
+                expRow.style.display = 'none';  // nos aseguramos que estén ocultas
+                tbody.appendChild(expRow);
+            });
+        });
+    }
+
+        $('#btnFiltrar').on('click', function () {
+            let idRegion = $('#filtroRegion').val();
+            let whsCode = $('#filtroTienda').val();
+            let slpCode = $('#filtroAsesor').val();
+            let fechaInicio = $('#fechaInicio').val();
+            let fechaFin = $('#fechaFin').val();
+            let refSac = $('#chkReferidos').prop('checked');
+
+            // Ejecutar la carga de datos
+            cargarTabla(idRegion, whsCode, slpCode, fechaInicio, fechaFin, refSac);
+        });
+
+    function cargarTabla(idRegion, whsCode, slpCode, fechai, fechaf, refSac) {
+        console.log(refSac);
+    // Mostrar loading si lo usas
+        $("#globalLoading").show();
+
+        $.ajax({
+            url: '@Url.Action("CargarData", "BolsonActivo")',
+            type: "POST",
+            data: { IdRegion: idRegion, WhsCode: whsCode, SlpCode: slpCode, FechaI: fechai, FechaF: fechaf, ReferidoSac: refSac == true ? -2000 : null },
+            success: function (data) {
+                const $tbody = $('tbody.BolsonActivo');
+                $tbody.empty();
+
+                $('#txtActivos').text("Q 0.00");
+                $('#txtNuevos').text("Q 0.00");
+                $('#txtFacturados').text("Q 0.00");
+                $('#txtPerdidos').text("Q 0.00");
+
+                if (data && data.length > 0) {
+                    $('#txtActivos').text('Q' + parseFloat(data[0].Activo).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    $('#txtNuevos').text('Q' + parseFloat(data[0].Nuevos).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    $('#txtFacturados').text('Q' + parseFloat(data[0].Facturado).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    $('#txtPerdidos').text('Q' + parseFloat(data[0].Perdida).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+                    let totalGeneral = 0;
+
+                    $.each(data, function (index, item) {
+                        const fila = $('<tr class="fila-principal">');
+
+                        // Botón expandir
+                        fila.append(`
+                            <td style="text-align: center;">
+                                <button class="btn btn-sm btn-expandir" type="button" title="Expandir" style="background-color: #0d6efd; color: white; border: none; width: 34px; height: 34px;
+                                           font-weight: bold; font-size: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: background-color 0.2s ease;">
+                                    +
+                                </button>
+                            </td>
+                        `);
+
+                        fila.append(`<td class="oculto">${item.DocEntry}</td>`);
+                        fila.append(`<td class="oculto">${item.DocNum}</td>`);
+                        fila.append(`<td class="oculto">${item.IdRegion}</td>`);
+                        fila.append(`<td class="oculto">${item.Region}</td>`);
+                        fila.append(`<td class="oculto">${item.WhsCode}</td>`);
+                        fila.append(`<td class="oculto">${item.WhsName}</td>`);
+                        fila.append(`<td class="oculto">${item.SlpCode}</td>`);
+                        fila.append(`<td>${item.SlpName}</td>`);
+                        fila.append(`<td>${item.Nit}</td>`);
+                        fila.append(`<td>${item.Nombre}</td>`);
+                        fila.append(`<td>${item.Telefono ? item.Telefono : '--'}</td>`);
+                        fila.append(`<td style="text-align:center">${formatearFecha(item.DocDate)}</td>`);
+                        fila.append(`<td style="text-align:right">${formatearTotal(item.DocTotal)}</td>`);
+                        fila.append(`<td style="text-align:center">${formatearFecha(item.PosibleFechaCom)}</td>`);
+                        let icono = '';
+                        switch (item.Estado) {
+                            case 'Aprobado':
+                                icono = '<i class="fas fa-check-circle text-success"></i>'; // verde
+                                break;
+                            case 'En seguimiento':
+                                icono = '<i class="fas fa-location-arrow text-info"></i>'; // azul claro
+                                break;
+                            case 'Abierto':
+                                icono = '<i class="fas fa-folder-open text-primary"></i>'; // azul
+                                break;
+                            case 'Abierto Autorizado':
+                                icono = '<i class="fas fa-check-circle text-success"></i>'; // Verde con check
+                                break;
+                            case 'Pendiente':
+                                icono = '<i class="fas fa-hourglass-half text-warning"></i>'; // amarillo
+                                break;
+                            case 'Rechazado':
+                                icono = '<i class="fas fa-times-circle text-danger"></i>'; // rojo
+                                break;
+                            case 'Revision':
+                                icono = '<i class="fas fa-exclamation-circle text-info"></i>'; // celeste
+                                break;
+                            default:
+                                icono = '<i class="fas fa-question-circle text-secondary"></i>'; // gris
+                                break;
+                        }
+
+                        fila.append(`<td style="text-align:center">${icono} ${item.Estado}</td>`);
+
+                        fila.append(`<td style="text-align:center">${formatearFecha(item.FechaSeguimiento)}</td>`);
+                        fila.append(`<td class="oculto">${item.Tipo}</td>`);
+
+                        if (item.Tipo == 1) {
+                            fila.append(`<td style="text-align: center; vertical-align: middle;">
+                              <div style="display: inline-flex; gap: 5px; justify-content: center; align-items: center;">                                
+                                <button type="button" class="btn btn-sm btn-success btn-btnDetalle" title="Ver detalle">📄</button>
+                              </div>
+                        </td>`);
+                        } else {
+                            fila.append(`<td style="text-align: center; vertical-align: middle;">
+                              <div style="display: inline-flex; gap: 5px; justify-content: center; align-items: center;">
+                                <button type="button" class="btn btn-sm btn-primary btn-seguimiento" title="Seguimiento">🔍</button>
+                                <button type="button" class="btn btn-sm btn-success btn-btnDetalle" title="Ver detalle">📄</button>
+                              </div>
+                        </td>`);
+                        }                        
+
+                        $tbody.append(fila);
+                        // Fila expandida oculta
+                        const filaExpandida = $(`
+                            <tr class="fila-expandida" style="display: none;">
+                                <td colspan="15" class="bg-light">
+                                    <div class="contenido-expandido">
+                                        <div>Cargando detalles...</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                        $tbody.append(filaExpandida);
+
+                        // Sumar total
+                        totalGeneral += parseFloat(item.DocTotal || 0);
+                    });
+
+                    // Fila con total general
+                    const filaTotal = $(`
+                        <tr style="font-weight: bold; background-color: #e9ecef;">
+                            <td colspan="6" style="text-align: right;">Total general:</td>
+                            <td style="text-align: right;">${formatearTotal(totalGeneral)}</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    `);
+                    $tbody.append(filaTotal);
+
+                    // Manejar clic en botón de expandir
+                    $tbody.off('click', '.btn-expandir').on('click', '.btn-expandir', function () {
+                        const btn = $(this);
+                        const filaPrincipal = btn.closest('tr');
+                        const filaExpandida = filaPrincipal.next('.fila-expandida');
+
+                        if (filaExpandida.is(':visible')) {
+                            filaExpandida.hide();
+                            btn.text('+');
+                        } else {
+                            // Cerrar otras filas abiertas
+                            $tbody.find('.fila-expandida').hide();
+                            $tbody.find('.btn-expandir').text('+');
+
+                            // Mostrar fila expandida actual
+                            filaExpandida.show();
+
+                            /*console.log(filaExpandida.show());*/
+                            btn.text('-');
+
+                            const _Docentry = filaPrincipal.find('td').eq(1).text();
+                            const _Tipo = filaPrincipal.find('td').eq(17).text();
+                            const tablaDetalle = $(`
+                                        <div class="tab-buttons">
+                                          <div class="tab-button active" data-tab="detalle">Detalle</div>
+                                          <div class="tab-button" data-tab="seguimientos">Seguimientos</div>
+                                        </div>
+                                        <div id="detalle" class="tab-content active">
+                                          <table style="width: 100%; border-collapse: collapse; border: 1px solid black;">
+                                            <thead style="background-color: white; color: black; text-align: center;">
+                                                <tr>
+                                                    <th style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%; text-align:center">Código</th>
+                                                    <th style="padding: 8px; border: 1px solid black; text-align:center">Producto</th>
+                                                    <th style="padding: 8px; border: 1px solid black; width: 130px; text-align:center">Cantidad</th>
+                                                    <th style="padding: 8px; border: 1px solid black; width: 130px; text-align:center">Precio Unitario</th>
+                                                    <th style="padding: 8px; border: 1px solid black; width: 130px; text-align:center">Precio c/Desc.</th>
+                                                    <th style="padding: 8px; border: 1px solid black; width: 130px; text-align:center">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="Detalle" class="Detalle"></tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right; font-weight: bold; padding: 8px; border: 1px solid black;">Subtotal:</td>
+                                                    <td style="text-align: right; font-weight: bold; padding: 8px; border: 1px solid black;" class="subtotal">Q 0.00</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right; font-weight: bold; padding: 8px; border: 1px solid black;">Descuento Promedio (%):</td>
+                                                    <td style="text-align: right; font-weight: bold; padding: 8px; border: 1px solid black;" class="descuento-total">0.00 %</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right; font-weight: bold; padding: 8px; border: 1px solid black;">Total General:</td>
+                                                    <td style="text-align: right; font-weight: bold; padding: 8px; border: 1px solid black;" class="total-general">Q 0.00</td>
+                                                </tr>
+                                            </tfoot>
+                                          </table>
+                                        </div>
+                                        <div id="seguimientos" class="tab-content">
+                                          <table id="tblSeguimientos" class='tblSeguimientos' style="width: 100%; border-collapse: collapse; border: 1px solid black;">
+                                            <thead style="background-color: white; color: black; text-align: center;">
+                                              <tr>
+                                                <th style="padding: 8px; border: 1px solid black; text-align: center;">Creado</th>
+                                                <th style="padding: 8px; border: 1px solid black; text-align: center;">Medio Contacto</th>
+                                                <th style="padding: 8px; border: 1px solid black; text-align: center;">Notas</th>
+                                                <th style="padding: 8px; border: 1px solid black; text-align: center;">Fecha Posible Compra</th>
+                                                <th style="padding: 8px; border: 1px solid black; text-align: center;">Próximo Seguimiento</th>
+                                                <th style="padding: 8px; border: 1px solid black; text-align: center;">Usuario</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody id="bodySeguimiento" class="bodySeguimiento">
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                    `);
+
+                            $.ajax({
+                                url: '/BolsonActivo/ObtenerDetalles',
+                                method: 'GET',
+                                data: { DocEntry: _Docentry, Tipo: _Tipo },
+                                success: function (detalles) {
+                                    const detalleId = `detalle-${_Docentry}`;                                    
+                                    const seguimientosId = `seguimientos-${_Docentry}`;
+                                    const tbodyDetalle = tablaDetalle.find('tbody.Detalle');
+                                    let subtotal = 0;
+                                    let totalConDescuento = 0;
+
+                                    if (detalles && detalles.length > 0) {
+                                        $.each(detalles, function (i, d) {
+                                            subtotal += d.Price * d.Quantity;
+                                            totalConDescuento += d.LineTotal;
+                                            tbodyDetalle.append(`
+                                                <tr>
+                                                    <td style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%;">${d.ItemCode}</td>
+                                                    <td style="padding: 8px; border: 1px solid black;">${d.Dscription}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; width: 130px; text-align:center">${d.Quantity}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; width: 130px; text-align:right">${formatearTotal(d.Price)}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; width: 130px; text-align:right">${d.Descuento}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; width: 130px; text-align:right">${formatearTotal(d.LineTotal)}</td>
+                                                </tr>
+                                            `);
+                                        });
+
+                                        const descuentoPromedio = 100 - ((totalConDescuento / subtotal) * 100);
+                                        tablaDetalle.find('.subtotal').text(formatearTotal(subtotal));
+                                        tablaDetalle.find('.total-general').text(formatearTotal(totalConDescuento));
+                                        tablaDetalle.find('.descuento-total').text(descuentoPromedio.toFixed(2) + ' %');
+                                    } else {
+                                        tbodyDetalle.append('<tr><td colspan="6" style="text-align: center; color: #888;">Sin detalles</td></tr>');
+                                    }
+
+                                    filaExpandida.find('.contenido-expandido').html(tablaDetalle);
+
+                                    // Tab switching script
+                                    filaExpandida.on('click', '.tab-button', function () {
+                                        const button = $(this);
+                                        const parent = button.closest('.contenido-expandido');
+                                        const tab = button.data('tab');
+
+                                        parent.find('.tab-button').removeClass('active');
+                                        button.addClass('active');
+
+                                        parent.find('.tab-content').removeClass('active');
+                                        parent.find(`#${tab}`).addClass('active');
+                                    });
+                                },
+                                error: function () {
+                                    filaExpandida.find('.contenido-expandido').html('<div style="color:red;">Error al cargar detalles</div>');
+                                }
+                            });
+
+                            $.ajax({
+                                url: '/BolsonActivo/ObtenerHistorial',
+                                method: 'GET',
+                                data: { DocEntry: _Docentry, Tipo: _Tipo },
+                                success: function (detalles) {
+                                    const tbodySeguimiento = tablaDetalle.find('tbody.bodySeguimiento');
+                                    if (detalles && detalles.length > 0) {
+                                        $.each(detalles, function (i, d) {
+                                            tbodySeguimiento.append(`
+                                                <tr>
+                                                    <td style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%;">${formatearFecha(d.FechaCreado)}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%;">${d.NombreMedioContacto}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%;">${d.Notas}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%;">${formatearFecha(d.PosFechaCompra)}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%;">${formatearFecha(d.FechaSeguimiento)}</td>
+                                                    <td style="padding: 8px; border: 1px solid black; white-space: nowrap; width: 1%;">${d.Usuario}</td>
+                                                </tr>
+                                            `);
+                                        });
+                                    } else {
+                                        tbodySeguimiento.append('<tr><td colspan="6" style="text-align: center; color: #888;">Sin detalles</td></tr>');
+                                    }
+                                },
+                                error: function () {
+                                    filaExpandida.find('.contenido-expandido').html('<div style="color:red;">Error al cargar detalles</div>');
+                                }
+                            });
+                        }
+                    });
+
+                    $tbody.on('click', '.btn-seguimiento', function () {
+                        const fila = $(this).closest('tr');
+                        limpiarCampos();
+
+                        const DocEntry = fila.find('td.oculto').eq(0).text();
+                        const DocNum = fila.find('td.oculto').eq(1).text();
+                        $('#txtDocEntry').val(DocEntry);
+                        $('#txtDocNum').val(DocNum);
+
+                        $("#modalSeguimiento").modal('show');
+                    });
+
+                    $tbody.on('click', '.btn-btnDetalle', function () {
+                        const fila = $(this).closest('tr');
+                        const DocEntry = fila.find('td.oculto').eq(0).text();
+                        const Tipo = fila.find('td.oculto').eq(7).text();                        
+                        window.location.href = "/Ventas/Detalle?DocEntry=" + DocEntry + "&Tipo=" + Tipo;
+                    })
+                } else {
+                    $tbody.append(`<tr><td colspan="15" class="text-center">No hay resultados</td></tr>`);
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al cargar los datos:", error);
+            },
+            complete: function () {
+                $("#globalLoading").hide();
+            }
+        });
+    }
+
+
+    document.getElementById("txtMotivoPerdida").disabled = true;
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Ventas/getAllTiposCrm", // Ajusta la URL según tu backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $select = $("#txtMedioContacto");
+                $select.empty(); // Limpiar el select antes de agregar opciones
+                $select.append('<option value="-1">-- Seleccione --</option>');
+                // Recorrer los datos y agregarlos al select
+                $.each(data, function (index, item) {
+                    $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                });
+            },
+            error: function () {
+                console.error("Error al cargar los estados.");
+            }
+        });
+
+        $.ajax({
+            url: "/Ventas/getAllEstadoPerdidas", // Ajusta la URL según tu backend
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let $select = $("#txtMotivoPerdida");
+                $select.empty(); // Limpiar el select antes de agregar opciones
+                $select.append('<option value="-1">-- Seleccione --</option>');
+                // Recorrer los datos y agregarlos al select
+                $.each(data, function (index, item) {
+                    $select.append(`<option value="${item.Id}">${item.Dscription}</option>`);
+                });
+            },
+            error: function () {
+                console.error("Error al cargar los estados.");
+            }
+        });
+    });
+
+        
+        
+        document.getElementById('btnCerrarModaSeguimiento').addEventListener('click', function () {
+            $("#modalSeguimiento").modal('hide');
+        });
+
+        document.getElementById('btnSaveSeguimiento').addEventListener('click', function () {
+        const chkPerdida = document.getElementById('chkPerdida');
+        const medioContacto = document.getElementById('txtMedioContacto');
+        const notas = document.getElementById('txtNotas');
+        const fechaCompra = document.getElementById('txtFechaCompra');
+        const proximoSeg = document.getElementById('txtProximoSeg');
+        const motivoPerdida = document.getElementById('txtMotivoPerdida');
+
+        if (!notas.value.trim()) {
+            alert("Escribe alguna observación o acción realizada.");
+            notas.focus();
+            return;
+        }
+
+        if (chkPerdida.checked) {
+            // Validaciones solo para cotización perdida
+            if (!motivoPerdida.value || motivoPerdida.value === "0" || motivoPerdida.value === "-1") {
+                alert("Si marcaste que se perdió, dime por qué… ¡Vamos! selecciona el motivo de la cotización perdida");
+                motivoPerdida.focus();
+                return;
+            }
+        } else {
+            // Validaciones normales
+            if (!medioContacto.value || medioContacto.value === "0" || medioContacto.value == "-1") {
+                alert("Selecciona un medio de contacto.");
+                medioContacto.focus();
+                return;
+            }
+            if (!fechaCompra.value) {
+                alert("No olvides seleccionar la posible fecha de compra.");
+                fechaCompra.focus();
+                return;
+            }
+            if (!proximoSeg.value) {
+                alert("¿Y cuándo le vas a dar seguimiento? Selecciona la fecha.");
+                proximoSeg.focus();
+                return;
+            }
+        }
+
+        if (chkPerdida.checked) {
+            Swal.fire({
+                title: '¡Atención!',
+                text: '¿Estás seguro de marcar esta cotización como perdida? Esta acción indica que no continuarás con el proceso.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, estoy seguro',
+                cancelButtonText: 'No, cancelar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true,
+                backdrop: `rgba(255,0,0,0.1)`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guardarSeguimiento();
+                } else {
+                    Swal.fire({
+                        title: 'Cotización NO marcada como perdida',
+                        icon: 'info',
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        } else {
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: '¿Desea guardar el seguimiento?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guardarSeguimiento();
+                }
+            });
+        }
+        });
+
+    function resetearListas() {
+
+        const list1 = document.getElementById('list1');
+        const list2 = document.getElementById('list2');
+
+        // Mover solo los elementos después del h4
+        while (list2.children.length > 1) {
+            list1.appendChild(list2.children[1]); // siempre el siguiente al h4
+        }
+    }
+
+
+    function guardarSeguimiento() {
+        $("#globalLoading").show();
+
+        const codigos = Array.from(document.querySelectorAll('#list2 .flag'))
+            .map(el => el.dataset.codigo)
+            .join(',');
+
+        console.log(codigos);
+            // Capturar los valores de los inputs
+            var data = {
+                DocEntry: document.getElementById("txtDocEntry").value,
+                DocNum: document.getElementById("txtDocNum").value,
+                MedioContacto: document.getElementById("txtMedioContacto").value,
+                Notas: document.getElementById("txtNotas").value,
+                PosFechaCompra: document.getElementById("txtFechaCompra").value,
+                FechaSeguimiento: document.getElementById("txtProximoSeg").value,
+                EstadoPerdida: document.getElementById("chkPerdida").checked ? "Y" : "N",
+                MotivoPerdida: document.getElementById("txtMotivoPerdida").value,
+                Acciones: codigos
+            };
+
+            // Enviar datos con AJAX
+            $.ajax({
+                url: "/Ventas/SaveSeguimiento", // Ruta a tu backend en ASP.NET
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (response.result === 1) {
+                        $("#globalLoading").hide();
+
+                        Swal.fire({
+                            title: 'Se guardó correctamente',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false
+                        }).then(() => {
+                            let idRegion = $('#filtroRegion').val();
+                            let whsCode = $('#filtroTienda').val();
+                            let slpCode = $('#filtroAsesor').val();
+                            let fechaInicio = $('#fechaInicio').val();
+                            let fechaFin = $('#fechaFin').val();
+
+                            // Ejecutar la carga de datos
+                            cargarTabla(idRegion, whsCode, slpCode, fechaInicio, fechaFin);
+                            limpiarCampos();                            
+
+                            $("#modalSeguimiento").modal('hide');
+                            $("#globalLoading").hide();
+                        });
+
+                    } else {
+                        alert("Error: " + response.message);
+                        $("#globalLoading").hide();
+                    }
+                },
+                error: function () {
+                    alert("Error al enviar la solicitud.");
+                    $("#globalLoading").hide();
+                }
+            });
+    }
+
+    function limpiarCampos() {
+        document.getElementById("txtDocEntry").value = "";
+        document.getElementById("txtDocNum").value = "";
+        document.getElementById("txtMedioContacto").value = "-1";
+        document.getElementById("txtMedioContacto").disabled = false;
+        document.getElementById("txtNotas").value = "";
+        document.getElementById("txtFechaCompra").value = "";
+        document.getElementById("txtFechaCompra").disabled = false;
+        document.getElementById("txtProximoSeg").value = "";
+        document.getElementById("txtProximoSeg").disabled = false;
+        document.getElementById("chkPerdida").checked = false;
+        document.getElementById("txtMotivoPerdida").disabled = true;
+        document.getElementById("txtMotivoPerdida").value = "-1";
+
+        resetearListas();
+
+    }
+
+
+    function formatearTotal(valor) {
+        if (valor == null || isNaN(valor)) return 'Q0.00';
+        return new Intl.NumberFormat('es-GT', {
+            style: 'currency',
+            currency: 'GTQ',
+            minimumFractionDigits: 2
+        }).format(valor);
+    }
+
+    function formatearFecha(fechaJson) {
+        if (!fechaJson) return '--'; // Si viene null, undefined o vacío
+        try {
+            const timestamp = parseInt(fechaJson.match(/\d+/)[0]);
+            const fecha = new Date(timestamp);
+            const dia = fecha.getDate().toString().padStart(2, '0');
+            const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+            const anio = fecha.getFullYear();
+            return `${dia}/${mes}/${anio}`;
+        } catch (e) {
+            return '--'; // Si falla el parseo, también muestra --
+        }
+    }
+
+// Función para ocultar columnas por índice
+    function ocultarColumnas(indices) {
+        $('table thead tr th').each(function (index) {
+            if (indices.includes(index)) {
+                $(this).hide();
+            }
+        });
+
+        $('table tbody tr').each(function () {
+            $(this).find('td').each(function (index) {
+                if (indices.includes(index)) {
+                    $(this).hide();
+                }
+            });
+        });
+    }
+</script>

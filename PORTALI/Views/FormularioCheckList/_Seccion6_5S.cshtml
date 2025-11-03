@@ -1,0 +1,391 @@
+﻿
+
+@model Entity.FormularioCheckList1Entity
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <i class="bi bi-folder me-1"></i> Sección 6: 5S
+    </div>
+    <div class="card-body">
+        <div class="card mb-4 shadow-sm border-0 border-start border-5" style="border-color: #0d6efd;">
+            <div class="card-body">
+
+                <h5 class="card-title mb-3 text-primary ">
+
+                    <i class="bi bi-box-seam"></i>
+                    I. ¿Se ha reducido significativamente el desorden y la acumulación de artículos y herramientas innesarias?
+                </h5>
+                <!-- Respuesta Sí/No -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1Rem;">95. PS1</h2>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS1, "Y", new { @class = "form-check-input", id = "PS1_SI" })
+                    <label class="form-check-label" for="PS1_SI">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS1, "N", new { @class = "form-check-input", id = "PS1_NO" })
+                    <label class="form-check-label" for="PS1_NO">No</label>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1Rem;">96. ADPS1</h2>
+                </div>
+                <div class="mt-4">
+                    <label class="form-label fw-bold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS1.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS1.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_5S_ADPS1" class="form-control" accept="image/*" id="ADPS1" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1Rem;">97. IAPS1 </h2>
+                </div>
+                <div class="mt-3">
+                    @Html.LabelFor(m => m.U_5S_IAPS1, "Información adicional", new { @class = "form-label fw-bold" })
+                    @Html.TextAreaFor(m => m.U_5S_IAPS1, new { @class = "form-control", id = "IAPS1", rows = 3, placeholder = "Agrega detalles relevantes..." })
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pregunta 2 -->
+        <div class="card mb-4 shadow-sm border-0 border-start border-5" style="border-color: #0d6efd;">
+            <div class="card-body">
+
+
+                <h5 class="card-title mb-3 text-primary">
+                    <i class="bi bi-check2-square me-2"></i>
+                    II. ¿Es fácil acceder a los productos necearios sin mover otros articulos o causar desorden?
+                </h5>
+
+                <!-- Respuesta Sí/No -->
+
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">98. PS2</h2>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS2, "Y", new { @class = "form-check-input", id = "PS2_SI" })
+                    <label class="form-check-label" for="PS2_SI">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS2, "N", new { @class = "form-check-input", id = "PS2_NO" })
+                    <label class="form-check-label" for="PS2_NO">No</label>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">99. ADPS2</h2>
+                </div>
+                <div class="mt-4">
+                    <label class="form-label fw-bold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS2.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS2.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_5S_ADPS2" class="form-control" accept="image/*" id="ADPS2" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">100. IAPS2</h2>
+                </div>
+                <div class="mt-3">
+                    @Html.LabelFor(m => m.U_5S_IAPS2, "Información adicional", new { @class = "form-label fw-bold" })
+                    @Html.TextAreaFor(m => m.U_5S_IAPS2, new { @class = "form-control", id = "IAPS2", rows = 3, placeholder = "Agrega detalles relevantes..." })
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm border-0 border-start border-5" style="border-color: #0d6efd;">
+            <div class="card-body">
+
+                <!-- Pregunta con ícono -->
+                <h5 class="card-title mb-3 text-primary">
+                    <i class="bi bi-signpost me-2"></i>
+                    III. ¿Se utilizan herramientas de control visual(rotulos, señales, marcas en el suelo) para mantener la estandarización?
+                </h5>
+
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">101. PS3</h2>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS3, "Y", new { @class = "form-check-input", id = "PS3_SI" })
+                    <label class="form-check-label" for="PS3_SI">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS3, "N", new { @class = "form-check-input", id = "PS3_NO" })
+                    <label class="form-check-label" for="PS3_NO">No</label>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (Foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">102. ADPS3</h2>
+                </div>
+                <div class="mt-4">
+                    <label class="form-label fw-bold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS3.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS3.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_5S_ADPS3" class="form-control" accept="image/*" id="ADPS3" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+
+                <!-- Encabezado grande -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">103. IAPS3</h2>
+                </div>
+                <div class="mt-3">
+                    @Html.LabelFor(m => m.U_5S_IAPS3, "Información adicional", new { @class = "form-label fw-bold" })
+                    @Html.TextAreaFor(m => m.U_5S_IAPS3, new { @class = "form-control", id = "IAPS3", rows = 3, placeholder = "Agrega detalles relevantes..." })
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 4 -->
+        <div class="card mb-4 shadow-sm border-0 border-start border-5" style="border-color: #0d6efd;">
+            <div class="card-body">
+
+                <h5 class="card-title mb-3 text-primary">
+                    <i class="bi bi-tools me-2"></i>
+                    IV. ¿El equipo de trabajo y de movimiento de mercancía está en áreas asignadas y accesibles? (porta pallets, escaleras, flejadoras, troquets)?
+                </h5>
+                <!-- Respuesta SI/No-->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">104. PS4</h2>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS4, "Y", new { @class = "form-check-input", id = "PS4_SI" })
+                    <label class="form-check-label" for="PS4_SI">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS4, "N", new { @class = "form-check-input", id = "PS4_NO" })
+                    <label class="form-check-label" for="PS4_NO">No</label>
+                </div>
+                <br />
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">105. ADPS4</h2>
+                </div>
+                <div class="mt-4">
+                    <label class="form-label fw-bold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS4.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS4.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_5S_ADPS4" class="form-control" accept="image/*" id="ADPS4" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">106. IAPS4</h2>
+                </div>
+                <div class="mt-3">
+                    @Html.LabelFor(m => m.U_5S_IAPS4, "Información adicional", new { @class = "form-label fw-bold" })
+                    @Html.TextAreaFor(m => m.U_5S_IAPS4, new { @class = "form-control", id = "IAPS4", rows = 3, placeholder = "Agrega detalles relevantes..." })
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 5 -->
+        <div class="card mb-4 shadow-sm border-0 border-start border-5" style="border-color: #0d6efd;">
+            <div class="card-body">
+
+                <h5 class="card-title mb-3 text-primary">
+                    <i class="bi bi-tags me-2"></i>
+                    V. ¿Los artículos necesarios están en lugares claramente designados y etiquetados por ejemplo Herramientas, insumos de Limpieza?
+                </h5>
+                <!-- Respuesta Sí/No -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">107. PS5</h2>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS5, "Y", new { @class = "form-check-input", id = "PS5_SI" })
+                    <label class="form-check-label" for="PS5_SI">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS5, "N", new { @class = "form-check-input", id = "PS5_NO" })
+                    <label class="form-check-label" for="PS5_NO">No</label>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">108. ADPS5</h2>
+                </div>
+                <div class="mt-4">
+                    <label class="form-label fw-bold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS5.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS5.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_5S_ADPS5" class="form-control" accept="image/*" id="ADPS5" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+                <!-- Observaciones -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">109. IAPS5</h2>
+                </div>
+                <div class="mt-3">
+                    @Html.LabelFor(m => m.U_5S_IAPS5, "Información adicional", new { @class = "form-label fw-bold" })
+                    @Html.TextAreaFor(m => m.U_5S_IAPS5, new { @class = "form-control", id = "IAPS5", rows = 3, placeholder = "Agrega detalles relevantes..." })
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 6-->
+        <div class="card mb-4 shadow-sm border-0 border-start border-5" style="border-color: #0d6efd;">
+            <div class="card-body">
+
+                <!-- Pregunta con ícono -->
+                <h5 class="card-title mb-3 text-primary">
+                    <i class="bi bi-clipboard-check me-2"></i>
+                    VI. ¿El personal  cumple con las responsabilidades asignadas en el plan de limpieza por Jefe Inmediato?
+                </h5>
+                <!-- Respuesta Sí/No -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">110. PS6</h2>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS6, "Y", new { @class = "form-check-input", id = "PS6_SI" })
+                    <label class="form-check-label" for="PS6_SI">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS6, "N", new { @class = "form-check-input", id = "PS6_NO" })
+                    <label class="form-check-label" for="PS6_NO">No</label>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">111. ADPS6</h2>
+                </div>
+                <div class="mt-4">
+                    <label class="form-label fw-bold">Fotografías de evidencia</label>
+
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS6.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS6.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_5S_ADPS6" class="form-control" accept="image/*" id="ADPS6" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+                <!-- Observaciones  -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">112. IAPS6</h2>
+                </div>
+                <div class="mt-3">
+                    @Html.LabelFor(m => m.U_5S_IAPS6, "Información adicional", new { @class = "form-label fw-bold" })
+                    @Html.TextAreaFor(m => m.U_5S_IAPS6, new { @class = "form-control", id = "IAPS6", rows = 3, placeholder = "Agrega detalles relevantes..." })
+                </div>
+            </div>
+        </div>
+        <!-- Pregunta 7 -->
+        <div class="card mb-4 shadow-sm border-0 border-start border-5" style="border-color: #0d6efd;">
+            <div class="card-body">
+
+
+                <h5 class="card-title mb-3 text-primary">
+                    <i class="bi bi-bucket me-2"></i>
+                    VII. ¿Las zonas de uso común (baños, casilleros, vestuarios, comedor, oficinas) están limpias y ordenadas?
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">113. PS7</h2>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS7, "Y", new { @class = "form-check-input", id = "PS7_SI" })
+                    <label class="form-check-label" for="PS7_SI">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.U_5S_PS7, "N", new { @class = "form-check-input", id = "PS7_NO" })
+                    <label class="form-check-label" for="PS7_NO">No</label>
+                </div>
+                <br />
+                <br />
+                <!-- Evidencia (foto) -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">114. ADPS7</h2>
+                </div>
+                <div class="mt-4">
+                    <label class="form-label fw-bold">Fotografías de evidencia</label>
+                    @if (Model.U_Estado == 1)
+                    {
+                        <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS7.png">
+                            <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPS7.png" />
+                        </a>
+                    }
+                    else
+                    {
+                        <input type="file" name="U_5S_ADPS7" class="form-control" accept="image/*" id="ADPS7" onchange="subirArchivo(this)" />
+                    }
+                </div>
+                <br />
+                <!-- Observaciones -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="mb-0 fw-bold" style="font-size: 1rem;">115. IAPS7</h2>
+                </div>
+                <div class="mt-3">
+                    @Html.LabelFor(m => m.U_5S_IAPS7, "Información adicional", new { @class = "form-label fw-bold" })
+                    @Html.TextAreaFor(m => m.U_5S_IAPS7, new { @class = "form-control", id = "IAPS7", rows = 3, placeholder = "Agrega detalles relevantes..." })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-outline-secondary btn-anterior" onclick="EnviarDatos(event,0,6)">
+            <i class="bi bi-arrow-left-circle"></i> Anterior
+        </button>
+
+        @{
+            if (Model.U_Estado == 1)
+            {
+                <button class="btn btn-success" onclick="VolverInformacionGeneral(event,1,6,1)">
+                    <i class="bi bi-info-circle"></i> Volver a informacion general
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-success" onclick="EnviarDatos(event,1,6,1)">
+                    <i class="bi bi-check-circle"></i> Finalizar y guardar
+                </button>
+            }
+
+        }
+
+    </div>
+</div>

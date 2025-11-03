@@ -12,6 +12,7 @@ namespace Entity
         public string ItemName { get; set; }
         public string WhsCode { get; set; }
         public double Stock { get; set; }
+        public double Comprometido { get; set; }
         public double PrecioVenta { get; set; }
         public double PrecioBeneficio { get; set; }
         public double PrecioPromocion { get; set; }
@@ -20,12 +21,22 @@ namespace Entity
         public string DetallePromo { get; set; }
         public string Imagen { get; set; }
         public int EsPromo { get; set; }
+        public int CodigoPromo { get; set; }
         public string Ambiente { get; set; }
-        public string Metraje { get; set; }
+        public double Metraje { get; set; }
         public double Descuento { get; set; }
         public int IdGrupo { get; set; }
         public double MetrosDisp { get; set; }
         public int PLFinal { get; set; }
         public double PrecioFinal { get; set; }
+        public List<Almacenes> Almacenes { get; set; }
+    }
+
+    public class Almacenes 
+    {
+        public string WhsName { get; set; }
+        public double Stock { get; set; }
+        public double Comprometido { get; set; }
+        public string Seleccionado { get; set; }
     }
 }

@@ -13,15 +13,15 @@ namespace PORTALI.Controllers
     public class GeneralesController : Controller
     {
         public JsonResult ObtenerCotizacion(int DocEntry)
-        {            
-            EncabezadoVentaEditarEntity encabezadoVentaEditarEntity = new EncabezadoVentaEditarEntity();
+        {
+            CarritoComprasEntity encabezadoVentaEditarEntity = new CarritoComprasEntity();
             encabezadoVentaEditarEntity = DALCarritoCotizaciones.CotizacionCompraEncabezado(DocEntry);
 
-            if (encabezadoVentaEditarEntity.productos == null)
-            {
-                List<ProductoEditarEntity> productoEditarEntity = new List<ProductoEditarEntity>();
-                encabezadoVentaEditarEntity.productos = productoEditarEntity;
-            }
+            //if (encabezadoVentaEditarEntity.productos == null)
+            //{
+            //    List<ProductoEditarEntity> productoEditarEntity = new List<ProductoEditarEntity>();
+            //    encabezadoVentaEditarEntity.productos = productoEditarEntity;
+            //}
 
             return Json(encabezadoVentaEditarEntity, JsonRequestBehavior.AllowGet);
         }

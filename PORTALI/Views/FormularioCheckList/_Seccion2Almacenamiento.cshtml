@@ -1,0 +1,352 @@
+﻿@model Entity.FormularioCheckList1Entity
+<style>
+    .img-preview {
+        width: 150px; /* Ancho deseado */
+        height: 150px; /* Alto deseado */
+        object-fit: cover; /* Esto es útil para que la imagen se recorte y no se deforme */
+        border-radius: 5px; /* Opcional: para darle bordes redondeados */
+        border: 1px solid #ddd; /* Opcional: un borde sutil */
+    }
+</style>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-teal text-white fw-bold">
+        <i class="bi bi-archive-fill me-2"></i>
+        Sección 2: Almacenamiento
+    </div>
+
+    <div class="card-body">
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-boxes"></i> ¿Los pasillos y carriles de almacenaje se mantienen limpios y ordenados?
+                </h5>
+                <p class="text-muted mb-4">Ingresa total, cantidad que cumple, evidencia y observaciones.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">07. PA1T</label>
+                        @Html.LabelFor(m => m.U_U_Alma_PA1T, "Total de pasillos", new { @class = "form-label fw-semibold", })
+                        @Html.TextBoxFor(m => m.U_U_Alma_PA1T, new { @class = "form-control", placeholder = "Ej. 10", id = "PA1T", Value = Model.U_U_Alma_PA1T == null ? "" : Model.U_U_Alma_PA1T.ToString() })
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">08. PA1C</label>
+                        @Html.LabelFor(m => m.U_Alma_PAIC, "Cantidad que cumple", new { @class = "form-label fw-semibold", })
+                        @Html.TextBoxFor(m => m.U_Alma_PAIC, new { @class = "form-control", placeholder = "Ej. 8", id = "PAIC", Value = Model.U_Alma_PAIC == null ? "" : Model.U_Alma_PAIC.ToString() })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">09. ADPA1</label>
+                        @Html.LabelFor(m => m.U_Alma_ADPA1, "Fotografía de Evidencia", new { @class = "form-label fw-semibold" })
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA1.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA1.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Alma_ADPA1" class="form-control mt-2" accept="image/*" id="ADPA1" onchange="subirArchivo(this)" />
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-grid-3x3-gap-fill"></i> ¿Las estibas están de forma continua según su formato y el mapa de almacenaje?
+                </h5>
+                <p class="text-muted mb-4">Ingresa total, cantidad que cumple, evidencia y observaciones.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">11. PA2T</label>
+                        @Html.LabelFor(m => m.U_Alma_PA2T, "Total de estibas", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA2T, new { @class = "form-control", id = "PA2T", placeholder = "Ej. 12", Value = Model.U_Alma_PA2T == null ? "" : Model.U_Alma_PA2T.ToString() })
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">12. PA2C</label>
+                        @Html.LabelFor(m => m.U_Alma_PA2C, "Cantidad que cumple", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA2C, new { @class = "form-control", placeholder = "Ej. 10", id = "PA2C", Value = Model.U_Alma_PA2C == null ? "" : Model.U_Alma_PA2C.ToString() })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">13. ADPA2</label>
+                        @Html.LabelFor(m => m.U_Alma_ADPA2, "Fotografía de Evidencia", new { @class = "form-label fw-semibold" })
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA2.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA2.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Alma_ADPA2" class="form-control" accept="image/*" id="ADPA2" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">14. IAPA2</label>
+                        @Html.LabelFor(m => m.U_Alma_IAPA2, "Información adicional", new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.U_Alma_IAPA2, new { @class = "form-control", id = "IAPA2", rows = 2, placeholder = "Observaciones...", })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-upc-scan"></i> ¿El producto con el mismo código está unificado?
+                </h5>
+                <p class="text-muted mb-4">Ingresa total, cantidad que cumple, evidencia y observaciones.</p>
+
+                <div class="row g-3">
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">15. PA3T</label>
+                        @Html.LabelFor(m => m.U_Alma_PA3T, "Total de estibas", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA3T, new { @class = "form-control", placeholder = "Ej. 10", id = "PA3T", Value = Model.U_Alma_PA3T == null ? "" : Model.U_Alma_PA3T.ToString() })
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">16. PA3C</label>
+                        @Html.LabelFor(m => m.U_Alma_PA3C, "Cantidad que cumple", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA3C, new { @class = "form-control", placeholder = "Ej. 8", id = "PA3C", Value = Model.U_Alma_PA3C == null ? "" : Model.U_Alma_PA3C.ToString() })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">17. ADPA3</label>
+                        @Html.LabelFor(m => m.U_Alma_ADPA3, "Fotografía de Evidencia", new { @class = "form-label fw-semibold" })
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA3.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA3.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Alma_ADPA3" class="form-control" accept="image/*" id="ADPA3" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">18. IAPA3</label>
+                        @Html.LabelFor(m => m.U_Alma_IAPA3, "Información adicional", new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.U_Alma_IAPA3, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPA3" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-stack"></i> ¿El apilamiento de estibas de piso cumple con los estándares de altura, ancho, peso y flejado?
+                </h5>
+                <p class="text-muted mb-4">Ingresa total, cantidad que cumple, evidencia y observaciones.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">19. PA4T</label>
+                        @Html.LabelFor(m => m.U_Alma_PA4T, "Total de estibas", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA4T, new { @class = "form-control", placeholder = "Ej. 20", id = "PA4T", Value = Model.U_Alma_PA4T == null ? "" : Model.U_Alma_PA4T.ToString() })
+                    </div>
+                    <div class="col-md-3">
+                        <label class="mb-0 fw-bold">20. PA4C</label>
+                        @Html.LabelFor(m => m.U_Alma_PA4C, "Cantidad que cumple", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA4C, new { @class = "form-control", placeholder = "Ej. 18", id = "PA4C", Value = Model.U_Alma_PA4C == null ? "" : Model.U_Alma_PA4C.ToString() })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">21. ADPA4</label>
+                        @Html.LabelFor(m => m.U_Alma_ADPA4, "Fotografía de Evidencia", new { @class = "form-label fw-semibold" })
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA4.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA4.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Alma_ADPA4" class="form-control" accept="image/*" id="ADPA4" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+                </div>
+
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">22. IAPA4</label>
+                        @Html.LabelFor(m => m.U_Alma_IAPA4, "Información adicional", new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.U_Alma_IAPA4, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPA4" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-tags"></i> ¿Todo el producto está identificado con la rotulación estándar?
+                </h5>
+                <p class="text-muted mb-4">Ingresa total, cantidad que cumple, evidencia y observaciones.</p>
+
+                <div class="row g-3">
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">23. PA5T</label>
+                        @Html.LabelFor(m => m.U_Alma_PA5T, "Total de estibas", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA5T, new { @class = "form-control", placeholder = "Ej. 25", id = "PA5T", Value = Model.U_Alma_PA5T == null ? "" : Model.U_Alma_PA5T.ToString() })
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">24. PA5C</label>
+                        @Html.LabelFor(m => m.U_Alma_PA5C, "Cantidad que cumple", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA5C, new { @class = "form-control", placeholder = "Ej. 24", id = "PA5C", Value = Model.U_Alma_PA5C == null ? "" : Model.U_Alma_PA5C.ToString() })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">25. ADPA5</label>
+                        @Html.LabelFor(m => m.U_Alma_ADPA5, "Fotografía de Evidencia", new { @class = "form-label fw-semibold" })
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA5.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA5.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Alma_ADPA5" class="form-control" accept="image/*" id="ADPA5" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">26. IAPA5</label>
+                        @Html.LabelFor(m => m.U_Alma_IAPA5, "Información adicional", new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.U_Alma_IAPA5, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPA5" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-boxes"></i> ¿Los productos (loza, pinturas, construcción, cocina) están apilados de forma segura y cumplen con los estándares de altura, largo y peso?
+                </h5>
+                <p class="text-muted mb-4">Ingresa total, cantidad que cumple, evidencia y observaciones.</p>
+
+                <div class="row g-3">
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">27. PA6T</label>
+                        @Html.LabelFor(m => m.U_Alma_PA6T, "Total de estibas", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA6T, new { @class = "form-control", placeholder = "Ej. 30", id = "PA6T", Value = Model.U_Alma_PA6T == null ? "" : Model.U_Alma_PA6T.ToString() })
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">28. PA6C</label>
+                        @Html.LabelFor(m => m.U_Alma_PA6C, "Cantidad que cumple", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA6C, new { @class = "form-control", placeholder = "Ej. 28", id = "PA6C", Value = Model.U_Alma_PA6C == null ? "" : Model.U_Alma_PA6C.ToString() })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">29. ADPA6</label>
+                        @Html.LabelFor(m => m.U_Alma_ADPA6, "Fotografía de Evidencia", new { @class = "form-label fw-semibold" })
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA6.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA6.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Alma_ADPA6" class="form-control" accept="image/*" id="ADPA6" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">30. IAPA6</label>
+                        @Html.LabelFor(m => m.U_Alma_IAPA6, "Información adicional", new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.U_Alma_IAPA6, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPA6" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary">
+                    <i class="bi bi-boxes"></i> ¿El personal de bodega hace uso de EPP (casco, cincho, botas y guantes)?
+                </h5>
+                <p class="text-muted mb-4">Ingresa total, cantidad que cumple, evidencia y observaciones.</p>
+
+                <div class="row g-3">
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">31. PA7T</label>
+                        @Html.LabelFor(m => m.U_Alma_PA7T, "Total de Personal", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA7T, new { @class = "form-control", placeholder = "Ej. 30", id = "PA7T", Value = Model.U_Alma_PA7T == null ? "" : Model.U_Alma_PA7T.ToString() })
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">32. PA7C</label>
+                        @Html.LabelFor(m => m.U_Alma_PA7C, "Cantidad que cumple", new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.U_Alma_PA7C, new { @class = "form-control", placeholder = "Ej. 28", id = "PA7C", Value = Model.U_Alma_PA7C == null ? "" : Model.U_Alma_PA7C.ToString() })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">33. ADPA7</label> 
+                        @Html.LabelFor(m => m.U_Alma_ADPA7, "Fotografía de Evidencia", new { @class = "form-label fw-semibold" })
+                        @if (Model.U_Estado == 1)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#imagenModal" data-src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA7.png">
+                                <img alt="fotografía de evidencia" class="img-preview d-block mt-2" src="/FormularioCheckList/VerImagen?archivo=@(Model.U_IdFormulario)-ADPA7.png" />
+                            </a>
+                        }
+                        else
+                        {
+                            <input type="file" name="U_Alma_ADPA7" class="form-control" accept="image/*" id="ADPA7" onchange="subirArchivo(this)" />
+                        }
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">34. IAPA7</label>
+                        @Html.LabelFor(m => m.U_Alma_IAPA7, "Información adicional", new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.U_Alma_IAPA7, new { @class = "form-control", rows = 2, placeholder = "Observaciones...", id = "IAPA7" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-outline-secondary btn-anterior" onclick="EnviarDatos(event,0,2)">
+            <i class="bi bi-arrow-left-circle"></i> Anterior
+        </button>
+        <button type="button" class="btn btn-primary btn-siguiente" onclick="EnviarDatos(event,0,2,1)">
+            Siguiente <i class="bi bi-arrow-right-circle-fill"></i>
+        </button>
+    </div>
+
+
+</div>

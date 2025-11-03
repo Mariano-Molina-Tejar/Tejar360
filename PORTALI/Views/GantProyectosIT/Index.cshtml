@@ -1,0 +1,1505 @@
+﻿@{
+    var primerDiaMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
+    var ultimoDiaMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)).ToString("yyyy-MM-dd");
+}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f8;
+        color: #333;
+        margin: 0;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #1f3c88;
+    }
+
+    form#filtroFechas {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        background-color: #fff;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+        form#filtroFechas input[type="date"] {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        form#filtroFechas button {
+            padding: 6px 15px;
+            border: none;
+            background-color: #1f3c88;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            form#filtroFechas button:hover {
+                background-color: #3954b3;
+            }
+
+    .totales-cards, .kpi-cards {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .total-card, .kpi-card {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        flex: 1;
+        min-width: 220px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+        .total-card h2, .kpi-card h2 {
+            margin: 0;
+            color: #1f3c88;
+        }
+
+    .lists-container {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .list-card {
+        background-color: #fff;
+        flex: 1;
+        min-width: 300px;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow-y: auto;
+    }
+
+        .list-card h3 {
+            margin-top: 0;
+            color: #1f3c88;
+            text-align: center;
+        }
+
+        .list-card table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .list-card th, .list-card td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+    .charts-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    canvas {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        max-width: 600px;
+    }
+
+    #tablaCategoriaUsuario {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        #tablaCategoriaUsuario thead {
+            background-color: #1f3c88;
+            color: white;
+            display: table;
+            width: 100%;
+            table-layout: fixed; /* mantiene alineación */
+        }
+
+        #tablaCategoriaUsuario tbody {
+            display: block;
+            max-height: 400px; /* ajusta según lo que quieras */
+            overflow-y: auto;
+            width: 100%;
+        }
+
+            #tablaCategoriaUsuario tbody tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed; /* para que coincidan las columnas con thead */
+            }
+</style>
+
+<style>
+    .list-card {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 5px;
+        text-align: left;
+    }
+
+    .hitos-table {
+        margin-top: 5px;
+        display: none;
+    }
+
+    .expand-btn {
+        cursor: pointer;
+        color: blue;
+        text-decoration: underline;
+    }
+
+    .green {
+        color: green;
+        font-weight: bold;
+    }
+
+    .red {
+        color: red;
+        font-weight: bold;
+    }
+
+    .total-card {
+        position: relative;
+        padding: 20px;
+        border-radius: 12px;
+        color: #111;
+        font-weight: bold;
+        overflow: hidden;
+        text-align: center;
+        min-width: 120px;
+        margin: 10px;
+    }
+
+        /* Iconos de fondo */
+        .total-card::before {
+            content: "";
+            position: absolute;
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 60px;
+            color: rgba(0,0,0,0.05); /* muy transparente */
+            top: 10px;
+            right: 10px;
+            z-index: 0;
+        }
+
+    /* Iconos específicos por tarjeta */
+    .total-proyectos::before {
+        content: "\f0c0";
+    }
+    /* fa-users */
+    .total-en-curso::before {
+        content: "\f121"; /* fa-tasks → desarrollo/proyectos en curso */
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        font-size: 60px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 0;
+    }
+
+    /* fa-spinner */
+    .total-en-pausa::before {
+        content: "\f28b";
+    }
+    /* fa-pause-circle */
+    .total-finalizados::before {
+        content: "\f00c";
+    }
+    /* fa-check-circle */
+    .total-indice::before {
+        content: "\f201";
+    }
+    /* fa-chart-line */
+
+    /* Asegurarse que el texto esté encima del icono */
+    .total-card h2, .total-card p {
+        position: relative;
+        z-index: 1;
+    }
+</style>
+
+<div class="totales-cards" style="padding:25px">
+    <div class="total-card total-proyectos">
+        <h2 id="totalTickets">3</h2>
+        <p>Proyectos</p>
+    </div>
+
+    <div class="total-card total-en-curso">
+        <h2 id="ticketsEnCurso">0</h2>
+        <p>En curso</p>
+    </div>
+
+    <div class="total-card total-en-pausa">
+        <h2 id="ticketsEnPausa">0</h2>
+        <p>En pausa</p>
+    </div>
+
+    <div class="total-card total-finalizados">
+        <h2 id="Finalizados">0</h2>
+        <p>Finalizados</p>
+    </div>
+
+    <div class="total-card total-indice">
+        <h2 id="Indice">50%</h2>
+        <p>Indice</p>
+    </div>
+
+</div>
+
+<div style="padding:25px; margin-top:-50px;">
+    <div class="list-card">
+        <h3>📊 GANT DE PROYECTOS</h3>
+        <table class="table table-hover" style="cursor:pointer" id="tblProyectos">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Asignado a</th>
+                    <th>Proyecto</th>
+                    <th>Area</th>
+                    <th>Dueño</th>
+                    <th>Fecha limite</th>
+                    <th>Estatus</th>
+                    <th>Avance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="expandable">                    
+                    <td class="expand-btn">Bayron López</td>
+                    <td>Mi Roca CRM</td>
+                    <td>Comercial</td>
+                    <td>Oscar Jimenez</td>
+                    <td>26/09/2025</td>
+                    <td>Finalizado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="100"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                100%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hitos-table">
+                    <td colspan="8">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hito</th>
+                                    <th>Fecha Promesa</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Días de Atraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Desarrollo de filtros avanzados de búsqueda en el bolsón activo.</td>
+                                    <td>08/08/2025</td>
+                                    <td>08/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>Implementación de lógica de descuentos en el módulo de cotización</td>
+                                    <td>08/08/2025</td>
+                                    <td>08/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>Actualización del bolsón activo a versión 2 con mejoras en rendimiento y visualización.</td>
+                                    <td>08/08/2025</td>
+                                    <td>08/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>Resumen de seguimiento</td>
+                                    <td>15/08/2025</td>
+                                    <td>15/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Matriz de seguimientos sobre bolsón activo
+                                    </td>
+                                    <td>22/08/2025</td>
+                                    <td>22/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Bolsón de perdidas
+                                    </td>
+                                    <td>22/08/2025</td>
+                                    <td>22/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Integración de sugerencias de artículos complementarios en procesos de venta
+                                    </td>
+                                    <td>28/08/2025</td>
+                                    <td>28/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Bolsón de clientes
+                                    </td>
+                                    <td>28/08/2025</td>
+                                    <td>28/08/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Implementación y capacitacion reporteria CRM
+                                    </td>
+                                    <td>28/08/2025</td>
+                                    <td>05/09/2025</td>
+                                    <td>6</td>
+                                    <td class="red">Con Atraso</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Bayron López</td>
+                    <td class="">Tejar Obras 50%</td>
+                    <td>Comercial</td>
+                    <td>Oscar Jimenez</td>
+                    <td>26/09/2025</td>
+                    <td>Finalizado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="100"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                100%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hitos-table">
+                    <td colspan="8">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hito</th>
+                                    <th>Fecha Promesa</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Días de Atraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Prospeccion - Cronograma
+                                    </td>
+                                    <td>05/09/2025</td>
+                                    <td>05/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Creacion de obra
+                                    </td>
+                                    <td>05/09/2025</td>
+                                    <td>05/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Seguimiento de obras
+                                    </td>
+                                    <td>12/09/2025</td>
+                                    <td>12/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Reporteria basica de obras
+                                    </td>
+                                    <td>12/09/2025</td>
+                                    <td>12/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Mariano Molina</td>
+                    <td class="">CheckList Operaciones</td>
+                    <td>Operaciones</td>
+                    <td>Manuel Lemuz</td>
+                    <td>26/09/2025</td>
+                    <td>Finalizado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="100"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                100%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hitos-table">
+                    <td colspan="8">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hito</th>
+                                    <th>Fecha Promesa</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Días de Atraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Prospeccion - Cronograma
+                                    </td>
+                                    <td>05/09/2025</td>
+                                    <td>05/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Creacion de obra
+                                    </td>
+                                    <td>05/09/2025</td>
+                                    <td>05/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Seguimiento de obras
+                                    </td>
+                                    <td>12/09/2025</td>
+                                    <td>12/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Reporteria basica de obras
+                                    </td>
+                                    <td>12/09/2025</td>
+                                    <td>12/09/2025</td>
+                                    <td>0</td>
+                                    <td class="green">A Tiempo</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Oskar Majuz</td>
+                    <td class="">Reporteria de PowerBI a Tejar360</td>
+                    <td>Operaciones</td>
+                    <td>Manuel Lemuz</td>
+                    <td>04/09/2025</td>
+                    <td>Finalizado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="100"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                100%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hitos-table">
+                    <td colspan="8">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hito</th>
+                                    <th>Fecha Promesa</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Días de Atraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Reporte Dañado
+                                    </td>
+                                    <td>08/08/2025</td>
+                                    <td>12/08/2025</td>
+                                    <td>2</td>
+                                    <td class="red">Fuera de tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Estado de cuenta importacion
+                                    </td>
+                                    <td>08/08/2025</td>
+                                    <td>12/08/2025</td>
+                                    <td>2</td>
+                                    <td class="red">Fuera de tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Estado de cuenta servicios adicionales
+                                    </td>
+                                    <td>08/08/2025</td>
+                                    <td>12/08/2025</td>
+                                    <td>2</td>
+                                    <td class="red">Fuera de tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Estado de cuenta gastos
+                                    </td>
+                                    <td>22/08/2025</td>
+                                    <td>29/08/2025</td>
+                                    <td>5</td>
+                                    <td class="red">Fuera de tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Estado de cuenta local
+                                    </td>
+                                    <td>22/08/2025</td>
+                                    <td>29/08/2025</td>
+                                    <td>5</td>
+                                    <td class="red">Fuera de tiempo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Reporte intertiendas
+                                    </td>
+                                    <td>22/08/2025</td>
+                                    <td>29/08/2025</td>
+                                    <td>5</td>
+                                    <td class="red">Fuera de tiempo</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Mariano Molina</td>
+                    <td class="">Altas y bajas RH</td>
+                    <td>Gerencia (RRHH)</td>
+                    <td>Julio Castillo</td>
+                    <td>28/11/2028</td>
+                    <td>En curso</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="8"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                8%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hitos-table">
+                    <td colspan="8">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hito</th>
+                                    <th>Fecha Promesa</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Días de Atraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Landing Page de Plazas
+                                    </td>
+                                    <td>10/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En curso</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Formulario de Nuevo Puesto
+                                    </td>
+                                    <td>14/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Solicitud de Altas y Bajas
+                                    </td>
+                                    <td>21/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Formulario de publicación de Plazas
+                                    </td>
+                                    <td>21/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Formulario de Solicitud de Empleo
+                                    </td>
+                                    <td>28/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Carga de Documentos
+                                    </td>
+                                    <td>05/11/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Generación de Usuarios Automática
+                                    </td>
+                                    <td>12/11/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Proceso de Baja
+                                    </td>
+                                    <td>19/11/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Tablero de Obligaciones
+                                    </td>
+                                    <td>22/11/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Emisión de Solvencia Administrativa
+                                    </td>
+                                    <td>22/11/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Bloqueo de Accesos
+                                    </td>
+                                    <td>22/11/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Requisición de Personal
+                                    </td>
+                                    <td>28/11/2028</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Capacitación
+                                    </td>
+                                    <td>28/11/2028</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Historial Digital de Colaboradores
+                                    </td>
+                                    <td>28/11/2028</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Reportes y Estadísticas
+                                    </td>
+                                    <td>28/11/2028</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Oskar Majuz</td>
+                    <td class="">Dashboard comercial</td>
+                    <td>Comercial</td>
+                    <td>Oscar Jimenez</td>
+                    <td>27/10/2025</td>
+                    <td>En curso</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="20"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                20%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hitos-table">
+                    <td colspan="8">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hito</th>
+                                    <th>Fecha Promesa</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Días de Atraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Ranking de asesores
+                                    </td>
+                                    <td>03/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En ejecucion</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Ventas diarias
+                                    </td>
+                                    <td>03/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En curso</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Meta diaria y brecha
+                                    </td>
+                                    <td>03/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En ejecucion</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Venta Mensual
+                                    </td>
+                                    <td>03/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En ejecucion</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Meta y Brecha mensual
+                                    </td>
+                                    <td>03/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En ejecucion</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Tarjetas informativas
+                                    </td>
+                                    <td>03/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En ejecucion</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Tablas detalladas
+                                    </td>
+                                    <td>03/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En ejecucion</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        TABLERO GERENTES Y SUPERVISORES Ticket Promedio
+                                    </td>
+                                    <td>17/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Cantidad de tickets emitidos
+                                    </td>
+                                    <td>17/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Ticket promedio
+                                    </td>
+                                    <td>17/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">En ejecucion</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Listas detalladas (Venta, meta, unidades o metros vendidos, mensual o por categoría (Piso, baño, ccp)
+                                    </td>
+                                    <td>24/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Capacitacion personal
+                                    </td>
+                                    <td>27/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Implementación
+                                    </td>
+                                    <td>27/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Soporte
+                                    </td>
+                                    <td>27/10/2025</td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td class="green">No iniciado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>La Liga version 3</td>
+                    <td>Comercial</td>
+                    <td>Oscar Jimenez</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Plan de especialistas</td>
+                    <td>Mercadeo</td>
+                    <td>Rene Vargas</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Liquidacion de cuentas especiales</td>
+                    <td>Finanzas</td>
+                    <td>Jorge Gil</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Tejar Bodegas</td>
+                    <td>Manuel Lemus</td>
+                    <td>Operaciones</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Solicitud de Viaticos</td>
+                    <td>Finanzas</td>
+                    <td>Jorge Gil</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Automatización y autorización de pagos</td>
+                    <td>Finanzas</td>
+                    <td>Jorge Gil</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Portal proveedores (control de contraseñas)</td>
+                    <td>Finanzas</td>
+                    <td>Jorge Gil</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Sistema de importaciones</td>
+                    <td>Distribucion</td>
+                    <td>Walter Hernandez</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Facturación tejar360</td>
+                    <td>Comercial</td>
+                    <td>Oscar Jimenez</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="expandable">
+                    <td class="expand-btn">Sin asignar</td>
+                    <td>Toma de inventarios tejar360</td>
+                    <td>Operaciones</td>
+                    <td>Manuel Lemus</td>
+                    <td></td>
+                    <td>No iniciado</td>
+                    <td style="padding: 1px; height: 40px; text-align: center; vertical-align: middle;">
+                        <div style="width: 100%; height: 100%; background-color: rgba(229, 231, 235, 0.6); position: relative; overflow: hidden;">
+                            <!-- Barra de color -->
+                            <div class="progress-bar" data-value="0"
+                                 style="height: 100%; width: 0%; background-color: rgba(239, 68, 68, 0.4); position: absolute; left: 0; top: 0; transition: width 0.8s ease;">
+                            </div>
+                            <!-- Texto centrado -->
+                            <span class="progress-text"
+                                  style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold; color: black;">
+                                0%
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div style="display: flex; gap: 40px; margin-bottom: 30px; height: 400px;">
+        <canvas id="usuariosChart"></canvas>
+        <canvas id="areasChart"></canvas>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const table = document.getElementById("tblProyectos");
+            const rows = table.querySelectorAll("tbody tr.expandable"); // solo filas principales
+
+            rows.forEach((row, index) => {
+                // Crea una celda al inicio
+                const cell = document.createElement("td");
+                cell.textContent = index + 1; // Numeración empieza en 1
+                cell.style.fontWeight = "bold";
+                cell.style.textAlign = "center";
+                row.insertBefore(cell, row.firstChild);
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const table = document.getElementById("tblProyectos");
+            const rows = table.querySelectorAll("tbody tr.expandable"); // solo filas principales
+
+            const usuarios = {};
+            const areas = {};
+
+            rows.forEach(row => {
+                const usuario = row.cells[1].textContent.trim();
+                const area = row.cells[3].textContent.trim();
+
+                if (usuario !== "" && usuario.toLowerCase() !== "sin asignar") {
+                    usuarios[usuario] = (usuarios[usuario] || 0) + 1;
+                }
+
+                if (area !== "") {
+                    areas[area] = (areas[area] || 0) + 1;
+                }
+            });
+
+            // --- Usuarios Chart ---
+            const ctxUsuarios = document.getElementById("usuariosChart").getContext("2d");
+            new Chart(ctxUsuarios, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(usuarios),
+                    datasets: [{
+                        data: Object.values(usuarios),
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Proyectos por Usuario',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'left', // leyenda a la izquierda
+                            labels: {
+                                boxWidth: 20,
+                                padding: 10
+                            }
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // --- Areas Chart ---
+            const ctxAreas = document.getElementById("areasChart").getContext("2d");
+            new Chart(ctxAreas, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(areas),
+                    datasets: [{
+                        data: Object.values(areas),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Proyectos por Área',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'left',
+                            labels: {
+                                boxWidth: 20,
+                                padding: 10
+                            }
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+        });
+    </script>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tbody = document.querySelector("#tblProyectos tbody");
+
+            Sortable.create(tbody, {
+                animation: 150, // animación al mover
+                handle: ".expand-btn", // solo arrastrar por la columna del nombre
+                filter: ".hitos-table", // las filas de hitos no se arrastran solas
+                draggable: "tr.expandable", // solo las filas principales se pueden arrastrar
+                onMove: function (evt) {
+                    // evita que se mueva otra fila que no sea expandable
+                    return evt.related.classList.contains("expandable") || evt.related.classList.contains("hitos-table") || evt.related === tbody;
+                },
+                onEnd: function (evt) {
+                    const movedRow = tbody.children[evt.newIndex];
+                    const nextRow = movedRow.nextElementSibling;
+
+                    // si el siguiente es la fila de hitos, la movemos junto con la principal
+                    if (nextRow && nextRow.classList.contains("hitos-table")) {
+                        tbody.insertBefore(nextRow, tbody.children[evt.newIndex + 1]);
+                    }
+                }
+
+            });
+        });
+
+        document.querySelectorAll(".progress-bar").forEach(bar => {
+            let value = parseInt(bar.dataset.value) || 0;
+
+            // Colores suaves translúcidos
+            if (value >= 100) {
+                bar.style.backgroundColor = "rgba(74, 222, 128, 0.4)"; // verde translúcido
+            } else if (value > 50) {
+                bar.style.backgroundColor = "rgba(245, 158, 11, 0.4)"; // naranja translúcido
+            } else {
+                bar.style.backgroundColor = "rgba(239, 68, 68, 0.4)"; // rojo translúcido
+            }
+
+            // Animación de llenado
+            setTimeout(() => {
+                bar.style.width = value + "%";
+            }, 100);
+        });
+
+        document.querySelectorAll('.expand-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const hitosRow = btn.parentElement.nextElementSibling;
+                hitosRow.style.display = hitosRow.style.display === 'table-row' ? 'none' : 'table-row';
+            });
+        });
+
+        function contarProyectosPrincipales() {
+            const filasPrincipales = document.querySelectorAll("#tblProyectos tbody tr.expandable");
+            document.getElementById("totalTickets").textContent = filasPrincipales.length;
+        }
+        document.addEventListener("DOMContentLoaded", contarProyectosPrincipales);
+
+        function contarProyectosEnCurso() {
+            // Selecciona solo las filas principales (clase expandable)
+            const filasPrincipales = document.querySelectorAll("#tblProyectos tbody tr.expandable");
+
+            // Filtra solo las que tengan "En curso" en la columna de Estatus (6ª columna)
+            const enCurso = Array.from(filasPrincipales).filter(tr => {
+                const estatus = tr.cells[6].innerText.trim(); // columna 6 → índice 5
+                return estatus === "En curso";
+            });
+
+            // Actualiza el h2
+            document.getElementById("ticketsEnCurso").textContent = enCurso.length;
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener("DOMContentLoaded", contarProyectosEnCurso);
+
+        function contarProyectosEnPausa() {
+            // Selecciona solo las filas principales (clase expandable)
+            const filasPrincipales = document.querySelectorAll("#tblProyectos tbody tr.expandable");
+
+            // Filtra solo las que tengan "En curso" en la columna de Estatus (6ª columna)
+            const enCurso = Array.from(filasPrincipales).filter(tr => {
+                const estatus = tr.cells[6].innerText.trim(); // columna 6 → índice 5
+                return estatus === "En pausa";
+            });
+
+            // Actualiza el h2
+            document.getElementById("ticketsEnPausa").textContent = enCurso.length;
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener("DOMContentLoaded", contarProyectosEnPausa);
+
+        function contarProyectosFinalizados() {
+            // Selecciona solo las filas principales (clase expandable)
+            const filasPrincipales = document.querySelectorAll("#tblProyectos tbody tr.expandable");
+
+            // Filtra solo las que tengan "En curso" en la columna de Estatus (6ª columna)
+            const enCurso = Array.from(filasPrincipales).filter(tr => {
+                const estatus = tr.cells[6].innerText.trim(); // columna 6 → índice 5
+                return estatus === "Finalizado";
+            });
+
+            // Actualiza el h2
+            document.getElementById("Finalizados").textContent = enCurso.length;
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener("DOMContentLoaded", contarProyectosFinalizados);
+
+        function actualizarTotales() {
+            // Selecciona solo filas principales (clase expandable)
+            const filasPrincipales = document.querySelectorAll("#tblProyectos tbody tr.expandable");
+
+            // Filtra los que están en curso
+            const enCurso = Array.from(filasPrincipales).filter(tr => {
+                return tr.cells[6].innerText.trim().toLowerCase() === "en curso";
+            });
+
+            // Filtra los que están finalizados
+            const finalizados = Array.from(filasPrincipales).filter(tr => {
+                return tr.cells[6].innerText.trim().toLowerCase() === "finalizado";
+            });
+
+            // Total de filas principales
+            const total = filasPrincipales.length;
+
+            // Actualiza los contadores
+            document.getElementById("ticketsEnCurso").textContent = enCurso.length;
+            document.getElementById("Finalizados").textContent = finalizados.length;
+
+            // Calcula índice: finalizados / total en decimal con dos decimales
+            let indice = total > 0 ? (finalizados.length / total * 100).toFixed(2) : "0.00";
+            document.getElementById("Indice").textContent = indice + "%";
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener("DOMContentLoaded", actualizarTotales);
+
+    </script>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

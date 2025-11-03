@@ -1,0 +1,647 @@
+﻿@using Entity;
+@model List<DetalleVacaciones>
+
+@{
+    ViewBag.Title = "Vacaciones";
+}
+
+<style>
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --accent-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #34495e;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --info-color: #1abc9c;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f5f7fa;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header styles */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-title i {
+        color: var(--primary-color);
+    }
+
+    /* Filter card */
+    .filter-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 25px;
+        overflow: hidden;
+    }
+
+    .filter-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filter-body {
+        padding: 20px;
+    }
+
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark-color);
+        font-size: 14px;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+    .filter-input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        background-color: #f8f9fa;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-right: none;
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+        color: #7f8c8d;
+    }
+
+    .filter-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-button:hover {
+        background-color: #2980b9;
+    }
+
+    /* Table styles */
+    .table-container {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .data-table th {
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .data-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .data-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Footer actions */
+    .footer-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #eee;
+        margin-bottom: 20px;
+    }
+
+    .export-button {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .export-button:hover {
+        background-color: #27ae60;
+    }
+
+    /* Alert messages */
+    .alert {
+        padding: 12px 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-warning {
+        background-color: #fef3e6;
+        border-left: 4px solid var(--warning-color);
+        color: var(--dark-color);
+    }
+
+    .alert-danger {
+        background-color: #fdecea;
+        border-left: 4px solid var(--accent-color);
+        color: var(--dark-color);
+    }
+
+    .alert i {
+        font-size: 18px;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #7f8c8d;
+    }
+
+    .empty-state i {
+        font-size: 40px;
+        margin-bottom: 15px;
+        color: #bdc3c7;
+    }
+
+    @*/* Responsive adjustments */
+    @media (max-width: 768px) {
+        .filter-row {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+    }*@
+</style>
+
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-calendar-check"></i>
+                Control de vacaciones
+            </h1>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("DetalleVacaciones", "RRHH", FormMethod.Get))
+    {
+        <div class="filter-card">
+            <div class="filter-header">
+                <i class="fas fa-filter"></i>
+                Filtros de Búsqueda
+            </div>
+            <div class="filter-body">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Inicio</label>
+                        <div class="input-group">
+                            @*<span class="input-icon"><i class="fas fa-calendar-alt"></i></span>*@
+                            <input type="date" class="filter-input" id="fechaInicio" name="fechaInicio" value="@ViewBag.FechaInicio" />
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Fecha Fin</label>
+                        <div class="input-group">
+                            @*<span class="input-icon"><i class="fas fa-calendar-alt"></i></span>*@
+                            <input type="date" class="filter-input" id="fechaFin" name="fechaFin" value="@ViewBag.FechaFin" />
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Área</label>
+                        <div class="input-group">
+                            @*<span class="input-icon"><i class="fas fa-building"></i></span>*@
+                            <select id="area" name="area" class="filter-input">
+                                <option value="0" selected>-- Todas --</option>
+                                @foreach (var area in ViewBag.Areas)
+                                {
+                                    <option value="@area.Codigo">@area.Descripcion</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Tienda / Departamento</label>
+                        <div class="input-group">
+                            @*<span class="input-icon"><i class="fas fa-store"></i></span>*@
+                            <select id="tienda" name="tienda" class="filter-input">
+                                <option value="">-- Todos --</option>
+                                @foreach (var tienda in ViewBag.Departamentos)
+                                {
+                                    <option value="@tienda.CodigoDepartamento">@tienda.Departamento</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Código | Nombre Empleado</label>
+                        <div class="input-group">
+                            @*<span class="input-icon"><i class="fas fa-id-badge"></i></span>*@
+                            <input type="text" id="CodEmpleado" name="CodEmpleado" class="filter-input" placeholder="Ingrese código | Nombre" />
+                        </div>
+                    </div>
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button type="submit" class="filter-button">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="footer-actions">
+        <form method="post" action="/RRHH/ExportarVacacionesExcel" target="_blank">
+            <button type="submit" class="export-button">
+                <i class="fas fa-file-excel"></i> Exportar a Excel
+            </button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Código Empleado</th>
+                        <th>Empleado</th>
+                        <th>Posición</th>
+                        <th>Departamento/Tienda</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Días Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class="fas fa-info-circle"></i>
+                                <div>No se encontraron registros</div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var lista in Model)
+                        {
+                            <tr>
+                                <td>@lista.RW</td>
+                                <td>@lista.U_CodEmpleado</td>
+                                <td>@lista.Empleado</td>
+                                <td>@lista.Empleado</td>
+                                <td>@lista.Departamento_Tienda</td>
+                                <td>@lista.FechaInicio.ToString("dd/MM/yyyy")</td>
+                                <td>@lista.FechaFin.ToString("dd/MM/yyyy")</td>
+                                <td>@lista.DiasAccion</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mensajes de error -->
+    @if (Model != null && Model.Any() && Model[0].ErrorMessage != null)
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            @Model[0].ErrorMessage
+        </div>
+    }
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            @ViewBag.ErrorMessage
+        </div>
+    }
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Evento para cargar departamentos cuando cambia el área
+        $('#area').on('change', function() {
+            const areaSeleccionada = $(this).val();
+
+            // Limpia el combo de tienda antes de llenarlo
+            $('#tienda').empty().append('<option value="">Cargando...</option>');
+
+            $.ajax({
+                url: '@Url.Action("ObtenerDepartamentosPorArea", "RRHH")',
+                method: 'POST',
+                data: { codigoArea: areaSeleccionada },
+                success: function(data) {
+                    $('#tienda').empty();
+                    $('#tienda').append('<option value="">-- Todos --</option>');
+
+                    data.forEach(function(item) {
+                        $('#tienda').append(`<option value="${item.Codigo}">${item.Nombre}</option>`);
+                    });
+                },
+                error: function() {
+                    alert('Ocurrió un error al cargar los departamentos.');
+                    $('#tienda').empty().append('<option value="">-- Todos --</option>');
+                }
+            });
+        });
+    });
+
+    function parseJsonDate(jsonDate) {
+        const timestamp = parseInt(jsonDate.replace(/\/Date\((\d+)\)\//, '$1'));
+        const date = new Date(timestamp);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    let detalleActual = null;
+    let detalleActualEmpleado = null;
+
+    function verDetalle(button, idArea) {
+        const tr = button.closest("tr");
+        const idBoton = button.getAttribute("data-id");
+
+        // Si ya hay un detalle abierto y es del mismo botón, ciérralo
+        if (detalleActual && detalleActual.id === idBoton) {
+            document.querySelector(".fila-detalle")?.remove();
+            detalleActual = null;
+            return;
+        }
+
+        // Elimina detalle anterior si es otro
+        document.querySelector(".fila-detalle")?.remove();
+        detalleActual = { id: idBoton };
+
+        const fechaInicio = document.getElementById("fechaInicio").value;
+        const fechaFin = document.getElementById("fechaFin").value;
+
+        $.ajax({
+            url: '@Url.Action("ObtenerDetalleIncumplimientos", "RRHH")',
+            method: 'POST',
+            data: {
+                FechaInicio: fechaInicio,
+                FechaFin: fechaFin,
+                CodigoDepartamento: idArea
+            },
+            success: function(response) {
+                if (response.success) {
+                    let html = `
+                        <tr class="fila-detalle">
+                            <td colspan="8">
+                                <div style="background: white; border-left: 4px solid var(--dark-color); border-radius: 0 var(--border-radius) var(--border-radius) 0; margin: 10px 0; box-shadow: var(--box-shadow);">
+                                    <div style="background-color: var(--dark-color); color: white; padding: 10px 15px; border-radius: 0;">
+                                        <strong><i class="fas fa-info-circle"></i> Detalle de Marcajes</strong>
+                                    </div>
+                                    <div style="padding: 15px; overflow-x: auto;">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <thead style="background-color: #f8f9fa;">
+                                                <tr>
+                                                    <th style="padding: 10px; text-align: left;">No</th>
+                                                    <th style="padding: 10px; text-align: left;">Cod. Empleado</th>
+                                                    <th style="padding: 10px; text-align: left;">Empleado</th>
+                                                    <th style="padding: 10px; text-align: left;">Puesto</th>
+                                                    <th style="padding: 10px; text-align: left;">Incumplimientos</th>
+                                                    <th style="padding: 10px; text-align: left;">Horas Trabajadas</th>
+                                                    <th style="padding: 10px; text-align: left;">Horas Registradas</th>
+                                                    <th style="padding: 10px; text-align: left;">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>`;
+
+                    response.data.forEach(item => {
+                        html += `
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 10px;">${item.Rw ?? ''}</td>
+                                    <td style="padding: 10px;">${item.U_CodEmpleado}</td>
+                                    <td style="padding: 10px;">${item.Empleado}</td>
+                                    <td style="padding: 10px;">${item.Posicion}</td>
+                                    <td style="padding: 10px;">${item.Incumplimientos}</td>
+                                    <td style="padding: 10px;">${item.TotalHorasLaboradas}</td>
+                                    <td style="padding: 10px;">${item.TotalHorasLaborales}</td>
+                                    <td style="padding: 10px;">
+                                        <button type="button"
+                                               style="padding: 5px 10px; border-radius: var(--border-radius); border: 1px solid var(--accent-color); background: transparent; color: var(--accent-color); cursor: pointer;"
+                                               data-id="${item.U_CodEmpleado}"
+                                               onclick="verDetalleEmpleado(this,${item.U_CodEmpleado},'${item.Empleado}')">
+                                               <i class="fas fa-exclamation-triangle"></i> Incumplimientos
+                                        </button>
+                                    </td>
+                                </tr>`;
+                    });
+
+                    html += `</tbody>
+                                        </table>
+                                    </div>
+                                    <div style="text-align: right; padding: 10px; border-top: 1px solid #eee;">
+                                        <form method="post" action="/RRHH/ExportarDetalleExcel" target="_blank">
+                                            <input type="hidden" name="FechaInicio" value="${fechaInicio}">
+                                            <input type="hidden" name="FechaFin" value="${fechaFin}">
+                                            <input type="hidden" name="CodigoDepartamento" value="${idArea}">
+                                            <button type="submit" style="padding: 8px 15px; border-radius: var(--border-radius); border: none; background-color: var(--success-color); color: white; cursor: pointer;">
+                                                <i class="fas fa-file-excel"></i> Exportar a Excel
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>`;
+
+                    tr.insertAdjacentHTML('afterend', html);
+                } else {
+                    alert(response.message);
+                    detalleActual = null;
+                }
+            }
+        });
+    }
+
+    function verDetalleEmpleado(Button, IdEmpleado, nombreEmpleado) {
+        const tr = Button.closest("tr");
+        const idBoton = Button.getAttribute("data-id");
+
+        // Si ya hay un detalle abierto y es del mismo botón, ciérralo
+        if (detalleActualEmpleado && detalleActualEmpleado.id === idBoton) {
+            document.querySelector(".fila-detalleEmpleado")?.remove();
+            detalleActualEmpleado = null;
+            return;
+        }
+
+        // Elimina detalle anterior si es otro
+        document.querySelector(".fila-detalleEmpleado")?.remove();
+        detalleActualEmpleado = { id: idBoton };
+        const fechaInicio = document.getElementById("fechaInicio").value;
+        const fechaFin = document.getElementById("fechaFin").value;
+
+        $.ajax({
+            url: '@Url.Action("ObtenerDetalleIncumplimientosPorEmpleado", "RRHH")',
+            method: 'POST',
+            data: {
+                FechaInicio: fechaInicio,
+                FechaFin: fechaFin,
+                CodigoEmpleado: IdEmpleado
+            },
+            success: function(response) {
+                if (response.success) {
+                    let html = `
+                        <tr class="fila-detalleEmpleado">
+                            <td colspan="8">
+                                <div style="background: white; border-left: 4px solid var(--primary-color); border-radius: 0 var(--border-radius) var(--border-radius) 0; margin: 10px 0; box-shadow: var(--box-shadow);">
+                                    <div style="background-color: var(--primary-color); color: white; padding: 10px 15px; border-radius: 0;">
+                                        <strong><i class="fas fa-info-circle"></i> Detalle de incumplimientos | ${nombreEmpleado}</strong>
+                                    </div>
+                                    <div style="padding: 15px;">
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                            <div style="background: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow); padding: 15px;">
+                                                <div style="color: #7f8c8d; font-size: 14px;">Horas Trabajadas</div>
+                                                <div style="font-size: 24px; font-weight: bold; color: var(--primary-color);">${response.data[0].TotalHorasLaboradas}</div>
+                                            </div>
+                                            <div style="background: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow); padding: 15px;">
+                                                <div style="color: #7f8c8d; font-size: 14px;">Horas Registradas</div>
+                                                <div style="font-size: 24px; font-weight: bold; color: var(--success-color);">${response.data[0].TotalHorasLaborales}</div>
+                                            </div>
+                                        </div>
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse;">
+                                                <thead style="background-color: #f8f9fa;">
+                                                    <tr>
+                                                        <th style="padding: 10px; text-align: left;">No</th>
+                                                        <th style="padding: 10px; text-align: left;">Fecha</th>
+                                                        <th style="padding: 10px; text-align: left;">Hora Entrada</th>
+                                                        <th style="padding: 10px; text-align: left;">Hora Salida</th>
+                                                        <th style="padding: 10px; text-align: left;">Hora Entrada Rol</th>
+                                                        <th style="padding: 10px; text-align: left;">Hora Salida Rol</th>
+                                                        <th style="padding: 10px; text-align: left;">Incumplimiento</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>`;
+
+                    response.data.forEach(item => {
+                        html += `
+                                                    <tr style="border-bottom: 1px solid #eee;">
+                                                        <td style="padding: 10px;">${item.Rw ?? ''}</td>
+                                                        <td style="padding: 10px;">${parseJsonDate(item.Fecha)}</td>
+                                                        <td style="padding: 10px;">${item.HoraEntrada}</td>
+                                                        <td style="padding: 10px;">${item.HoraSalida}</td>
+                                                        <td style="padding: 10px;">${item.HoraEntradaROL}</td>
+                                                        <td style="padding: 10px;">${item.HoraSalidaROL}</td>
+                                                        <td style="padding: 10px;">${item.Incumplimiento}</td>
+                                                    </tr>`;
+                    });
+
+                    tr.insertAdjacentHTML('afterend', html);
+                } else {
+                    alert(response.message);
+                    detalleActual = null;
+                    detalleActualEmpleado = null;
+                }
+            }
+        });
+    }
+</script>

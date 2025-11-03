@@ -1,0 +1,109 @@
+﻿
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Gráficos</h1>
+    <div class="row">
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado en Ruta por PDV</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartDañadoPorTienda"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado por Almacén</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+
+                        <canvas id="chartDañadoAlmacenMes" class="chart-canvas" ;"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado por Transportista</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartDañadoPorTransportista" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">Monto de Nota Crédito por Mes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartMontoNCMeses" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado En Rutas</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartPorcentajeDañadoRutaMes" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">Relación  dañados por proceso</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartStackedDañado" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado por Categoría</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartDañadoPorCategoria" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" mb-4>
+                <div class="card-header py-3">
+                    <h6 class=" m-0 font-weight-bold text-primary">% Dañado Por Ruta</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="chartDañadoPorRuta" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+</div>
+
+<style>
+    .chart-bar {
+        position: relative;
+        width: 100%; /* Se adapta al contenedor */
+        height: 400px; /* Establece una altura fija o ajusta según tus necesidades */
+    }
+
+    canvas.chart-canvas {
+        width: 100% !important; /* Fuerza el ancho completo */
+        height: 100% !important; /* Fuerza la altura completa */
+    }
+
+
+</style>
+

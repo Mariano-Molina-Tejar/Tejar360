@@ -1,0 +1,348 @@
+﻿<style>
+    .form-control, select {
+        border-radius: 0.5rem;
+        font-size: 14px;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        padding: 10px 20px;
+        font-size: 14px;
+        margin-right: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+    }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+    table {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    thead {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .tab-content {
+        background-color: #fff;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #f8f9fa;
+        border-color: #dee2e6 #dee2e6 #fff;
+        font-weight: bold;
+    }
+</style>
+
+<h2 class="mt-4 mb-4 text-primary">🚧 Gestión de Proyecto - Obras</h2>
+
+<div class="container mt-4">
+    <!-- ENCABEZADO GENERAL DEL PROYECTO -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">📋 Datos del Proyecto</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="formObra">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label><strong>Código</strong></label>
+                        <input type="text" class="form-control" name="Codigo" />
+                    </div>
+                    <div class="form-group col-md-10">
+                        <label><strong>Nombre del Cliente</strong></label>
+                        <input type="text" class="form-control" name="Cliente" placeholder="Ingrese nombre del cliente" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label><strong>Nombre del Proyecto</strong></label>
+                        <input type="text" class="form-control" name="Proyecto" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label><strong>Dirección</strong></label>
+                        <input type="text" class="form-control" name="Direccion" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label><strong>Ubicación (Google Maps)</strong></label>
+                        <input type="text" class="form-control" name="Ubicacion" placeholder="URL de Google Maps" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><strong>Asesor</strong></label>
+                        <select class="form-control" name="Asesor">
+                            <option value="">TZ1 - Asesor 1</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><strong>Fecha Inicio</strong></label>
+                        <input type="date" class="form-control" name="FechaInicio" />
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label><strong>Observaciones</strong></label>
+                        <textarea class="form-control" name="Observaciones" rows="2"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABS PARA COTIZACIONES, FACTURADO, HISTORIAL -->
+    <ul class="nav nav-tabs" id="tabObras" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="tab-cotizacion-tab" data-toggle="tab" href="#tab-cotizacion" role="tab">📝 Cotización</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-facturado-tab" data-toggle="tab" href="#tab-facturado" role="tab">💳 Facturado</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-seguimiento-tab" data-toggle="tab" href="#tab-seguimientos" role="tab">📚 Seguimientos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-historial-tab" data-toggle="tab" href="#tab-historial" role="tab">📚 Historial Cliente</a>
+        </li>
+    </ul>
+    <div class="tab-content border border-top-0 bg-white p-3" id="tabContentObras">
+        <!-- Contenido de cada tab lo dejas como ya lo tenés -->
+        <div class="tab-pane fade show active" id="tab-cotizacion" role="tabpanel">
+            <h5 class="mt-4">📦 Productos Cotizados</h5>
+            <div style="overflow-x: auto; max-height: 400px;">
+                <table class="table table-bordered table-sm text-center align-middle" style="min-width: 900px;">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="min-width: 80px;">Imagen</th>
+                            <th style="min-width: 120px;">Área</th>
+                            <th style="min-width: 100px;">Código</th>
+                            <th style="min-width: 200px;">Nombre</th>
+                            <th style="min-width: 100px;">Cantidad</th>
+                            <th style="min-width: 120px;">Precio Unitario</th>
+                            <th style="min-width: 120px;">Descuento (%)</th>
+                            <th style="min-width: 100px;">Total</th>
+                            <th style="min-width: 80px;">✔</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCotizacion">
+                        <tr>
+                            <td>
+                                <img src="https://via.placeholder.com/60x60.png?text=PISO+1" alt="Piso 1" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                            </td>
+                            <td>
+                                <select class="form-control">
+                                    <option>SALA</option>
+                                    <option>COCINA</option>
+                                    <option>BAÑO</option>
+                                    <option>HABITACIÓN</option>
+                                    <option>PASILLO</option>
+                                    <option>TERRAZA</option>
+                                </select>
+                            </td>
+                            <td>PS-1201</td>
+                            <td style="text-align:left">PISO CERÁMICO BEIGE 45X45CM</td>
+                            <td><input type="number" value="20" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 35.00</td>
+                            <td><input type="number" value="5" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 665.00</td>
+                            <td><div class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" /></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://via.placeholder.com/60x60.png?text=PISO+2" alt="Piso 2" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                            </td>
+                            <td>
+                                <select class="form-control">
+                                    <option>SALA</option>
+                                    <option>COCINA</option>
+                                    <option selected>BAÑO</option>
+                                    <option>HABITACIÓN</option>
+                                    <option>PASILLO</option>
+                                    <option>TERRAZA</option>
+                                </select>
+                            </td>
+                            <td>PC-9802</td>
+                            <td style="text-align:left">PORCELANATO GRIS MATE 60X60CM</td>
+                            <td><input type="number" value="18" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 55.00</td>
+                            <td><input type="number" value="0" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 990.00</td>
+                            <td><div class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" /></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://via.placeholder.com/60x60.png?text=PISO+3" alt="Piso 3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                            </td>
+                            <td>
+                                <select class="form-control">
+                                    <option>SALA</option>
+                                    <option selected>COCINA</option>
+                                    <option>BAÑO</option>
+                                    <option>HABITACIÓN</option>
+                                    <option>PASILLO</option>
+                                    <option>TERRAZA</option>
+                                </select>
+                            </td>
+                            <td>PS-2103</td>
+                            <td style="text-align:left">PISO ANTIDESLIZANTE BLANCO 30X30CM</td>
+                            <td><input type="number" value="12" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 28.00</td>
+                            <td><input type="number" value="10" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 302.40</td>
+                            <td><div class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" /></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://via.placeholder.com/60x60.png?text=PISO+4" alt="Piso 4" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                            </td>
+                            <td>
+                                <select class="form-control">
+                                    <option>SALA</option>
+                                    <option selected>COCINA</option>
+                                    <option>BAÑO</option>
+                                    <option>HABITACIÓN</option>
+                                    <option>PASILLO</option>
+                                    <option>TERRAZA</option>
+                                </select>
+                            </td>
+                            <td>PC-4505</td>
+                            <td style="text-align:left">PORCELANATO IMITACIÓN MADERA 20X90CM</td>
+                            <td><input type="number" value="25" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 75.00</td>
+                            <td><input type="number" value="8" class="form-control form-control-sm text-center" /></td>
+                            <td>Q 1725.00</td>
+                            <td><div class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" /></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="mt-3 text-right">
+                <button type="button" class="btn btn-primary">💾 Guardar</button>
+                <button type="button" class="btn btn-danger">🗑 Anular Proyecto</button>
+                <button type="button" class="btn btn-success">⬇ Descargar PDF</button>
+                <button type="button" class="btn btn-warning">📤 Facturar Seleccionados</button>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="tab-facturado" role="tabpanel">
+            <h5 class="mb-3">💳 Productos Facturados</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Área</th>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Descuento (%)</th>
+                        <th>Total</th>
+                        <th>Factura</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaFacturado"></tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="tab-seguimientos" role="tabpanel">
+            <h5 class="mb-3">📚 Seguimiento</h5>
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">📚 Historial del Cliente</h5>
+                <button class="btn btn-success" type="button" onclick="agregarSeguimiento()">
+                    ➕ Agregar nuevo seguimiento
+                </button>
+            </div>
+
+            <div class="accordion" id="accordionHistorial">
+                <!-- Ejemplo de seguimiento 1 -->
+                <div class="card">
+                    <div class="card-header bg-secondary text-white" id="headingOne">
+                        <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                            <button class="btn btn-link text-white" type="button" data-toggle="collapse" data-target="#collapseOne">
+                                📅 10/07/2025 - 👤 Usuario: Juan Pérez
+                            </button>
+                            <span class="badge badge-info">Seguimiento</span>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse show" data-parent="#accordionHistorial">
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label><strong>Notas</strong></label>
+                                    <textarea class="form-control" rows="3">Cliente interesado en porcelanato mate 60x60. Espera cotización final.</textarea>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label><strong>Nivel de Obra</strong></label>
+                                    <select class="form-control">
+                                        <option>Negra</option>
+                                        <option selected>Gris</option>
+                                        <option>Blanca</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label><strong>Próximo seguimiento</strong></label>
+                                    <input type="date" class="form-control" value="2025-07-15" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Otro seguimiento -->
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo">
+                                📅 05/07/2025 - 👤 Usuario: Ana López
+                            </button>
+                            <span class="badge badge-secondary">Cotización enviada</span>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" data-parent="#accordionHistorial">
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label><strong>Notas</strong></label>
+                                    <textarea class="form-control" rows="3">Se envió cotización inicial, pendiente aprobación.</textarea>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label><strong>Nivel de Obra</strong></label>
+                                    <select class="form-control">
+                                        <option>Negra</option>
+                                        <option selected>Gris</option>
+                                        <option>Blanca</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label><strong>Próximo seguimiento</strong></label>
+                                    <input type="date" class="form-control" value="2025-07-12" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="tab-pane fade" id="tab-historial" role="tabpanel">
+            <h5 class="mb-3">📚 Historial de Compras del Cliente</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Factura</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHistorial"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

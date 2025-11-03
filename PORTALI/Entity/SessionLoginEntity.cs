@@ -24,5 +24,7 @@ namespace Entity
         public double Descto { get; set; }
         public string ClienteCf { get; set; }
         public int Serie { get; set; }
+        public string CambiarContrasena { get; set; }
+        public string SuperUser { get; set; }
     }
 }

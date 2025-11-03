@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitud de Vacaciones</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 0px;
+        }
+
+        .contenedor {
+            background-color: white;
+            max-width: 1100px;
+            margin: auto;
+            padding: 30px;
+            /* border: 1px solid #ccc; */
+            /* box-shadow: 0 0 10px rgba(0,0,0,0.1); */
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .fila {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+            .fila .col {
+                flex: 1;
+                padding-right: 10px;
+            }
+
+                .fila .col:last-child {
+                    padding-right: 0;
+                }
+
+        .label {
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        table, th, td {
+            border: 1px solid #333;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+
+        .firmas {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+            .firmas div {
+                flex: 1;
+            }
+
+                .firmas div:not(:last-child) {
+                    margin-right: 20px;
+                }
+
+        .linea {
+            margin-top: 40px;
+            border-top: 1px solid #000;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .small {
+            font-size: 0.8em;
+            color: #555;
+        }
+
+        .texto-subrayado {
+            border-bottom: 1px solid black;
+            display: inline-block;
+            width: 50px;
+        }
+
+        .espaciado {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="contenedor">
+
+        <img width="20%" src="https://eltejar.gt/wp-content/uploads/2025/01/cropped-cropped-download-1-1.png" alt="logo">
+
+        <h2>SOLICITUD DE VACACIONES</h2>
+
+        <div class="fila">
+            <div class="col"><span class="label">Nombre:   </span> @Nombre</div>
+        </div>
+        <div class="fila">
+            <div class="col"><span class="label">Puesto:</span> @Puesto</div>
+        </div>
+        <div class="fila">
+            <div class="col"><span class="label">Depto.:</span> @Departamento</div>
+        </div>
+        <div class="fila">
+            <div class="col"><span class="label">Código empleado.:</span> @CodigoEmpleado</div>
+            <div class="col"><span class="label">Fecha:</span> @FechaRegistro</div>
+        </div>
+
+
+        <p class="espaciado">Atentamente solicito me sean concedidas mis vacaciones según:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">PERIODO</th>
+                    <th colspan="2">FECHA EN QUE TOMARÁ VACACIONES</th>
+                    <th colspan="2">DÍAS</th>
+                    <th rowspan="2">Fecha en que deberá presentarse nuevamente</th>
+                </tr>
+                <tr>
+                    <th>DEL</th>
+                    <th>AL</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>GOZADOS</th>
+                    <th>PENDIENTES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2025</td>
+                    <td>2025</td>
+                    <td>@FechaInicio</td>
+                    <td>@FechaFin</td>
+                    <td>@DiasGozadados</td>
+                    <td>___</td>
+                    <td>@FechaPresentarse</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <br>
+        <br>
+
+        <div class="firmas espaciado">
+            <div>
+                <div style="margin-bottom: 2px;">
+                    <p style="font-size: 12px; margin: 0px;">@ComentarioFirmaSolicitante</p>
+                    <p style="font-size: 12px; margin: 0px;">@FirmaSolicitante</p>
+                </div>
+
+                <div style="border-top: 1px solid black; width: 300px; margin: 0 auto;"></div>
+                <span class="small">Firma del Colaborador</span>
+            </div>
+
+            <div>
+                <div style="margin-bottom: 2px;">
+                    <p style="font-size: 12px; margin: 0px;">@ComentarioAutorizador</p>
+                    <p style="font-size: 12px; margin: 0px;">@FirmaAutorizador</p>
+                </div>
+
+                <div style="border-top: 1px solid black; width: 300px; margin: 0 auto;"></div>
+                <span class="small">Autorizacion del Jefe Inmediato</span>
+            </div>
+        </div>
+        <br>
+        <br>
+
+
+        <div class="firmas espaciado">
+            <div>
+                <div style="margin-bottom: 2px;">
+                    <p style="font-size: 12px; margin: 0px;">@ComentarioRRHH</p>
+                    <p style="font-size: 12px; margin: 0px;">@FirmaRRHH</p>
+                </div>
+
+                <div style="border-top: 1px solid black; width: 300px; margin: 0 auto;"></div>
+                <span class="small">VoBo. Recursos Humanos<br>(opcional)</span>
+            </div>
+
+        </div>
+        <br>
+        <br>
+        <br>
+
+        <h3 class="espaciado">FINIQUITO DE VACACIONES</h3>
+        <br>
+
+
+        <p>Sírvase la presente como constancia de goce de <span style="font-weight: bold;">@DiasGozadados</span> días de vacaciones conforme a la solicitud realizada anteriormente.</p>
+        <br>
+        <br>
+
+        <div class="firmas espaciado">
+            <div>
+                <div style="margin-bottom: 2px;">
+                    <p style="font-size: 12px; margin: 0px;">@ComentarioFirmaSolicitante</p>
+                    <p style="font-size: 12px; margin: 0px;">@FirmaSolicitante</p>
+                </div>
+
+                <div style="border-top: 1px solid black; width: 300px; margin: 0 auto;"></div>
+                <span class="small">Firma del Colaborador</span>
+            </div>
+
+        </div>
+
+
+    </div>
+</body>
+</html>
