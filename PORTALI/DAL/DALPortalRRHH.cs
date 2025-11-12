@@ -273,7 +273,7 @@ namespace DAL
                 };
             }
         }
-        public async Task<List<AsistenciaModel>> ObternerAsistencia(DateTime? fechaI , DateTime? fechaF, string nombre = "")
+        public async Task<List<AsistenciaModel>> ObternerAsistencia(DateTime? fechaI , DateTime? fechaF, string nombre = "", int userId = 0)
         {
             try
             {
@@ -281,7 +281,7 @@ namespace DAL
                 {
                     string sp = "sp_ver_horarios_ingreso_por_sucursal";
 
-                    return (List<AsistenciaModel>)await connection.QueryAsync<AsistenciaModel>(sp,new { @FechaI = fechaI, @FechaF = fechaF, @Nombre = nombre} , commandType: CommandType.StoredProcedure, commandTimeout: 120);
+                    return (List<AsistenciaModel>)await connection.QueryAsync<AsistenciaModel>(sp,new { @FechaI = fechaI, @FechaF = fechaF, @Nombre = nombre, @UserId = userId} , commandType: CommandType.StoredProcedure, commandTimeout: 120);
                 }
             }
             catch (Exception ex)

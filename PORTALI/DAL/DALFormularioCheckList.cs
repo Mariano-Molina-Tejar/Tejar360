@@ -79,7 +79,7 @@ namespace DAL
             
         public async Task<List<ListasDesplegableCheckList>> ObtenerEncargadosBodega()
         {
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(connectionString))    
             {
                 string sp = "sp_CheckListObtenerEncargadoBodega";
                 var resultado = await connection.QueryAsync<ListasDesplegableCheckList>(sp, commandType: CommandType.StoredProcedure);
@@ -92,7 +92,7 @@ namespace DAL
             {
                 using (var connection = new SqlConnection(connectionString))
                 {
-                    string sp = "sp_ver_check_sup_procesos_v2";
+                    string sp = "sp_ver_check_sup_procesos_v2";     
                     return (List<CheckListInfo>)await connection.QueryAsync<CheckListInfo>(sp, new { @FechaI = FechaI, @FechaF = FechaF, @Estado = Estado, @USER360 = User360, @Tienda = Tienda, @RegionT = Region }, commandType: CommandType.StoredProcedure);
                 }
             }

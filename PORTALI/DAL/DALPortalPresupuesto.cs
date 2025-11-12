@@ -141,9 +141,9 @@ namespace DAL
                     return (List<ReporteFinanciero>)await connection.QueryAsync<ReporteFinanciero>(query, commandType: CommandType.StoredProcedure, commandTimeout: 120);
                 }
             }
-            catch (Exception ex)
+            catch 
             {
-                return new List<ReporteFinanciero> { new ReporteFinanciero { ErrorMessage = ex.Message } };
+                throw;
             }
         }
         public async Task<List<ReporteFinanciero>> ObtenerRepoteFInancier_cd()

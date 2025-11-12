@@ -403,6 +403,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KpiCrmController.cs" />
     <Compile Include="Controllers\KPISItController.cs" />
+    <Compile Include="Controllers\LiquidacionesController.cs" />
     <Compile Include="Controllers\MacroGantController.cs" />
     <Compile Include="Controllers\MargenController.cs" />
     <Compile Include="Controllers\MargenTiendasController.cs" />
@@ -417,6 +418,7 @@
     <Compile Include="Controllers\ProspListadoObrasController.cs" />
     <Compile Include="Controllers\ProspVisitaController.cs" />
     <Compile Include="Controllers\RankingV2Controller.cs" />
+    <Compile Include="Controllers\ReclutamientoController.cs" />
     <Compile Include="Controllers\ReporteBodegasController.cs" />
     <Compile Include="Controllers\ReporteDañadoController.cs" />
     <Compile Include="Controllers\ReporteEstadoCuentaGastosController.cs" />
@@ -439,6 +441,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\EmailHelper\Templates.cs" />
     <Compile Include="hubs\NotificacionesHub.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -525,6 +528,8 @@
     <Content Include="Img\PARTE-INFERIOR-PAG-1-08.png" />
     <Content Include="Img\PARTE-INFERIOR-PAG2-05-05 %281%29.png" />
     <Content Include="Img\perfil.png" />
+    <Content Include="Img\PerfilFemale.png" />
+    <Content Include="Img\PerfilMale.png" />
     <Content Include="Img\Plata.png" />
     <Content Include="Img\pregunta.png" />
     <Content Include="Img\quetzal_simbolo.png" />
@@ -1276,6 +1281,9 @@
     <Content Include="Views\Asistencia\Index.cshtml" />
     <Content Include="Views\FlujoCD\Index.cshtml" />
     <Content Include="Views\GestionDePersonal\Index.cshtml" />
+    <Content Include="Views\GestionDePersonal\AutorizacionGTH.cshtml" />
+    <Content Include="Views\Liquidaciones\Index.cshtml" />
+    <Content Include="Views\Reclutamiento\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

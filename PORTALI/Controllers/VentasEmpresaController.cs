@@ -105,7 +105,6 @@ namespace PORTALI.Controllers
             }
             catch (Exception ex)
             {
-                //detallePresupuesto.Add(new DetallePresupuestoN3 { ErrorMessage = ex.Message });
                 return Json(new { success = false, message = ex.Message });
             }
         }

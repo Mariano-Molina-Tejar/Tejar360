@@ -250,7 +250,7 @@
                                         <i class="nav-icon fas fa-file-invoice-dollar"></i> Estado de bolson
                                     </a>
                                 </li>
- }
+                            }
                             else
                             { @*<li class="nav-item">
                                         <a class="nav-link" href="@Url.Action("Bolson", "EstadoBolson")">
@@ -284,7 +284,7 @@
                                     <i class="nav-icon fas fa-file-invoice-dollar"></i> Resumen seguimiento
                                 </a>
                             </li>
-}
+                        }
 
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Index", "BolsonPerdidas")">
@@ -371,6 +371,27 @@
                         </ul>
                         <ul class="nav-dropdown-items">
                             <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("AutorizacionGTH", "GestionDePersonal")">
+                                    <i class="nav-icon fas fa-users-gear"></i> Autorizacones GTH
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Reclutamiento")">
+                                    <i class="nav-icon fas fa-users-gear"></i> Reclutamiento GTH
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Liquidaciones")">
+                                    <i class="nav-icon fas fa-users-gear"></i> Pago y liquidación autorizada | Contabilidad
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Index", "RRHH")">
                                     <i class="nav-icon fas fa-clock"></i> Reporte Marcaje
                                 </a>
@@ -409,86 +430,86 @@
                                 </li>
                             </ul>
                         </li>
-}
+                    }
 
 
 
                     @if (UserLogin.SuperUser == "Y" || UserLogin.UserCode == "manager" || UserLogin.Depto == 6 || UserLogin.UserCode == "toperac1")
                     {
-                <li class="nav-item nav-dropdown">
-                    <a class="nav-link nav-dropdown-toggle" href="#">
-                        <i class="nav-icon fas fa-truck"></i> Operaciones
-                    </a>
-                    <ul class="nav-dropdown-items">
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Cd", "VentasCd")">
-                                <i class="nav-icon fas fa-shopping-cart"></i> Ventas CD
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav-dropdown-items">
-                        <!-- Submenú Reportes -->
                         <li class="nav-item nav-dropdown">
                             <a class="nav-link nav-dropdown-toggle" href="#">
-                                <i class="nav-icon fas fa-file-alt"></i> Reportes
+                                <i class="nav-icon fas fa-truck"></i> Operaciones
                             </a>
                             <ul class="nav-dropdown-items">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="@Url.Action("ReporteDañado", "ReporteDañado")">
-                                        <i class="nav-icon fas fa-clipboard-check"></i> Producto Dañado
+                                    <a class="nav-link" href="@Url.Action("Cd", "VentasCd")">
+                                        <i class="nav-icon fas fa-shopping-cart"></i> Ventas CD
                                     </a>
                                 </li>
+                            </ul>
+                            <ul class="nav-dropdown-items">
+                                <!-- Submenú Reportes -->
+                                <li class="nav-item nav-dropdown">
+                                    <a class="nav-link nav-dropdown-toggle" href="#">
+                                        <i class="nav-icon fas fa-file-alt"></i> Reportes
+                                    </a>
+                                    <ul class="nav-dropdown-items">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="@Url.Action("ReporteDañado", "ReporteDañado")">
+                                                <i class="nav-icon fas fa-clipboard-check"></i> Producto Dañado
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaImportacion")" title="Estado de cuanta importación">
+                                                <i class="nav-icon fas fa-file-invoice-dollar"></i> Estado Cuenta Imp.
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaServiciosAdicionales")" title="Estado de cuenta servicios adicionales">
+                                                <i class="nav-icon fas fa-file-invoice"></i> Estado Cuenta Serv. Ad.
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaGastos")">
+                                                <i class="nav-icon fas fa-file-invoice"></i> Estado Cuenta Gastos
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaLocal")">
+                                                <i class="nav-icon fas fa-file-invoice"></i> Estado Cuenta Local
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="@Url.Action("Index", "ReporteInterTiendas")">
+                                                <i class="nav-icon fas fa-exchange-alt"></i> Reporte Inter Tiendas
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ul class="nav-dropdown-items">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaImportacion")" title="Estado de cuanta importación">
-                                        <i class="nav-icon fas fa-file-invoice-dollar"></i> Estado Cuenta Imp.
+                                    <a class="nav-link" href="@Url.Action("Index", "FormularioChecklist")">
+                                        <i class="nav-icon fas fa-clipboard-check"></i> Check list
                                     </a>
                                 </li>
+                            </ul>
+                            <ul class="nav-dropdown-items">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaServiciosAdicionales")" title="Estado de cuenta servicios adicionales">
-                                        <i class="nav-icon fas fa-file-invoice"></i> Estado Cuenta Serv. Ad.
+                                    <a class="nav-link" href="@Url.Action("ReporteBodegas", "ReporteBodegas")">
+                                        <i class="nav-icon fas fa-tachometer-alt"></i> Dashboard Calificación
                                     </a>
                                 </li>
+                            </ul>
+                            <ul class="nav-dropdown-items">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaGastos")">
-                                        <i class="nav-icon fas fa-file-invoice"></i> Estado Cuenta Gastos
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="@Url.Action("Index", "ReporteEstadoCuentaLocal")">
-                                        <i class="nav-icon fas fa-file-invoice"></i> Estado Cuenta Local
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="@Url.Action("Index", "ReporteInterTiendas")">
-                                        <i class="nav-icon fas fa-exchange-alt"></i> Reporte Inter Tiendas
+                                    <a class="nav-link" href="@Url.Action("Index", "FlujoCD")">
+                                        <i class="nav-icon fas fa-tachometer-alt"></i> Flujo de entradas y salidas
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                    </ul>
-                    <ul class="nav-dropdown-items">
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "FormularioChecklist")">
-                                <i class="nav-icon fas fa-clipboard-check"></i> Check list
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav-dropdown-items">
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("ReporteBodegas", "ReporteBodegas")">
-                                <i class="nav-icon fas fa-tachometer-alt"></i> Dashboard Calificación
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav-dropdown-items">
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "FlujoCD")">
-                                <i class="nav-icon fas fa-tachometer-alt"></i> Flujo de entradas y salidas
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-}
+                    }
 
                     <li class="nav-item nav-dropdown">
                         <a class="nav-link nav-dropdown-toggle" href="#">

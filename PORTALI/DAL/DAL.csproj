@@ -226,6 +226,7 @@
     <Compile Include="DALPortalVentasCd.cs" />
     <Compile Include="DALPortalVentasEmpresa.cs" />
     <Compile Include="DALProspeccion.cs" />
+    <Compile Include="DALReclutamiento.cs" />
     <Compile Include="DALReporteCheckList.cs" />
     <Compile Include="DALReporteDañado.cs" />
     <Compile Include="DALReporteEstadoCuentaGastos.cs" />

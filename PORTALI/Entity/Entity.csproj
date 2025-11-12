@@ -177,6 +177,7 @@
     <Compile Include="RecepcionProductosDetalleEntity.cs" />
     <Compile Include="RecepcionProductosEntity.cs" />
     <Compile Include="RecepcionProductosModalDetalleEntity.cs" />
+    <Compile Include="ReclutemientoEntity.cs" />
     <Compile Include="Reply.cs" />
     <Compile Include="ReporteCheckListEntity.cs" />
     <Compile Include="ReporteDañadoEntity.cs" />

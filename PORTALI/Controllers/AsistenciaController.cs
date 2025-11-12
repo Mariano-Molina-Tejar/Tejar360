@@ -15,6 +15,13 @@ namespace PORTALI.Controllers
         DALPortalRRHH _dal = new DALPortalRRHH();
         public async Task<ActionResult> Index(DateTime? fechaI, DateTime? fechaF, string nombre)
         {
+            var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+            if (sessions == null)
+            {
+                ViewData["Error"] = "Su sesion ha expirado!!";
+                return RedirectToAction("Login", "Account");
+            }
+
             List<AsistenciaModel> asistencia = new List<AsistenciaModel>();
             List<AsistenciaSemanalViewModel> ListaAsistenciaError = new List<AsistenciaSemanalViewModel>();
 
@@ -27,10 +34,10 @@ namespace PORTALI.Controllers
                 fechaF = fechaF == null ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1) : fechaF;
                 nombre = string.IsNullOrEmpty(nombre) ? "": nombre;
 
-                asistencia = await _dal.ObternerAsistencia(fechaI, fechaF, nombre);
+                asistencia = await _dal.ObternerAsistencia(fechaI, fechaF, nombre, sessions.UserId);
 
                 var viewModel = asistencia
-                .GroupBy(a => new { a.Empleado, a.Sucursal , a.Semana})
+                .GroupBy(a => new { a.Empleado , a.Semana})
                 .Select(g => new AsistenciaSemanalViewModel
                 {
                     Empleado = $"{g.Key.Empleado}",

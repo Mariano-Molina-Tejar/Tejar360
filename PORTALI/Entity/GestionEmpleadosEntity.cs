@@ -39,12 +39,19 @@ namespace Entity
         public string Name { get; set; }
     }
 
+    public class AutorizacionesGTHViewModel
+    {
+        public IEnumerable<AutorizacionDeBaja> Autorizaciones { get; set; }
+        public IEnumerable<CausasDespido> Causas { get; set; }
+    }
     public class EnvioCorreoGestionEmpleados
     {
         public string Asunto { get; set; }
         public string Correos { get; set; }
         public string Cuerpo { get; set; }  
         public string Nombre { get; set; }
+        public int Estado { get; set; }
+        public bool isHTML { get; set; } = false;
     }
 
     public class SolicitudDeBaja
@@ -64,5 +71,21 @@ namespace Entity
     {
         public int U_IdSolicitud { get; set; }
         public int U_IdCausa { get; set; }
+    }
+
+    public class AutorizacionDeBaja
+    {
+        public int Code { get; set; }
+        public DateTime FechaSolicitud { get; set; }
+        public int EmpleadoId { get; set; }
+        public string Nombre { get; set; }
+        public string Puesto { get; set; }
+        public string Departamento { get; set; }
+        public string Solicita { get; set; }
+        public string Motivo { get; set; }
+        public string Observaciones { get; set; }
+        public int Causas { get; set; }
+        public char AutorizadoGTH { get; set; }
+        public int Estado { get; set; }
     }
 }

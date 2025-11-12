@@ -55,8 +55,8 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Tienda</label>
-                    <select class="form-control" name="Tienda" @(ViewBag.DisabledTienda ? "Disabled":"")>
-                        <option value="" @(ViewBag.Tienda == "" ? "Selected" : "") >Todas</option>
+                    <select class="form-control" name="Tienda" @(ViewBag.DisabledTienda ? "Disabled" : "")>
+                        <option value="" @(ViewBag.Tienda == "" ? "Selected" : "")>Todas</option>
                         @foreach (var items in @ViewBag.TiendasRegiones)
                         {
                             <option value="@items.WhsCode" @(ViewBag.Tienda == items.WhsCode ? "Selected" : "")>@items.WhsName</option>
@@ -65,8 +65,8 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Region</label>
-                    <select class="form-control" name="Region" @(ViewBag.DisabledRegion ? "Disabled":"")>
-                        <option value="-1" @(ViewBag.Region == -1 ? "Selected" : "") >Todas</option>
+                    <select class="form-control" name="Region" @(ViewBag.DisabledRegion ? "Disabled" : "")>
+                        <option value="-1" @(ViewBag.Region == -1 ? "Selected" : "")>Todas</option>
                         @foreach (var items in ((IEnumerable<dynamic>)ViewBag.TiendasRegiones)
                         .GroupBy(x => new { x.Code, x.Location })
                         .Select(g => g.First()))
@@ -146,9 +146,8 @@
                                     if (lista.Estado == 0)
                                     {
                                         <td>
-                                            
-                                            <a href="@Url.Action("Checklist", "FormularioCheckList", new {nuevo = -1 , NumeroFormulario = lista.Correlativo})">
-                                                <button type="button" class="btn btn-outline-danger btn-sm ver-detalle-btn" >
+                                            <a href="@Url.Action("Checklist", "FormularioCheckList", new { nuevo = -1, NumeroFormulario = lista.Correlativo })">
+                                                <button type="button" class="btn btn-outline-danger btn-sm ver-detalle-btn">
                                                     <i class="bi bi-exclamation-circle"></i> Completar
                                                 </button>
                                             </a>
@@ -157,11 +156,19 @@
                                     else
                                     {
                                         <td>
-                                            <a href="@Url.Action("Checklist", "FormularioCheckList", new {nuevo = 1 , NumeroFormulario = lista.Correlativo})">
+                                            <a href="@Url.Action("Checklist", "FormularioCheckList", new { nuevo = 1, NumeroFormulario = lista.Correlativo })">
                                                 <button type="button" class="btn btn-outline-primary btn-sm ver-detalle-btn">
                                                     <i class="bi bi-eye-fill"></i> Ver detalle
                                                 </button>
                                             </a>
+                                            @if (sessions.UserId == 330)
+                                            {
+                                                <a href="@Url.Action("ActivaCheckList", "FormularioCheckList", new { nuevo = 1, NumeroFormulario = lista.Correlativo })">
+                                                    <button type="button" class="btn btn-outline-success btn-sm ver-detalle-btn">
+                                                        <i class="bi bi-toggle-on"></i>
+                                                    </button>
+                                                </a>
+                                            }
                                         </td>
                                     }
                                 }

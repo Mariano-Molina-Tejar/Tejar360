@@ -18,7 +18,7 @@ namespace PORTALI.Services
             msg.Subject = correo.Asunto;
             msg.To.Add(correo.Correos); /*gerente.it@eltejar.com.gt*/ /*programador.jr@eltejar.com.gt*/ /*katherine.campos@eltejar.com.gt*/
             msg.Body = correo.Cuerpo;
-            msg.IsBodyHtml = false;
+            msg.IsBodyHtml = correo.isHTML;
 
 
             msg.From = new MailAddress("eltejarferreteria@gmail.com", $"Gestion de empleados - {correo.Nombre}", System.Text.Encoding.UTF8);
