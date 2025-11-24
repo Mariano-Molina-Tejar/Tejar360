@@ -1284,6 +1284,7 @@
     <Content Include="Views\GestionDePersonal\AutorizacionGTH.cshtml" />
     <Content Include="Views\Liquidaciones\Index.cshtml" />
     <Content Include="Views\Reclutamiento\Index.cshtml" />
+    <Content Include="Views\Reclutamiento\_DetalleDocumento.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

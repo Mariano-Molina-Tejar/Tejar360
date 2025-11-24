@@ -19,6 +19,7 @@
             background-color: #6C757D;
             color: white;
         }
+
         .timeline {
             position: relative;
             margin: 20px 0;
@@ -71,7 +72,6 @@
             color: #ffc107;
             font-weight: bold;
         }
-
     </style>
 </head>
 <div class="container mt-4">
@@ -112,15 +112,15 @@
                             <td>@empleados.Puesto</td>
                             <td>@empleados.CreadoSAP.ToString("dd/MM/yyyy")</td>
                             @*<td>
-                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                </td>
-                                <td>@empleados.Viaticos</td>*@
-                        <td>
-                            <i class="fas fa-check-circle @(empleados.Activo == "Y" ? "text-success" : "d-none")"></i>
-                            <i class="fas fa-times-circle @(empleados.Activo == "N" ? "text-danger" : "d-none")"></i>
-                            <i class="fas fa-minus-circle @(empleados.Activo == "-" ? "text-warning" : "d-none")"></i>
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                    </td>
+                    <td>@empleados.Viaticos</td>*@
+                            <td>
+                                <i class="fas fa-check-circle @(empleados.Activo == "Y" ? "text-success" : "d-none")"></i>
+                                <i class="fas fa-times-circle @(empleados.Activo == "N" ? "text-danger" : "d-none")"></i>
+                                <i class="fas fa-minus-circle @(empleados.Activo == "-" ? "text-warning" : "d-none")"></i>
 
-                        </td>
+                            </td>
                             <td>
                                 <button class="btn btn-sm btn-outline-primary"
                                         onclick="verPerfil(this)"
@@ -138,6 +138,14 @@
                             </td>
                         </tr>
                     }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
+                            <i class="bi bi-info-circle"></i> No se encontraron datos
+                        </td>
+                    </tr>
                 }
 
             </tbody>
@@ -237,7 +245,7 @@
                                 <th class="text-secondary-perfil">Teléfono:</th>
                                 <td id="perfilTelefono">5555-1234</td>
                             </tr>
-                           
+
                         </table>
                     </div>
                 </div>
@@ -252,11 +260,12 @@
                 <button id="btn-DetalleProceso" type="button" class="btn btn-warning hidden-input" onclick="verProcesoBaja()">
                     <i class="bi bi-arrow-repeat"></i> Ver Proceso
                 </button>
-                <button id="btn-SolicitaBaja" type="button" class="btn btn-danger hidden-input" onclick="verSolicitudBaja()">
+                <button id="btn-SolicitaBaja" type="button"
+                        class="btn btn-outline-dark btn-sm hidden-input"
+                        onclick="verSolicitudBaja()">
                     <i class="bi bi-box-arrow-down"></i> Solicitar Baja
                 </button>
             </div>
-
         </div>
     </div>
 </div>
@@ -602,7 +611,7 @@
             } else if (button.getAttribute("data-activo") === '-') {
                 document.getElementById("perfilActivo").innerHTML =
                     '<i class="fas fa-minus-circle text-warning"></i> Pendiente de baja';
-            }else {
+            } else {
                 document.getElementById("perfilActivo").innerHTML =
                     '<i class="bi bi-x-circle-fill text-danger"></i> Inactivo';
             }

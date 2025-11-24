@@ -221,8 +221,8 @@ namespace DAL
 
                     var parametros = new
                     {
-                        IdSolicitud = idSolicitud,
-                        Estado = estado
+                        @IdSolicitud = idSolicitud,
+                        @IdEstado = estado
                     };
 
                     return await conn.QuerySingleOrDefaultAsync<string>(

@@ -19,6 +19,7 @@
             background-color: #6C757D;
             color: white;
         }
+
         .buttonMarcado {
             background-color: #6C757D;
             color: white;
@@ -155,6 +156,14 @@
                             </td>
                         </tr>
                     }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-3" style="font-style: italic;">
+                            <i class="bi bi-info-circle"></i> No se encontraron solicitudes
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>
@@ -476,7 +485,7 @@
             showCancelButton: true,
             confirmButtonText: 'Autorizar',
             cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#198754', // verde
+            confirmButtonColor: '#198754',
             cancelButtonColor: '#6c757d',
             inputValidator: (value) => {
                 if (!value) {
@@ -487,11 +496,10 @@
 
         if (observaciones) {
 
-            const datosDetalle = datos.find(x => x.Code === id)
-            const response = autorizarBaja(id, 1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones);
-
+            const datosDetalle = datos.find(x => x.Code === id);
+            const response = await autorizarBaja(id, 1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones, datosDetalle.DepartamentoId, datosDetalle.PuestoId, datosDetalle.SolicitaId);
             Swal.fire({
-                icon: 'success',
+                icon: response.success,
                 title: 'Solicitud autorizada',
                 text: 'La solicitud fue autorizada correctamente.',
                 timer: 1800,
@@ -524,7 +532,7 @@
         if (observaciones) {
 
             const datosDetalle = datos.find(x => x.Code === id)
-            const response = autorizarBaja(id, -1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones);
+            const response = await autorizarBaja(id, -1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones, datosDetalle.DepartamentoId, datosDetalle.PuestoId, datosDetalle.SolicitaId);
 
             Swal.fire({
                 icon: 'error',
@@ -538,21 +546,40 @@
         }
     }
 
-    async function autorizarBaja(id, estado, nombreEmpleado, departamento, motivo, observaciones, nombreSolicitante, comentariosGTH) {
+    async function autorizarBaja(id, estado, nombreEmpleado, departamento, motivo, observaciones, nombreSolicitante, comentariosGTH, departamentoId, puestoId, solicitaId)
+    {
         try {
 
-            const response = await fetch(`/GestionDePersonal/AutorizarBaja?id=${id}&estado=${estado}&nombreEmpleado=${nombreEmpleado}&departamento=${departamento}&motivo=${motivo}&observaciones=${observaciones}&nombreSolicitante=${nombreSolicitante}&comentariosGTH=${comentariosGTH}`, {
-                method: "GET"
+            console.log("Autorizar baja");
+            const formData = new FormData();
+
+            formData.append("id", id);
+            formData.append("estado", estado);
+            formData.append("nombreEmpleado", nombreEmpleado);
+            formData.append("departamento", departamento);
+            formData.append("motivo", motivo);
+            formData.append("observaciones", observaciones);
+            formData.append("nombreSolicitante", nombreSolicitante);
+            formData.append("comentariosGTH", comentariosGTH);
+            formData.append("departamentoId", departamentoId);
+            formData.append("puestoId", puestoId);
+            formData.append("solicitaId", solicitaId);
+
+
+            const response = await fetch(`/GestionDePersonal/AutorizarBaja`, {
+                method: "POST",
+                body: formData
             });
 
             if (!response.ok)
-                return false;
+                console.log(response)
+                //return { success: "error", message: response };
 
             const reply = await response.json();
             return reply;
 
         } catch (error) {
-            return {success : false, message : "Ocurrio un error al autorizar la solicitud"};
+            return { success: false, message: error };
         }
     }
 
@@ -573,6 +600,5 @@
     function cerrarModalTrackinDeBaja() {
         modalTrackingProceso.hide();
     }
-
 
 </script>

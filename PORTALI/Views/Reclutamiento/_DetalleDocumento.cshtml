@@ -1,0 +1,165 @@
+﻿@using Entity;
+@model ViewModelDocumento
+
+<head>
+    <style>
+        .verBoton {
+            display: none
+        }
+    </style>
+</head>
+<div class="text-center py-4">
+    <h4 class="fw-bold mb-3 text-primary">@Model.NombreDocumento</h4>
+    <p class="text-muted">@*Aquí puede cargar o visualizar el documento seleccionado.*@</p>
+    <p class="text-muted">@(Model.Descripcion).</p>
+
+    <form id="formUpload" enctype="multipart/form-data">
+        <div class="mb-3">
+            <input type="file" class="form-control" id="archivo" name="archivo" accept=".@(Model.Extencion)" required />
+        </div>
+
+        <button type="submit" class="btn btn-outline-success">
+            <i class="bi bi-upload me-2"></i> Cargar Archivo
+        </button>
+
+        <button id="btnVerDocumento" class="btn btn-outline-primary verBoton">
+            <i class="@(Model.Extencion == "pdf" ? " bi bi-file-earmark-pdf me-2" : "bi bi-card-image")"></i> @(Model.Extencion == "pdf" ? "Ver Documento" : "Ver Imagen")
+        </button>
+
+    </form>
+    <div class="alert alert-info d-flex align-items-center mt-2" role="alert">
+        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+        <div>
+            Si sube un nuevo archivo, <strong>el documento anterior será reemplazado.</strong>
+        </div>
+    </div>
+    <div class="modal fade" id="modalPDF" tabindex="-1" aria-labelledby="modalPDFLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalPDFLabel"><i class="@(Model.Extencion == "pdf" ? " bi bi-file-earmark-pdf me-2" : "bi bi-card-image")"></i> @(Model.Extencion =="pdf" ? "Vista del Documento" : "Vista de la Imagen")</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar" onclick="cerrarModalVerPdf()"></button>
+                </div>
+                <div class="modal-body p-0" style="height: 80vh;">
+                    @if (Model.Extencion == "pdf")
+                    {
+                        <iframe id="visorPDF" src="" width="100%" height="100%" style="border: none;"> </iframe>
+                    }
+                    else
+                    {
+                        <img id="visorIMG" src="" style="max-width:100%; max-height:100%; object-fit:contain;" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script>
+    //if (window.modalVerPdf) {
+    //    const modalVerPdf = new bootstrap.Modal(document.getElementById("modalPDF"));
+    //}
+    //else {
+    //    cosole.log("Ya esta creado");
+    //}
+    //if (!window.modalVerPdf) {
+    //    //window.modalVerPdf = new bootstrap.Modal(document.getElementById("modalPDF"));
+    //    const modalVerPdf = new bootstrap.Modal(document.getElementById("modalPDF"));
+    //}
+    //else {
+    //    const modalVerPdf = new bootstrap.Modal(document.getElementById("modalPDF"));
+    //}
+    $(() => {
+        VerExistencia();
+    })
+
+    $("#formUpload").on("submit", function (e) {
+        e.preventDefault();
+        const tipoDocumento = @Model.TipoDocumento;
+        const extencion = '@Model.Extencion';
+        const formData = new FormData(this);
+        formData.append("Tipo", tipoDocumento);
+        formData.append("Extencion", extencion);
+
+        $.ajax({
+            url: '@Url.Action("SubirDocumentos", "CVDigital")',
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (resp) {
+                toastr.success(resp.Message || "Documento cargado correctamente");
+                VerExistencia();
+                $(`#Icono-${tipoDocumento}`).removeClass();
+                $(`#Icono-${tipoDocumento}`).addClass("bi bi-check-lg text-success fs-5");
+            },
+            error: function () {
+                toastr.error("Error al subir el documento");
+            }
+        });
+    });
+
+    function verPDF() {
+        $("#globalLoading").show();
+        let userCode = document.getElementById("pCode").value;
+        $.ajax({
+            url: `/Reclutamiento/verdocumetos?Usuario=${userCode}&Tipo=@Model.TipoDocumento&Extencion=@Model.Extencion`,
+            success: function (data) {
+                if (data === "-1") {
+                    toastr.warning("No existe ningún archivo guardado");
+
+                } else if (data === "-2") {
+                    toastr.warning("La sesión ha expirado. Por favor, recargue la página e inicie sesión nuevamente.");
+                }
+                else {
+                    if ('@Model.Extencion' == 'pdf')
+                    {
+                        $("#visorPDF").attr("src", `/Reclutamiento/verdocumetos?Usuario=${userCode}&Tipo=@Model.TipoDocumento&Extencion=@Model.Extencion`);
+                    }
+                    else
+                    {
+                        $("#visorIMG").attr("src", `/Reclutamiento/verdocumetos?Usuario=${userCode}&Tipo=@Model.TipoDocumento&Extencion=@Model.Extencion`);
+                    }
+                    $("#globalLoading").hide();
+                    //modalVerPdf.show();
+                    new bootstrap.Modal(document.getElementById('modalPDF')).show();
+                }
+            }
+        });
+    }
+
+    function cerrarModalVerPdf() {
+        //modalVerPdf.hide();
+        console.log("Holiwis");
+        new bootstrap.Modal(document.getElementById('modalPDF')).hide();
+    }
+
+    function VerExistencia() {
+        let userCode = document.getElementById("pCode").value;
+
+        let Direccion = `/Reclutamiento/verdocumetos?usuario=${userCode}&Tipo=@(Model.TipoDocumento)&VerExistencia=1&Extencion=@(Model.Extencion)`;
+        $.ajax({
+            url: Direccion,
+            success: function (data) {
+                if (data === "-1") {
+                    $("#btnVerDocumento").addClass("verBoton");
+                } else if (data === "-2") {
+                    toastr.warning("La sesión ha expirado. Por favor, recargue la página e inicie sesión nuevamente.");
+                }
+                else {
+                    $("#btnVerDocumento").removeClass("verBoton");
+                }
+            },
+            error: () => { },
+            complete: () => {}
+        });
+    }
+
+    document.getElementById("btnVerDocumento").addEventListener("click", (e) => {
+        e.preventDefault();
+        verPDF();
+    });
+
+</script>

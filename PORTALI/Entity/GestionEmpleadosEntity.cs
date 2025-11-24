@@ -80,8 +80,11 @@ namespace Entity
         public int EmpleadoId { get; set; }
         public string Nombre { get; set; }
         public string Puesto { get; set; }
+        public int PuestoId { get; set; }
         public string Departamento { get; set; }
+        public int DepartamentoId { get; set; }
         public string Solicita { get; set; }
+        public int SolicitaId { get; set; }
         public string Motivo { get; set; }
         public string Observaciones { get; set; }
         public int Causas { get; set; }

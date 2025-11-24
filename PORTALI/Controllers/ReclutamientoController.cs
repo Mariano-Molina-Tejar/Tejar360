@@ -1,28 +1,283 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using DAL;
 using Entity;
+using Newtonsoft.Json;
+using PORTALI.Helpers.EmailHelper;
+using PORTALI.Services;
 
 namespace PORTALI.Controllers
 {
     public class ReclutamientoController : Controller
     {
         DALReclutamiento _dal = new DALReclutamiento();
+
         public async Task<ActionResult> Index()
         {
             try
             {
-                var SolicitudesDePersonal = await _dal.VerSolicitudesDePersonal();
-                return View(SolicitudesDePersonal);
+                ReclutamientoViewModel reclutamiento = new ReclutamientoViewModel();
+                reclutamiento.Reclutamiento = await _dal.VerSolicitudesDePersonal();
+                reclutamiento.Documentos = await _dal.VerDocumentosRequeridos();
+
+                if (reclutamiento.Reclutamiento != null)
+                    return View(reclutamiento);
+
+                return View();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewData["Error"] = ex.GetType();
                 return View();
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearUsuarioLanding(string usuario, int idSolicitudAlta, string nombreAspirante, string correoAspirante)
+        {
+            EnvioCorreoGestionEmpleados correo = new EnvioCorreoGestionEmpleados();
+            Response replyEmail = new Response();
+
+            string claveGenerada = GenerarClaveAleatoria();
+            int response = await _dal.InsertUsuarioLanding(usuario, claveGenerada, idSolicitudAlta, correoAspirante, nombreAspirante);
+
+            if (response == 1)
+            {
+                correo.Asunto = "Llenado de información";
+                correo.Cuerpo = Templates.BodyMailAspirante(nombreAspirante, usuario, claveGenerada, DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"), "bolsaempleoseltejar.com");
+                correo.Correos = correoAspirante;
+                correo.Nombre = "Llenado de información";
+                correo.isHTML = true;
+                replyEmail = MailServices.EnviarCorreoElectronico(correo);
+
+                if (replyEmail.result)
+                    return Json(new { success = true, message = $"Creación de usuario y envio realizado con exito para el aspirante {nombreAspirante}" });
+
+                return Json(new { success = true, message = $"Se creo el usuario correctamente para el aspirante {nombreAspirante} pero ocurrio un error al enviar el correo" });
+            }
+
+            return Json(new { success = false, message = $"Ocurrio un erro al guardar el usuario" });
+        }
+
+        public async Task<JsonResult> ObtenerCodigoSiguiente(string userId)
+        {
+            try
+            {
+                int response = await _dal.ObtenerCodigoSiguienUsuario(userId);
+                if (response == 0)
+                    return Json(-1, JsonRequestBehavior.AllowGet);
+
+                return Json(response, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(-1, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public static string GenerarClaveAleatoria()
+        {
+            Random random = new Random();
+            int numero = random.Next(1000, 9999);
+            return numero.ToString();
+        }
+
+        public async Task<JsonResult> ObtenerDetalleAspirantes(string userName)
+        {
+            try
+            {
+                var detalleAspirantes = await _dal.ObtenerDetalleAspirantes(userName);
+
+                if (detalleAspirantes.Any())
+                    return Json(new { success = true, message = "", data = detalleAspirantes }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false, message = "No se encontraron datos" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "No se encontraron datos" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [Authorize]
+        public async Task<JsonResult> VerClaveUsuario(string userName)
+        {
+            try
+            {
+                string clave = await _dal.verClaveUsuario(userName);
+
+                if (string.IsNullOrEmpty(clave))
+                    return Json(new { success = false, clave = "" }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = true, clave = clave }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, clave = "" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public async Task<JsonResult> ObtenerDatosPersonales(string userName)
+        {
+            try
+            {
+                var datosPersonales = await _dal.ObtenerDatosPersonalesAspirante(userName);
+
+                if (!string.IsNullOrWhiteSpace(datosPersonales.DatosPersonalesVM.PrimerNombre))
+                    return Json(new { success = true, data = datosPersonales }, JsonRequestBehavior.AllowGet);
+
+                var code = await _dal.ObtenerCodigoUsuario(userName);
+                datosPersonales.DatosPersonalesVM.Code = code;
+                if (datosPersonales.DatosPersonalesVM.Code != 0)
+                    return Json(new { success = true, data = datosPersonales }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult CargarVistaParcial(string nombreDocumento, int tipo, string extencion, string descripcion)
+        {
+            ViewModelDocumento documento = new ViewModelDocumento()
+            {
+                NombreDocumento = nombreDocumento,
+                TipoDocumento = tipo,
+                Extencion = extencion,
+                Descripcion = descripcion
+            };
+
+            return PartialView($"_DetalleDocumento", documento);
+        }
+
+        public ActionResult VerDocumetos(int Usuario, string Tipo, int VerExistencia = 0, string Extencion = "pdf")
+        {
+
+            string carpeta = @"\\SRVSAPTQ2\SAPDocs\DocumentosAspirantes\";
+            string nombreArchivo = $"Documento_{Tipo}{Usuario}.{Extencion}";
+            string ruta = Path.Combine(carpeta, nombreArchivo);
+
+            if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
+                return Content("-1");
+
+            if (VerExistencia == 0)
+            {
+                string contentType = MimeMapping.GetMimeMapping(ruta);
+                return File(ruta, contentType);
+            }
+            else
+            {
+                return Content("1");
+            }
+        }
+
+        public JsonResult ExistenciaDocumentos(List<CVDOCREQ> Documentos, int idUser)
+        {
+            Reply reply = new Reply();
+
+            List<dynamic> response = new List<dynamic>();
+            string carpeta = @"\\SRVSAPTQ2\SAPDocs\DocumentosAspirantes\";
+            foreach (var Lista in Documentos)
+            {
+                string nombreArchivo = $"Documento_{Lista.DocEntry}{idUser}.{Lista.Extension}";
+                string ruta = Path.Combine(carpeta, nombreArchivo);
+
+                if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
+                {
+                    response.Add(new { DocEntry = Lista.DocEntry, Existe = 0 });
+                }
+                else
+                {
+                    response.Add(new { DocEntry = Lista.DocEntry, Existe = 1 });
+                }
+            }
+            return Json(new { Response = 1, Objet = response }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> ReenviarCorreoAspirante(string usuario)
+        {
+            EnvioCorreoGestionEmpleados correo = new EnvioCorreoGestionEmpleados();
+            Response replyEmail = new Response();
+            try
+            {
+                var aspirante = await _dal.ObtenerDetalleAspirante(usuario);
+
+                if (!string.IsNullOrWhiteSpace(aspirante.UserName) || aspirante != null)
+                {
+                    if (DateTime.Now > aspirante.Created.AddDays(2))
+                        return Json(new { success = false, message = $"La fecha para llenar el formulario ya vencio" });
+
+                    correo.Asunto = "Llenado de información";
+                    correo.Cuerpo = Templates.BodyMailAspirante(aspirante.NombreAspirante, usuario, aspirante.PassWord, aspirante.Created.AddDays(2).ToString("dd/MM/yyyy"), "bolsaempleoseltejar.com");
+                    correo.Correos = aspirante.Correo;
+                    correo.Nombre = "Llenado de información";
+                    correo.isHTML = true;
+                    replyEmail = MailServices.EnviarCorreoElectronico(correo);
+
+                    if (replyEmail.result)
+                        return Json(new { success = true, message = $"El correo se re-envio correctamente" });
+
+                    return Json(new { success = false, message = $"Ocurrio un error al re-enviar el correo" });
+                }
+
+                return Json(new { success = false, message = $"Ocurrio un error al obtener los datos del aspirante" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Ocurrio un error al re-enviar el correo" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> AgregarComentario(int code, string comentario)
+        {
+            string url = "GestionDePersonal/AgregarComentario";
+            var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+            if (sessions == null)
+            {
+                return Json(new { success = false, message = "Sesión expirada" });
+            }
+
+            var datosComentario = new
+            {
+                U_Usuario = code,
+                U_Comentario = comentario,
+                U_Fecha = DateTime.Now,
+                U_UsuarioComentario = sessions.UserId
+            };
+
+            string response = DAL_API.NotasPpto(url, datosComentario);
+
+            var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+            if (reply.result == 1)
+            {
+                return Json(new { success = true });
+            }
+            return Json(new { });
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> ObtenerComentariosAspirantes(int usuario)
+        {
+            try
+            {
+                var comentarios = await _dal.ObtenerComentariosAspitantes(usuario);
+                if (comentarios.Any())
+                    return Json(new { success = true, data = comentarios }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
     }

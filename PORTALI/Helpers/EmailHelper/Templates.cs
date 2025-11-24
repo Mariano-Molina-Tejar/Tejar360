@@ -55,7 +55,7 @@ namespace PORTALI.Helpers.EmailHelper
                                                     string nombreSolicitante,
                                                     int estado, // 1 = Autorizado, -1 = Rechazado
                                                     string comentariosGTH // Comentarios opcionales del área GTH
-)
+        )
         {
             // Definir valores según el estado numérico
             bool autorizado = estado == 1;
@@ -64,42 +64,125 @@ namespace PORTALI.Helpers.EmailHelper
             string emojiEstado = autorizado ? "✅" : "❌";
 
             return $@"
-        <div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden; 
-                    box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #eee;'>
+                <div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden; 
+                            box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #eee;'>
 
-            <div style='background-color:{colorHeader}; color:white; padding:12px 20px;'>
-                <h2 style='margin:0; font-size:18px;'>Respuesta de GTH - Solicitud de baja</h2>
-            </div>
+                    <div style='background-color:{colorHeader}; color:white; padding:12px 20px;'>
+                        <h2 style='margin:0; font-size:18px;'>Respuesta de GTH - Solicitud de baja</h2>
+                    </div>
 
-            <div style='background-color:#F8F9FA; padding:20px;'>
-                <p>Estimado(a) <strong>{nombreSolicitante}</strong>,</p>
+                    <div style='background-color:#F8F9FA; padding:20px;'>
+                        <p>Estimado(a) <strong>{nombreSolicitante}</strong>,</p>
 
-                <p>Se ha revisado la solicitud de baja del siguiente colaborador:</p>
+                        <p>Se ha revisado la solicitud de baja del siguiente colaborador:</p>
 
-                <ul style='list-style:none; padding-left:0;'>
-                    <li><strong>👤 Empleado:</strong> {nombreEmpleado}</li>
-                    <li><strong>🏢 Departamento:</strong> {departamento}</li>
-                    <li><strong>📝 Motivo:</strong> {motivo}</li>
-                    <li><strong>💬 Observaciones:</strong> {observaciones}</li>
-                </ul>
+                        <ul style='list-style:none; padding-left:0;'>
+                            <li><strong>👤 Empleado:</strong> {nombreEmpleado}</li>
+                            <li><strong>🏢 Departamento:</strong> {departamento}</li>
+                            <li><strong>📝 Motivo:</strong> {motivo}</li>
+                            <li><strong>💬 Observaciones:</strong> {observaciones}</li>
+                        </ul>
 
-                <div style='background-color:white; border-left:5px solid {colorHeader}; padding:15px; margin:15px 0;'>
-                    <p style='font-size:16px; margin:0;'>
-                        <strong>Estado:</strong> {emojiEstado} <span style='color:{colorHeader}; font-weight:bold;'>{textoEstado}</span>
-                    </p>
-                    {(string.IsNullOrWhiteSpace(comentariosGTH) ? "" : $"<p style='margin-top:10px;'><strong>Comentarios GTH:</strong> {comentariosGTH}</p>")}
+                        <div style='background-color:white; border-left:5px solid {colorHeader}; padding:15px; margin:15px 0;'>
+                            <p style='font-size:16px; margin:0;'>
+                                <strong>Estado:</strong> {emojiEstado} <span style='color:{colorHeader}; font-weight:bold;'>{textoEstado}</span>
+                            </p>
+                            {(string.IsNullOrWhiteSpace(comentariosGTH) ? "" : $"<p style='margin-top:10px;'><strong>Comentarios GTH:</strong> {comentariosGTH}</p>")}
+                        </div>
+
+                        <p>Atentamente,<br>
+                        <strong>Departamento de Gestión de Talento Humano</strong></p>
+                    </div>
+
+                    <div style='background-color:#FFD700; text-align:center; padding:10px; font-weight:bold; color:#C8102E;'>
+                        El Tejar
+                    </div>
                 </div>
-
-                <p>Atentamente,<br>
-                <strong>Departamento de Gestión de Talento Humano</strong></p>
-            </div>
-
-            <div style='background-color:#FFD700; text-align:center; padding:10px; font-weight:bold; color:#C8102E;'>
-                El Tejar
-            </div>
-        </div>
-    ";
+            ";
         }
+
+        public static string BodyMailAspirante(
+    string nombreAspirante,
+    string usuario,
+    string password,
+    string fechaLimite,
+    string linkAcceso)
+        {
+            return $@"
+                <div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden;
+                            box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #eee;'>
+
+                    <!-- Encabezado -->
+                    <div style='background-color:#0066cc; color:white; padding:12px 20px;'>
+                        <h2 style='margin:0; font-size:18px;'>Acceso a plataforma de reclutamiento</h2>
+                    </div>
+
+                    <!-- Contenido principal -->
+                    <div style='background-color:#F4FAFF; padding:20px;'>
+                        <p>Estimado(a) <strong>{nombreAspirante}</strong>,</p>
+
+                        <p>
+                            Le damos la bienvenida al proceso de reclutamiento de 
+                            <strong>El Tejar</strong>. 
+                            Para continuar, deberá ingresar a nuestra plataforma y completar su perfil.
+                        </p>
+
+                        <p>A continuación encontrará sus credenciales de acceso:</p>
+
+                        <ul style='list-style:none; padding-left:0;'>
+                            <li><strong>👤 Usuario:</strong> {usuario}</li>
+                            <li><strong>🔐 Contraseña:</strong> {password}</li>
+                            <li><strong>📅 Fecha límite para completar la información:</strong> {fechaLimite}</li>
+                        </ul>
+
+                        <p>Puede ingresar al sistema desde el siguiente enlace:</p>
+
+                        <p style='text-align:center; margin:20px 0;'>
+                            <a href='{linkAcceso}' 
+                               style='background-color:#0066cc; color:white; padding:10px 18px; text-decoration:none; 
+                                      border-radius:5px; font-weight:bold; display:inline-block;'>
+                               Ingresar a la plataforma
+                            </a>
+                        </p>
+
+                        <p>Dentro de la plataforma deberá completar la siguiente información:</p>
+
+                        <ul>
+                            <li>📌 Información personal</li>
+                            <li>🎓 Información académica</li>
+                            <li>💼 Experiencia laboral</li>
+                        </ul>
+
+                        <p>Además, deberá cargar los siguientes documentos:</p>
+
+                        <ul>
+                            <li>📄 Currículum Vitae (CV)</li>
+                            <li>🪪 DPI (ambos lados)</li>
+                            <li>📚 Constancias laborales</li>
+                            <li>📄 Constancia de antecedentes penales</li>
+                            <li>📄 Constancia de antecedentes policiales</li>
+                        </ul>
+
+                        <p>
+                            Le recordamos que toda la información debe completarse antes de la fecha límite indicada. 
+                            Esto permitirá continuar con su evaluación dentro del proceso de selección.
+                        </p>
+
+                        <p>Quedamos atentos ante cualquier consulta.</p>
+
+                        <p>Saludos cordiales,<br>
+                            <strong>Departamento de Recursos Humanos</strong>
+                        </p>
+                    </div>
+
+                    <!-- Pie -->
+                    <div style='background-color:#0066cc; text-align:center; padding:10px; font-weight:bold; color:white;'>
+                        El Tejar
+                    </div>
+                </div>
+                ";
+        }
+
 
     }
 }

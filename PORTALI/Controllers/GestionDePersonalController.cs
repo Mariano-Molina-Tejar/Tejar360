@@ -230,6 +230,7 @@ namespace PORTALI.Controllers
             }
         }
 
+        [HttpPost]
         public async Task<JsonResult> AutorizarBaja(int id,
                                                     int estado,
                                                     string nombreEmpleado,
@@ -237,7 +238,10 @@ namespace PORTALI.Controllers
                                                     string motivo,
                                                     string observaciones,
                                                     string nombreSolicitante,
-                                                    string comentariosGTH
+                                                    string comentariosGTH,
+                                                    int departamentoId,
+                                                    int puestoId,
+                                                    int solicitaId
             )
         {
             try
@@ -245,7 +249,7 @@ namespace PORTALI.Controllers
                 var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
                 int response = await _dal.CambiarEstadoSolicitudBaja(id, estado);
                 if (response != 1)
-                    return Json(new { success = false, message = "Ocurrio un error inesperado al realiazar la solicitud" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = "success", message = "Ocurrio un error inesperado al realiazar la solicitud" });
 
                 string correos = await _dal.ObtenerCorreosSolicitud(id, estado);
 
@@ -258,19 +262,61 @@ namespace PORTALI.Controllers
                     isHTML = true
                 };
 
+                if (estado == 1)
+                {
+                    int respuestaCrearSolicitud = await CrearSolicitudDeAlta(id, solicitaId, puestoId, departamentoId);
+                }
+
                 int respuestaObservaciones = guardarObservaciones(sessions.UserId, id, estado, comentariosGTH);
-
                 MailServices.EnviarCorreoElectronico(correo);
-
-                return Json(new { success = true, message = "Solicitud realizada con exito" }, JsonRequestBehavior.AllowGet);
-
+                return Json(new { success = "error", message = "Solicitud realizada con exito" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Ocurrio un error inesperado al realizar la solicitud" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = "error", message = "Ocurrio un error inesperado al realizar la solicitud" });
             }
         }
 
+        public async Task<int> CrearSolicitudDeAlta(
+            int IdSolicitudBaja,
+            int IdSolicitante,
+            int IdPosicion,
+            int departamento
+            )
+        {
+            string url = "GestionDePersonal/CrearSolicitudDeAlta";
+            var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+            if (sessions == null)
+            {
+                return 0;
+            }
+            try
+            {
+                var ObjectSend = new
+                {
+                    U_IdSolicitudBaja = IdSolicitudBaja,
+                    U_FechaCreacion = DateTime.Now,
+                    U_IdSolicitante = IdSolicitante,
+                    U_Estado = "A",
+                    U_IdPosicion = IdPosicion,
+                    U_IdDepartamento = departamento,
+                    U_IdPerfil = 0
+                };
+
+                string response = DAL_API.NotasPpto(url, ObjectSend);
+
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                    return 1;
+
+                return 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
         public async Task<JsonResult> VerificarSolicitudBajaPendiente(int id)
         {
             try
