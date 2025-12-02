@@ -280,5 +280,63 @@ namespace PORTALI.Controllers
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        [HttpGet]
+        public async Task<JsonResult> ObtenerPerfilPuestoPorId(int idPuesto)
+        {
+            try
+            {
+                var perfil = await _dal.ObtenerPerfilDePuestoPorId(idPuesto);
+
+                if (perfil.U_IdPuesto == 0)
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = true, data = perfil }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GuardarPerfilPuesto(PerfilPuestoModel perfil)
+        {
+            bool existe = await _dal.VerificarExistenciaDePerfil(perfil.Code);
+            string url = !existe ? "GestionDePersonal/AgregarPerfilPuesto" : "GestionDePersonal/ActualizarPerfilPuesto";
+            var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+            perfil.U_UsuarioCreacion = sessions.UserId;
+            perfil.U_FechaCreacion = DateTime.Now;
+
+
+            string response = DAL_API.NotasPpto(url, perfil);
+
+            var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+            if (reply.result == 1)
+            {
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false });
+        }
+
+        public async Task<JsonResult> ActualizarCorreo(string usuario, string correo)
+        {
+            try
+            {
+                var resultado = await _dal.ActualizarCorreo(usuario, correo);
+
+                if (resultado == 0)
+                    return Json(new { success = false });
+                
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
     }
 }

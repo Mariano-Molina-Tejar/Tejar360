@@ -236,6 +236,7 @@
     <Compile Include="DALReporteInterTiendas.cs" />
     <Compile Include="DALResumenSeguimiento.cs" />
     <Compile Include="DAL_API.cs" />
+    <Compile Include="EmpleadosDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

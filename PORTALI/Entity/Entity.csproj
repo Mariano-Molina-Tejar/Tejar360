@@ -108,6 +108,7 @@
     <Compile Include="DocumentosEntity.cs" />
     <Compile Include="DraftEntity.cs" />
     <Compile Include="EditarCotizacionEntity.cs" />
+    <Compile Include="EmpleadosEntity.cs" />
     <Compile Include="EncabezadoVentaEditarEntity.cs" />
     <Compile Include="EstadoBolsonV2Entity.cs" />
     <Compile Include="EstadoBolsonV3Entity.cs" />

@@ -10,9 +10,11 @@ namespace Entity
     {
         public int SolicitudDeAlta { get; set; }
         public DateTime FechaSolicitud { get; set; }
+        public int PuestoId { get; set; }
         public string Puesto { get; set; }
         public string Departamento { get; set; }
         public string Solicita { get; set; }
+        public bool Perfil { get; set; }
     }
 
     public class ReclutamientoViewModel
@@ -104,5 +106,20 @@ namespace Entity
         public string Comentario { get; set; }
         public DateTime Fecha { get; set; }
         public string ComentarioPor  { get; set; }
+    }
+    public class PerfilPuestoModel
+    {
+        public int Code { get; set; }
+        public int U_IdPuesto { get; set; }
+        public int U_ExperienciaMinima { get; set; }
+        public int U_RangoEdadMin { get; set; }
+        public int U_RangoEdadMax { get; set; }
+        public string U_Sexo { get; set; } = string.Empty;
+        public string U_NivelEstudio { get; set; } = string.Empty;
+        public decimal U_SalarioMin { get; set; }
+        public decimal U_SalarioMax { get; set; }
+        public string U_Observaciones { get; set; } = string.Empty;
+        public DateTime U_FechaCreacion { get; set; }
+        public int U_UsuarioCreacion { get; set; }
     }
 }

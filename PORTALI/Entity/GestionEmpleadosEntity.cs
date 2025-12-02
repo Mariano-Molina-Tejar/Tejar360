@@ -16,6 +16,7 @@ namespace Entity
         public int EmpID { get; set; }
         public string Nombre { get; set; }
         public string Puesto { get; set; }
+        public int PuestoId { get; set; }
         public string Departamento { get; set; }
         public string RequisicionUniforme { get; set; }
         public string Estado { get; set; }
@@ -25,6 +26,7 @@ namespace Entity
         public string Correo { get; set; }
         public string Sexo { get; set; }
         public DateTime CreadoSAP { get; set; }
+        public bool Perfil { get; set; }
     }
 
     public class Puestos

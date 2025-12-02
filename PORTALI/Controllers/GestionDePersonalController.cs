@@ -463,7 +463,7 @@ namespace PORTALI.Controllers
             }
             catch
             {
-                return 0;
+                return 0;   
             }
         }
     }

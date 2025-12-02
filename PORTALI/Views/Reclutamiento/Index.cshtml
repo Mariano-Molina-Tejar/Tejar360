@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Reclutamiento";
 }
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -10,18 +11,24 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<!-- Bootstrap 5.3.3 -->
 
 <body>
     <div class="container mt-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header text-white" style="background-color:black;">
-                <h5 class="mb-0"><i class="bi bi-file-earmark-person-fill"></i> Solicitudes de Alta de personal</h5>
-            </div>
+            <div class="card-header text-white d-flex justify-content-between align-items-center"
+                 style="background-color: steelblue;">
 
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-person-fill me-2"></i> Solicitudes de Alta de personal
+                </h5>
+
+                <button class="btn btn-light btn-sm" id="btnAgregarSolicitud">
+                    <i class="bi bi-plus-circle"></i> Agregar solicitud
+                </button>
+            </div>
             <div class="card-body bg-light">
                 <table class="table table-hover align-middle text-center">
-                    <thead class="table-warning">
+                    <thead class="table-success">
                         <tr>
                             <th>#</th>
                             <th>Fecha Solicitud</th>
@@ -45,8 +52,13 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span>@puesto.Puesto</span>
 
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Perfil del puesto">
-                                                <i class="bi bi-file-earmark-text"></i>
+                                            <button id="btnPerfil-@(puesto.SolicitudDeAlta)"
+                                                    class="btn btn-sm @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
+                                                    data-bs-toggle="tooltip"
+                                                    title="@(puesto.Perfil ? "Ver perfil" : "Agregar perfil")"
+                                                    onclick="abrirModalPerfilPuesto('@puesto.Puesto',@puesto.PuestoId,'btnPerfil-@(puesto.SolicitudDeAlta)')">
+
+                                                <i id="ibtnPerfil-@(puesto.SolicitudDeAlta)" class="bi bi-file-earmark-text @(puesto.Perfil ? "text-success" : "text-danger")"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -117,7 +129,6 @@
                             </tr>
                         </thead>
                         <tbody id="tbodyAspirantes">
-                            <!-- 🔹 Fila de carga temporal -->
                             <tr id="filaCarga">
                                 <td colspan="5" class="text-center py-4">
                                     <div class="spinner-border text-warning" role="status"></div>
@@ -160,6 +171,20 @@
                             <input type="password" id="passwordModal" class="form-control" readonly value="MiClave123">
                             <button class="btn btn-outline-secondary" type="button" id="btnVerPassword">
                                 <i id="iconoBtnVerUsuario" class="bi bi-eye-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Correo:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope-fill"></i>
+                            </span>
+                            <input type="text" id="emailModal" class="form-control">
+                            <button class="btn btn-outline-secondary" type="button" id="btnEditarCorreo">
+                                <i id="btnEditar" class="bi bi-pencil-fill"></i>
+                                <span id="loadingGuardar" class="spinner-border spinner-border-sm d-none"></span>
                             </button>
                         </div>
                     </div>
@@ -475,10 +500,105 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Cancelar
                     </button>
+
                     <button type="button" class="btn btn-primary" id="btnCrearEnviar">
                         <i class="bi bi-send-fill"></i> Crear y enviar
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPerfilPuesto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+
+                <!-- Header -->
+                <div class="modal-header text-white" style="background-color: steelblue; ">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-badge"></i>
+                        Perfil del Puesto: <span id="tituloPuesto"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <form id="formPerfilPuesto">
+
+                        <div class="row g-3">
+                            <!-- Experiencia -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Experiencia mínima (años)</label>
+                                <input type="number" class="form-control" id="U_ExperienciaMinima" required>
+                                <input type="number" id="U_IdPuesto" class="d-none" />
+                                <input type="text" id="U_IdButton" class="d-none" />
+                                <input type="number" id="Code" class="d-none" />
+                            </div>
+
+                            <!-- Rango edad -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Edad mínima</label>
+                                <input type="number" class="form-control" id="U_RangoEdadMin" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Edad máxima</label>
+                                <input type="number" class="form-control" id="U_RangoEdadMax" required>
+                            </div>
+
+                            <!-- Sexo -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Sexo</label>
+                                <select class="form-select" id="U_Sexo" required>
+                                    <option value="I">Indistinto</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+
+                            <!-- Nivel Estudio -->
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold">Nivel de estudio</label>
+                                <select class="form-select" id="U_NivelEstudio" required>
+                                    <option value="Basico">Básico</option>
+                                    <option value="Diversificado">Diversificado</option>
+                                    <option value="Universitario">Universitario</option>
+                                    <option value="Otro">Otro (Especificar en observaciones)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Salario mínimo (Q) <span class="text-muted">(Opcional)</span></label>
+                                <input type="number" class="form-control" id="U_SalarioMin" step="0.01">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Salario máximo (Q) <span class="text-muted">(Opcional)</span></label>
+                                <input type="number" class="form-control" id="U_SalarioMax" step="0.01">
+                            </div>
+
+                            <!-- Observaciones -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Observaciones</label>
+                                <textarea class="form-control" rows="3" id="U_Observaciones" required></textarea>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarPerfil">
+                        <i class="bi bi-save"></i> Guardar Perfil
+                    </button>
+
+                </div>
+
             </div>
         </div>
     </div>
@@ -493,7 +613,8 @@
         const modalUsuario = new bootstrap.Modal(document.getElementById("modalUsuario"));
         const modalDetalleUsuario = new bootstrap.Modal(document.getElementById("modalDetalleAspirante"));
         const modalEnviarUsuarioCorreo = new bootstrap.Modal(document.getElementById("modalCrearUsuario"));
-
+        const modalPerfilPuesto = new bootstrap.Modal(document.getElementById('modalPerfilPuesto'));
+        let idModal = "";
 
         const Toast = Swal.mixin({
             toast: true,
@@ -504,7 +625,6 @@
         })
 
         function verDetalleSolicitud(button) {
-
             let datosSolicitud = {
                 puesto: button.getAttribute("data-Puesto"),
                 departamento: button.getAttribute("data-Departamento"),
@@ -626,11 +746,11 @@
                                                                                 <th>${item.Rw}</th>
                                                                                 <th>${item.UserName}</th>
                                                                                 <th>${item.NombreAspirante}</th>
-                                                                                <th>${item.Correo}</th>
+                                                                                <th id="e${item.Rw}">${item.Correo}</th>
                                                                                 <th>${convertirFechaDotNet(item.Created)}</th>
                                                                                 <th>${item.Estado}</th>
                                                                                 <th>
-                                                                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Usuario" onclick ="verPerfilUsuario('${item.UserName}')">
+                                                                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Usuario" onclick ="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
                                                                                         <i class="bi bi-person-fill"></i> </i>
                                                                                     </button>
                                                                                     <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="CV" onclick ="verDetalleAspirante('${item.UserName}')">
@@ -651,15 +771,28 @@
             document.getElementById("tbodyAspirantes").innerHTML = tbody;
         }
 
-        async function verPerfilUsuario(userName) {
+        async function verPerfilUsuario(userName, correo, id) {
             const input = document.getElementById("passwordModal");
+            const icon = document.getElementById("btnEditar");
+            idModal = id;
+
+            document.getElementById("loadingGuardar").classList.add("d-none");
+            icon.classList.remove("bi-floppy-fill");
+            icon.classList.add("bi-pencil-fill");
+            icon.classList.remove("d-none");
+
+            const correoInput = document.getElementById("emailModal");
+
+            correoInput.disabled = true;
             input.type = "password";
+
             const response = await fetch(`/Reclutamiento/VerClaveUsuario?userName=${userName}`)
             const reply = await response.json();
 
             if (reply.success) {
                 document.getElementById("usuarioModal").value = userName;
-                document.getElementById("passwordModal").value = reply.clave;
+                correoInput.value = document.getElementById(idModal).innerText;
+                correoInput.disabled = true;
                 modalUsuario.show();
             }
             else {
@@ -677,15 +810,10 @@
 
                 cargarDatosAspirante(result.data);
                 modalDetalleUsuario.show();
-                //activarTabPersonal();
-
             }
             else {
                 Toast.fire({ icon: 'warning', title: "No se encontraron datos" });
                 mostrarComentarios();
-                //$("#globalLoading").hide();
-
-                //modalDetalleUsuario.show();
             }
         }
 
@@ -703,6 +831,73 @@
                 icon.classList.add("bi-eye-fill");
             }
         });
+
+        document.getElementById("btnEditarCorreo").addEventListener("click", async () => {
+            const input = document.getElementById("emailModal");
+            const inputUsuario = document.getElementById("usuarioModal");
+            const icon = document.getElementById("btnEditar");
+            const spiner = document.getElementById("loadingGuardar");
+
+            try {
+                if (input.disabled) {
+                    input.disabled = false;
+                    icon.classList.remove("bi-pencil-fill");
+                    icon.classList.add("bi-floppy-fill");
+                    console.log(icon.disabled);
+                }
+                else
+                {
+                    
+                    spiner.classList.remove("d-none");
+                    icon.classList.add("d-none");
+
+                    await ActualizarCorreo(inputUsuario.value, input.value)
+
+                    input.disabled = true;
+                    icon.classList.add("bi-pencil-fill");
+                    icon.classList.remove("bi-floppy-fill");
+                    icon.classList.remove("d-none");
+                    spiner.classList.add("d-none");
+                }
+            }
+            catch (error) {
+                console.log(error);
+                Toast.fire({ icon: 'warning', title: "Ocurrio un error al actualizar el correo " });
+                input.disabled = true;
+                icon.classList.add("bi-pencil-fill");
+                icon.classList.remove("bi-floppy-fill");
+                spiner.classList.add("d-none");
+            }
+
+        });
+
+        async function ActualizarCorreo(usuario, correo) {
+            try {
+                const data = new FormData();
+                data.append("usuario", usuario);
+                data.append("correo", correo);
+
+                const response = await fetch('/Reclutamiento/ActualizarCorreo',
+                    {
+                        method: "POST",
+                        body: data
+                    }
+                );
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: "Correo actualizado con éxito" });
+                    document.getElementById(idModal).innerText = correo;
+                }
+                else {
+                    Toast.fire({ icon: 'warning', title: "Ocurrio un error al actualizar el correo " });
+                }
+            }
+            catch (error){
+                throw new Error(error);
+            }
+        }
 
         function cargarDatosAspirante(datosAspirante) {
             limpiarDatos();
@@ -925,11 +1120,11 @@
                 else {
                     Toast.fire({ icon: 'error', title: "Ocurrio un error al guardar el comentario" });
                 }
-            } 
+            }
             finally {
                 $('#globalLoading').hide();
             }
-            
+
         }
 
         async function mostrarComentarios() {
@@ -995,12 +1190,113 @@
             let tab = new bootstrap.Tab(document.getElementById('tab-personal'));
             tab.show();
         }
+
+        async function abrirModalPerfilPuesto(puesto, puestoId, idButton) {
+
+            document.getElementById('tituloPuesto').innerText = puesto;
+            document.getElementById('formPerfilPuesto').reset();
+            bloquearFormulario('formPerfilPuesto', false);
+            document.getElementById('btnGuardarPerfil').classList.remove("d-none")
+            document.getElementById('U_IdPuesto').value = puestoId;
+            console.log(idButton);
+            document.getElementById('U_IdButton').value = idButton;
+
+
+            const response = await fetch(`/Reclutamiento/ObtenerPerfilPuestoPorId?idPuesto=${puestoId}`);
+            const result = await response.json();
+
+            if (result.success) {
+
+                bloquearFormulario('formPerfilPuesto', true);
+                document.getElementById('btnGuardarPerfil').classList.add("d-none")
+
+                document.getElementById('U_ExperienciaMinima').value = result.data.U_ExperienciaMinima
+                document.getElementById('U_NivelEstudio').value = result.data.U_NivelEstudio
+                document.getElementById('U_Observaciones').value = result.data.U_Observaciones
+                document.getElementById('U_RangoEdadMax').value = result.data.U_RangoEdadMax
+                document.getElementById('U_RangoEdadMin').value = result.data.U_RangoEdadMin
+                document.getElementById('U_SalarioMax').value = result.data.U_SalarioMax
+                document.getElementById('U_SalarioMin').value = result.data.U_SalarioMin
+                document.getElementById('U_Sexo').value = result.data.U_Sexo
+            }
+            modalPerfilPuesto.show();
+        }
+
+        async function guardarPerfilDeUsuario() {
+
+            if (!document.getElementById('formPerfilPuesto').checkValidity()) {
+                Toast.fire({ icon: 'warning', title: "Debe llenar los campos obligarorios" });
+                return;
+            }
+
+            $("#globalLoading").show();
+            const idButton = document.getElementById('U_IdButton').value;
+            const button = document.getElementById(idButton);
+            const icono = document.getElementById("i"+idButton);
+            console.log('Id del boton es ', idButton , button);
+            try {
+                const perfilUsuario = {
+                    U_IdPuesto: document.getElementById('U_IdPuesto').value,
+                    U_ExperienciaMinima: document.getElementById('U_ExperienciaMinima').value,
+                    U_NivelEstudio: document.getElementById('U_NivelEstudio').value,
+                    U_Observaciones: document.getElementById('U_Observaciones').value,
+                    U_RangoEdadMax: document.getElementById('U_RangoEdadMax').value,
+                    U_RangoEdadMin: document.getElementById('U_RangoEdadMin').value,
+                    U_SalarioMax: document.getElementById('U_SalarioMax').value,
+                    U_SalarioMin: document.getElementById('U_SalarioMin').value,
+                    U_Sexo: document.getElementById('U_Sexo').value
+                };
+
+                const response = await fetch('/Reclutamiento/GuardarPerfilPuesto', {
+                    method: 'POST',
+                    body: JSON.stringify({ perfil: perfilUsuario }),
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+
+                    button.classList.add('btn-outline-success');
+                    button.classList.remove('btn-outline-danger');
+                    button.setAttribute('title', 'Ver perfil');
+                    icono.classList.add('text-success');
+                    icono.classList.remove('text-danger');
+                    Toast.fire({ icon: 'success', title: "Perfil guardado con éxito " });
+                    modalPerfilPuesto.hide();
+                }
+                else {
+                    Toast.fire({ icon: 'error', title: "Ocurrio un error al guardar el perfil" });
+                }
+            }
+            catch(error)
+            {
+                Toast.fire({ icon: 'error', title: "Ocurrio un error al guardar el perfil" });
+                console.log(error);
+            }
+            finally
+            {
+                $("#globalLoading").hide();
+            }
+
+        }
+
+        function bloquearFormulario(formId,bloquearlo) {
+            const form = document.getElementById(formId);
+            const elementos = form.querySelectorAll("input, select, textarea, button");
+
+            elementos.forEach(el => {
+                el.disabled = bloquearlo;
+            });
+        }
+
         document.getElementById('tab-cv').addEventListener('click', () => CambiarIconoDocumentos());
         document.getElementById('btnCrearUsuarioClave').addEventListener('click', () => abrirModalCrarUsuario());
         document.getElementById('btnCrearEnviar').addEventListener('click', () => crearUsuarioClave());
         document.getElementById('btnReenviarCorreo').addEventListener('click', () => reenviaCorreo());
         document.getElementById('btnAgregarComentario').addEventListener('click', () => agregarComentario());
         document.getElementById('tab-comentarios').addEventListener('click', () => mostrarComentarios());
+        document.getElementById('btnGuardarPerfil').addEventListener('click', () => guardarPerfilDeUsuario());
     </script>
 </body>
 </html>

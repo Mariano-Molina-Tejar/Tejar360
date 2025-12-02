@@ -270,5 +270,72 @@ namespace DAL
                 throw;
             }
         }
+
+        public async Task<PerfilPuestoModel> ObtenerPerfilDePuestoPorId(int idPuesto)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    var query = @"SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL]
+                                  WHERE U_IdPuesto = @IdPuesto";
+
+                    return await conn.QueryFirstAsync<PerfilPuestoModel>
+                        (
+                        query,
+                        new {IdPuesto = idPuesto},
+                        commandTimeout: 60
+                        ) ?? new PerfilPuestoModel();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> VerificarExistenciaDePerfil(int code)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    var query = @"IF (EXISTS (SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] WHERE code = @Code)) 
+                                    SELECT 1 
+                                    ELSE SELECT 0";
+
+                    return await conn.QuerySingleAsync<bool>(
+                        query,
+                        new {Code = code}
+                        );
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> ActualizarCorreo(string usuario, string correo)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    var query = @"UPDATE [BOLSON_EMPLEOS_TEJAR].[DBO].OUSR
+                                SET Email = @Correo
+                                WHERE UserName = @Usuario";
+
+                    return await conn.ExecuteAsync(
+                        query,
+                        new {Usuario = usuario, Correo = correo}
+                        );
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

@@ -5,7 +5,9 @@
 }
 
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         .text-secondary-perfil {
             color: dimgray;
@@ -80,95 +82,101 @@
     </style>
 </head>
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>Solicitudes de baja de personal</h4>
-    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-header text-white d-flex justify-content-between align-items-center"
+             style="background-color: steelblue;">
 
-    <div class="table-responsive shadow-sm rounded">
-        <table class="table table-striped align-middle text-center">
-            @if (ViewData["Error"] != null)
-            {
-                <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError" style="display:none;">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <span id="msgError">@ViewData["Error"]</span>
-                </div>
-            }
-            <thead class="table-dark">
-                <tr>
-                    <th>No.</th>
-                    <th>Fecha</th>
-                    <th>Nombre</th>
-                    <th>Puesto</th>
-                    <th>Departamento</th>
-                    <th>Solicita</th>
-                    <th>Motivo</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Autorizaciones != null && Model.Autorizaciones.Any())
+            <h5 class="mb-0">
+                <i class="bi bi-people-fill me-2"></i> Solicitudes de baja de personal
+            </h5>
+        </div>
+
+        <div class="card-body bg-light">
+            <table class="table table-striped align-middle text-center">
+                @if (ViewData["Error"] != null)
                 {
-                    foreach (var autorizacion in Model.Autorizaciones)
+                    <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError" style="display:none;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span id="msgError">@ViewData["Error"]</span>
+                    </div>
+                }
+                <thead class="table-success">
+                    <tr>
+                        <th>No.</th>
+                        <th>Fecha</th>
+                        <th>Nombre</th>
+                        <th>Puesto</th>
+                        <th>Departamento</th>
+                        <th>Solicita</th>
+                        <th>Motivo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Autorizaciones != null && Model.Autorizaciones.Any())
+                    {
+                        foreach (var autorizacion in Model.Autorizaciones)
+                        {
+                            <tr>
+                                <td>@autorizacion.Code</td>
+                                <td>@autorizacion.FechaSolicitud.ToString("dd-MM-yyyy")</td>
+                                <td>@autorizacion.Nombre</td>
+                                <td>@autorizacion.Puesto</td>
+                                <td>@autorizacion.Departamento</td>
+                                <td>@autorizacion.Solicita</td>
+                                <td>@autorizacion.Motivo</td>
+                                <td class="text-center">
+                                    @switch (autorizacion.Estado)
+                                    {
+                                        case 0:
+                                            <i class="bi bi-hourglass-split text-warning" title="Pendiente"></i>
+                                            break;
+                                        case 1:
+                                            <i class="bi bi-check-circle-fill text-success" title="Autorizado"></i>
+                                            break;
+                                        case -1:
+                                            <i class="bi bi-x-circle-fill text-danger" title="Rechazado"></i>
+                                            break;
+                                        default:
+                                            <i class="bi bi-question-circle text-secondary" title="Desconocido"></i>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        @if (autorizacion.Estado == 0)
+                                        {
+                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="Rechazar" onclick="rechazar(@autorizacion.Code)">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+
+                                            <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" title="Autorizar" onclick="autorizar(@autorizacion.Code)">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        }
+
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Ver detalle" onclick="verDetalle(@autorizacion.Code)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>@autorizacion.Code</td>
-                            <td>@autorizacion.FechaSolicitud.ToString("dd-MM-yyyy")</td>
-                            <td>@autorizacion.Nombre</td>
-                            <td>@autorizacion.Puesto</td>
-                            <td>@autorizacion.Departamento</td>
-                            <td>@autorizacion.Solicita</td>
-                            <td>@autorizacion.Motivo</td>
-                            <td class="text-center">
-                                @switch (autorizacion.Estado)
-                                {
-                                    case 0:
-                                        <i class="bi bi-hourglass-split text-warning" title="Pendiente"></i>
-                                        break;
-                                    case 1:
-                                        <i class="bi bi-check-circle-fill text-success" title="Autorizado"></i>
-                                        break;
-                                    case -1:
-                                        <i class="bi bi-x-circle-fill text-danger" title="Rechazado"></i>
-                                        break;
-                                    default:
-                                        <i class="bi bi-question-circle text-secondary" title="Desconocido"></i>
-                                        break;
-                                }
-                            </td>
-                            <td class="text-center">
-                                <div class="d-flex justify-content-end gap-2">
-                                    @if (autorizacion.Estado == 0)
-                                    {
-                                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="Rechazar" onclick="rechazar(@autorizacion.Code)">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
-
-                                        <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" title="Autorizar" onclick="autorizar(@autorizacion.Code)">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
-                                    }
-
-                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Ver detalle" onclick="verDetalle(@autorizacion.Code)">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                </div>
+                            <td colspan="9" class="text-center text-muted py-3" style="font-style: italic;">
+                                <i class="bi bi-info-circle"></i> No se encontraron solicitudes
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="9" class="text-center text-muted py-3" style="font-style: italic;">
-                            <i class="bi bi-info-circle"></i> No se encontraron solicitudes
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+</div>  
 <!-- Modal Detalle Empleado -->
 <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
