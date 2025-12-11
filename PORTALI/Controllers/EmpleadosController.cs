@@ -1,13 +1,16 @@
-﻿using System;
+﻿using DAL;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.VariantTypes;
+using Entity;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using DAL;
-using DocumentFormat.OpenXml.VariantTypes;
-using Entity;
-using Newtonsoft.Json;
+using static ClosedXML.Excel.XLPredefinedFormat;
 
 namespace PORTALI.Controllers
 {
@@ -126,6 +129,105 @@ namespace PORTALI.Controllers
             catch
             {
                 return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GuardarTipoEquipo(string nombre, string icono)
+        {
+            try
+            {
+                string url = "GestionDePersonal/GuardarTipoDeEquipo";
+
+                string response = DAL_API.NotasPpto(
+                    url,
+                    new
+                    {
+                        U_NombreEquipo = nombre,
+                        U_Icono = icono
+                    }
+                    );
+
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                    return Json(new { success = true });
+
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public async Task<JsonResult> ObtenerEquiposGuardados()
+        {
+            try
+            {
+                var equipos = await _dal.ObtenerEquiposGuardados();
+
+                if (equipos.Any())
+                    return Json(new { success = true, data = equipos }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GuardarEquipoPorPerfil(int perfil, List<Equipos> equipos)
+        {
+            try
+            {
+                var session = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
+                if (session == null)
+                {
+                    ViewData["Error"] = "Su sesion ha expirado!!";
+                    return Json(new { success = false });
+                }
+
+                string url = "GestionDePersonal/GuardarEquiposPorPefil";
+
+                string response = DAL_API.NotasPpto(
+                    url,
+                    new
+                    {
+                        perfil = perfil,
+                        Equipos = equipos,
+                        Tipo = "P",
+                        Usuario = session.UserCode
+                    }
+                    );
+
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                    return Json(new { success = true });
+
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public async Task<JsonResult> ObtenerEquiposPorPerfil(int perfil)
+        {
+            try
+            {
+                var equipos = await _dal.ObtenerEquiposPorPuesto(perfil);
+                if (equipos.Any())
+                    return Json(new { success = true, data = equipos }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
     }

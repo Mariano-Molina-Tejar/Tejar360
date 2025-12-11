@@ -22,7 +22,7 @@
                     <i class="bi bi-file-earmark-person-fill me-2"></i> Solicitudes de Alta de personal
                 </h5>
 
-                <button class="btn btn-light btn-sm" id="btnAgregarSolicitud">
+                <button class="btn btn-light btn-sm" id="btnAgregarSolicitud" onclick="agregarSolicitud()">
                     <i class="bi bi-plus-circle"></i> Agregar solicitud
                 </button>
             </div>
@@ -67,9 +67,12 @@
                                     <td>
                                         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDetalle"
                                                 data-Puesto="@puesto.Puesto"
+                                                data-PuestoId="@puesto.PuestoId"
                                                 data-Departamento="@puesto.Departamento"
+                                                data-DepartamentoId="@puesto.DepartamentoId"
                                                 data-FechaSolicitud="@puesto.FechaSolicitud.ToString("dd/MM/yyyy")"
                                                 data-Solicita="@puesto.Solicita"
+                                                data-SolicitaId="@puesto.SolicitaId"
                                                 data-Solicitud="@puesto.SolicitudDeAlta"
                                                 onclick="verDetalleSolicitud(this)">
                                             <i class="bi bi-eye-fill"></i> Detalle
@@ -86,7 +89,6 @@
                                 </td>
                             </tr>
                         }
-
                     </tbody>
                 </table>
             </div>
@@ -104,7 +106,6 @@
 
                 <div class="modal-body bg-light">
                     <div id="solicitud-InformacionGeneral" class="mb-3">
-
                     </div>
 
                     <hr>
@@ -201,7 +202,6 @@
                     <button class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cerrar
                     </button>
-
                 </div>
             </div>
         </div>
@@ -252,13 +252,13 @@
                                     <i class="bi bi-chat-dots-fill"></i> Comentarios
                                 </button>
                             </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-config-alta" data-bs-toggle="tab"
+                                        data-bs-target="#info-config-alta" type="button" role="tab">
+                                    <i class="bi bi-person-check"></i> Confirmacion de alta
+                                </button>
+                            </li>
                         </ul>
-
-                        <!-- Botón a la derecha -->
-                        <button class="btn btn-success ms-3">
-                            <i class="bi bi-person-check"></i> Dar de alta
-                        </button>
-
                     </div>
 
                     <!-- Contenido de Tabs -->
@@ -397,10 +397,8 @@
                                             </h5>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
-
                         </div>
                         <!-- COMENTARIOS DEL RECLUTADOR -->
                         <div class="tab-pane fade" id="info-comentarios" role="tabpanel">
@@ -445,11 +443,145 @@
                                                 @*<button class="btn btn-sm btn-danger btnEliminarComentario">
                                                         <i class="bi bi-trash"></i>
                                                     </button>*@
-
                                             </div>
                                         </li>
-
                                     </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CONFIGURACIÓN DE ALTA -->
+                        <div class="tab-pane fade" id="info-config-alta" role="tabpanel">
+                            <div class="card border-0 shadow-sm">
+                                <<div class="card-header bg-secondary text-white fw-semibold d-flex align-items-center">
+
+                                    <!-- Título -->
+                                    <div class="fs-6">
+                                        <i class="bi bi-gear-fill me-1"></i> Configuración de Alta
+                                    </div>
+
+                                    <!-- Botón a la derecha -->
+                                    <button id="btnDarDeAlta" class="btn btn-success ms-auto px-4 shadow-sm rounded-pill">
+                                        <i class="bi bi-person-check fs-5 me-2"></i> Dar de alta
+                                    </button>
+
+                                </div>
+
+
+                                <div class="card-body">
+
+                                    <!-- TÍTULO -->
+                                    <h6 class="fw-bold mb-3 text-primary">Configuraciones obligatorias</h6>
+
+                                    <div class="row g-3">
+
+                                        <!-- Obligatorio 1 -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="chkEmpleado" checked disabled>
+                                                <label class="form-check-label fw-semibold">
+                                                    Creación de datos maestro de empleado <span class="text-danger">*</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Obligatorio 2 -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="chkCliente" checked disabled>
+                                                <label class="form-check-label fw-semibold">
+                                                    Creación de cliente <span class="text-danger">*</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Obligatorio 3 -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="chkProveedor" checked disabled>
+                                                <label class="form-check-label fw-semibold">
+                                                    Creación de proveedor <span class="text-danger">*</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-4">
+
+                                    <!-- OPCIONAL GENERAL -->
+                                    <h6 class="fw-bold mb-3 text-primary">Opcionales generales</h6>
+
+                                    <div class="row g-3">
+
+                                        <!-- Usuario SAP -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="chkUsuarioSAP">
+                                                <label class="form-check-label fw-semibold">
+                                                    Crear Usuario SAP (Opcional)
+                                                </label>
+                                            </div>
+
+                                            <!-- Mensaje informativo -->
+                                            <small class="text-muted d-block ms-4">
+                                                <i class="bi bi-info-circle"></i>
+                                                Se necesitará una licencia para usar SAP.
+                                            </small>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="my-4">
+
+                                    <!-- SECCIÓN SOLO PARA ASESORES DE VENTAS -->
+                                    <h6 class="fw-bold mb-3 text-success">
+                                        Solo para asesores de ventas
+                                    </h6>
+
+                                    <div class="row g-3">
+
+                                        <!-- Usuario de ventas -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="chkUsuarioVentas">
+                                                <label class="form-check-label fw-semibold">
+                                                    Crear usuario de empleado de ventas (Opcional)
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Usuario Tejar360 -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="chkTejar360">
+                                                <label class="form-check-label fw-semibold">
+                                                    Crear usuario Tejar360 (Opcional)
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tienda Asignada -->
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Tienda Asignada</label>
+                                            <select id="selectTienda" class="form-control">
+                                                <option value="">Seleccione...</option>
+                                                <option value="1">Tienda Central</option>
+                                                <option value="2">Tienda Norte</option>
+                                                <option value="3">Tienda Sur</option>
+                                                <option value="4">Tienda Oriente</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Meta -->
+                                        <div class="col-md-4">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" id="chkMeta">
+                                                <label class="form-check-label fw-semibold">
+                                                    Asignación de meta (Opcional)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -491,7 +623,6 @@
                             <label class="form-label">Correo electrónico</label>
                             <input type="email" id="correoAspirante" class="form-control" placeholder="correo@ejemplo.com" required>
                         </div>
-
                     </form>
                 </div>
 
@@ -584,7 +715,6 @@
                                 <textarea class="form-control" rows="3" id="U_Observaciones" required></textarea>
                             </div>
                         </div>
-
                     </form>
                 </div>
 
@@ -596,9 +726,115 @@
                     <button type="button" class="btn btn-primary" id="btnGuardarPerfil">
                         <i class="bi bi-save"></i> Guardar Perfil
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="modalAgregarSolicitud" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Encabezado -->
+                <div class="modal-header text-white" style="background-color: steelblue;">
+                    <h5 class="modal-title" id="modalAgregarLabel">Agregar solicitud de personal</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
+                <!-- Cuerpo -->
+                <div class="modal-body">
+
+                    <!-- Puesto -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Puesto</label>
+                        <select id="puestoSelect" class="form-select">
+                            <option value="" selected disabled>Seleccione un puesto</option>
+                            <option value="1">Gerente</option>
+                            <option value="2">Supervisor</option>
+                            <option value="3">Asistente</option>
+                        </select>
+                    </div>
+
+                    <!-- Departamento -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Departamento</label>
+                        <select id="departamentoSelect" class="form-select">
+                            <option value="" selected disabled>Seleccione un departamento</option>
+                            <option value="1">Recursos Humanos</option>
+                            <option value="2">Finanzas</option>
+                            <option value="3">IT</option>
+                        </select>
+                    </div>
+
+                    <!-- Solicita -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Solicita</label>
+                        <select id="solicitaSelect" class="form-select">
+                            <option value="" selected disabled>Seleccione quién solicita</option>
+                            <option value="1">Empleado</option>
+                            <option value="2">Jefe Inmediato</option>
+                            <option value="3">Gerencia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Pie -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success" onclick="agregarSolicitudDePesonal()">
+                        Agregar solicitud
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de proceso -->
+    <div class="modal fade" id="modalProcesos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Header -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-gear-wide-connected me-2"></i> Procesando datos</h5>
+                    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Body -->
+                <div id="contenedorLoading" class="modal-body">
+
+                    <!-- Paso 1 -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Creación de dato maestro de empleado</span>
+                        <span id="step1-icon">
+                            <div class="spinner-border spinner-border-sm text-primary"></div>
+                        </span>
+                    </div>
+
+                    <!-- Paso 2 -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Creación de cliente</span>
+                        <span id="step2-icon">
+                            <div class="spinner-border spinner-border-sm text-primary"></div>
+                        </span>
+                    </div>
+
+                    <!-- Paso 3 -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Creación de proveedor</span>
+                        <span id="step3-icon">
+                            <div class="spinner-border spinner-border-sm text-primary"></div>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button id="btnCerrarProceso" class="btn btn-secondary" data-bs-dismiss="modal" disabled>
+                        Cerrar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -614,6 +850,9 @@
         const modalDetalleUsuario = new bootstrap.Modal(document.getElementById("modalDetalleAspirante"));
         const modalEnviarUsuarioCorreo = new bootstrap.Modal(document.getElementById("modalCrearUsuario"));
         const modalPerfilPuesto = new bootstrap.Modal(document.getElementById('modalPerfilPuesto'));
+        const modalAgregarSolicitud = new bootstrap.Modal(document.getElementById('modalAgregarSolicitud'));
+        const modalProcesos = new bootstrap.Modal(document.getElementById('modalProcesos'));
+        let dataAspiranteFinal = {};
         let idModal = "";
 
         const Toast = Swal.mixin({
@@ -627,18 +866,24 @@
         function verDetalleSolicitud(button) {
             let datosSolicitud = {
                 puesto: button.getAttribute("data-Puesto"),
+                puestoId: button.getAttribute("data-PuestoId"),
                 departamento: button.getAttribute("data-Departamento"),
+                departamentoId: button.getAttribute("data-DepartamentoId"),
                 fechaSolicitud: button.getAttribute("data-FechaSolicitud"),
                 solicita: button.getAttribute("data-Solicita"),
+                solicitaId: button.getAttribute("data-SolicitaId"),
                 solicitud: button.getAttribute("data-Solicitud")
             }
 
             let informacionGeneral = `<h6 class="fw-bold text-secondary">Información del Puesto</h6>
                                                                                                             <p><strong>Puesto:</strong> <span id="detallePuesto"> ${datosSolicitud.puesto}</span></p>
-                                                                                                            <p><strong>Departamento:</strong> ${datosSolicitud.departamento}</p>
+                                                                                                            <p><strong>Departamento:</strong><span id="departamento">${datosSolicitud.departamento}</span></p>
                                                                                                             <p><strong>Fecha de Solicitud:</strong> ${datosSolicitud.fechaSolicitud}</p>
                                                                                                             <p><strong>Solicitado por:</strong> ${datosSolicitud.solicita}</p>
-                                                                                                            <p id="idSolicitud" style = "display: none;">${datosSolicitud.solicitud}</p>`;
+                                                                                                            <p id="idSolicitud" style = "display: none;">${datosSolicitud.solicitud}</p>
+                                                                                                            <p id="idPuesto" style = "display: none;">${datosSolicitud.puestoId}</p>
+                                                                                                            <p id="idDepartamento" style = "display: none;">${datosSolicitud.departamentoId}</p>
+                                                                                                            <p id="idSolicita" style = "display: none;">${datosSolicitud.solicitaId}</p>`;
 
             document.getElementById('solicitud-InformacionGeneral').innerHTML = informacionGeneral;
             ObtenerDatosAspirantes();
@@ -793,6 +1038,7 @@
                 document.getElementById("usuarioModal").value = userName;
                 correoInput.value = document.getElementById(idModal).innerText;
                 correoInput.disabled = true;
+                passwordModal.value = reply.clave;
                 modalUsuario.show();
             }
             else {
@@ -806,9 +1052,8 @@
             const result = await response.json();
             $("#globalLoading").show();
             if (result.success) {
-                console.log(result.data)
-
                 cargarDatosAspirante(result.data);
+                dataAspiranteFinal = result.data.DatosPersonalesVM;
                 modalDetalleUsuario.show();
             }
             else {
@@ -847,7 +1092,7 @@
                 }
                 else
                 {
-                    
+
                     spiner.classList.remove("d-none");
                     icon.classList.add("d-none");
 
@@ -931,13 +1176,12 @@
                 });
             }
             else {
-                tbodyAcademico += `<tr >
+                tbodyAcademico += `<tr>
                                       <th colspan ="5"><div class="text-center text-muted py-3">
                                          <i class="bi bi-info-circle"></i> No se encontraron datos
                                       </div></th>
                                    </tr> `;
             }
-
 
             if (datosAspirante.DatosLaboralesVM.length != 0) {
                 datosAspirante.DatosLaboralesVM.forEach(item => {
@@ -1022,7 +1266,6 @@
 
             // Mostrar contenido del documento seleccionado
             const nombre = element.querySelector(".fw-bold").innerText;
-
 
             $("#mensajePrincipal").load(`/Reclutamiento/CargarVistaParcial?nombreDocumento=${encodeURIComponent(nombre)}&tipo=${encodeURIComponent(tipo)}&extencion=${encodeURIComponent(extencion)}&descripcion=${encodeURI(descripcion)}`);
             $("#globalLoading").hide();
@@ -1201,7 +1444,6 @@
             console.log(idButton);
             document.getElementById('U_IdButton').value = idButton;
 
-
             const response = await fetch(`/Reclutamiento/ObtenerPerfilPuestoPorId?idPuesto=${puestoId}`);
             const result = await response.json();
 
@@ -1290,6 +1532,271 @@
             });
         }
 
+        async function agregarSolicitud() {
+            const response = await fetch('/Reclutamiento/ObtenerDatosPuestoDepartamentoGerentes')
+            const result = await response.json();
+
+            const selectPuesto = document.getElementById("puestoSelect");
+            const selectDepartamento = document.getElementById("departamentoSelect");
+            const selectSolicita = document.getElementById("solicitaSelect");
+
+            if (result.success)
+            {
+
+                let data = '';
+
+                result.data.Posiciones.forEach((item) => {
+                    data += `<Option value="${item.NoPosicion}">${item.Descripcion}</Option>`;
+                });
+                selectPuesto.innerHTML = data;
+                data = '';
+
+                result.data.Departamentos.forEach((item) => {
+                    data += `<Option value="${item.Code}">${item.Name}</Option>`;
+                });
+                selectDepartamento.innerHTML = data;
+                data = '';
+
+                result.data.Gerentes.forEach((item) => {
+                    data += `<Option value="${item.CodigoEmpleado}">${item.Nombre}</Option>`;
+                });
+                selectSolicita.innerHTML = data;
+
+                modalAgregarSolicitud.show();
+            }
+        }
+
+        async function agregarSolicitudDePesonal() {
+            $("#globalLoading").show();
+            try {
+                const selectPuesto = document.getElementById("puestoSelect");
+                const selectDepartamento = document.getElementById("departamentoSelect");
+                const selectSolicita = document.getElementById("solicitaSelect");
+                const data = new FormData();
+
+                data.append("posicion", selectPuesto.value)
+                data.append("departamento", selectDepartamento.value)
+                data.append("solicita", selectSolicita.value)
+
+                const response = await fetch('/Reclutamiento/GuardarSolicitudDePersonal',
+                    {
+                        method: "POST",
+                        body: data
+                    }
+                );
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: "Solicitudd de personal realizada con éxito" });
+
+                    setTimeout(() => {
+                        location.reload();
+                    },5000)
+
+                    modalAgregarSolicitud.hide();
+                }
+                else {
+                    Toast.fire({ icon: 'warning', title: "Ocurrio un error a enviar la solicitud" });
+                }
+            }
+            catch (error) {
+                Toast.fire({ icon: 'warning', title: "Ocurrio un error a enviar la solicitud" });
+            }
+            finally {
+                $("#globalLoading").hide();
+            }
+        }
+
+        async function darDeAlta() {
+
+            const idPuesto = document.getElementById("idPuesto").textContent;
+            const idDepartamento = document.getElementById("idDepartamento").textContent;
+            const departamento = document.getElementById("departamento").textContent;
+            const idSolicita = document.getElementById("idSolicita").textContent;
+            const bodyLoading = document.getElementById("contenedorLoading");
+                //addLoadingPrincipal
+            const usuarioSAP = document.getElementById("chkUsuarioSAP").checked;
+
+            const usuarioVentas = document.getElementById("chkUsuarioVentas").checked;
+            const tejar360 = document.getElementById("chkTejar360").checked;
+            const meta = document.getElementById("chkMeta").checked;
+
+            let empleadoId = "";
+            let proveedor = "";
+            let cliente = "";
+
+            bodyLoading.innerHTML = addLoadingPrincipal();
+            modalProcesos.show();
+            document.getElementById("step1-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step2-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step3-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
+
+            if (usuarioSAP)
+                bodyLoading.insertAdjacentHTML("beforeend", addLoading("Creacion de usuario SAP",4));
+
+            if (usuarioVentas)
+                bodyLoading.insertAdjacentHTML("beforeend", addLoading("Creacion de usuario de empleado de ventas", 5));
+
+            if (tejar360)
+                bodyLoading.insertAdjacentHTML("beforeend", addLoading("Creacion de usuario Tejar360", 6));
+
+            if (meta)
+                bodyLoading.insertAdjacentHTML("beforeend", addLoading("Asignación de meta", 7));
+
+             // CRACION DE ALTA DEL ASPITANTE
+            //empleadoId = await creacionDeAspirante(dataAspiranteFinal, idPuesto, idDepartamento, idSolicita);
+
+            ////CREACION DE PROVEEDOR
+            //proveedor = await creacionDeProveedor(true, dataAspiranteFinal, empleadoId)
+
+            ////CREACION DE CLIENTE
+            //cliente = await creacionDeCliente(false, dataAspiranteFinal, empleadoId)
+            //CREACION DE USUARIO SAP
+            if (usuarioSAP) {
+                await crearUsuarioSAP(departamento, dataAspiranteFinal)
+            }
+        }
+
+        async function creacionDeAspirante(dataAspiranteFinal, idPuesto, idDepartamento, idSolicita) {
+            let response = await fetch('/Reclutamiento/DarDeAltaAAspirante',
+                {
+                    method: "POST",
+                    body: JSON.stringify(
+                        {
+                            datosPersonales: dataAspiranteFinal,
+                            puestoId: idPuesto,
+                            departamentoId: idDepartamento,
+                            solicitaId: idSolicita
+                        }),
+                    headers: { "Content-Type": "application/json" }
+                }
+            )
+
+            let result = await response.json();
+
+            if (result.success) {
+                document.getElementById("step1-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+                return result.empId;
+
+            }
+            else {
+                document.getElementById("step1-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                return "";
+            }
+        }
+
+        async function creacionDeProveedor(proveedor, dataAspiranteFinal, empleadoId) {
+            response = await fetch('/Reclutamiento/CrearProveedor',
+                {
+                    method: "POST",
+                    body: JSON.stringify(
+                        {
+                            proveedor: proveedor,
+                            datosPersonales: dataAspiranteFinal,
+                            empId: empleadoId
+                        }
+                    ),
+                    headers: { "Content-Type": "application/json" }
+                }
+            );
+
+            result = await response.json();
+
+            if (result.success) {
+                document.getElementById("step2-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+                return result.proveedor;
+            }
+            else {
+                document.getElementById("step2-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                return "";
+            }
+        }
+
+        async function creacionDeCliente(proveedor, dataAspiranteFinal, empleadoId) {
+            response = await fetch('/Reclutamiento/CrearProveedor',
+                {
+                    method: "POST",
+                    body: JSON.stringify(
+                        {
+                            proveedor: proveedor,
+                            datosPersonales: dataAspiranteFinal,
+                            empId: empleadoId
+                        }
+                    ),
+                    headers: { "Content-Type": "application/json" }
+                }
+            );
+
+            result = await response.json();
+
+            if (result.success) {
+                proveedor = result.proveedor;
+                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+            }
+            else {
+                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+            }
+        }
+
+        async function crearUsuarioSAP(departamento, dataAspiranteFinal) {
+            response = await fetch('/Reclutamiento/CrearUsuarioSAP',
+                {
+                    method: "POST",
+                    body: JSON.stringify(
+                        {
+                            datosPersonales: dataAspiranteFinal,
+                            departamento: departamento
+                        }
+                    ),
+                    headers: { "Content-Type": "application/json" }
+                }
+            );
+
+            result = await response.json();
+
+            if (result.success) {
+                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+            }
+            else {
+                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+            }
+        }
+
+        function addLoading(text,id) {
+            return `<div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>${text}</span>
+                        <span id="step${id}-icon">
+                            <div class="spinner-border spinner-border-sm text-primary"></div>
+                        </span>
+                    </div>`;
+        };
+
+         function addLoadingPrincipal() {
+             return `<div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Creación de dato maestro de empleado</span>
+                            <span id="step1-icon">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                            </span>
+                        </div>
+
+                        <!-- Paso 2 -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Creación de cliente</span>
+                            <span id="step2-icon">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                            </span>
+                        </div>
+
+                        <!-- Paso 3 -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Creación de proveedor</span>
+                            <span id="step3-icon">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                            </span>
+                        </div>`;
+        };
+
         document.getElementById('tab-cv').addEventListener('click', () => CambiarIconoDocumentos());
         document.getElementById('btnCrearUsuarioClave').addEventListener('click', () => abrirModalCrarUsuario());
         document.getElementById('btnCrearEnviar').addEventListener('click', () => crearUsuarioClave());
@@ -1297,6 +1804,7 @@
         document.getElementById('btnAgregarComentario').addEventListener('click', () => agregarComentario());
         document.getElementById('tab-comentarios').addEventListener('click', () => mostrarComentarios());
         document.getElementById('btnGuardarPerfil').addEventListener('click', () => guardarPerfilDeUsuario());
+        document.getElementById('btnDarDeAlta').addEventListener('click', () => darDeAlta());
     </script>
 </body>
 </html>

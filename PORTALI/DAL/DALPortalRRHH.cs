@@ -40,6 +40,7 @@ namespace DAL
                 };
             }
         }
+
         public async Task<List<DetalleMarcaje>> ObtenerDetalleMarcaje(MarcajeFiltrosEntiry model, SessionLoginEntity user)
         {
             try
@@ -114,6 +115,7 @@ namespace DAL
                 };
             }
         }
+
         public async Task<List<AreaEntity>> ObtenerAreas()
         {
             try
@@ -136,6 +138,7 @@ namespace DAL
                 };
             }
         }
+
         public async Task<List<DepartamentosEntity>> ObtenerDepartamentos(int codigoArea)
         {
             try
@@ -167,6 +170,7 @@ namespace DAL
                 };
             }
         }
+
         public async Task<List<EmpleadoEntity>> BuscarEmpleadosPorNombre(string nombre, SessionLoginEntity user)
         {
             try
@@ -189,6 +193,7 @@ namespace DAL
                 };
             }
         }
+
         public async Task<List<GetPermisoEntity>> ObtenerPermisosPorEmpleado(SessionLoginEntity User, MarcajeFiltrosEntiry fechas)
         {
             try
@@ -211,6 +216,7 @@ namespace DAL
                 };
             }
         }
+
         public async Task<List<FirmaDigitalEntity>> ObtenerFirmaDigital(int Solicitante, int LineId)
         {
             try
@@ -273,7 +279,8 @@ namespace DAL
                 };
             }
         }
-        public async Task<List<AsistenciaModel>> ObternerAsistencia(DateTime? fechaI , DateTime? fechaF, string nombre = "", int userId = 0)
+
+        public async Task<List<AsistenciaModel>> ObternerAsistencia(DateTime? fechaI, DateTime? fechaF, string nombre = "", int userId = 0)
         {
             try
             {
@@ -281,7 +288,7 @@ namespace DAL
                 {
                     string sp = "sp_ver_horarios_ingreso_por_sucursal";
 
-                    return (List<AsistenciaModel>)await connection.QueryAsync<AsistenciaModel>(sp,new { @FechaI = fechaI, @FechaF = fechaF, @Nombre = nombre, @UserId = userId} , commandType: CommandType.StoredProcedure, commandTimeout: 120);
+                    return (List<AsistenciaModel>)await connection.QueryAsync<AsistenciaModel>(sp, new { @FechaI = fechaI, @FechaF = fechaF, @Nombre = nombre, @UserId = userId }, commandType: CommandType.StoredProcedure, commandTimeout: 120);
                 }
             }
             catch (Exception ex)
@@ -310,7 +317,6 @@ namespace DAL
             catch (Exception ex)
             {
                 return 0;
-
             }
         }
 
@@ -328,10 +334,7 @@ namespace DAL
             catch (Exception ex)
             {
                 return 0;
-
             }
         }
-
-
     }
 }

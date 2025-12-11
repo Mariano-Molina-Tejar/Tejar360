@@ -102,11 +102,11 @@ namespace PORTALI.Helpers.EmailHelper
         }
 
         public static string BodyMailAspirante(
-    string nombreAspirante,
-    string usuario,
-    string password,
-    string fechaLimite,
-    string linkAcceso)
+                                            string nombreAspirante,
+                                            string usuario,
+                                            string password,
+                                            string fechaLimite,
+                                            string linkAcceso)
         {
             return $@"
                 <div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden;
@@ -181,6 +181,77 @@ namespace PORTALI.Helpers.EmailHelper
                     </div>
                 </div>
                 ";
+        }
+
+        public static string BodyMailSolicitudAutorizacion(
+    string nombreSolicitante,
+    string puesto,
+    string fechaSolicitud,
+    string observaciones,
+    string linkAutorizar,
+    string linkRechazar)
+        {
+            return $@"
+        <div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #eee;'>
+
+            <!-- Encabezado -->
+            <div style='background-color:#0066cc; color:white; padding:12px 20px;'>
+                <h2 style='margin:0; font-size:18px;'>Solicitud de Autorización</h2>
+            </div>
+
+            <!-- Contenido -->
+            <div style='background-color:#F4FAFF; padding:20px;'>
+                <p>Estimado(a),</p>
+
+                <p>
+                    Se ha generado una <strong>nueva solicitud de autorización</strong> dentro del sistema.
+                    A continuación, encontrará los detalles:
+                </p>
+
+                <ul style='list-style:none; padding-left:0;'>
+                    <li><strong>👤 Solicitante:</strong> {nombreSolicitante}</li>
+                    <li><strong>💼 Puesto:</strong> {puesto}</li>
+                    <li><strong>📅 Fecha de solicitud:</strong> {fechaSolicitud}</li>
+                    <li><strong>📝 Observaciones:</strong> {observaciones}</li>
+                </ul>
+
+                <p style='margin-top:20px;'>Seleccione una opción para continuar con el proceso:</p>
+
+                <!-- Botones -->
+                <div style='text-align:center; margin:25px 0;'>
+
+                    <a href='{linkAutorizar}' 
+                       style='background-color:#28a745; color:white; padding:10px 18px; 
+                              text-decoration:none; border-radius:5px; font-weight:bold; 
+                              display:inline-block; margin-right:10px;'>
+                        ✔ Autorizar
+                    </a>
+
+                    <a href='{linkRechazar}' 
+                       style='background-color:#dc3545; color:white; padding:10px 18px; 
+                              text-decoration:none; border-radius:5px; font-weight:bold; 
+                              display:inline-block;'>
+                        ✖ Rechazar
+                    </a>
+
+                </div>
+
+                <p>
+                    Al seleccionar alguna de las opciones, su decisión quedará registrada automáticamente en el sistema.
+                </p>
+
+                <p>Saludos cordiales,<br>
+                   <strong>Departamento de Recursos Humanos</strong>
+                </p>
+            </div>
+
+            <!-- Pie -->
+            <div style='background-color:#0066cc; text-align:center; padding:10px; font-weight:bold; color:white;'>
+                El Tejar
+            </div>
+        </div>
+    ";
         }
 
 

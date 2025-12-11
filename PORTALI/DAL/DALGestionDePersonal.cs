@@ -8,6 +8,7 @@ using Connection;
 using Entity;
 using System.Data.SqlClient;
 using System.Data;
+using System.Web.ModelBinding;
 
 namespace DAL
 {
@@ -72,6 +73,27 @@ namespace DAL
                 using (var conn = new SqlConnection(connectionString))
                 {
                     string query = "sp_ver_autorizaciones_baja_de_personal";
+
+                    return await conn.QueryAsync<AutorizacionDeBaja>
+                        (
+                        query,
+                        commandType: CommandType.StoredProcedure,
+                        commandTimeout: 60
+                        );
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<AutorizacionDeBaja>> ObtenerProcesoDeBaja()
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    string query = "sp_ver_procesos_baja_de_personal";
 
                     return await conn.QueryAsync<AutorizacionDeBaja>
                         (
@@ -226,9 +248,9 @@ namespace DAL
                     };
 
                     return await conn.QuerySingleOrDefaultAsync<string>(
-                        sp, 
-                        parametros, 
-                        commandType: CommandType.StoredProcedure, 
+                        sp,
+                        parametros,
+                        commandType: CommandType.StoredProcedure,
                         commandTimeout: 60)
                         .ConfigureAwait(false) ?? "";
                 }
@@ -236,6 +258,47 @@ namespace DAL
             catch (SqlException ex)
             {
                 throw new Exception("Error al obtener los correos de la solicitud", ex);
+            }
+        }
+
+        public async Task<string> ObtenerNombreCompleto(int userId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT	CASE 
+		                        WHEN CONCAT(OHEM.firstName, ' ' ,OHEM.LastName) = '' THEN OUSR.U_NAME
+		                        ELSE CONCAT(OHEM.firstName, ' ' ,OHEM.LastName) END Nombre
+                        FROM OUSR
+                        LEFT JOIN OHEM ON OUSR.USERID = OHEM.userId
+                        WHERE OUSR.USERID = @UserId";
+
+                return await conn.ExecuteScalarAsync<string>
+                    (
+                    query,
+                    new { UserId = userId }
+                    );
+            }
+        }
+
+        public async Task<IEnumerable<Autorizaciones>> ObtenerProcesoDeAutorizaciones(int userId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT	T0.U_FechaCreacion AS FechaDeSolicitud,
+		                                ISNULL(T1.descriptio,'Posicion sin confirmar') AS Posicion,
+		                            ISNULL(T0.U_Estado,'P') AS Estado
+                            FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_A] T0
+                            LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHPS T1 ON T0.U_IdPosicion = T1.posID     
+                            WHERE U_IdSolicitante = @userId";                   
+
+                return await conn.QueryAsync<Autorizaciones>
+                    (
+                    query,
+                    new
+                    {
+                        UserId = userId
+                    }
+                    );
             }
         }
     }

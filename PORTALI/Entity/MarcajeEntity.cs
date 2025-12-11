@@ -15,6 +15,7 @@ namespace Entity
         public int Incumplimientos { get; set; }
         public string ErrorMessage { get; set; }
     }
+
     public class MarcajeFiltrosEntiry
     {
         public DateTime FechaInicio { get; set; }
@@ -70,7 +71,7 @@ namespace Entity
         public string AutorizadoPor { get; set; }
         public string Observaciones { get; set; }
         public string Autorizado { get; set; }
-        public string ErrorMessage { get; set; }        
+        public string ErrorMessage { get; set; }
     }
 
     public class FiltroVacaciones
@@ -99,6 +100,7 @@ namespace Entity
         public string Departamento { get; set; }
         public string ErrorMessage { get; set; }
     }
+
     public class EmpleadoEntity
     {
         public int CodigoEmpleado { get; set; }
@@ -106,6 +108,7 @@ namespace Entity
         public string Departamento { get; set; }
         public string ErrorMessage { get; set; }
     }
+
     public class PermisosEntity
     {
         public int CodigoEmpleado { get; set; }
@@ -128,6 +131,7 @@ namespace Entity
         public int LineId { get; set; }
         public int rrhh { get; set; }
     }
+
     public class detallePermiso
     {
         public int CodigoEmpleado { get; set; }
@@ -165,7 +169,6 @@ namespace Entity
         public int Autorizar { get; set; }
         public int rrhh { get; set; }
         public int EstadoRH { get; set; }
-
     }
 
     public class TiposPermisosEntity
@@ -183,8 +186,5 @@ namespace Entity
         public string FirmaDigital { get; set; } // Firma codificada en base64
         public string Comentario { get; set; }
         public string ErrorMessage { get; set; }
-
     }
-
-
 }

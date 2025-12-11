@@ -57,6 +57,38 @@
                 border-color: #0d6efd;
                 background: #e0ecff;
             }
+
+        .equipo-item-added {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .equipo-item-added i {
+                font-size: 22px;
+                color: #0d6efd;
+            }
+
+        .equipo-delete {
+            margin-left: auto;
+            cursor: pointer;
+            color: #dc3545;
+        }
+
+            .equipo-delete:hover {
+                color: #a71d2a;
+            }
+
+        .btn-equipos {
+            width: 42px; /* ajusta según tu gusto */
+            height: 32px; /* igual al btn-sm */
+            padding: 0;
+        }
     </style>
 </head>
 <!-- Bootstrap 5.3.3 -->
@@ -237,6 +269,12 @@
                                                     onclick="abrirModalPerfilPuesto('@posicion.Nombre',@posicion.NoPosicion, @posicion.Perfil.ToString().ToLower(), 'btnPerfil-@(posicion.NoPosicion)')">
 
                                                 <i id="ibtnPerfil-@(posicion.NoPosicion)" class="bi bi-file-earmark-text @(posicion.Perfil ? "text-success" : "text-danger")"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-primary btn-cuadrado"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Equipo asignado"
+                                                    onclick="verEquiposAsignados('@(posicion.NoPosicion)')">
+                                                <i class="bi bi-laptop text-primary"></i>
                                             </button>
                                         </th>
                                     </tr>
@@ -480,9 +518,9 @@
                 <!-- Footer -->
                 <div class="modal-footer" style="display:flex; justify-content:space-between">
                     <div>
-                        <button id="btnVerEquipo" type="button" class="btn btn-success">
-                            <i class="bi bi-laptop"></i> Equipo
-                        </button>
+                        @*<button id="btnVerEquipo" type="button" class="btn btn-success">
+                                <i class="bi bi-laptop"></i> Equipo
+                            </button>*@
                     </div>
                     <div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -564,6 +602,7 @@
                 <div class="modal-header" style="background-color: steelblue;">
                     <h5 class="modal-title text-white">
                         <i class="bi bi-laptop text-white"></i> Asignar Equipo al Perfil
+                        <input class="d-none" id="PerfilId" value="" />
                     </h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -578,7 +617,6 @@
                                 <i class="bi bi-box-seam"></i> Equipos Disponibles
                             </h6>
                             <div id="listaDisponibles" class="lista-equipos">
-                                <!-- JS inserta aquí -->
                             </div>
                         </div>
 
@@ -604,7 +642,7 @@
 
     <!-- Modal Agregar Equipo -->
     <div class="modal fade" id="modalAgregarEquipo" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
 
                 <div class="modal-header">
@@ -617,177 +655,194 @@
                 <div class="modal-body">
 
                     <div class="row">
-                        <!-- Nombre del equipo -->
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Nombre del Equipo</label>
-                            <input type="text" class="form-control" id="equipoNombre" placeholder="Ej: Laptop">
-                        </div>
 
-                        <!-- Vista previa del icono -->
-                        <div class="col-md-6 mb-3 text-center">
-                            <label class="form-label fw-semibold">Vista Previa del Ícono</label>
-                            <div id="previewIcon"
-                                 class="border rounded p-3 fs-1 text-primary"
-                                 style="min-height: 80px;">
-                                <i class="bi bi-laptop"></i>
+                        <!-- ===== COLUMNA IZQUIERDA ===== -->
+                        <div class="col-md-8">
+
+                            <div class="row">
+                                <!-- Nombre del equipo -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Nombre del Equipo</label>
+                                    <input type="text" class="form-control" id="equipoNombre" placeholder="Ej: Laptop">
+                                </div>
+
+                                <!-- Vista previa del icono -->
+                                <div class="col-md-6 mb-3 text-center">
+                                    <label class="form-label fw-semibold">Vista Previa del Ícono</label>
+                                    <div id="previewIcon"
+                                         class="border rounded p-3 fs-1 text-primary"
+                                         style="min-height: 80px;">
+                                        <i class="bi bi-laptop"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Selección de íconos -->
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold">Seleccionar Ícono</label>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-3" id="iconSelector">
+
+                                <!-- 1 -->
+                                <div class="icon-option" data-icon="bi-laptop">
+                                    <i class="bi bi-laptop fs-2"></i>
+                                </div>
+
+                                <!-- 2 -->
+                                <div class="icon-option" data-icon="bi-pc-display">
+                                    <i class="bi bi-pc-display fs-2"></i>
+                                </div>
+
+                                <!-- 3 -->
+                                <div class="icon-option" data-icon="bi-pc">
+                                    <i class="bi bi-pc fs-2"></i>
+                                </div>
+
+                                <!-- 4 -->
+                                <div class="icon-option" data-icon="bi-phone">
+                                    <i class="bi bi-phone fs-2"></i>
+                                </div>
+
+                                <!-- 5 -->
+                                <div class="icon-option" data-icon="bi-phone-fill">
+                                    <i class="bi bi-phone-fill fs-2"></i>
+                                </div>
+
+                                <!-- 6 -->
+                                <div class="icon-option" data-icon="bi-tablet">
+                                    <i class="bi bi-tablet fs-2"></i>
+                                </div>
+
+                                <!-- 7 -->
+                                <div class="icon-option" data-icon="bi-tablet-landscape">
+                                    <i class="bi bi-tablet-landscape fs-2"></i>
+                                </div>
+
+                                <!-- 8 -->
+                                <div class="icon-option" data-icon="bi-mouse">
+                                    <i class="bi bi-mouse fs-2"></i>
+                                </div>
+
+                                <!-- 9 -->
+                                <div class="icon-option" data-icon="bi-keyboard">
+                                    <i class="bi bi-keyboard fs-2"></i>
+                                </div>
+
+                                <!-- 10 -->
+                                <div class="icon-option" data-icon="bi-printer">
+                                    <i class="bi bi-printer fs-2"></i>
+                                </div>
+
+                                <!-- 11 -->
+                                <div class="icon-option" data-icon="bi-cpu">
+                                    <i class="bi bi-cpu fs-2"></i>
+                                </div>
+
+                                <!-- 12 -->
+                                <div class="icon-option" data-icon="bi-hdd">
+                                    <i class="bi bi-hdd fs-2"></i>
+                                </div>
+
+                                <!-- 13 -->
+                                <div class="icon-option" data-icon="bi-hdd-fill">
+                                    <i class="bi bi-hdd-fill fs-2"></i>
+                                </div>
+
+                                <!-- 14 -->
+                                <div class="icon-option" data-icon="bi-router">
+                                    <i class="bi bi-router fs-2"></i>
+                                </div>
+
+                                <!-- 15 -->
+                                <div class="icon-option" data-icon="bi-wifi">
+                                    <i class="bi bi-wifi fs-2"></i>
+                                </div>
+
+                                <!-- 16 -->
+                                <div class="icon-option" data-icon="bi-ethernet">
+                                    <i class="bi bi-ethernet fs-2"></i>
+                                </div>
+
+                                <!-- 17 -->
+                                <div class="icon-option" data-icon="bi-plug">
+                                    <i class="bi bi-plug fs-2"></i>
+                                </div>
+
+                                <!-- 18 -->
+                                <div class="icon-option" data-icon="bi-tv">
+                                    <i class="bi bi-tv fs-2"></i>
+                                </div>
+
+                                <!-- 19 -->
+                                <div class="icon-option" data-icon="bi-headphones">
+                                    <i class="bi bi-headphones fs-2"></i>
+                                </div>
+
+                                <!-- 20 -->
+                                <div class="icon-option" data-icon="bi-camera">
+                                    <i class="bi bi-camera fs-2"></i>
+                                </div>
+
+                                <!-- 21 -->
+                                <div class="icon-option" data-icon="bi-camera-video">
+                                    <i class="bi bi-camera-video fs-2"></i>
+                                </div>
+
+                                <!-- 22 -->
+                                <div class="icon-option" data-icon="bi-optical-audio">
+                                    <i class="bi bi-optical-audio fs-2"></i>
+                                </div>
+
+                                <!-- 23 -->
+                                <div class="icon-option" data-icon="bi-tools">
+                                    <i class="bi bi-tools fs-2"></i>
+                                </div>
+
+                                <!-- 24 -->
+                                <div class="icon-option" data-icon="bi-sliders">
+                                    <i class="bi bi-sliders fs-2"></i>
+                                </div>
+
+                                <!-- 25 -->
+                                <div class="icon-option" data-icon="bi-box-seam">
+                                    <i class="bi bi-box-seam fs-2"></i>
+                                </div>
+                                <!-- 26 -->
+                                <div class="icon-option" data-icon="bi-smartwatch">
+                                    <i class="bi bi-smartwatch fs-2"></i>
+                                </div>
+
+                                <!-- 27 -->
+                                <div class="icon-option" data-icon="bi-tv">
+                                    <i class="bi bi-tv fs-2"></i>
+                                </div>
+
+                                <!-- 28 -->
+                                <div class="icon-option" data-icon="bi-usb-drive">
+                                    <i class="bi bi-usb-drive fs-2"></i>
+                                </div>
+
+                                <!-- 29 -->
+                                <div class="icon-option" data-icon="bi-sd-card">
+                                    <i class="bi bi-sd-card fs-2"></i>
+                                </div>
+
+                                <!-- 30 -->
+                                <div class="icon-option" data-icon="bi-speaker">
+                                    <i class="bi bi-speaker fs-2"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Selección de íconos -->
-                    <div class="mb-2">
-                        <label class="form-label fw-semibold">Seleccionar Ícono</label>
-                    </div>
+                        <!-- ===== COLUMNA DERECHA ===== -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Equipos Agregados</label>
 
-                    <div class="d-flex flex-wrap gap-3" id="iconSelector">
-
-                        <!-- 1 -->
-                        <div class="icon-option" data-icon="bi-laptop">
-                            <i class="bi bi-laptop fs-2"></i>
-                        </div>
-
-                        <!-- 2 -->
-                        <div class="icon-option" data-icon="bi-pc-display">
-                            <i class="bi bi-pc-display fs-2"></i>
-                        </div>
-
-                        <!-- 3 -->
-                        <div class="icon-option" data-icon="bi-pc">
-                            <i class="bi bi-pc fs-2"></i>
-                        </div>
-
-                        <!-- 4 -->
-                        <div class="icon-option" data-icon="bi-phone">
-                            <i class="bi bi-phone fs-2"></i>
-                        </div>
-
-                        <!-- 5 -->
-                        <div class="icon-option" data-icon="bi-phone-fill">
-                            <i class="bi bi-phone-fill fs-2"></i>
-                        </div>
-
-                        <!-- 6 -->
-                        <div class="icon-option" data-icon="bi-tablet">
-                            <i class="bi bi-tablet fs-2"></i>
-                        </div>
-
-                        <!-- 7 -->
-                        <div class="icon-option" data-icon="bi-tablet-landscape">
-                            <i class="bi bi-tablet-landscape fs-2"></i>
-                        </div>
-
-                        <!-- 8 -->
-                        <div class="icon-option" data-icon="bi-mouse">
-                            <i class="bi bi-mouse fs-2"></i>
-                        </div>
-
-                        <!-- 9 -->
-                        <div class="icon-option" data-icon="bi-keyboard">
-                            <i class="bi bi-keyboard fs-2"></i>
-                        </div>
-
-                        <!-- 10 -->
-                        <div class="icon-option" data-icon="bi-printer">
-                            <i class="bi bi-printer fs-2"></i>
-                        </div>
-
-                        <!-- 11 -->
-                        <div class="icon-option" data-icon="bi-cpu">
-                            <i class="bi bi-cpu fs-2"></i>
-                        </div>
-
-                        <!-- 12 -->
-                        <div class="icon-option" data-icon="bi-hdd">
-                            <i class="bi bi-hdd fs-2"></i>
-                        </div>
-
-                        <!-- 13 -->
-                        <div class="icon-option" data-icon="bi-hdd-fill">
-                            <i class="bi bi-hdd-fill fs-2"></i>
-                        </div>
-
-                        <!-- 14 -->
-                        <div class="icon-option" data-icon="bi-router">
-                            <i class="bi bi-router fs-2"></i>
-                        </div>
-
-                        <!-- 15 -->
-                        <div class="icon-option" data-icon="bi-wifi">
-                            <i class="bi bi-wifi fs-2"></i>
-                        </div>
-
-                        <!-- 16 -->
-                        <div class="icon-option" data-icon="bi-ethernet">
-                            <i class="bi bi-ethernet fs-2"></i>
-                        </div>
-
-                        <!-- 17 -->
-                        <div class="icon-option" data-icon="bi-plug">
-                            <i class="bi bi-plug fs-2"></i>
-                        </div>
-
-                        <!-- 18 -->
-                        <div class="icon-option" data-icon="bi-lightning-charge">
-                            <i class="bi bi-lightning-charge fs-2"></i>
-                        </div>
-
-                        <!-- 19 -->
-                        <div class="icon-option" data-icon="bi-headphones">
-                            <i class="bi bi-headphones fs-2"></i>
-                        </div>
-
-                        <!-- 20 -->
-                        <div class="icon-option" data-icon="bi-camera">
-                            <i class="bi bi-camera fs-2"></i>
-                        </div>
-
-                        <!-- 21 -->
-                        <div class="icon-option" data-icon="bi-camera-video">
-                            <i class="bi bi-camera-video fs-2"></i>
-                        </div>
-
-                        <!-- 22 -->
-                        <div class="icon-option" data-icon="bi-optical-audio">
-                            <i class="bi bi-optical-audio fs-2"></i>
-                        </div>
-
-                        <!-- 23 -->
-                        <div class="icon-option" data-icon="bi-tools">
-                            <i class="bi bi-tools fs-2"></i>
-                        </div>
-
-                        <!-- 24 -->
-                        <div class="icon-option" data-icon="bi-sliders">
-                            <i class="bi bi-sliders fs-2"></i>
-                        </div>
-
-                        <!-- 25 -->
-                        <div class="icon-option" data-icon="bi-box-seam">
-                            <i class="bi bi-box-seam fs-2"></i>
-                        </div>
-                        <!-- 26 -->
-                        <div class="icon-option" data-icon="bi-smartwatch">
-                            <i class="bi bi-smartwatch fs-2"></i>
-                        </div>
-
-                        <!-- 27 -->
-                        <div class="icon-option" data-icon="bi-tv">
-                            <i class="bi bi-tv fs-2"></i>
-                        </div>
-
-                        <!-- 28 -->
-                        <div class="icon-option" data-icon="bi-usb-drive">
-                            <i class="bi bi-usb-drive fs-2"></i>
-                        </div>
-
-                        <!-- 29 -->
-                        <div class="icon-option" data-icon="bi-sd-card">
-                            <i class="bi bi-sd-card fs-2"></i>
-                        </div>
-
-                        <!-- 30 -->
-                        <div class="icon-option" data-icon="bi-speaker">
-                            <i class="bi bi-speaker fs-2"></i>
+                            <div id="listaEquiposAgregados"
+                                 class="border rounded p-2"
+                                 style="min-height: 350px; max-height: 350px; overflow-y: auto; background: #fafafa;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -821,9 +876,13 @@
         const modalDepartamentos = new bootstrap.Modal(document.getElementById('modalDepartamentos'));
         const modalEquipos = new bootstrap.Modal(document.getElementById('modalEquipos'));
         const modalAgregarEquipo = new bootstrap.Modal(document.getElementById('modalAgregarEquipo'));
-
-        let resultado = [];
         const containerBody = document.getElementById('bodyEmpleados');
+
+        let equiposDisponibles = [];
+        let equiposAsignados = [];
+        let equiposAsignadosGuardados = [];
+        let resultado = [];
+        let iconoEquipo = "";
 
         function filtrarPorNombre() {
             const nombre = document.getElementById('filtroNombre').value
@@ -1037,18 +1096,6 @@
                 $("#globalLoading").hide();
             }
         }
-        document.getElementById("posNombre").addEventListener("input", function () {
-            this.value = this.value.trimStart();
-        });
-
-        document.getElementById('filtroNombre').addEventListener('input', () => filtrarPorNombre());
-        document.getElementById('filtroEstado').addEventListener('change', () => filtrarPorNombre());
-        document.getElementById('btnGuardarEmpleado').addEventListener('click', () => guardarDatosEmpleado());
-        document.getElementById('btnPuestos').addEventListener('click', () => abrirModalPosiciones());
-        document.getElementById('btnAgregarPosicion').addEventListener('click', (e) => {
-            e.preventDefault();
-            guardarPosicion();
-        });
 
         async function abrirModalPerfilPuesto(puesto, puestoId, perfil, idButton) {
 
@@ -1147,6 +1194,7 @@
                 el.disabled = bloquearlo;
             });
         }
+
         function abilitarEditar() {
             bloquearFormulario('formPerfilPuesto', false);
             document.getElementById('btnAbilitarEditar').classList.add("d-none")
@@ -1195,6 +1243,7 @@
         function renderListas() {
             const disponibles = document.getElementById("listaDisponibles");
             const asignados = document.getElementById("listaAsignados");
+            console.log(disponibles);
 
             disponibles.innerHTML = "";
             asignados.innerHTML = "";
@@ -1206,18 +1255,22 @@
             equiposAsignados.forEach(eq => {
                 asignados.appendChild(crearEquipoItem(eq));
             });
+
+            equiposAsignadosGuardados.forEach(eq => {
+                asignados.appendChild(crearEquipoItem(eq));
+            });
         }
 
         function crearEquipoItem(equipo) {
             const div = document.createElement("div");
             div.classList.add("equipo-item");
             div.draggable = true;
-            div.dataset.id = equipo.id;
+            div.dataset.id = equipo.Code;
 
             div.innerHTML = `
-    <i class="bi bi-laptop"></i>
-    <span>${equipo.nombre}</span>
-  `;
+                        <i class="bi ${equipo.U_Icono}"></i>
+                        <span>${equipo.U_NombreEquipo}</span>
+                      `;
 
             div.addEventListener("dragstart", () => {
                 div.classList.add("dragging");
@@ -1240,7 +1293,8 @@
             lista.addEventListener("drop", e => {
                 const id = parseInt(document.querySelector(".dragging").dataset.id);
 
-                if (lista.id === "listaAsignados") {
+                if (lista.id === "listaAsignados")
+                {
                     moverEquipo(id, equiposDisponibles, equiposAsignados);
                 } else {
                     moverEquipo(id, equiposAsignados, equiposDisponibles);
@@ -1249,36 +1303,87 @@
         });
 
         function moverEquipo(id, origen, destino) {
-            const index = origen.findIndex(e => e.id === id);
+            const index = origen.findIndex(e => e.Code === id);
             if (index >= 0) {
                 destino.push(origen[index]);
                 origen.splice(index, 1);
             }
         }
 
-        // Inicializar
+        async function guardarEquipoDePerfil() {
+            const idPerfil = document.getElementById('PerfilId').value;
+            $("#globalLoading").show();
+            try {
 
-        let equiposDisponibles = [
-            { id: 1, nombre: "Laptop" },
-            { id: 2, nombre: "Celular" },
-            { id: 3, nombre: "Tablet" },
-            { id: 4, nombre: "Monitor" },
-            { id: 5, nombre: "Impresora" }
-        ];
+                if (equiposAsignados.length === 0) {
+                    Toast.fire({ icon: 'warning', title: "Debe tener al menos un quipo asignado" });
+                    return;
+                }
 
-        let equiposAsignados = [];
+                const response = await fetch('/Empleados/GuardarEquipoPorPerfil',
+                    {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ perfil: idPerfil, equipos: equiposAsignados })
+                    });
 
-        function verEquiposAsignados() {
+                const result = await response.json();
+
+                if (result.success)
+                {
+                    Toast.fire({ icon: 'warning', title: "Equipo agregado con éxito" });
+                    $("#globalLoading").hide();
+                    modalEquipos.hide();
+                    
+                } else {
+                    Toast.fire({ icon: 'warning', title: "Ocurrio un error al agregar el equipo" });
+                }
+            }
+            catch (error)
+            {
+                console.log("Error : ",error);
+            }
+        }
+
+        async function verEquiposAsignados(idPosicion) {
+
+            let response = await fetch('/Empleados/ObtenerEquiposGuardados');
+            document.getElementById('PerfilId').value = idPosicion;
+
+            let result = await response.json();
+
+            if (result.success) {
+                let div = "";
+                equiposDisponibles = [];
+                equiposDisponibles = result.data;
+            }
+            else {
+                equiposAsignadosGuardados = [];
+            }
+
+            response = await fetch(`/Empleados/ObtenerEquiposPorPerfil?perfil=${idPosicion}`);
+            result = await response.json();
+
+            if (result.success) {
+                equiposAsignadosGuardados = [];
+                equiposAsignadosGuardados = result.data;
+            }
+            else {
+                equiposAsignadosGuardados = [];
+            }
+
             renderListas();
             modalEquipos.show()
         }
 
-        //AGREGAR EQUIPO FIN
-
-        function abrirModalAgregarEquipos() {
+        async function abrirModalAgregarEquipos() {
             modalAgregarEquipo.show();
 
             let selectedIcon = "bi-laptop";
+            iconoEquipo = "bi-laptop";
 
             document.querySelectorAll(".icon-option").forEach(option => {
                 option.addEventListener("click", function () {
@@ -1291,37 +1396,86 @@
 
                     // Obtener icono seleccionado
                     selectedIcon = this.dataset.icon;
-
+                    iconoEquipo = this.dataset.icon;
                     // Actualizar vista previa
                     document.getElementById("previewIcon").innerHTML = `<i class="bi ${selectedIcon}"></i>`;
                 });
             });
 
-            document.getElementById("btnGuardarEquipo").addEventListener("click", function () {
-                const nombre = document.getElementById("equipoNombre").value;
+            const response = await fetch('/Empleados/ObtenerEquiposGuardados');
 
-                if (nombre.trim() === "") {
-                    alert("Ingrese el nombre del equipo.");
-                    return;
-                }
+            const result = await response.json();
 
-                console.log("Equipo Guardado:", nombre, selectedIcon);
+            if (result.success) {
+                let div = "";
 
-                // Aquí llamas tu API / DB / Service Layer
-                // ...
+                result.data.forEach((item) => {
 
-                // Cerrar modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById("modalAgregarEquipo"));
-                modal.hide();
-            });
+                    div += `<div class="equipo-item-added">
+                                <i class="bi ${item.U_Icono}"></i>
+                                <span>${item.U_NombreEquipo}</span>
+                            </div>`;
+                })
 
+                document.getElementById("listaEquiposAgregados").innerHTML = div;
+            }
         }
 
+        async function guardarTipoEquipo() {
+
+            $("#globalLoading").show();
+            const nombre = document.getElementById("equipoNombre").value;
+            let icono = iconoEquipo;
+            const data = new FormData();
+
+            data.append("nombre", nombre);
+            data.append("icono", icono);
+
+            if (nombre.trim() === "") {
+                Toast.fire({ icon: 'warning', title: "Debe ingresar el nombre" });
+                return;
+            }
+
+            const response = await fetch('/Empleados/GuardarTipoEquipo',
+                {
+                    method: "POST",
+                    body: data
+                }
+            );
+
+            const result = await response.json();
+
+            if (result.success) {
+                Toast.fire({ icon: 'success', title: "Se guardo el equipo con éxito" });
+                $("#globalLoading").hide();
+                modalEquipos.hide();
+
+            } else {
+                Toast.fire({ icon: 'error', title: "Ocurrio un error al guardar el equipo" });
+                $("#globalLoading").hide();
+            }
+            document.getElementById("equipoNombre").value = "";
+            modalAgregarEquipo.hide();
+        };
+
+        document.getElementById("posNombre").addEventListener("input", function () {
+            this.value = this.value.trimStart();
+        });
+        document.getElementById('filtroNombre').addEventListener('input', () => filtrarPorNombre());
+        document.getElementById('filtroEstado').addEventListener('change', () => filtrarPorNombre());
+        document.getElementById('btnGuardarEmpleado').addEventListener('click', () => guardarDatosEmpleado());
+        document.getElementById('btnPuestos').addEventListener('click', () => abrirModalPosiciones());
+        document.getElementById('btnAgregarPosicion').addEventListener('click', (e) => {
+            e.preventDefault();
+            guardarPosicion();
+        });
         document.getElementById('btnGuardarPerfil').addEventListener('click', () => guardarPerfilDeUsuario());
         document.getElementById('btnAbilitarEditar').addEventListener('click', () => abilitarEditar());
         document.getElementById('btnDepartamentos').addEventListener('click', () => abrirModalDepartamentos());
-        document.getElementById('btnVerEquipo').addEventListener('click', () => verEquiposAsignados());
+
         document.getElementById('btnEquipos').addEventListener('click', () => abrirModalAgregarEquipos());
+        document.getElementById('btnGuardarEquipos').addEventListener('click', () => guardarEquipoDePerfil());
+        document.getElementById("btnGuardarEquipo").addEventListener("click", () => guardarTipoEquipo());
     </script>
 </body>
 </html>

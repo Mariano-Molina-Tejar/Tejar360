@@ -12,7 +12,8 @@ namespace PORTALI.Controllers
 {
     public class AsistenciaController : Controller
     {
-        DALPortalRRHH _dal = new DALPortalRRHH();
+        private DALPortalRRHH _dal = new DALPortalRRHH();
+
         public async Task<ActionResult> Index(DateTime? fechaI, DateTime? fechaF, string nombre)
         {
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
@@ -32,12 +33,12 @@ namespace PORTALI.Controllers
 
                 fechaI = fechaI == null ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1) : fechaI;
                 fechaF = fechaF == null ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1) : fechaF;
-                nombre = string.IsNullOrEmpty(nombre) ? "": nombre;
+                nombre = string.IsNullOrEmpty(nombre) ? "" : nombre;
 
                 asistencia = await _dal.ObternerAsistencia(fechaI, fechaF, nombre, sessions.UserId);
 
                 var viewModel = asistencia
-                .GroupBy(a => new { a.Empleado , a.Semana})
+                .GroupBy(a => new { a.Empleado, a.Semana })
                 .Select(g => new AsistenciaSemanalViewModel
                 {
                     Empleado = $"{g.Key.Empleado}",
@@ -68,11 +69,10 @@ namespace PORTALI.Controllers
                 })
                 .ToList();
                 return View(viewModel);
-
             }
             catch (Exception ex)
             {
-                ListaAsistenciaError.Add(new AsistenciaSemanalViewModel { ErrorMessage = ex.Message});
+                ListaAsistenciaError.Add(new AsistenciaSemanalViewModel { ErrorMessage = ex.Message });
                 return View(ListaAsistenciaError);
             }
             finally

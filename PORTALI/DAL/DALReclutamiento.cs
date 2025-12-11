@@ -14,8 +14,9 @@ namespace DAL
     public class DALReclutamiento
     {
         private readonly string connectionString;
-        CommandType texto = CommandType.Text;
-        CommandType sp = CommandType.StoredProcedure;
+        private CommandType texto = CommandType.Text;
+        private CommandType sp = CommandType.StoredProcedure;
+
         public DALReclutamiento()
         {
             ConnectionEntity pConnection = Conexion.ConexionDB();
@@ -114,6 +115,7 @@ namespace DAL
                 throw;
             }
         }
+
         public async Task<DetalleAspirantes> ObtenerDetalleAspirante(string userName)
         {
             try
@@ -158,6 +160,7 @@ namespace DAL
                 throw;
             }
         }
+
         public async Task<DatosAspirantesViewModel> ObtenerDatosPersonalesAspirante(string userName)
         {
             try
@@ -254,6 +257,7 @@ namespace DAL
                 throw;
             }
         }
+
         public async Task<int> ObtenerCodigoUsuario(string userName)
         {
             try
@@ -283,7 +287,7 @@ namespace DAL
                     return await conn.QueryFirstAsync<PerfilPuestoModel>
                         (
                         query,
-                        new {IdPuesto = idPuesto},
+                        new { IdPuesto = idPuesto },
                         commandTimeout: 60
                         ) ?? new PerfilPuestoModel();
                 }
@@ -300,13 +304,13 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    var query = @"IF (EXISTS (SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] WHERE code = @Code)) 
-                                    SELECT 1 
+                    var query = @"IF (EXISTS (SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] WHERE code = @Code))
+                                    SELECT 1
                                     ELSE SELECT 0";
 
                     return await conn.QuerySingleAsync<bool>(
                         query,
-                        new {Code = code}
+                        new { Code = code }
                         );
                 }
             }
@@ -328,13 +332,27 @@ namespace DAL
 
                     return await conn.ExecuteAsync(
                         query,
-                        new {Usuario = usuario, Correo = correo}
+                        new { Usuario = usuario, Correo = correo }
                         );
                 }
             }
             catch
             {
                 throw;
+            }
+        }
+
+        public async Task<IEnumerable<EmpleadoEntity>> ObtenerGerentes()
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT DISTINCT U_IdEmpleado AS CodigoEmpleado, CONCAT(t1.firstName, ' ' , t1.lastName) AS Nombre
+                            FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_GER_DEP] T0
+                            LEFT JOIN OHEM T1 ON T1.empID = t0.U_IdEmpleado
+                            ORDER BY Nombre";
+                return await conn.QueryAsync<EmpleadoEntity>(
+                    query
+                    );
             }
         }
     }

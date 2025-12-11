@@ -1,22 +1,24 @@
-﻿using System;
+﻿using DAL;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Entity;
+using Newtonsoft.Json;
+using PORTALI.Helpers.EmailHelper;
+using PORTALI.Services;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Entity;
-using DAL;
-using System.Threading.Tasks;
-using PORTALI.Services;
-using Newtonsoft.Json;
-using System.IO;
-using PORTALI.Helpers.EmailHelper;
 
 namespace PORTALI.Controllers
 {
     public class GestionDePersonalController : Controller
     {
         // GET: GestionDePersonal
-        DALGestionDePersonal _dal = new DALGestionDePersonal();
+        private DALGestionDePersonal _dal = new DALGestionDePersonal();
+
         [Authorize]
         public async Task<ActionResult> Index()
         {
@@ -57,7 +59,6 @@ namespace PORTALI.Controllers
                     return Json(new { success = false, message = "No se encontraron datos" }, JsonRequestBehavior.AllowGet);
 
                 return Json(new { success = true, message = "", data = puestos }, JsonRequestBehavior.AllowGet);
-
             }
             catch
             {
@@ -164,6 +165,7 @@ namespace PORTALI.Controllers
                 return Json(new { successS = successSolicitud, successE = successEmail });
             }
         }
+
         public string SubirDocumento(HttpPostedFileBase archivo, int empleadoId, int solicitudId, string Extencion = "pdf")
         {
             if (archivo == null || archivo.ContentLength == 0)
@@ -210,14 +212,15 @@ namespace PORTALI.Controllers
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
+
         public async Task<ActionResult> AutorizacionGTH()
         {
             try
             {
-
                 AutorizacionesGTHViewModel autorizacionesViewModel = new AutorizacionesGTHViewModel
                 {
                     Autorizaciones = await _dal.ObtenerAutorizacinesDeBaja(),
+                    Procesos = await _dal.ObtenerProcesoDeBaja(),
                     Causas = await _dal.ObtenerCausasPorSolicitud()
                 };
 
@@ -317,6 +320,7 @@ namespace PORTALI.Controllers
                 return 0;
             }
         }
+
         public async Task<JsonResult> VerificarSolicitudBajaPendiente(int id)
         {
             try
@@ -333,39 +337,6 @@ namespace PORTALI.Controllers
                 return Json(new { pendiente = 1, error = true }, JsonRequestBehavior.AllowGet);
             }
         }
-
-        //[HttpPost]
-        //public async Task<JsonResult> guardarObservaciones(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta)
-        //{
-        //    Reply reply = new Reply();
-
-        //    SolicitudDeBaja solicitud = new SolicitudDeBaja();
-
-
-        //    string url = "GestionDePersonal/guardarObservacionesSolicitud";
-        //    var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
-        //    if (sessions == null)
-        //    {
-        //        return Json(new { success = false, message = "Sesión expirada" });
-        //    }
-        //    try
-        //    {
-        //        string response = DAL_API.NotasPpto(url, solicitud);
-
-        //        reply = JsonConvert.DeserializeObject<Reply>(response);
-
-        //        if (reply.result == 1)
-        //        {
-
-        //        }
-
-        //        return Json(new { successS = true, successE = "Hola" });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new { successS = false, successE = "" });
-        //    }
-        //}
 
         [HttpPost]
         public JsonResult AgregarEmail(string email)
@@ -427,7 +398,6 @@ namespace PORTALI.Controllers
             if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
                 return Content("Error al mostrar el pdf");
 
-
             string contentType = MimeMapping.GetMimeMapping(ruta);
 
             return File(ruta, contentType);
@@ -463,7 +433,94 @@ namespace PORTALI.Controllers
             }
             catch
             {
-                return 0;   
+                return 0;
+            }
+        }
+
+        public async Task<JsonResult> EnviarSolicitudNuevoPuesto(string puesto, int puestoId, string observaciones, bool nuevo)
+        {
+            try
+            {
+                string host = "https://localhost:44325/api/AutorizacionGerencia/AutorizacionNuevoPuesto";
+                string url = "GestionDePersonal/CrearSolicitudDeAlta";
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+
+                if (sessions == null)
+                {
+                    return Json(new { success = false });
+                }
+
+                var nombreCompleto = await _dal.ObtenerNombreCompleto(sessions.UserId);
+
+                var Solicitud = new
+                {
+                    U_FechaCreacion = DateTime.Now.ToString("yyyy-MM-dd"),
+                    U_IdSolicitante = sessions.CodeEmpleado,
+                    U_IdPosicion = puestoId,
+                    U_IdDepartamento = sessions.Depto,
+                    U_NuevaPlaza = "Y"
+                };
+
+                string response = DAL_API.NotasPpto(url, Solicitud);
+
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+                var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                int code = (int)json.Code;
+
+                if (reply.result != 1)
+                    return Json(new { success = false });
+
+                observaciones = string.IsNullOrWhiteSpace(observaciones) ? "No se agregaron observaciones" : observaciones;
+
+                string TemplateCorreoAutorizacion = Templates.BodyMailSolicitudAutorizacion(
+                    nombreCompleto,
+                    puesto.ToUpper(),
+                    DateTime.Now.ToString("dd/MM/yyyy"),
+                    observaciones,
+                    $"{host}?code={code}&aut=1&puesto={puesto}&puestoId={puestoId}",
+                    $"{host}?code={code}&aut=-1&puesto={puesto}&puestoId={puestoId}"
+                    );
+
+                MailServices.EnviarCorreoElectronico
+                    (
+                    new EnvioCorreoGestionEmpleados
+                    {
+                        Asunto = "Solicitud de nuevo puesto",
+                        Cuerpo = TemplateCorreoAutorizacion,
+                        Correos = "programador@eltejar.com.gt",
+                        Nombre = "Solicitud de nuevo puesto",
+                        isHTML = true
+                    }
+                    );
+
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public async Task<JsonResult> ObtenerProcesoDeAutorizacion()
+        {
+            try
+            {
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+
+                if (sessions == null)
+                {
+                    return Json(new { success = false });
+                }
+
+                var procesos = await _dal.ObtenerProcesoDeAutorizaciones(sessions.CodeEmpleado);
+                if (procesos.Any())
+                    return Json(new { success = true, data = procesos }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
     }

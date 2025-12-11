@@ -9,12 +9,14 @@ using Entity;
 using Newtonsoft.Json;
 using PORTALI.Helpers.EmailHelper;
 using PORTALI.Services;
+using DAL;
 
 namespace PORTALI.Controllers
 {
     public class ReclutamientoController : Controller
     {
-        DALReclutamiento _dal = new DALReclutamiento();
+        private DALReclutamiento _dal = new DALReclutamiento();
+        private readonly EmpleadosDAL _dalGestionPersonal = new EmpleadosDAL();
 
         public async Task<ActionResult> Index()
         {
@@ -23,6 +25,7 @@ namespace PORTALI.Controllers
                 ReclutamientoViewModel reclutamiento = new ReclutamientoViewModel();
                 reclutamiento.Reclutamiento = await _dal.VerSolicitudesDePersonal();
                 reclutamiento.Documentos = await _dal.VerDocumentosRequeridos();
+                var gerentes = await _dal.ObtenerGerentes();
 
                 if (reclutamiento.Reclutamiento != null)
                     return View(reclutamiento);
@@ -78,6 +81,7 @@ namespace PORTALI.Controllers
                 return Json(-1, JsonRequestBehavior.AllowGet);
             }
         }
+
         public static string GenerarClaveAleatoria()
         {
             Random random = new Random();
@@ -157,7 +161,6 @@ namespace PORTALI.Controllers
 
         public ActionResult VerDocumetos(int Usuario, string Tipo, int VerExistencia = 0, string Extencion = "pdf")
         {
-
             string carpeta = @"\\SRVSAPTQ2\SAPDocs\DocumentosAspirantes\";
             string nombreArchivo = $"Documento_{Tipo}{Usuario}.{Extencion}";
             string ruta = Path.Combine(carpeta, nombreArchivo);
@@ -296,7 +299,6 @@ namespace PORTALI.Controllers
             {
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
-
         }
 
         [HttpPost]
@@ -307,7 +309,6 @@ namespace PORTALI.Controllers
             var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
             perfil.U_UsuarioCreacion = sessions.UserId;
             perfil.U_FechaCreacion = DateTime.Now;
-
 
             string response = DAL_API.NotasPpto(url, perfil);
 
@@ -329,8 +330,157 @@ namespace PORTALI.Controllers
 
                 if (resultado == 0)
                     return Json(new { success = false });
-                
+
                 return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public async Task<JsonResult> ObtenerDatosPuestoDepartamentoGerentes()
+        {
+            try
+            {
+                var gerentes = await _dal.ObtenerGerentes();
+                var puestos = await _dalGestionPersonal.ObtenerPosiciones();
+                var departamentos = await _dalGestionPersonal.ObtenerTodosLosDepartamentos();
+
+                var Informacion = new
+                {
+                    Posiciones = puestos,
+                    Departamentos = departamentos,
+                    Gerentes = gerentes
+                };
+
+                if (!gerentes.Any() && !puestos.Any() && !departamentos.Any())
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = true, data = Informacion }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GuardarSolicitudDePersonal(int posicion, int departamento, int solicita)
+        {
+            try
+            {
+                string url = "GestionDePersonal/CrearSolicitudDeAlta";
+
+                var solicitudAlta = new
+                {
+                    U_FechaCreacion = DateTime.Now,
+                    U_IdSolicitante = solicita,
+                    U_Estado = "A",
+                    U_IdPosicion = posicion,
+                    U_IdDepartamento = departamento,
+                    U_IdPerfil = 0
+                };
+
+                string response = DAL_API.NotasPpto(url, solicitudAlta);
+
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                {
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult DarDeAltaAAspirante
+            (
+            DatosPersonales datosPersonales,
+            int puestoId,
+            int departamentoId,
+            int solicitaId
+            )
+        {
+            try
+            {
+                string url = "Reclutamiento/DatoMaestroEmpleado";
+
+                var datosEmpleado = new
+                {
+                    DatosPersonales = datosPersonales,
+                    PuestoId = puestoId,
+                    DepartamentoId = departamentoId,
+                    SolicitaId = solicitaId
+                };
+
+                string response = DAL_API.NotasPpto(url, datosEmpleado);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+                var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                string employeeID = (string)json.EmployeeID;
+
+                if (reply.result == 1)
+                {
+                    return Json(new { success = true, empId = employeeID });
+                }
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearProveedor(bool proveedor, DatosPersonales datosPersonales, int empId)
+        {
+            try
+            {
+                var url = proveedor ? "Reclutamiento/Proveedor" : "Reclutamiento/Cliente";
+
+                var datosSN = new
+                {
+                    DatosPersonales = datosPersonales,
+                    EmpId = empId
+                };
+
+                var response = DAL_API.NotasPpto(url, datosSN);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+                var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                string cardCode = (string)json.CardCode;
+                if (reply.result == 1)
+                {
+                    return Json(new { success = true, proveedor = cardCode });
+                }
+
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearUsuarioSAP(string departamento, DatosPersonales datosPersonales)
+        {
+            try
+            {
+                var url = "Reclutamiento/UsuarioSAP";
+
+                var user = new
+                {
+                    userName = $"{datosPersonales.PrimerNombre} {datosPersonales.PrimerApellido}",
+                    userCode = departamento.Length > 6 ? $"t{departamento.Substring(0, 6).ToLower()}" : $"t{departamento.ToLower()}"
+                };
+
+                var response = DAL_API.NotasPpto(url, user);
+                return Json(new { success = false });
             }
             catch
             {

@@ -59,7 +59,7 @@ namespace PORTALI.Controllers
             {
                 return Json(new { success = false, message = "Sesión expirada" });
             }
-                
+
             var lista = DALPortalVentasEmpresa.getAllData(FechaI, FechaF, sessions.UserId);
             return Json(new { success = true, data = lista });
         }
@@ -67,7 +67,6 @@ namespace PORTALI.Controllers
         [HttpPost]
         public JsonResult DetalleUsuarios(DateTime FechaI, DateTime FechaF, string WhsCode)
         {
-
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
             if (sessions == null)
             {

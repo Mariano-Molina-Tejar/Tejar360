@@ -44,6 +44,7 @@ namespace Entity
     public class AutorizacionesGTHViewModel
     {
         public IEnumerable<AutorizacionDeBaja> Autorizaciones { get; set; }
+        public IEnumerable<AutorizacionDeBaja> Procesos { get; set; }
         public IEnumerable<CausasDespido> Causas { get; set; }
     }
     public class EnvioCorreoGestionEmpleados
@@ -93,4 +94,11 @@ namespace Entity
         public char AutorizadoGTH { get; set; }
         public int Estado { get; set; }
     }
+
+    public class Autorizaciones
+    {
+        public DateTime FechaDeSolicitud { get; set; }
+        public string Posicion { get; set; }
+        public char Estado { get; set; }
+    } 
 }

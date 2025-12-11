@@ -83,9 +83,14 @@
             <h5 class="mb-0">
                 <i class="bi bi-people-fill me-2"></i>Gestión de Personal
             </h5>
-            <button class="btn btn-light btn-sm" id="btnNuevaPlaza" data-bs-toggle="modal" data-bs-target="#modalNuevaPlaza">
-                <i class="bi bi-person-plus-fill me-1"></i> Nueva Plaza
-            </button>
+            <div style="display:flex; flex-direction:row">
+                <button class="mr-2 btn btn-light btn-sm" id="btnProcesoAutorizacion" data-bs-toggle="modal" data-bs-target="#modalSeguimiento">
+                    <i class="bi bi-clipboard-check me-1"></i> Proceso de Autorización
+                </button>
+                <button class="btn btn-light btn-sm" id="btnNuevaPlaza" data-bs-toggle="modal" data-bs-target="#modalNuevaPlaza">
+                    <i class="bi bi-person-plus-fill me-1"></i> Solicitar nueva plaza
+                </button>
+            </div>
         </div>
 
         <div class="card-body bg-light">
@@ -160,7 +165,6 @@
                             </td>
                         </tr>
                     }
-
                 </tbody>
             </table>
         </div>
@@ -171,22 +175,29 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
-            <!-- Encabezado -->
             <div class="modal-header text-white" style="background-color:steelblue;">
                 <h5 class="modal-title" id="miModalLabel">
                     <i class="bi bi-person-fill-add me-2"></i> Registrar nueva plaza
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- Cuerpo -->
             <div class="modal-body">
                 <form id="formNuevaPlaza">
+
+                    <!-- Select de puesto -->
                     <div class="mb-3">
                         <label class="form-label">Puesto</label>
                         <select class="form-control" id="selectNuevaPlaza">
                         </select>
                     </div>
+
+                    <!-- Input para nuevo puesto -->
+                    <div class="mb-3 d-none" id="divNuevoPuesto">
+                        <label class="form-label">Nuevo puesto</label>
+                        <input type="text" id="inputNuevoPuesto" class="form-control" placeholder="Ingrese el nuevo puesto">
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">Observaciones</label>
                         <textarea id="PerfilObservaciones" class="form-control" rows="5" placeholder="Observaciones..." required></textarea>
@@ -194,7 +205,6 @@
                 </form>
             </div>
 
-            <!-- Pie -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
@@ -259,7 +269,6 @@
                                 <th class="text-secondary-perfil">Teléfono:</th>
                                 <td id="perfilTelefono">5555-1234</td>
                             </tr>
-
                         </table>
                     </div>
                 </div>
@@ -331,7 +340,6 @@
                         <label class="form-label">Causas</label>
                         <div class="border rounded-3 p-3">
                             <div class="d-flex flex-wrap gap-2" id="contenedorCausas">
-
                             </div>
                         </div>
                     </div>
@@ -486,7 +494,6 @@
                         <div class="timeline-icon"><i class="bi bi-circle"></i></div>
                         <div class="timeline-content">Bloqueo de usuarios contables</div>
                     </div>
-
                 </div>
             </div>
 
@@ -574,7 +581,6 @@
                             <textarea class="form-control" rows="3" id="U_Observaciones" required></textarea>
                         </div>
                     </div>
-
                 </form>
             </div>
 
@@ -587,11 +593,48 @@
                     <i class="bi bi-save"></i> Guardar Perfil
                 </button>
             </div>
-
         </div>
     </div>
 </div>
+<!-- Modal Seguimiento Solicitudes -->
+<div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-labelledby="modalSeguimientoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
 
+            <!-- Header -->
+            <div class="modal-header text-white" style="background-color: steelblue; ">
+                <h5 class="modal-title" id="modalSeguimientoLabel">
+                    <i class="bi bi-clock-history me-2"></i> Seguimiento de solicitudes
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 160px;">Fecha de solicitud</th>
+                                <th>Posición</th>
+                                <th style="width: 150px; text-align:center;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSeguimiento">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -604,10 +647,10 @@
         const modalAgregarCorreo = new bootstrap.Modal(document.getElementById('modalAgregarCorreo'));
         const modalTrackingProceso = new bootstrap.Modal(document.getElementById('modalTrackingProceso'));
         const modalPerfilPuesto = new bootstrap.Modal(document.getElementById('modalPerfilPuesto'));
-
+        const modalSeguimiento = new bootstrap.Modal(document.getElementById('modalSeguimiento'));
+        const modalNuevaPlaza = new bootstrap.Modal(document.getElementById('modalNuevaPlaza'));
 
         const listaCausas = [];
-
 
         const Toast = Swal.mixin({
             toast: true,
@@ -617,6 +660,22 @@
             timerProgressBar: true
         })
 
+        function convertirFechaDotNet(fechaDotNet) {
+            if (!fechaDotNet) return "";
+
+            const match = /\/Date\((\d+)\)\//.exec(fechaDotNet);
+            if (!match) return "";
+
+            // Convierte los milisegundos a fecha
+            const fecha = new Date(parseInt(match[1]));
+
+            // Formatea en dd/MM/yyyy
+            const dia = fecha.getDate().toString().padStart(2, '0');
+            const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+            const anio = fecha.getFullYear();
+
+            return `${dia}/${mes}/${anio}`;
+        }
 
         async function obtenerPuestos() {
 
@@ -629,7 +688,7 @@
 
                 const reply = await response.json();
 
-                let option = '<option value="-1" disabled selected>--Seleccionar--</option> ';
+                let option = '<option value="-1" disabled selected>--Seleccionar--</option> <option value="-500"> ➕ Agregar nuevo puesto</option>';
 
                 reply.data.forEach(puesto => {
                     option += `<option value = '${puesto.Id}'>${puesto.Nombre}</option>`;
@@ -668,7 +727,6 @@
             const idCausa = button.getAttribute("Id");
             const classCausa = button.getAttribute("Class");
             const causasAgregadas = button.getAttribute("data-IdCausa");//
-
 
             if (classCausa.includes("buttonMarcado")) {
                 document.getElementById(idCausa).classList.remove("buttonMarcado");
@@ -907,6 +965,7 @@
             }
 
         }
+
         function verProcesoBaja() {
             modalTrackingProceso.show();
         }
@@ -924,7 +983,6 @@
             document.getElementById('U_IdPuesto').value = puestoId;
             console.log(idButton);
             document.getElementById('U_IdButton').value = idButton;
-
 
             const response = await fetch(`/Reclutamiento/ObtenerPerfilPuestoPorId?idPuesto=${puestoId}`);
             const result = await response.json();
@@ -1010,15 +1068,113 @@
             }
 
         }
+
         function cerrarModalPerfilPuesto() {
             modalPerfilPuesto.hide();
         }
+
+        async function solicitarNuevaPlaza() {
+
+            $("#globalLoading").show();
+            const selectPuesto = document.getElementById("selectNuevaPlaza");
+            const inputNuevoPuesto = document.getElementById("inputNuevoPuesto");
+            const observaciones = document.getElementById("PerfilObservaciones").value;
+            const data = new FormData();
+
+            try {
+                let plaza = selectPuesto.value == -500 ? inputNuevoPuesto.value : selectPuesto.options[selectPuesto.selectedIndex].text
+                let nuevo = selectPuesto.value == -500 ? true : false;
+
+                data.append("puesto", plaza);
+                data.append("puestoId", selectPuesto.value);
+                data.append("observaciones", observaciones);
+                data.append("nuevo", nuevo);
+
+                const response = await fetch('/GestionDePersonal/EnviarSolicitudNuevoPuesto',
+                    {
+                        method: "POST",
+                        body: data
+                    }
+                )
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: "Se envio la solicitud de nueva plaza con éxito" });
+
+                    //setTimeout(() => { location.reload() }, 5000)
+                    inputNuevoPuesto.value = "";
+                    selectPuesto.value = "-1";
+                    observaciones.value = ""
+                    modalNuevaPlaza.hide();
+                }
+                else {
+                    Toast.fire({ icon: 'error', title: "Ocurrio un error al enviar la solicitud" });
+                }
+            }
+            catch (error) {
+                Toast.fire({ icon: 'error', title: "Ocurrio un error al enviar la solicitud" });
+            }
+            finally {
+                $("#globalLoading").hide();
+            }
+        }
+
+        async function verProcesoDeAutorizacion() {
+
+            const response = await fetch('/GestionDePersonal/ObtenerProcesoDeAutorizacion')
+            const result = await response.json();
+            const container = document.getElementById("tablaSeguimiento");
+            if (result.success) {
+                body = "";
+                color = "";
+                estado = "";
+
+                result.data.forEach((item) => {
+
+                    switch (item.Estado) {
+                        case "A":
+                            color = "badge bg-success";
+                            estado = "Autorizado";
+                            break;
+                        case "R":
+                            color = "badge bg-danger";
+                            estado = "Rechazado";
+                            break;
+                        case "P":
+                            color = "badge bg-warning";
+                            estado = "Pendiente";
+                            break;
+                    }
+
+                    body += ` <tr>
+                                     <td>${convertirFechaDotNet(item.FechaDeSolicitud)}</td>
+                                     <td>${item.Posicion}</td>
+                                     <td class="text-center">
+                                         <span class="${color}">${estado}</span>
+                                     </td>
+                                 </tr>`
+                });
+
+                container.innerHTML = body;
+            }
+            else {
+
+            }
+        }
+
+        document.getElementById("selectNuevaPlaza").addEventListener("change", function () {
+            const esNuevo = this.value === "-500";
+            document.getElementById("divNuevoPuesto").classList.toggle("d-none", !esNuevo);
+        });
 
         document.getElementById("btnNuevaPlaza").addEventListener("click", () => obtenerPuestos());
         document.getElementById("motivo").addEventListener("change", () => cambiarInputs());
         document.getElementById("btnConfirmarBaja").addEventListener("click", () => confimacionDeBaja());
         document.getElementById("btnAgregarCorreo").addEventListener("click", () => guardarCorreo());
         document.getElementById('btnGuardarPerfil').addEventListener('click', () => guardarPerfilDeUsuario());
+        document.getElementById('btnGuardar').addEventListener('click', () => solicitarNuevaPlaza());
+        document.getElementById('btnProcesoAutorizacion').addEventListener('click', () => verProcesoDeAutorizacion());
     </script>
 
 }

@@ -163,4 +163,12 @@ namespace Entity
         public string WhsCode { get; set; }
         public string WhsName { get; set; }
     }
+
+    public class Equipos
+    {
+        public int Code { get; set; }
+        public string U_NombreEquipo { get; set; }
+        public string U_Icono { get; set; }
+    }
+
 }

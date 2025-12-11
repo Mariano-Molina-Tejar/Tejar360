@@ -13,7 +13,9 @@ namespace Entity
         public int PuestoId { get; set; }
         public string Puesto { get; set; }
         public string Departamento { get; set; }
-        public string Solicita { get; set; }
+        public string DepartamentoId { get; set; }
+        public string Solicita { get; set;}
+        public int SolicitaId { get; set;}
         public bool Perfil { get; set; }
     }
 
@@ -27,7 +29,7 @@ namespace Entity
         public int Rw { get; set; }
         public string UserName { get; set; }
         public string PassWord { get; set; }
-        public string NombreAspirante { get; set; } 
+        public string NombreAspirante { get; set; }
         public string Correo { get; set; }
         public string Estado { get; set; }
         public DateTime Created { get; set; }
@@ -105,7 +107,7 @@ namespace Entity
     {
         public string Comentario { get; set; }
         public DateTime Fecha { get; set; }
-        public string ComentarioPor  { get; set; }
+        public string ComentarioPor { get; set; }
     }
     public class PerfilPuestoModel
     {
