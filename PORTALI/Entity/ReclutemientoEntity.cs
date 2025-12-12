@@ -23,6 +23,8 @@ namespace Entity
     {
         public IEnumerable<ReclutemientoEntity> Reclutamiento { get; set; }
         public List<CVDOCREQ> Documentos { get; set; }
+
+        public IEnumerable<Tiendas> Tiendas { get; set; }
     }
     public class DetalleAspirantes
     {

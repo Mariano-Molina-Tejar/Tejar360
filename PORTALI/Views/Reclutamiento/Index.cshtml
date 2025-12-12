@@ -288,7 +288,6 @@
                                             <label class="form-label fw-bold">Segundo Apellido</label>
                                             <p id="pSegundoApellido" class="mb-0"></p>
                                         </div>
-
                                         <div class="col-md-3">
                                             <label class="form-label fw-bold">Fecha de Nacimiento</label>
                                             <p id="pFechaNacimiento" class="mb-0"></p>
@@ -464,9 +463,7 @@
                                     <button id="btnDarDeAlta" class="btn btn-success ms-auto px-4 shadow-sm rounded-pill">
                                         <i class="bi bi-person-check fs-5 me-2"></i> Dar de alta
                                     </button>
-
                                 </div>
-
 
                                 <div class="card-body">
 
@@ -528,24 +525,24 @@
                                                 Se necesitará una licencia para usar SAP.
                                             </small>
                                         </div>
-
                                     </div>
 
                                     <hr class="my-4">
 
                                     <!-- SECCIÓN SOLO PARA ASESORES DE VENTAS -->
+                                    <input class="form-check-input" type="checkbox" id="chkAsesorDeVEntas">
+
                                     <h6 class="fw-bold mb-3 text-success">
                                         Solo para asesores de ventas
                                     </h6>
-
                                     <div class="row g-3">
 
                                         <!-- Usuario de ventas -->
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="chkUsuarioVentas">
+                                                <input class="form-check-input" type="checkbox" id="chkUsuarioVentas" disabled>
                                                 <label class="form-check-label fw-semibold">
-                                                    Crear usuario de empleado de ventas (Opcional)
+                                                    Crear usuario de empleado de ventas
                                                 </label>
                                             </div>
                                         </div>
@@ -553,9 +550,9 @@
                                         <!-- Usuario Tejar360 -->
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="chkTejar360">
+                                                <input class="form-check-input" type="checkbox" id="chkTejar360" disabled>
                                                 <label class="form-check-label fw-semibold">
-                                                    Crear usuario Tejar360 (Opcional)
+                                                    Crear usuario Tejar360
                                                 </label>
                                             </div>
                                         </div>
@@ -563,21 +560,21 @@
                                         <!-- Tienda Asignada -->
                                         <div class="col-md-4">
                                             <label class="form-label fw-semibold">Tienda Asignada</label>
-                                            <select id="selectTienda" class="form-control">
-                                                <option value="">Seleccione...</option>
-                                                <option value="1">Tienda Central</option>
-                                                <option value="2">Tienda Norte</option>
-                                                <option value="3">Tienda Sur</option>
-                                                <option value="4">Tienda Oriente</option>
+                                            <select id="selectTiendaEmpDeVentas" class="form-control" disabled>
+                                                <option value="" selected>- Seleccionar tienda -</option>
+                                                @foreach (var tienda in Model.Tiendas)
+                                                {
+                                                    <option value="@tienda.WhsCode">@tienda.WhsName</option>
+                                                }
                                             </select>
                                         </div>
 
                                         <!-- Meta -->
                                         <div class="col-md-4">
                                             <div class="form-check mt-4">
-                                                <input class="form-check-input" type="checkbox" id="chkMeta">
+                                                <input class="form-check-input" type="checkbox" id="chkMeta" disabled>
                                                 <label class="form-check-label fw-semibold">
-                                                    Asignación de meta (Opcional)
+                                                    Asignación de meta
                                                 </label>
                                             </div>
                                         </div>
@@ -1397,11 +1394,6 @@
                                             <i class="bi bi-calendar"></i> ${convertirFechaDotNet(item.Fecha)}
                                         </small>
                                     </div>
-
-                                    <!-- Botón eliminar -->
-                                    @*<button class="btn btn-sm btn-outline-danger btnEliminarComentario">
-                                        <i class="bi bi-trash"></i>
-                                    </button>*@
                                 </div>
                             </li>
                         `;
@@ -1610,13 +1602,14 @@
 
         async function darDeAlta() {
 
+            const tienda = document.getElementById("selectTiendaEmpDeVentas").value;
             const idPuesto = document.getElementById("idPuesto").textContent;
             const idDepartamento = document.getElementById("idDepartamento").textContent;
             const departamento = document.getElementById("departamento").textContent;
             const idSolicita = document.getElementById("idSolicita").textContent;
             const bodyLoading = document.getElementById("contenedorLoading");
-                //addLoadingPrincipal
             const usuarioSAP = document.getElementById("chkUsuarioSAP").checked;
+            const AsesorDeVentas = document.getElementById("chkAsesorDeVEntas").checked;
 
             const usuarioVentas = document.getElementById("chkUsuarioVentas").checked;
             const tejar360 = document.getElementById("chkTejar360").checked;
@@ -1626,11 +1619,18 @@
             let proveedor = "";
             let cliente = "";
 
+            if (AsesorDeVentas) {
+                if (tienda == "") {
+                    Toast.fire({ icon: 'warning', title: "Debe seleccionar la tienda asignada" });
+                    return
+                }
+            }
+
             bodyLoading.innerHTML = addLoadingPrincipal();
             modalProcesos.show();
-            document.getElementById("step1-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
-            document.getElementById("step2-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
-            document.getElementById("step3-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step1-icon").innerHTML = `<br><div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step2-icon").innerHTML = `<br><div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step3-icon").innerHTML = `<br><div class="spinner-border spinner-border-sm text-primary"></div>`;
 
             if (usuarioSAP)
                 bodyLoading.insertAdjacentHTML("beforeend", addLoading("Creacion de usuario SAP",4));
@@ -1644,17 +1644,22 @@
             if (meta)
                 bodyLoading.insertAdjacentHTML("beforeend", addLoading("Asignación de meta", 7));
 
-             // CRACION DE ALTA DEL ASPITANTE
-            //empleadoId = await creacionDeAspirante(dataAspiranteFinal, idPuesto, idDepartamento, idSolicita);
+              //CRACION DE ALTA DEL ASPITANTE
+            empleadoId = await creacionDeAspirante(dataAspiranteFinal, idPuesto, idDepartamento, idSolicita);
 
-            ////CREACION DE PROVEEDOR
-            //proveedor = await creacionDeProveedor(true, dataAspiranteFinal, empleadoId)
+            //CREACION DE PROVEEDOR
+            proveedor = await creacionDeProveedor(true, dataAspiranteFinal, empleadoId)
 
-            ////CREACION DE CLIENTE
-            //cliente = await creacionDeCliente(false, dataAspiranteFinal, empleadoId)
+            //CREACION DE CLIENTE
+            cliente = await creacionDeCliente(false, dataAspiranteFinal, empleadoId)
+
             //CREACION DE USUARIO SAP
             if (usuarioSAP) {
                 await crearUsuarioSAP(departamento, dataAspiranteFinal)
+            }
+
+            if (usuarioVentas) {
+                crearEmpleadoDeVentas(dataAspiranteFinal, empleadoId);
             }
         }
 
@@ -1676,12 +1681,12 @@
             let result = await response.json();
 
             if (result.success) {
-                document.getElementById("step1-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+                document.getElementById("step1-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i> ${result.empId}`;
                 return result.empId;
 
             }
             else {
-                document.getElementById("step1-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step1-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
                 return "";
             }
         }
@@ -1704,11 +1709,11 @@
             result = await response.json();
 
             if (result.success) {
-                document.getElementById("step2-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+                document.getElementById("step2-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i>${result.proveedor}`;
                 return result.proveedor;
             }
             else {
-                document.getElementById("step2-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step2-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
                 return "";
             }
         }
@@ -1732,10 +1737,10 @@
 
             if (result.success) {
                 proveedor = result.proveedor;
-                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+                document.getElementById("step3-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i>${result.proveedor}`;
             }
             else {
-                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step3-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
             }
         }
 
@@ -1756,10 +1761,39 @@
             result = await response.json();
 
             if (result.success) {
-                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>`;
+                document.getElementById("step4-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i>${result.userCode}`;
             }
             else {
-                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step4-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+            }
+        }
+
+        async function crearEmpleadoDeVentas(dataAspiranteFinal, empId) {
+            const whsCode = document.getElementById("selectTiendaEmpDeVentas").value;
+            const whsName = document.getElementById("selectTiendaEmpDeVentas").options[document.getElementById("selectTiendaEmpDeVentas").selectedIndex].textContent;
+
+            response = await fetch('/Reclutamiento/CrearEmpleadoDeVentas',
+                {
+                    method: "POST",
+                    body: JSON.stringify(
+                        {
+                            datosPersonales: dataAspiranteFinal,
+                            whsCode: whsCode,
+                            whsName: whsName,
+                            empId : empId
+                        }
+                    ),
+                    headers: { "Content-Type": "application/json" }
+                }
+            );
+
+            result = await response.json();
+
+            if (result.success) {
+                document.getElementById("step5-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i> ${result.salesEmployeeName}`;
+            }
+            else {
+                document.getElementById("step5-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
             }
         }
 
@@ -1767,7 +1801,7 @@
             return `<div class="d-flex justify-content-between align-items-center mb-3">
                         <span>${text}</span>
                         <span id="step${id}-icon">
-                            <div class="spinner-border spinner-border-sm text-primary"></div>
+                            <br><div class="spinner-border spinner-border-sm text-primary"></div>
                         </span>
                     </div>`;
         };
@@ -1776,7 +1810,7 @@
              return `<div class="d-flex justify-content-between align-items-center mb-3">
                             <span>Creación de dato maestro de empleado</span>
                             <span id="step1-icon">
-                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <br><div class="spinner-border spinner-border-sm text-primary"></div>
                             </span>
                         </div>
 
@@ -1784,7 +1818,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span>Creación de cliente</span>
                             <span id="step2-icon">
-                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <br><div class="spinner-border spinner-border-sm text-primary"></div>
                             </span>
                         </div>
 
@@ -1792,11 +1826,30 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span>Creación de proveedor</span>
                             <span id="step3-icon">
-                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <br><div class="spinner-border spinner-border-sm text-primary"></div>
                             </span>
                         </div>`;
         };
 
+        document.getElementById("chkAsesorDeVEntas").addEventListener("change", (e) => {
+            const usuarioVentas = document.getElementById("chkUsuarioVentas");
+            const tejar360 = document.getElementById("chkTejar360");
+            const meta = document.getElementById("chkMeta");
+            const tienda = document.getElementById("selectTiendaEmpDeVentas");
+
+            if (e.target.checked) {
+                usuarioVentas.checked = true;
+                tejar360.checked = true;
+                meta.checked = true;
+                tienda.disabled = false;
+            } else {
+                usuarioVentas.checked = false;
+                tejar360.checked = false;
+                meta.checked = false;
+                tienda.disabled = true;
+                tienda.value = "";
+            }
+        });
         document.getElementById('tab-cv').addEventListener('click', () => CambiarIconoDocumentos());
         document.getElementById('btnCrearUsuarioClave').addEventListener('click', () => abrirModalCrarUsuario());
         document.getElementById('btnCrearEnviar').addEventListener('click', () => crearUsuarioClave());

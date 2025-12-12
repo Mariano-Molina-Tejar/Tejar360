@@ -355,5 +355,35 @@ namespace DAL
                     );
             }
         }
+
+        public async Task<bool> ExisteUsuario(string userCode)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"IF(EXISTS(SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OUSR WHERE USER_CODE = @User))
+                            SELECT 1
+                            ELSE SELECT 0";
+
+                return await conn.ExecuteScalarAsync<bool>
+                    (
+                    query,
+                    new { User = userCode }
+                    );
+            }
+        }
+
+        public async Task<IEnumerable<Tiendas>> ObtenerTiendas()
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT WhsCode, WhsName 
+                                FROM OWHS
+                                WHERE WhsName LIKE 'Tienda%'";
+
+                return await conn.QueryAsync<Tiendas>(
+                    query
+                    );
+            }
+        }
     }
 }

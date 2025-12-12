@@ -25,6 +25,7 @@ namespace PORTALI.Controllers
                 ReclutamientoViewModel reclutamiento = new ReclutamientoViewModel();
                 reclutamiento.Reclutamiento = await _dal.VerSolicitudesDePersonal();
                 reclutamiento.Documentos = await _dal.VerDocumentosRequeridos();
+                reclutamiento.Tiendas = await _dal.ObtenerTiendas();
                 var gerentes = await _dal.ObtenerGerentes();
 
                 if (reclutamiento.Reclutamiento != null)
@@ -472,14 +473,61 @@ namespace PORTALI.Controllers
             try
             {
                 var url = "Reclutamiento/UsuarioSAP";
+                var usuarioParcial = departamento.Length > 6 ? $"t{departamento.Substring(0, 6).ToLower()}" : $"t{departamento.ToLower()}";
+                var usuarioFinal = "";
+                int contador = 0;
+                var existe = true;
+
+                do
+                {
+                    existe = await _dal.ExisteUsuario(contador == 0 ? usuarioParcial : $"{usuarioParcial}{contador}");
+                    usuarioFinal = contador == 0 ? usuarioParcial : $"{usuarioParcial}{contador}";
+                    contador++;
+                } while (existe);
 
                 var user = new
                 {
                     userName = $"{datosPersonales.PrimerNombre} {datosPersonales.PrimerApellido}",
-                    userCode = departamento.Length > 6 ? $"t{departamento.Substring(0, 6).ToLower()}" : $"t{departamento.ToLower()}"
+                    userCode = usuarioFinal
                 };
 
                 var response = DAL_API.NotasPpto(url, user);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+                var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                string UserCode = (string)json.UserCode;
+
+                return Json(new { success = true, userCode = UserCode });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearEmpleadoDeVentas(DatosPersonales datosPersonales, string whsCode, string whsName, int empId)
+        {
+            try
+            {
+                var url = "Reclutamiento/EmpleadoDeVentas";
+
+                var EmpleadoDeVentas = new
+                {
+                    Nombre = $"{datosPersonales.PrimerNombre} {datosPersonales.SegundoNombre} {datosPersonales.PrimerApellido} {datosPersonales.SegundoApellido}",
+                    WhsCode = whsCode,
+                    WhsName = whsName,
+                    EmpId = empId
+                };
+
+                var response = DAL_API.NotasPpto(url, EmpleadoDeVentas);
+
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+                var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                string SalesEmployeeName = (string)json.SalesEmployeeName;
+
+                if (reply.result == 1)
+                    return Json(new { success = true, salesEmployeeName = SalesEmployeeName });
+
                 return Json(new { success = false });
             }
             catch
