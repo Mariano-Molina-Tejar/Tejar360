@@ -18,9 +18,9 @@
             <input type="file" class="form-control" id="archivo" name="archivo" accept=".@(Model.Extencion)" required />
         </div>
 
-        <button type="submit" class="btn btn-outline-success">
+        @*<button type="submit" class="btn btn-outline-success">
             <i class="bi bi-upload me-2"></i> Cargar Archivo
-        </button>
+        </button>*@
 
         <button id="btnVerDocumento" class="btn btn-outline-primary verBoton">
             <i class="@(Model.Extencion == "pdf" ? " bi bi-file-earmark-pdf me-2" : "bi bi-card-image")"></i> @(Model.Extencion == "pdf" ? "Ver Documento" : "Ver Imagen")

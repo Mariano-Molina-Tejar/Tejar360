@@ -50,7 +50,6 @@ namespace PORTALI.Controllers
             return View(reporte);
         }
 
-
         [HttpPost]
         public JsonResult CargarData(DateTime FechaI, DateTime FechaF)
         {

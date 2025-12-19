@@ -32,7 +32,25 @@ namespace DAL
                     var sp = "sp_ver_puestos_solicitados";
 
                     return await conn.QueryAsync<ReclutemientoEntity>(sp, commandType: CommandType.Text, commandTimeout: 60);
-                };
+                }
+                ;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<ReclutemientoEntity>> VerSolicitudesDePersonalFinalizadas()
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    var sp = "sp_ver_puestos_solicitados_finalizados";
+
+                    return await conn.QueryAsync<ReclutemientoEntity>(sp, commandType: CommandType.Text, commandTimeout: 60);
+                }
+                ;
             }
             catch
             {
@@ -382,6 +400,45 @@ namespace DAL
 
                 return await conn.QueryAsync<Tiendas>(
                     query
+                    );
+            }
+        }
+
+        public async Task<int> AgregarEmpleadoAlAspirante(int empId, string user)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    var query = @"UPDATE [BOLSON_EMPLEOS_TEJAR].[DBO].OUSR
+                                SET EmpIdSAP = @EmpId
+                                WHERE UserName = @User
+                                ";
+
+                    return await conn.ExecuteAsync(
+                        query,
+                        new { EmpId = empId, User = user}
+                        );
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<DatosCreadosEmpleado> ObtenerDatosEmpleadoCreado(int empId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var sp = "sp_obtener_datos_empleado_creado";
+
+                return await conn.QueryFirstAsync<DatosCreadosEmpleado>(
+                    sp,
+                    new
+                    {
+                        EmpId = empId
+                    }
                     );
             }
         }

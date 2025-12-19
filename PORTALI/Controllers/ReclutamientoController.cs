@@ -1,15 +1,18 @@
-﻿using System;
+﻿using DAL;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using Entity;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
+using PORTALI.Helpers.EmailHelper;
+using PORTALI.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Entity;
-using Newtonsoft.Json;
-using PORTALI.Helpers.EmailHelper;
-using PORTALI.Services;
-using DAL;
 
 namespace PORTALI.Controllers
 {
@@ -24,6 +27,7 @@ namespace PORTALI.Controllers
             {
                 ReclutamientoViewModel reclutamiento = new ReclutamientoViewModel();
                 reclutamiento.Reclutamiento = await _dal.VerSolicitudesDePersonal();
+                reclutamiento.ReclutamientoFinalizadas = await _dal.VerSolicitudesDePersonalFinalizadas();
                 reclutamiento.Documentos = await _dal.VerDocumentosRequeridos();
                 reclutamiento.Tiendas = await _dal.ObtenerTiendas();
                 var gerentes = await _dal.ObtenerGerentes();
@@ -52,14 +56,14 @@ namespace PORTALI.Controllers
             if (response == 1)
             {
                 correo.Asunto = "Llenado de información";
-                correo.Cuerpo = Templates.BodyMailAspirante(nombreAspirante, usuario, claveGenerada, DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"), "bolsaempleoseltejar.com");
+                correo.Cuerpo = Templates.BodyMailAspirante(nombreAspirante, usuario, claveGenerada, DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"), "https://localhost:44313/");
                 correo.Correos = correoAspirante;
                 correo.Nombre = "Llenado de información";
                 correo.isHTML = true;
                 replyEmail = MailServices.EnviarCorreoElectronico(correo);
 
                 if (replyEmail.result)
-                    return Json(new { success = true, message = $"Creación de usuario y envio realizado con exito para el aspirante {nombreAspirante}" });
+                    return Json(new { success = true, message = $"Creación de usuario y envio de correo realizado con exito para el aspirante {nombreAspirante}" });
 
                 return Json(new { success = true, message = $"Se creo el usuario correctamente para el aspirante {nombreAspirante} pero ocurrio un error al enviar el correo" });
             }
@@ -162,7 +166,7 @@ namespace PORTALI.Controllers
 
         public ActionResult VerDocumetos(int Usuario, string Tipo, int VerExistencia = 0, string Extencion = "pdf")
         {
-            string carpeta = @"\\SRVSAPTQ2\SAPDocs\DocumentosAspirantes\";
+            string carpeta = @"\\172.31.99.76\SAPDocs\DocumentosAspirantes\";
             string nombreArchivo = $"Documento_{Tipo}{Usuario}.{Extencion}";
             string ruta = Path.Combine(carpeta, nombreArchivo);
 
@@ -185,7 +189,7 @@ namespace PORTALI.Controllers
             Reply reply = new Reply();
 
             List<dynamic> response = new List<dynamic>();
-            string carpeta = @"\\SRVSAPTQ2\SAPDocs\DocumentosAspirantes\";
+            string carpeta = @"\\172.31.99.76\SAPDocs\DocumentosAspirantes\";
             foreach (var Lista in Documentos)
             {
                 string nombreArchivo = $"Documento_{Lista.DocEntry}{idUser}.{Lista.Extension}";
@@ -380,7 +384,8 @@ namespace PORTALI.Controllers
                     U_Estado = "A",
                     U_IdPosicion = posicion,
                     U_IdDepartamento = departamento,
-                    U_IdPerfil = 0
+                    U_IdPerfil = 0,
+                    U_NuevaPlaza = "N"
                 };
 
                 string response = DAL_API.NotasPpto(url, solicitudAlta);
@@ -468,7 +473,7 @@ namespace PORTALI.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> CrearUsuarioSAP(string departamento, DatosPersonales datosPersonales)
+        public async Task<JsonResult> CrearUsuarioSAP(string departamento, DatosPersonales datosPersonales, bool usuario360, int empId, int departamentoId)
         {
             try
             {
@@ -488,7 +493,10 @@ namespace PORTALI.Controllers
                 var user = new
                 {
                     userName = $"{datosPersonales.PrimerNombre} {datosPersonales.PrimerApellido}",
-                    userCode = usuarioFinal
+                    userCode = usuarioFinal,
+                    usuario360 = usuario360,
+                    EmpId = empId,
+                    departamento = departamentoId
                 };
 
                 var response = DAL_API.NotasPpto(url, user);
@@ -510,6 +518,8 @@ namespace PORTALI.Controllers
             try
             {
                 var url = "Reclutamiento/EmpleadoDeVentas";
+                string SalesEmployeeName = "";
+                int SalesEmployeeCode = 0;
 
                 var EmpleadoDeVentas = new
                 {
@@ -522,17 +532,168 @@ namespace PORTALI.Controllers
                 var response = DAL_API.NotasPpto(url, EmpleadoDeVentas);
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
-                var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
-                string SalesEmployeeName = (string)json.SalesEmployeeName;
+                if (reply.result == 1)
+                {
+                    var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                    SalesEmployeeName = (string)json.SalesEmployeeName;
+                    SalesEmployeeCode = (int)json.SalesEmployeeCode;
+                }
 
                 if (reply.result == 1)
-                    return Json(new { success = true, salesEmployeeName = SalesEmployeeName });
+                {
+                    return Json(new { success = true, salesEmployeeName = SalesEmployeeName, salesEmployeeCode = SalesEmployeeCode });
+                }
+                else
+                {
+                    return Json(new { success = false, message = reply.message });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearUsuarioSAPAsesor(DatosPersonales datosPersonales, string whsCode, int empId)
+        {
+            try
+            {
+                var prefijo = whsCode.Substring(whsCode.IndexOf("-") + 2);
+                var url = "Reclutamiento/UsuarioSAPAsesor";
+                var usuarioParcial = $"V{prefijo}-Asesor";
+                var usuarioFinal = "";
+                int contador = 1;
+                var existe = true;
+
+                do
+                {
+                    existe = await _dal.ExisteUsuario($"{usuarioParcial}{contador}");
+                    usuarioFinal = contador == 0 ? usuarioParcial : $"{usuarioParcial}{contador}";
+                    contador++;
+                } while (existe);
+
+                var user = new
+                {
+                    userName = $"{datosPersonales.PrimerNombre} {datosPersonales.PrimerApellido}",
+                    userCode = usuarioFinal,
+                    whsCode = whsCode,
+                    empId = empId
+                };
+
+                var response = DAL_API.NotasPpto(url, user);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+                var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                string UserCode = (string)json.UserCode;
+
+                return Json(new { success = true, userCode = UserCode });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> AsignarMetaAsesor(int codigoEmpVentas, string tienda)
+        {
+            try
+            {
+                var url = "Reclutamiento/AsignarMeta";
+
+                var data = new
+                {
+                    empeDeVentas = codigoEmpVentas,
+                    whsCode = tienda
+                };
+
+                var response = DAL_API.NotasPpto(url, data);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                    return Json(new { success = true, metaAsesor = "Q150,000" });
+
+                return Json(new { success = false });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CerrarSolicitudDeAlta(int idSolicitud, int empId, string user)
+        {
+            try
+            {
+                var url = "Reclutamiento/CerrarSolicitudDeAlta";
+
+                var response = DAL_API.NotasPpto(url, new { idSolicitud = idSolicitud });
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                {
+
+                    int result = await _dal.AgregarEmpleadoAlAspirante(empId, user);
+
+                    return Json(new { success = true });
+                }
 
                 return Json(new { success = false });
             }
             catch
             {
                 return Json(new { success = false });
+            }
+        }
+
+        public ActionResult VerImagen(string archivo)
+        {
+            string carpeta = @"\\172.31.99.76\SAPDocs\GestionDePersonal\fotosPerfil\";
+
+            // Sanitizar para evitar rutas peligrosas
+            archivo = Path.GetFileName(archivo);
+
+            string ruta = Path.Combine(carpeta, archivo);
+
+            if (!System.IO.File.Exists(ruta))
+            {
+                string sinExtension = Path.GetFileNameWithoutExtension(archivo);
+
+                var posiblesExtensiones = new[] { ".jpg", ".jpeg", ".png" };
+                ruta = posiblesExtensiones
+                    .Select(ext => Path.Combine(carpeta, sinExtension + ext))
+                    .FirstOrDefault(f => System.IO.File.Exists(f));
+            }
+
+            // Si no encuentra ninguna, usa NoPhoto.jpg
+            if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
+            {
+                ruta = Path.Combine(carpeta, "NoProfile.png");
+                if (!System.IO.File.Exists(ruta))
+                {
+                    return HttpNotFound("No se encontró la imagen ni el archivo NoPhoto.jpg");
+                }
+            }
+            string contentType = MimeMapping.GetMimeMapping(ruta);
+            return File(ruta, contentType);
+        }
+
+        public async Task<JsonResult> ObtenerInformaciónCreadaEmpleado(int empId)
+        {
+            try
+            {
+                var datos = await _dal.ObtenerDatosEmpleadoCreado(empId);
+
+                if (datos != null)
+                    return Json(new { success = true, data = datos }, JsonRequestBehavior.AllowGet);
+
+                return Json(new {success = false }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
     }

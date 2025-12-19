@@ -162,7 +162,7 @@
                     <tbody id="bodyEmpleados">
                         @if (Model != null)
                         {
-                            foreach (var empleado in Model.Empleados.OrderBy(x => x.EmpId))
+                            foreach (var empleado in Model.Empleados.OrderByDescending(x => x.Nuevo == true).ThenBy(x => x.EmpId))
                             {
                                 <tr>
                                     <td>@empleado.EmpId</td>
@@ -172,11 +172,16 @@
                                     <td>
                                         @if (empleado.Activo == "Y")
                                         {
-                                            <span class="badge bg-success">Activo</span>
+                                            <span class="badge bg-success me-1">Activo</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-danger">Inactivo</span>
+                                            <span class="badge bg-danger me-1">Inactivo</span>
+                                        }
+
+                                        @if (empleado.Nuevo)
+                                        {
+                                            <span class="badge bg-primary">Nuevo</span>
                                         }
                                     </td>
 
@@ -426,12 +431,21 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
-                    </button>
-                    <button class="btn btn-primary" id="btnGuardarEmpleado">
-                        <i class="bi bi-save"></i> Guardar
-                    </button>
+                    <div style="display:flex; align-content:space-between">
+                        @*<div>
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="bi bi-x-circle"></i> Cerrar
+                            </button>
+                        </div>*@
+                        <div>
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="bi bi-x-circle"></i> Cerrar
+                            </button>
+                            <button class="btn btn-primary" id="btnGuardarEmpleado">
+                                <i class="bi bi-save"></i> Guardar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -869,7 +883,7 @@
             timerProgressBar: true
         })
 
-        const empleados = @Html.Raw(Json.Encode(Model.Empleados));
+        const empleados = @Html.Raw(Json.Encode(Model.Empleados.OrderBy(x => x.Nuevo == true).ThenBy(x=> x.EmpId)));
         const modalPosiciones = new bootstrap.Modal(document.getElementById('modalPosiciones'));
         const modalEmpleado = new bootstrap.Modal(document.getElementById('modalEmpleado'));
         const modalPerfilPuesto = new bootstrap.Modal(document.getElementById('modalPerfilPuesto'));
@@ -924,6 +938,12 @@
                                     empleado.Activo === "Y"
                                         ? '<span class="badge bg-success">Activo</span>'
                                         : '<span class="badge bg-danger">Inactivo</span>'
+                                }
+
+                                ${
+                                    empleado.Nuevo
+                                        ? '<span class="badge bg-primary">Nuevo</span>'                    
+                                        :''
                                 }
                             </td>
                             <td>${empleado.JefeInmediato}</td>
@@ -1337,7 +1357,7 @@
                     Toast.fire({ icon: 'warning', title: "Equipo agregado con éxito" });
                     $("#globalLoading").hide();
                     modalEquipos.hide();
-                    
+
                 } else {
                     Toast.fire({ icon: 'warning', title: "Ocurrio un error al agregar el equipo" });
                 }

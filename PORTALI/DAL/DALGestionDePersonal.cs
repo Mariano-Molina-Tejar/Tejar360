@@ -289,7 +289,7 @@ namespace DAL
 		                            ISNULL(T0.U_Estado,'P') AS Estado
                             FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_A] T0
                             LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHPS T1 ON T0.U_IdPosicion = T1.posID     
-                            WHERE U_IdSolicitante = @userId";                   
+                            WHERE U_IdSolicitante = @userId";
 
                 return await conn.QueryAsync<Autorizaciones>
                     (
@@ -300,6 +300,21 @@ namespace DAL
                     }
                     );
             }
+        }
+
+        public async Task<TrackingDeBaja> ObtenerTrackingBaja(int empId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var sp = "sp_ver_proceso_de_baja";
+
+                return await conn.QuerySingleAsync<TrackingDeBaja>
+                    (
+                    sp,
+                    new { EmpId = empId }
+                    );
+            }
+
         }
     }
 }

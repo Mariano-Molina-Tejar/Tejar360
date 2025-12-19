@@ -438,6 +438,7 @@
     <Compile Include="Controllers\VentasCdController.cs" />
     <Compile Include="Controllers\VentasController.cs" />
     <Compile Include="Controllers\VentasEmpresaController.cs" />
+    <Content Include="Css\GestionDePersonal\styleProceso.css" />
     <Compile Include="Filter\VerifySession.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -470,6 +471,7 @@
     <Content Include="Css\DetalleAutorizaVenta.css" />
     <Content Include="Css\DetallesCarrito.css" />
     <Content Include="Css\font-awesome.min.css" />
+    <Content Include="Css\GestionDePersonal\style.css" />
     <Content Include="Css\ionicons.min.css" />
     <Content Include="Css\Login\Login2.css" />
     <Content Include="Css\Login\Style.css" />

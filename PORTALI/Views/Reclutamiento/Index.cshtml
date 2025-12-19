@@ -10,87 +10,199 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .fila-verde th {
+            background-color: lightgreen;
+        }
+
+    </style>
 </head>
 
 <body>
     <div class="container mt-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-header text-white d-flex justify-content-between align-items-center"
-                 style="background-color: steelblue;">
-
-                <h5 class="mb-0">
-                    <i class="bi bi-file-earmark-person-fill me-2"></i> Solicitudes de Alta de personal
-                </h5>
-
-                <button class="btn btn-light btn-sm" id="btnAgregarSolicitud" onclick="agregarSolicitud()">
-                    <i class="bi bi-plus-circle"></i> Agregar solicitud
+        <!-- Nav Tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="solicitudes-tab" data-bs-toggle="tab" data-bs-target="#solicitudes" type="button" role="tab">
+                    Pendientes
                 </button>
-            </div>
-            <div class="card-body bg-light">
-                <table class="table table-hover align-middle text-center">
-                    <thead class="table-success">
-                        <tr>
-                            <th>#</th>
-                            <th>Fecha Solicitud</th>
-                            <th>Puesto</th>
-                            <th>Departamento</th>
-                            <th>Solicita</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Reclutamiento.Count() != 0)
-                        {
-                            foreach (var puesto in Model.Reclutamiento)
-                            {
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="procesos-tab" data-bs-toggle="tab" data-bs-target="#procesos" type="button" role="tab">
+                    Finalizados
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+
+            <!-- TAB Solicitudes -->
+            <div class="tab-pane fade show active" id="solicitudes" role="tabpanel">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header text-white d-flex justify-content-between align-items-center"
+                         style="background-color: steelblue;">
+
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-earmark-person-fill me-2"></i> Solicitudes de Alta de personal - Pendientes
+                        </h5>
+
+                        <button class="btn btn-light btn-sm" id="btnAgregarSolicitud" onclick="agregarSolicitud()">
+                            <i class="bi bi-plus-circle"></i> Agregar solicitud
+                        </button>
+                    </div>
+                    <div class="card-body bg-light">
+                        <table class="table table-hover align-middle text-center">
+                            <thead class="table-success">
                                 <tr>
-                                    <td>
-                                        @puesto.SolicitudDeAlta
-                                    </td>
-                                    <td>@puesto.FechaSolicitud.ToString("dd/MM/yyyy")</td>
-                                    <td>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span>@puesto.Puesto</span>
-
-                                            <button id="btnPerfil-@(puesto.SolicitudDeAlta)"
-                                                    class="btn btn-sm @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
-                                                    data-bs-toggle="tooltip"
-                                                    title="@(puesto.Perfil ? "Ver perfil" : "Agregar perfil")"
-                                                    onclick="abrirModalPerfilPuesto('@puesto.Puesto',@puesto.PuestoId,'btnPerfil-@(puesto.SolicitudDeAlta)')">
-
-                                                <i id="ibtnPerfil-@(puesto.SolicitudDeAlta)" class="bi bi-file-earmark-text @(puesto.Perfil ? "text-success" : "text-danger")"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                    <td>@puesto.Departamento</td>
-                                    <td>@puesto.Solicita</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDetalle"
-                                                data-Puesto="@puesto.Puesto"
-                                                data-PuestoId="@puesto.PuestoId"
-                                                data-Departamento="@puesto.Departamento"
-                                                data-DepartamentoId="@puesto.DepartamentoId"
-                                                data-FechaSolicitud="@puesto.FechaSolicitud.ToString("dd/MM/yyyy")"
-                                                data-Solicita="@puesto.Solicita"
-                                                data-SolicitaId="@puesto.SolicitaId"
-                                                data-Solicitud="@puesto.SolicitudDeAlta"
-                                                onclick="verDetalleSolicitud(this)">
-                                            <i class="bi bi-eye-fill"></i> Detalle
-                                        </button>
-                                    </td>
+                                    <th>#</th>
+                                    <th>Fecha Solicitud</th>
+                                    <th>Puesto</th>
+                                    <th>Departamento</th>
+                                    <th>Solicita</th>
+                                    <th>Acciones</th>
                                 </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
-                                    <i class="bi bi-info-circle"></i> No se encontraron solicitudes
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                @if (Model.Reclutamiento.Count() != 0)
+                                {
+                                    foreach (var puesto in Model.Reclutamiento)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @puesto.SolicitudDeAlta
+                                            </td>
+                                            <td>@puesto.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span>@puesto.Puesto</span>
+
+                                                    <button id="btnPerfil-@(puesto.SolicitudDeAlta)"
+                                                            class="btn btn-sm @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
+                                                            data-bs-toggle="tooltip"
+                                                            title="@(puesto.Perfil ? "Ver perfil" : "Agregar perfil")"
+                                                            onclick="abrirModalPerfilPuesto('@puesto.Puesto',@puesto.PuestoId,'btnPerfil-@(puesto.SolicitudDeAlta)')">
+
+                                                        <i id="ibtnPerfil-@(puesto.SolicitudDeAlta)" class="bi bi-file-earmark-text @(puesto.Perfil ? "text-success" : "text-danger")"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>@puesto.Departamento</td>
+                                            <td>@puesto.Solicita</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDetalle"
+                                                        data-Puesto="@puesto.Puesto"
+                                                        data-PuestoId="@puesto.PuestoId"
+                                                        data-Departamento="@puesto.Departamento"
+                                                        data-DepartamentoId="@puesto.DepartamentoId"
+                                                        data-FechaSolicitud="@puesto.FechaSolicitud.ToString("dd/MM/yyyy")"
+                                                        data-Solicita="@puesto.Solicita"
+                                                        data-SolicitaId="@puesto.SolicitaId"
+                                                        data-Solicitud="@puesto.SolicitudDeAlta"
+                                                        data-finalizada= "0"
+                                                        onclick="verDetalleSolicitud(this)">
+                                                    <i class="bi bi-eye-fill"></i> Detalle
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
+                                            <i class="bi bi-info-circle"></i> No se encontraron solicitudes
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB Procesos -->
+            <div class="tab-pane fade" id="procesos" role="tabpanel">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header text-white d-flex justify-content-between align-items-center"
+                         style="background-color: steelblue;">
+
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-earmark-person-fill me-2"></i> Solicitudes de Alta de personal - Finalizados
+                        </h5>
+
+                        
+                    </div>
+                    <div class="card-body bg-light">
+                        <table class="table table-hover align-middle text-center">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Fecha Solicitud</th>
+                                    <th>Puesto</th>
+                                    <th>Departamento</th>
+                                    <th>Solicita</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ReclutamientoFinalizadas.Count() != 0)
+                                {
+                                    foreach (var puesto in Model.ReclutamientoFinalizadas)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @puesto.SolicitudDeAlta
+                                            </td>
+                                            <td>@puesto.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span>@puesto.Puesto</span>
+
+                                                    <button id="btnPerfil-@(puesto.SolicitudDeAlta)"
+                                                            class="btn btn-sm @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
+                                                            data-bs-toggle="tooltip"
+                                                            title="@(puesto.Perfil ? "Ver perfil" : "Agregar perfil")"
+                                                            onclick="abrirModalPerfilPuesto('@puesto.Puesto',@puesto.PuestoId,'btnPerfil-@(puesto.SolicitudDeAlta)')">
+
+                                                        <i id="ibtnPerfil-@(puesto.SolicitudDeAlta)" class="bi bi-file-earmark-text @(puesto.Perfil ? "text-success" : "text-danger")"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>@puesto.Departamento</td>
+                                            <td>@puesto.Solicita</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDetalle"
+                                                        data-Puesto="@puesto.Puesto"
+                                                        data-PuestoId="@puesto.PuestoId"
+                                                        data-Departamento="@puesto.Departamento"
+                                                        data-DepartamentoId="@puesto.DepartamentoId"
+                                                        data-FechaSolicitud="@puesto.FechaSolicitud.ToString("dd/MM/yyyy")"
+                                                        data-Solicita="@puesto.Solicita"
+                                                        data-SolicitaId="@puesto.SolicitaId"
+                                                        data-Solicitud="@puesto.SolicitudDeAlta"
+                                                        data-finalizada= "1"
+                                                        onclick="verDetalleSolicitud(this)">
+                                                    <i class="bi bi-eye-fill"></i> Detalle
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
+                                            <i class="bi bi-info-circle"></i> No se encontraron solicitudes
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -252,12 +364,24 @@
                                     <i class="bi bi-chat-dots-fill"></i> Comentarios
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
+                            <li id="contenedorConfiguracionAlta" class="nav-item" role="presentation">
                                 <button class="nav-link" id="tab-config-alta" data-bs-toggle="tab"
                                         data-bs-target="#info-config-alta" type="button" role="tab">
                                     <i class="bi bi-person-check"></i> Confirmacion de alta
                                 </button>
                             </li>
+                            <li id="contenedorInfoCreada" class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-info-creada"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#info-creada"
+                                        type="button" role="tab"
+                                        aria-controls="info-creada"
+                                        aria-selected="false">
+
+                                    <i class="bi bi-check-circle"></i> Información creada
+                                </button>
+                            </li>
+
                         </ul>
                     </div>
 
@@ -270,44 +394,73 @@
                                 <div class="card-header bg-primary text-white fw-semibold">
                                     <i class="bi bi-info-circle-fill"></i> Información Personal
                                 </div>
+                                <input id="inputUser" class="d-none" value="" />
+                                <input id="pUsuario" class="d-none" value="" />
                                 <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">Primer Nombre</label>
-                                            <p id="pPrimerNombre" class="mb-0"></p>
+                                    <div class="row">
+
+                                        <!-- FOTO DE PERFIL -->
+                                        <div class="col-md-3 text-center border-end">
+                                            <img id="imgPerfil"
+                                                 src=""
+                                                 class="img-fluid rounded-circle mb-2 shadow-sm"
+                                                 style="width:150px; height:150px; object-fit:cover;"
+                                                 alt="Foto de perfil">
                                         </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">Segundo Nombre</label>
-                                            <p id="pSegundoNombre" class="mb-0"></p>
+
+                                        <!-- DATOS PERSONALES -->
+
+                                        <div class="col-md-9">
+                                            <div class="row g-3">
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">Primer Nombre</label>
+                                                    <p id="pPrimerNombre" class="mb-0"></p>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">Segundo Nombre</label>
+                                                    <p id="pSegundoNombre" class="mb-0"></p>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">Primer Apellido</label>
+                                                    <p id="pPrimerApellido" class="mb-0"></p>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">Segundo Apellido</label>
+                                                    <p id="pSegundoApellido" class="mb-0"></p>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">Fecha de Nacimiento</label>
+                                                    <p id="pFechaNacimiento" class="mb-0"></p>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">Sexo</label>
+                                                    <p id="pSexo" class="mb-0"></p>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">DPI</label>
+                                                    <p id="pDpi" class="mb-0"></p>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-bold">Correo</label>
+                                                    <p id="pCorreo" class="mb-0"></p>
+                                                    <input id="pCode" type="hidden">
+                                                </div>
+
+                                            </div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">Primer Apellido</label>
-                                            <p id="pPrimerApellido" class="mb-0"></p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">Segundo Apellido</label>
-                                            <p id="pSegundoApellido" class="mb-0"></p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">Fecha de Nacimiento</label>
-                                            <p id="pFechaNacimiento" class="mb-0"></p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">Sexo</label>
-                                            <p id="pSexo" class="mb-0"></p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">DPI</label>
-                                            <p id="pDpi" class="mb-0"></p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label fw-bold">Correo</label>
-                                            <p id="pCorreo" class="mb-0"></p>
-                                            <input id="pCode" class="mb-0" style="display:none;">
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
                         <!-- ACADÉMICA -->
@@ -368,8 +521,8 @@
                                                 </div>
                                             }
                                             @*<div class="mb-3">
-                                                        <input type="text" id="buscarDocumentos" class="form-control" placeholder="Buscar Documentos" />
-                                                </div>*@
+                                    <input type="text" id="buscarDocumentos" class="form-control" placeholder="Buscar Documentos" />
+                            </div>*@
                                             <div id="listaDocumentos" class="list-group overflow-auto" style="max-height: 2000px;">
                                                 <!-- Ejemplo de items -->
                                                 @foreach (var Documentos in Model.Documentos)
@@ -407,17 +560,18 @@
                                 </div>
 
                                 <div class="card-body">
+                                    <div id="cajaAgregarComentario">
+                                        <!-- Campo para agregar comentario -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Agregar comentario</label>
+                                            <textarea id="txtNuevoComentario" class="form-control" rows="3"
+                                                      placeholder="Escribe un comentario sobre el proceso..."></textarea>
+                                        </div>
 
-                                    <!-- Campo para agregar comentario -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Agregar comentario</label>
-                                        <textarea id="txtNuevoComentario" class="form-control" rows="3"
-                                                  placeholder="Escribe un comentario sobre el proceso..."></textarea>
+                                        <button class="btn btn-primary mb-4" id="btnAgregarComentario">
+                                            <i class="bi bi-plus-circle"></i> Agregar Comentario
+                                        </button>
                                     </div>
-
-                                    <button class="btn btn-primary mb-4" id="btnAgregarComentario">
-                                        <i class="bi bi-plus-circle"></i> Agregar Comentario
-                                    </button>
 
                                     <hr>
 
@@ -431,17 +585,17 @@
 
                                                 <!-- Información del comentario -->
                                                 @*<div>
-                                                        <i class="bi bi-chat-left-text"></i> Comentario 1
-                                                        <br>
-                                                        <small class="text-muted">
-                                                            05-05-2025 — <strong>por Juan Pérez</strong>
-                                                        </small>
-                                                    </div>*@
+                                    <i class="bi bi-chat-left-text"></i> Comentario 1
+
+                                    <small class="text-muted">
+                                        05-05-2025 — <strong>por Juan Pérez</strong>
+                                    </small>
+                                </div>*@
 
                                                 <!-- Botón eliminar -->
                                                 @*<button class="btn btn-sm btn-danger btnEliminarComentario">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>*@
+                                    <i class="bi bi-trash"></i>
+                                </button>*@
                                             </div>
                                         </li>
                                     </ul>
@@ -452,7 +606,7 @@
                         <!-- CONFIGURACIÓN DE ALTA -->
                         <div class="tab-pane fade" id="info-config-alta" role="tabpanel">
                             <div class="card border-0 shadow-sm">
-                                <<div class="card-header bg-secondary text-white fw-semibold d-flex align-items-center">
+                                <div class="card-header bg-secondary text-white fw-semibold d-flex align-items-center">
 
                                     <!-- Título -->
                                     <div class="fs-6">
@@ -525,6 +679,15 @@
                                                 Se necesitará una licencia para usar SAP.
                                             </small>
                                         </div>
+                                        <!-- Usuario Tejar360 -->
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="chkTejar360">
+                                                <label class="form-check-label fw-semibold">
+                                                    Crear usuario Tejar360
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <hr class="my-4">
@@ -539,34 +702,12 @@
 
                                         <!-- Usuario de ventas -->
                                         <div class="col-md-4">
-                                            <div class="form-check">
+                                            <div class="form-check  mt-4">
                                                 <input class="form-check-input" type="checkbox" id="chkUsuarioVentas" disabled>
                                                 <label class="form-check-label fw-semibold">
                                                     Crear usuario de empleado de ventas
                                                 </label>
                                             </div>
-                                        </div>
-
-                                        <!-- Usuario Tejar360 -->
-                                        <div class="col-md-4">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="chkTejar360" disabled>
-                                                <label class="form-check-label fw-semibold">
-                                                    Crear usuario Tejar360
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <!-- Tienda Asignada -->
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Tienda Asignada</label>
-                                            <select id="selectTiendaEmpDeVentas" class="form-control" disabled>
-                                                <option value="" selected>- Seleccionar tienda -</option>
-                                                @foreach (var tienda in Model.Tiendas)
-                                                {
-                                                    <option value="@tienda.WhsCode">@tienda.WhsName</option>
-                                                }
-                                            </select>
                                         </div>
 
                                         <!-- Meta -->
@@ -578,10 +719,193 @@
                                                 </label>
                                             </div>
                                         </div>
+                                        <!-- Tienda Asignada -->
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Tienda Asignada</label>
+                                            <select id="selectTiendaEmpDeVentas" class="form-control" disabled>
+                                                <option value="" selected>- Seleccionar tienda -</option>
+                                                @foreach (var tienda in Model.Tiendas)
+                                                {
+                                                    <option value="@tienda.WhsCode">@tienda.WhsName</option>
+                                                }
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- INFORMACIÓN CREADA -->
+                        <div class="tab-pane fade" id="info-creada" role="tabpanel">
+                            <div class="card border-0 shadow-sm">
+
+                                <!-- HEADER -->
+                                <div class="card-header bg-success text-white fw-semibold d-flex align-items-center">
+                                    <div class="fs-6">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Información creada
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+
+                                    <!-- RESUMEN GENERAL -->
+                                    <h6 class="fw-bold mb-3 text-success">
+                                        <i class="bi bi-list-check me-1"></i> Resumen de creación
+                                    </h6>
+
+                                    <div class="row g-3">
+
+                                        <!-- Empleado -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-person-badge text-primary me-1"></i> Empleado
+                                                </div>
+                                                @*<span class="badge bg-success mt-2">Creado</span>*@
+                                                <p class="mb-0 small text-muted mt-2">
+                                                    Código: <strong id="lblEmpleadoCode">EMP-001</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cliente -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-people text-primary me-1"></i> Cliente
+                                                </div>
+                                                @*<span class="badge bg-success mt-2">Creado</span>*@
+                                                <p class="mb-0 small text-muted mt-2">
+                                                    Código: <strong id="lblClienteCode">C-10025</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Proveedor -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-truck text-primary me-1"></i> Proveedor
+                                                </div>
+                                                @*<span class="badge bg-success mt-2">Creado</span>*@
+                                                <p class="mb-0 small text-muted mt-2">
+                                                    Código: <strong id="lblProveedorCode">P-3056</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-4">
+
+                                    <!-- USUARIOS -->
+                                    <h6 class="fw-bold mb-3 text-primary">
+                                        <i class="bi bi-shield-check me-1"></i> Usuarios creados
+                                    </h6>
+
+                                    <div class="row g-3">
+
+                                        <!-- Usuario SAP -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-boxes text-warning me-1"></i> Usuario SAP
+                                                </div>
+                                                @*<span class="badge bg-secondary mt-2" id="badgeUsuarioSAP">
+                    No creado
+                </span>*@
+                                                <p class="mb-0 small text-muted mt-2">
+                                                    Usuario: <strong id="lblUsuarioSAP">C-10025</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tejar360 -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-globe text-info me-1"></i> Tejar360
+                                                </div>
+                                                @*<span class="badge bg-success mt-2" id="badgeTejar360">
+                    Creado
+                </span>*@
+                                                <p class="mb-0 small text-muted mt-2">
+                                                    Usuario: <strong id="lblUsuario360">C-10025</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100 bg-light">
+                                                <div class="fw-semibold text-primary">
+                                                    <i class="bi bi-info-circle-fill me-1"></i> Información importante
+                                                </div>
+
+                                                <p class="mb-0 small text-muted mt-2">
+                                                    La contraseña generada automáticamente para los usuarios creados es:
+                                                </p>
+
+                                                <p class="mb-0 mt-2">
+                                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                                                        1234
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="my-4">
+
+                                    <!-- CONFIGURACIÓN DE VENTAS -->
+                                    <h6 class="fw-bold mb-3 text-success">
+                                        <i class="bi bi-cash-stack me-1"></i> Configuración de ventas
+                                    </h6>
+
+                                    <div class="row g-3">
+
+                                        <!-- Meta -->
+                                        <div class="col-md-4" >
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-bullseye text-danger me-1"></i> Meta asignada
+                                                </div>
+                                                <p class="mb-0 small text-muted mt-2" id="lblMeta">
+                                                    Q 15,000.00
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tienda -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-shop text-primary me-1"></i> Tienda asignada
+                                                </div>
+                                                <p class="mb-0 small text-muted mt-2" id="lblTienda">
+                                                    Tienda Central
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <!-- Ventas -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="fw-semibold">
+                                                    <i class="bi bi-graph-up-arrow text-success me-1"></i> Empleado de Ventas
+                                                </div>
+                                                @*<span class="badge bg-success mt-2" id="badgeUsuarioVentas">
+                                                    Creado
+                                                </span>*@
+                                                <p class="mb-0 small text-muted mt-2">
+                                                    <strong id="lblEmpleadoVentas">C-10025</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <!-- Footer -->
@@ -789,7 +1113,7 @@
 
     <!-- Modal de proceso -->
     <div class="modal fade" id="modalProcesos" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
 
                 <!-- Header -->
@@ -869,7 +1193,8 @@
                 fechaSolicitud: button.getAttribute("data-FechaSolicitud"),
                 solicita: button.getAttribute("data-Solicita"),
                 solicitaId: button.getAttribute("data-SolicitaId"),
-                solicitud: button.getAttribute("data-Solicitud")
+                solicitud: button.getAttribute("data-Solicitud"),
+                finalizada: button.getAttribute("data-finalizada")
             }
 
             let informacionGeneral = `<h6 class="fw-bold text-secondary">Información del Puesto</h6>
@@ -883,8 +1208,19 @@
                                                                                                             <p id="idSolicita" style = "display: none;">${datosSolicitud.solicitaId}</p>`;
 
             document.getElementById('solicitud-InformacionGeneral').innerHTML = informacionGeneral;
-            ObtenerDatosAspirantes();
 
+            ObtenerDatosAspirantes(datosSolicitud.finalizada);
+
+            if (datosSolicitud.finalizada === "1") {
+                document.getElementById("btnCrearUsuarioClave").classList.add("d-none");
+                document.getElementById("cajaAgregarComentario").classList.add("d-none");
+                document.getElementById("contenedorConfiguracionAlta").classList.add("d-none");
+            }
+            else {
+                document.getElementById("btnCrearUsuarioClave").classList.remove("d-none");
+                document.getElementById("cajaAgregarComentario").classList.remove("d-none");
+                document.getElementById("contenedorConfiguracionAlta").classList.remove("d-none");
+            }
         }
 
         function abrirModalCrarUsuario() {
@@ -969,11 +1305,11 @@
             }
         }
 
-        async function ObtenerDatosAspirantes() {
-            let puesto = document.getElementById("detallePuesto").textContent;
-            let user = generarUsuario(puesto);
+        async function ObtenerDatosAspirantes(finalizada = 0) {
+            
+            const idSolicitud = document.getElementById("idSolicitud").textContent
 
-            const response = await fetch(`/Reclutamiento/ObtenerDetalleAspirantes?userName=${user}`, {
+            const response = await fetch(`/Reclutamiento/ObtenerDetalleAspirantes?userName=${idSolicitud}`, {
                 method: "GET"
             })
 
@@ -984,18 +1320,22 @@
             if (reply.success) {
 
                 reply.data.forEach(item => {
-                    tbody += `<tr>
+                    console.log("Empleado ID : ", item.EmpIdSAP)
+                    tbody += `<tr ${item.EmpIdSAP != 0 ? `class="fila-verde"` : ``}>
                                                                                 <th>${item.Rw}</th>
                                                                                 <th>${item.UserName}</th>
                                                                                 <th>${item.NombreAspirante}</th>
                                                                                 <th id="e${item.Rw}">${item.Correo}</th>
                                                                                 <th>${convertirFechaDotNet(item.Created)}</th>
                                                                                 <th>${item.Estado}</th>
-                                                                                <th>
-                                                                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Usuario" onclick ="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
-                                                                                        <i class="bi bi-person-fill"></i> </i>
-                                                                                    </button>
-                                                                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="CV" onclick ="verDetalleAspirante('${item.UserName}')">
+                                                                                <th>${finalizada == 0 
+                                                                                    ? `<button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Usuario" onclick ="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
+                                                                                            <i class="bi bi-person-fill"></i> </i>
+                                                                                        </button>`
+                                                                                    : ``
+                                                                                     }
+                                                                                    
+                                                                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="CV" onclick ="verDetalleAspirante('${item.UserName}','${item.EmpIdSAP}')">
                                                                                         <i class="bi bi-file-earmark-text"></i>
                                                                                     </button>
                                                                                 </th>
@@ -1043,13 +1383,13 @@
             }
         }
 
-        async function verDetalleAspirante(userName) {
+        async function verDetalleAspirante(userName,empId = 0) {
             limpiarDatos();
             const response = await fetch(`/Reclutamiento/ObtenerDatosPersonales?userName=${userName}`);
             const result = await response.json();
             $("#globalLoading").show();
             if (result.success) {
-                cargarDatosAspirante(result.data);
+                await cargarDatosAspirante(result.data, userName, empId);
                 dataAspiranteFinal = result.data.DatosPersonalesVM;
                 modalDetalleUsuario.show();
             }
@@ -1141,7 +1481,7 @@
             }
         }
 
-        function cargarDatosAspirante(datosAspirante) {
+        async function cargarDatosAspirante(datosAspirante,usuario = "",empId = 0) {
             limpiarDatos();
 
             document.getElementById("pPrimerNombre").innerText = datosAspirante.DatosPersonalesVM.PrimerNombre;
@@ -1153,6 +1493,8 @@
             document.getElementById("pDpi").innerText = datosAspirante.DatosPersonalesVM.NoDPI;
             document.getElementById("pCorreo").innerText = datosAspirante.DatosPersonalesVM.CorreoPersonal;
             document.getElementById("pCode").value = datosAspirante.DatosPersonalesVM.Code;
+            document.getElementById("imgPerfil").src = `/Reclutamiento/VerImagen?archivo=Perfil_${datosAspirante.DatosPersonalesVM.Code}`
+            document.getElementById("pUsuario").value = usuario;
 
             let tbodyAcademico = '';
             let containerLaboral = '';
@@ -1186,7 +1528,7 @@
                                         <li class="list-group-item">
                                                     <div class="d-flex align-items-start justify-content-between">
                                                         <div>
-                                                            <strong>${item.Empresa}</strong> — ${item.Puesto}<br>
+                                                            <strong>${item.Empresa}</strong> — ${item.Puesto}
                                                             <small class="text-muted">${convertirFechaDotNet(item.FechaInicio)} - ${convertirFechaDotNet(item.FechaFin)}</small>
                                                         </div>
                                                         <button class="btn btn-outline-primary btn-sm toggle-detalle" title="Ver detalles">
@@ -1196,11 +1538,11 @@
 
                                                     <!-- Detalle oculto -->
                                                     <div class="detalle-laboral mt-3 p-3 bg-light border rounded" style="display: none;">
-                                                        <p class="mb-1"><strong>Actividades:</strong> ${item.Actividades}</p>
-                                                        <p class="mb-1"><strong>Correo de empresa:</strong> ${item.CorreoEmpresa}</p>
-                                                        <p class="mb-1"><strong>Teléfono empresa:</strong> ${item.TelefonoEmpresa}</p>
-                                                        <p class="mb-1"><strong>Nombre del jefe:</strong> ${item.NombreJefe}</p>
-                                                        <p class="mb-1"><strong>Teléfono del jefe:</strong> ${item.TelefonoJefe}</p>
+                                                        <p class="mb-1"><strong>Actividades:</strong> ${item.Actividades ?? "Sin datos"}</p>
+                                                        <p class="mb-1"><strong>Correo de empresa:</strong> ${item.CorreoEmpresa ?? "Sin datos"}</p>
+                                                        <p class="mb-1"><strong>Teléfono empresa:</strong> ${item.TelefonoEmpresa ?? "Sin datos"}</p>
+                                                        <p class="mb-1"><strong>Nombre del jefe:</strong> ${item.NombreJefe ?? "Sin datos"}</p>
+                                                        <p class="mb-1"><strong>Teléfono del jefe:</strong> ${item.TelefonoJefe ?? "Sin datos"}</p>
                                                     </div>
                                         </li>
                                         `;
@@ -1218,8 +1560,53 @@
             }
             CambiarIconoDocumentos();
             mostrarComentarios();
+            await mostrarInformaciónGenerada(empId)
             document.getElementById("tbodyAcademico").innerHTML = tbodyAcademico;
             document.getElementById("containerLaboral").innerHTML = containerLaboral;
+        }
+
+        async function mostrarInformaciónGenerada(empId) {
+            const tabDatos = document.getElementById("contenedorInfoCreada");
+            const contenedorDatos = document.getElementById("info-creada");
+
+            if (empId != 0) {
+                tabDatos.classList.remove("d-none");
+                contenedorDatos.classList.remove("d-none");
+            }
+            else {
+                tabDatos.classList.add("d-none");
+                contenedorDatos.classList.add("d-none");
+            }
+
+             await ObtenerInformaciónCreada(empId)
+        }
+
+        async function ObtenerInformaciónCreada(empId) {
+            const response = await fetch(`/Reclutamiento/ObtenerInformaciónCreadaEmpleado?empId=${empId}`)
+            const result = await response.json();
+
+            if (result.success) {
+                console.log("Data : ", result.data)
+                // Datos maestros
+                document.getElementById("lblEmpleadoCode").innerText = result.data.Empleado ?? "";
+                document.getElementById("lblClienteCode").innerText = result.data.Cliente ?? "";
+                document.getElementById("lblProveedorCode").innerText = result.data.Proveedor ?? "";
+
+                document.getElementById("lblUsuarioSAP").innerText = result.data.UsuarioSAP ?? "";
+                document.getElementById("lblUsuario360").innerText = result.data.Usuario360 ?? "";
+
+                document.getElementById("lblEmpleadoVentas").innerText = result.data.EmpleadoVentas ?? "";
+
+
+                // Usuarios
+                //document.getElementById("badgeUsuarioSAP").innerText = result.data.usuarioSAP ? "Creado" : "No creado";
+                //document.getElementById("badgeTejar360").innerText = result.data.tejar360 ? "Creado" : "No creado";
+                //document.getElementById("badgeUsuarioVentas").innerText = result.data.usuarioVentas ? "Creado" : "No creado";
+
+                // Configuración de ventas
+                document.getElementById("lblMeta").innerText = result.data.TotalMeta == 0 ? "Q --" : `Q${result.data.TotalMeta}`;
+                document.getElementById("lblTienda").innerText = result.data.TiendaAsignada ?? "--";
+            }
         }
 
         function convertirFechaDotNet(fechaDotNet) {
@@ -1610,14 +1997,35 @@
             const bodyLoading = document.getElementById("contenedorLoading");
             const usuarioSAP = document.getElementById("chkUsuarioSAP").checked;
             const AsesorDeVentas = document.getElementById("chkAsesorDeVEntas").checked;
+            const whsCode = document.getElementById("selectTiendaEmpDeVentas").value;
+
 
             const usuarioVentas = document.getElementById("chkUsuarioVentas").checked;
             const tejar360 = document.getElementById("chkTejar360").checked;
             const meta = document.getElementById("chkMeta").checked;
 
-            let empleadoId = "";
+            let empleadoId = "10";
             let proveedor = "";
             let cliente = "";
+            let userSAP = "";
+            let empleadoDeVentas = "";
+            let codigoEmpleadoDeVentas = "";
+            let metaAsesor = "";
+
+            if (dataAspiranteFinal.PrimerNombre === null ||
+                dataAspiranteFinal.PrimerApellido === null ||
+                dataAspiranteFinal.SegundoApellido === null ||
+                dataAspiranteFinal.NIT === null ||
+                dataAspiranteFinal.FechaNacimiento === "/Date(-62135575200000)/" ||
+                dataAspiranteFinal.Sexo === null ||
+                dataAspiranteFinal.TelefonoCelular === null ||
+                dataAspiranteFinal.NoDPI === null ||
+                dataAspiranteFinal.CorreoPersonal === null
+            ) {
+                Toast.fire({ icon: 'warning', title: "Los datos ingresados son insuficientes para dar de alta al aspirante" });
+                return
+            }
+
 
             if (AsesorDeVentas) {
                 if (tienda == "") {
@@ -1628,9 +2036,9 @@
 
             bodyLoading.innerHTML = addLoadingPrincipal();
             modalProcesos.show();
-            document.getElementById("step1-icon").innerHTML = `<br><div class="spinner-border spinner-border-sm text-primary"></div>`;
-            document.getElementById("step2-icon").innerHTML = `<br><div class="spinner-border spinner-border-sm text-primary"></div>`;
-            document.getElementById("step3-icon").innerHTML = `<br><div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step1-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step2-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
+            document.getElementById("step3-icon").innerHTML = `<div class="spinner-border spinner-border-sm text-primary"></div>`;
 
             if (usuarioSAP)
                 bodyLoading.insertAdjacentHTML("beforeend", addLoading("Creacion de usuario SAP",4));
@@ -1644,23 +2052,54 @@
             if (meta)
                 bodyLoading.insertAdjacentHTML("beforeend", addLoading("Asignación de meta", 7));
 
-              //CRACION DE ALTA DEL ASPITANTE
+             
             empleadoId = await creacionDeAspirante(dataAspiranteFinal, idPuesto, idDepartamento, idSolicita);
 
-            //CREACION DE PROVEEDOR
+            if (empleadoId === "")
+                return;
+
             proveedor = await creacionDeProveedor(true, dataAspiranteFinal, empleadoId)
 
-            //CREACION DE CLIENTE
             cliente = await creacionDeCliente(false, dataAspiranteFinal, empleadoId)
 
-            //CREACION DE USUARIO SAP
             if (usuarioSAP) {
-                await crearUsuarioSAP(departamento, dataAspiranteFinal)
+                if (!AsesorDeVentas) {
+                    if (tejar360) {
+                        userSAP = await crearUsuarioSAP(departamento, dataAspiranteFinal, true, empleadoId, idDepartamento);
+                    }
+                    else {
+                        userSAP = await crearUsuarioSAP(departamento, dataAspiranteFinal, false, empleadoId,idDepartamento);
+                    }
+                }
+                else {
+                    userSAP = await crarUsuarioSAPAsesor(whsCode, dataAspiranteFinal, empleadoId);
+                }
+            }
+            else {
+                if (AsesorDeVentas) {
+                    userSAP = await crarUsuarioSAPAsesor(whsCode, dataAspiranteFinal, empleadoId, false);
+                }
+                else {
+                    if (tejar360) {
+                        userSAP = await crearUsuarioSAP(departamento, dataAspiranteFinal, true, empleadoId, idDepartamento);
+                    }
+                }
             }
 
-            if (usuarioVentas) {
-                crearEmpleadoDeVentas(dataAspiranteFinal, empleadoId);
-            }
+            if (usuarioVentas)
+                codigoEmpleadoDeVentas = await crearEmpleadoDeVentas(dataAspiranteFinal, empleadoId);
+
+            if (usuarioVentas)
+
+                if (codigoEmpleadoDeVentas != "") {
+                    metaAsesor = await AsignarMetaAsesor(codigoEmpleadoDeVentas, tienda);
+                }
+                else {
+                    document.getElementById("step7-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                }
+
+            await cerrarSolicituDeAlta(empleadoId);
+
         }
 
         async function creacionDeAspirante(dataAspiranteFinal, idPuesto, idDepartamento, idSolicita) {
@@ -1681,12 +2120,11 @@
             let result = await response.json();
 
             if (result.success) {
-                document.getElementById("step1-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i> ${result.empId}`;
+                document.getElementById("step1-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i> ${result.empId}`;
                 return result.empId;
-
             }
             else {
-                document.getElementById("step1-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step1-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
                 return "";
             }
         }
@@ -1709,11 +2147,11 @@
             result = await response.json();
 
             if (result.success) {
-                document.getElementById("step2-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i>${result.proveedor}`;
+                document.getElementById("step2-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>${result.proveedor}`;
                 return result.proveedor;
             }
             else {
-                document.getElementById("step2-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step2-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
                 return "";
             }
         }
@@ -1737,21 +2175,24 @@
 
             if (result.success) {
                 proveedor = result.proveedor;
-                document.getElementById("step3-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i>${result.proveedor}`;
+                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>${result.proveedor}`;
             }
             else {
-                document.getElementById("step3-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step3-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
             }
         }
 
-        async function crearUsuarioSAP(departamento, dataAspiranteFinal) {
+        async function crearUsuarioSAP(departamento, dataAspiranteFinal, usuario360 = false, empId, departamentoId) {
             response = await fetch('/Reclutamiento/CrearUsuarioSAP',
                 {
                     method: "POST",
                     body: JSON.stringify(
                         {
                             datosPersonales: dataAspiranteFinal,
-                            departamento: departamento
+                            departamento: departamento,
+                            usuario360: usuario360,
+                            empId: empId,
+                            departamentoId: departamentoId
                         }
                     ),
                     headers: { "Content-Type": "application/json" }
@@ -1761,18 +2202,28 @@
             result = await response.json();
 
             if (result.success) {
-                document.getElementById("step4-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i>${result.userCode}`;
+                document.getElementById("step6-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>${result.userCode}`;
+                return result.userCode
             }
             else {
-                document.getElementById("step4-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step6-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                return ""
             }
         }
 
         async function crearEmpleadoDeVentas(dataAspiranteFinal, empId) {
             const whsCode = document.getElementById("selectTiendaEmpDeVentas").value;
             const whsName = document.getElementById("selectTiendaEmpDeVentas").options[document.getElementById("selectTiendaEmpDeVentas").selectedIndex].textContent;
+            const data = {
+                datosPersonales: dataAspiranteFinal,
+                whsCode: whsCode,
+                whsName: whsName,
+                empId: empId
+            };
 
-            response = await fetch('/Reclutamiento/CrearEmpleadoDeVentas',
+            console.log(data);
+
+            const response = await fetch('/Reclutamiento/CrearEmpleadoDeVentas',
                 {
                     method: "POST",
                     body: JSON.stringify(
@@ -1790,27 +2241,114 @@
             result = await response.json();
 
             if (result.success) {
-                document.getElementById("step5-icon").innerHTML = `<br><i class="bi bi-check-circle-fill text-success fs-5"></i> ${result.salesEmployeeName}`;
+                document.getElementById("step5-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i> ${result.salesEmployeeName}`;
+                return result.salesEmployeeCode;
             }
             else {
-                document.getElementById("step5-icon").innerHTML = `<br><i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step5-icon").innerHTML = `
+                            <i class="bi bi-x-circle-fill text-danger fs-5 me-2"></i>
+                            <span class="text-danger fw-semibold">${result.message}</span>
+                        `;
+
+                return "";
             }
         }
 
-        function addLoading(text,id) {
+        async function crarUsuarioSAPAsesor(whsCode, dataAspiranteFinal, empId, usuarioSAP = true) {
+            const whsName = document.getElementById("selectTiendaEmpDeVentas").options[document.getElementById("selectTiendaEmpDeVentas").selectedIndex].textContent;
+
+            response = await fetch('/Reclutamiento/CrearUsuarioSAPAsesor',
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        datosPersonales: dataAspiranteFinal,
+                        whsCode: whsCode,
+                        whsName: whsName,
+                        empId: empId
+                    }),
+                    headers: {"Content-Type" : "application/json"}
+                }
+            );
+
+            result = await response.json();
+
+            if (result.success) {
+                if (usuarioSAP)
+                    document.getElementById("step4-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>${result.userCode}`;
+
+                document.getElementById("step6-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>${result.userCode}`;
+                return result.userCode
+            }
+            else {
+                document.getElementById("step4-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                document.getElementById("step6-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                return ""
+            }
+        }
+
+        async function AsignarMetaAsesor(codigoEmpDeVentas, tienda) {
+
+            response = await fetch('/Reclutamiento/AsignarMetaAsesor', {
+                method: "POST",
+                body: JSON.stringify({
+                    codigoEmpVentas: codigoEmpDeVentas,
+                    tienda: tienda
+                }),
+                headers: {"Content-Type" : "application/json"}
+            });
+
+            result = await response.json();
+
+            if (result.success) {
+                document.getElementById("step7-icon").innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i>${result.metaAsesor}`;
+                return result.userCode
+            }
+            else {
+                document.getElementById("step7-icon").innerHTML = `<i class="bi bi-x-circle-fill text-danger fs-5"></i> `;
+                return ""
+            }
+        }
+
+        async function cerrarSolicituDeAlta(empId) {
+            //let puesto = document.getElementById("detallePuesto").textContent;
+            //let user = generarUsuario(puesto);
+            const pUsuario = document.getElementById("pUsuario").value;
+
+
+            const solicitud = document.getElementById("idSolicitud").textContent;
+             response = await fetch('/Reclutamiento/CerrarSolicitudDeAlta',
+                {
+                    method: "POST",
+                    body: JSON.stringify({ idSolicitud: solicitud, empId: empId, user: pUsuario }),
+                    headers: { "Content-Type": "application/json" }
+                 });
+
+            result = await response.json();
+
+            if (result.success) {
+                Toast.fire({ icon: 'success', title: "Se dío de alta al aspirante" });
+                setTimeout(() => { location.reload(); }, 500);
+            }
+            else
+            {
+                Toast.fire({ icon: 'warning', title: "Ocurrio uno  o mas errores al dar de alta al aspirante" });
+            }
+        }
+
+        function addLoading(text, id) {
             return `<div class="d-flex justify-content-between align-items-center mb-3">
                         <span>${text}</span>
                         <span id="step${id}-icon">
-                            <br><div class="spinner-border spinner-border-sm text-primary"></div>
+                            <div class="spinner-border spinner-border-sm text-primary"></div>
                         </span>
                     </div>`;
         };
 
-         function addLoadingPrincipal() {
+        function addLoadingPrincipal() {
              return `<div class="d-flex justify-content-between align-items-center mb-3">
                             <span>Creación de dato maestro de empleado</span>
                             <span id="step1-icon">
-                                <br><div class="spinner-border spinner-border-sm text-primary"></div>
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
                             </span>
                         </div>
 
@@ -1818,7 +2356,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span>Creación de cliente</span>
                             <span id="step2-icon">
-                                <br><div class="spinner-border spinner-border-sm text-primary"></div>
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
                             </span>
                         </div>
 
@@ -1826,10 +2364,20 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span>Creación de proveedor</span>
                             <span id="step3-icon">
-                                <br><div class="spinner-border spinner-border-sm text-primary"></div>
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
                             </span>
                         </div>`;
         };
+
+        document.getElementById("chkTejar360").addEventListener("change", () => {
+            const checkVentas = document.getElementById("chkAsesorDeVEntas").checked;
+
+            if (checkVentas) {
+                document.getElementById("chkTejar360").checked = true;
+                Toast.fire({ icon: 'warning', title: "Cuando es empleado de ventas el usuario de Tejar360 es obligatorio" });
+
+            }
+        });
 
         document.getElementById("chkAsesorDeVEntas").addEventListener("change", (e) => {
             const usuarioVentas = document.getElementById("chkUsuarioVentas");
@@ -1858,6 +2406,7 @@
         document.getElementById('tab-comentarios').addEventListener('click', () => mostrarComentarios());
         document.getElementById('btnGuardarPerfil').addEventListener('click', () => guardarPerfilDeUsuario());
         document.getElementById('btnDarDeAlta').addEventListener('click', () => darDeAlta());
+
     </script>
 </body>
 </html>

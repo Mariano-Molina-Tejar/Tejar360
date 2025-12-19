@@ -21,6 +21,7 @@ namespace Entity
         public string JefeInmediato { get; set; } = string.Empty;
         public int empIdJefe { get; set; }
         public bool Perfil { get; set; }
+        public bool Nuevo { get; set; }
     }
 
     public class Posicion

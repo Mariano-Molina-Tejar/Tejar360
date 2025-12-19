@@ -14,14 +14,15 @@ namespace Entity
         public string Puesto { get; set; }
         public string Departamento { get; set; }
         public string DepartamentoId { get; set; }
-        public string Solicita { get; set;}
-        public int SolicitaId { get; set;}
+        public string Solicita { get; set; }
+        public int SolicitaId { get; set; }
         public bool Perfil { get; set; }
     }
 
     public class ReclutamientoViewModel
     {
         public IEnumerable<ReclutemientoEntity> Reclutamiento { get; set; }
+        public IEnumerable<ReclutemientoEntity> ReclutamientoFinalizadas { get; set; }
         public List<CVDOCREQ> Documentos { get; set; }
 
         public IEnumerable<Tiendas> Tiendas { get; set; }
@@ -35,11 +36,13 @@ namespace Entity
         public string Correo { get; set; }
         public string Estado { get; set; }
         public DateTime Created { get; set; }
+        public int EmpIdSAP { get; set; }
     }
 
     public class DatosPersonales
     {
         public int Code { get; set; }
+        public int usuario { get; set; }
         public string PrimerNombre { get; set; }
         public string SegundoNombre { get; set; }
         public string PrimerApellido { get; set; }
@@ -51,7 +54,7 @@ namespace Entity
         public string AfilicionIGSS { get; set; }
         public string CorreoPersonal { get; set; }
         public string TelefonoFijo { get; set; }
-        public string TelefonoPersonal { get; set; }
+        public string TelefonoCelular { get; set; }
         public string profesion { get; set; }
     }
 
@@ -125,5 +128,17 @@ namespace Entity
         public string U_Observaciones { get; set; } = string.Empty;
         public DateTime U_FechaCreacion { get; set; }
         public int U_UsuarioCreacion { get; set; }
+    }
+
+    public class DatosCreadosEmpleado
+    {
+        public int Empleado { get; set; } 
+        public string Cliente { get; set; }
+        public string Proveedor { get; set; }
+        public string UsuarioSAP { get; set; }
+        public string Usuario360 { get; set; }
+        public string EmpleadoVentas { get; set; }
+        public decimal TotalMeta { get; set; }
+        public string TiendaAsignada { get; set; }
     }
 }

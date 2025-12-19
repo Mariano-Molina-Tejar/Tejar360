@@ -173,7 +173,7 @@ namespace PORTALI.Controllers
 
             try
             {
-                string path = @"\\SRVSAPTQ2\SAPDocs\GestionDePersonal\";
+                string path = @"\\172.31.99.76\SAPDocs\GestionDePersonal\";
 
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
@@ -191,7 +191,7 @@ namespace PORTALI.Controllers
 
         public JsonResult ExistenciaDeDocumento(int solicitud, int id)
         {
-            string carpeta = @"\\SRVSAPTQ2\SAPDocs\GestionDePersonal\";
+            string carpeta = @"\\172.31.99.76\SAPDocs\GestionDePersonal\";
             string nombreArchivo = $"Carta-{solicitud}{id}.pdf";
             string ruta = Path.Combine(carpeta, nombreArchivo);
             var sessions = (Entity.SessionLoginEntity)Session["PropertiesEntity"];
@@ -303,7 +303,8 @@ namespace PORTALI.Controllers
                     U_Estado = "A",
                     U_IdPosicion = IdPosicion,
                     U_IdDepartamento = departamento,
-                    U_IdPerfil = 0
+                    U_IdPerfil = 0,
+                    U_NuevaPlaza = "N"
                 };
 
                 string response = DAL_API.NotasPpto(url, ObjectSend);
@@ -390,7 +391,7 @@ namespace PORTALI.Controllers
 
         public ActionResult VerDocumentos(int solicitud, int id)
         {
-            string carpeta = @"\\SRVSAPTQ2\SAPDocs\GestionDePersonal\";
+            string carpeta = @"\\172.31.99.76\SAPDocs\GestionDePersonal\";
             string nombreArchivo = $"Carta-{solicitud}{id}.pdf";
 
             string ruta = Path.Combine(carpeta, nombreArchivo);
@@ -481,7 +482,7 @@ namespace PORTALI.Controllers
                     $"{host}?code={code}&aut=-1&puesto={puesto}&puestoId={puestoId}"
                     );
 
-                MailServices.EnviarCorreoElectronico
+                var responseMail = MailServices.EnviarCorreoElectronico
                     (
                     new EnvioCorreoGestionEmpleados
                     {
@@ -515,6 +516,23 @@ namespace PORTALI.Controllers
                 var procesos = await _dal.ObtenerProcesoDeAutorizaciones(sessions.CodeEmpleado);
                 if (procesos.Any())
                     return Json(new { success = true, data = procesos }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public async Task<JsonResult> ObtenerTrackingDeBaja(int empId)
+        {
+            try
+            {
+                var traking = await _dal.ObtenerTrackingBaja(empId) ?? new TrackingDeBaja();
+
+                if (traking != null)
+                    return Json(new { success = true, data = traking }, JsonRequestBehavior.AllowGet);
 
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }

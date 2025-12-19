@@ -100,5 +100,18 @@ namespace Entity
         public DateTime FechaDeSolicitud { get; set; }
         public string Posicion { get; set; }
         public char Estado { get; set; }
-    } 
+    }
+    public class TrackingDeBaja
+    {
+        public bool Pendiente { get; set; }
+        public bool AutorizadoGTH { get; set; }
+        public bool Carta { get; set; }
+        public bool Solvencia { get; set; }
+        public bool UsuariosOperativos { get; set; }
+        public bool ConfirmacionPago { get; set; }
+        public bool CargaLiquidacion { get; set; }
+        public bool UsuariosContables { get; set; }
+    }
+
+
 }

@@ -6,112 +6,60 @@
 
 <head>
     <style>
-        .text-secondary-perfil {
-            color: dimgray;
-        }
-
-        .hidden-input {
-            display: none !important;
-        }
-
-        .buttonMarcado {
-            background-color: #6C757D;
-            color: white;
-        }
-
-        .timeline {
-            position: relative;
-            margin: 20px 0;
-            padding-left: 30px;
-            border-left: 3px solid #dee2e6;
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .timeline-icon {
-            position: absolute;
-            left: -16px;
-            top: 0;
-            background-color: #fff;
-            color: #6c757d;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #dee2e6;
-        }
-
-        .timeline-item.completed .timeline-icon {
-            background-color: #198754;
-            color: #fff;
-            border-color: #198754;
-        }
-
-        .timeline-item.active .timeline-icon {
-            background-color: #ffc107;
-            color: #212529;
-            border-color: #ffc107;
-        }
-
-        .timeline-content {
-            margin-left: 20px;
-            color: #212529;
-        }
-
-        .timeline-item.completed .timeline-content {
-            color: #198754;
-        }
-
-        .timeline-item.active .timeline-content {
-            color: #ffc107;
-            font-weight: bold;
-        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/Css/GestionDePersonal/style.css">
+
 </head>
 <div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header text-white d-flex justify-content-between align-items-center"
-             style="background-color: steelblue;">
-            <h5 class="mb-0">
-                <i class="bi bi-people-fill me-2"></i>Gestión de Personal
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <!-- HEADER -->
+        <div class="card-header d-flex justify-content-between align-items-center px-4"
+             style="background: linear-gradient(135deg, #3a7bd5, #3a6073); color:white;">
+            <h5 class="mb-0 fw-semibold">
+                <i class="bi bi-people-fill me-2"></i> Gestión de Personal
             </h5>
-            <div style="display:flex; flex-direction:row">
-                <button class="mr-2 btn btn-light btn-sm" id="btnProcesoAutorizacion" data-bs-toggle="modal" data-bs-target="#modalSeguimiento">
-                    <i class="bi bi-clipboard-check me-1"></i> Proceso de Autorización
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-light btn-sm" id="btnProcesoAutorizacion"
+                        data-bs-toggle="modal" data-bs-target="#modalSeguimiento">
+                    <i class="bi bi-clipboard-check me-1"></i> Proceso
                 </button>
-                <button class="btn btn-light btn-sm" id="btnNuevaPlaza" data-bs-toggle="modal" data-bs-target="#modalNuevaPlaza">
-                    <i class="bi bi-person-plus-fill me-1"></i> Solicitar nueva plaza
+
+                <button class="btn btn-light btn-sm" id="btnNuevaPlaza"
+                        data-bs-toggle="modal" data-bs-target="#modalNuevaPlaza">
+                    <i class="bi bi-person-plus-fill me-1"></i> Nueva plaza
                 </button>
             </div>
         </div>
 
+        <!-- BODY -->
         <div class="card-body bg-light">
-            <table class="table table-striped align-middle text-center" ;">
-                @if (ViewData["Error"] != null)
-                {
-                    <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError" style="display:none;">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <span id="msgError">@ViewData["Error"]</span>
-                    </div>
-                }
-                <thead class="table-primary" style="background-color: steelblue">
+
+            @if (ViewData["Error"] != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="msgError">@ViewData["Error"]</span>
+                </div>
+            }
+
+            <table class="table align-middle text-center tabla-personal">
+
+                <thead>
                     <tr>
-                        <th>Codigo</th>
-                        <th>Nombres</th>
-                        <th>Puesto</th>
+                        <th>Código</th>
+                        <th class="text-start">Nombres</th>
+                        <th class="text-start">Puesto</th>
                         <th>Creado SAP</th>
                         <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @if (Model != null && Model.Any())
                     {
@@ -119,28 +67,36 @@
                         {
                             <tr>
                                 <td>@empleados.EmpID</td>
-                                <td style="text-align:start">@empleados.Nombre</td>
-                                <td>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        @empleados.Puesto
+
+                                <td class="text-start fw-medium">
+                                    @empleados.Nombre
+                                </td>
+
+                                <td class="text-start">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <span>@empleados.Puesto</span>
+
                                         <button id="btnPerfil-@(empleados.EmpID)"
-                                                class="btn btn-sm @(empleados.Perfil ? "btn-outline-success" : "btn-outline-danger")"
+                                                class="btn btn-sm rounded-circle @(empleados.Perfil ? "btn-outline-success" : "btn-outline-danger")"
                                                 data-bs-toggle="tooltip"
                                                 title="@(empleados.Perfil ? "Ver perfil" : "Agregar perfil")"
                                                 onclick="abrirModalPerfilPuesto('@empleados.Puesto',@empleados.PuestoId, @empleados.Perfil.ToString().ToLower(),'btnPerfil-@(empleados.EmpID)')">
-
-                                            <i id="ibtnPerfil-@(empleados.EmpID)" class="bi bi-file-earmark-text @(empleados.Perfil ? "text-success" : "text-danger")"></i>
+                                            <i id="ibtnPerfil-@(empleados.EmpID)"
+                                               class="bi bi-file-earmark-text"></i>
                                         </button>
                                     </div>
                                 </td>
+
                                 <td>@empleados.CreadoSAP.ToString("dd/MM/yyyy")</td>
+
                                 <td>
-                                    <i class="fas fa-check-circle @(empleados.Activo == "Y" ? "text-success" : "d-none")"></i>
-                                    <i class="fas fa-times-circle @(empleados.Activo == "N" ? "text-danger" : "d-none")"></i>
-                                    <i class="fas fa-minus-circle @(empleados.Activo == "-" ? "text-warning" : "d-none")"></i>
+                                    <span class="badge bg-success @(empleados.Activo == "Y" ? "" : "d-none")">Activo</span>
+                                    <span class="badge bg-danger @(empleados.Activo == "N" ? "" : "d-none")">Inactivo</span>
+                                    <span class="badge bg-warning text-dark @(empleados.Activo == "-" ? "" : "d-none")">Pendiente</span>
                                 </td>
+
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary"
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                             onclick="verPerfil(this)"
                                             data-nombre="@empleados.Nombre"
                                             data-id="@empleados.EmpID"
@@ -150,8 +106,9 @@
                                             data-telefono="@empleados.Telefono"
                                             data-correo="@empleados.Correo"
                                             data-sexo="@empleados.Sexo"
-                                            data-creadoSAP="@empleados.CreadoSAP.ToString("dd/MM/   yyyy")">
-                                        <i class="bi bi-person-vcard"></i> Ver Perfil
+                                            data-empId="@empleados.EmpID"
+                                            data-creadoSAP="@empleados.CreadoSAP.ToString("dd/MM/yyyy")">
+                                        <i class="bi bi-person-vcard me-1"></i> Perfil
                                     </button>
                                 </td>
                             </tr>
@@ -160,138 +117,170 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 <i class="bi bi-info-circle"></i> No se encontraron datos
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+
         </div>
     </div>
+
 </div>
 
-<div class="modal fade" id="modalNuevaPlaza" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+<<div class="modal fade" id="modalNuevaPlaza" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content modal-plaza-modern">
 
-            <div class="modal-header text-white" style="background-color:steelblue;">
-                <h5 class="modal-title" id="miModalLabel">
+            <!-- HEADER -->
+            <div class="modal-header modal-plaza-header">
+                <h5 class="modal-title">
                     <i class="bi bi-person-fill-add me-2"></i> Registrar nueva plaza
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
+            <!-- BODY -->
             <div class="modal-body">
-                <form id="formNuevaPlaza">
+                <form id="formNuevaPlaza" class="plaza-form">
 
-                    <!-- Select de puesto -->
-                    <div class="mb-3">
+                    <!-- Puesto -->
+                    <div class="form-group-modern">
                         <label class="form-label">Puesto</label>
-                        <select class="form-control" id="selectNuevaPlaza">
+                        <select class="form-select" id="selectNuevaPlaza">
                         </select>
                     </div>
 
-                    <!-- Input para nuevo puesto -->
-                    <div class="mb-3 d-none" id="divNuevoPuesto">
+                    <!-- Nuevo puesto -->
+                    <div class="form-group-modern d-none" id="divNuevoPuesto">
                         <label class="form-label">Nuevo puesto</label>
-                        <input type="text" id="inputNuevoPuesto" class="form-control" placeholder="Ingrese el nuevo puesto">
+                        <input type="text"
+                               id="inputNuevoPuesto"
+                               class="form-control"
+                               placeholder="Ingrese el nuevo puesto">
                     </div>
 
-                    <div class="mb-3">
+                    <!-- Observaciones -->
+                    <div class="form-group-modern">
                         <label class="form-label">Observaciones</label>
-                        <textarea id="PerfilObservaciones" class="form-control" rows="5" placeholder="Observaciones..." required></textarea>
+                        <textarea id="PerfilObservaciones"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Agregue observaciones relevantes..."
+                                  required></textarea>
                     </div>
+
                 </form>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle"></i> Cancelar
+            <!-- FOOTER -->
+            <div class="modal-footer modal-plaza-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    Cancelar
                 </button>
-                <button type="button" class="btn btn-success" id="btnGuardar">
-                    <i class="bi bi-check-circle"></i> Guardar
+
+                <button type="button" class="btn btn-primary" id="btnGuardar">
+                    <i class="bi bi-send me-1"></i>
+                    Enviar solicitud
                 </button>
             </div>
+
         </div>
     </div>
 </div>
 
-<!-- Modal del perfil -->
-<div class="modal fade" id="modalPerfilEmpleado" tabindex="-1" aria-labelledby="perfilEmpleadoLabel" aria-hidden="true">
+<div class="modal fade" id="modalPerfilEmpleado" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content shadow-lg border-0 rounded-2">
+        <div class="modal-content perfil-modern">
 
-            <!-- Encabezado -->
-            <div class="modal-header text-white" style="background-color:steelblue;">
-                <h5 class="modal-title" id="perfilEmpleadoLabel">
-                    <i class="bi bi-person-badge-fill me-2"></i> Perfil del Empleado
+            <!-- Header -->
+            <div class="modal-header perfil-modern-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-circle me-2"></i> Perfil del Empleado
                 </h5>
-                <button onclick="cerrarModalPerfil()" type="button" class="btn-close btn-close-white" aria-label="Cerrar"></button>
+                <button onclick="cerrarModalPerfil()"
+                        type="button"
+                        class="btn-close">
+                </button>
             </div>
 
-            <!-- Cuerpo del modal -->
+            <!-- Body -->
             <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-md-4 text-center">
+                <div class="row g-4 align-items-center">
+
+                    <!-- Perfil -->
+                    <div class="col-md-4 text-center perfil-modern-side">
                         <img id="imgPerfil"
                              src="~/Img/PerfilMale.png"
-                             class="img-fluid border shadow-sm mb-3"
-                             width="120" height="120"
-                             alt="Foto empleado"
-                             style="border-radius:50%; object-fit:cover; aspect-ratio:1/1;">
+                             class="perfil-avatar"
+                             alt="Foto empleado">
 
-                        <h5 id="perfilNombre">María López</h5>
-                        <span id="perfilActivo">Activo</span><br />
-                        <span id="perfilSexo"></span>
+                        <h5 id="perfilNombre" class="mt-3 mb-1 fw-semibold"></h5>
+                        <input class="d-none" id="perfilEmpId" />
+
+                        <span id="perfilActivo" class="badge badge-status mb-1"></span><br>
+                        <span id="perfilSexo" class="text-muted small"></span>
                         <span id="perfilId" hidden></span>
                     </div>
 
+                    <!-- Datos -->
                     <div class="col-md-8">
-                        <table class="table table-borderless align-middle mb-0">
-                            <tr>
-                                <th class="text-secondary-perfil">Puesto:</th>
-                                <td id="perfilPuesto">Supervisora de Producción</td>
-                            </tr>
-                            <tr>
-                                <th class="text-secondary-perfil">Departamento:</th>
-                                <td id="perfilDepartamento">Producción</td>
-                            </tr>
-                            <tr>
-                                <th class="text-secondary-perfil">Fecha de Registro SAP:</th>
-                                <td id="perfilCreadoSAP">15/03/2022</td>
-                            </tr>
-                            <tr>
-                                <th class="text-secondary-perfil">Correo:</th>
-                                <td id="perfilCorreo">maria.lopez@empresa.com</td>
-                            </tr>
-                            <tr>
-                                <th class="text-secondary-perfil">Teléfono:</th>
-                                <td id="perfilTelefono">5555-1234</td>
-                            </tr>
-                        </table>
+                        <div class="perfil-data">
+                            <div class="perfil-row">
+                                <span>Puesto</span>
+                                <strong id="perfilPuesto"></strong>
+                            </div>
+                            <div class="perfil-row">
+                                <span>Departamento</span>
+                                <strong id="perfilDepartamento"></strong>
+                            </div>
+                            <div class="perfil-row">
+                                <span>Registro SAP</span>
+                                <strong id="perfilCreadoSAP"></strong>
+                            </div>
+                            <div class="perfil-row">
+                                <span>Correo</span>
+                                <strong id="perfilCorreo"></strong>
+                            </div>
+                            <div class="perfil-row">
+                                <span>Teléfono</span>
+                                <strong id="perfilTelefono"></strong>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Pie del modal -->
-            <div class="modal-footer d-flex justify-content-between">
-                <button onclick="cerrarModalPerfil()" type="button" class="btn btn-outline-secondary">
-                    <i class="bi bi-x-circle"></i> Cerrar
+            <!-- Footer -->
+            <div class="modal-footer perfil-modern-footer">
+                <button onclick="cerrarModalPerfil()"
+                        type="button"
+                        class="btn btn-light">
+                    Cerrar
                 </button>
 
-                <button id="btn-DetalleProceso" type="button" class="btn btn-warning hidden-input" onclick="verProcesoBaja()">
-                    <i class="bi bi-arrow-repeat"></i> Ver Proceso
-                </button>
-                <button id="btn-SolicitaBaja" type="button"
-                        class="btn btn-outline-dark btn-sm hidden-input"
-                        onclick="verSolicitudBaja()">
-                    <i class="bi bi-box-arrow-down"></i> Solicitar Baja
-                </button>
+                <div class="d-flex gap-2">
+                    <button id="btn-DetalleProceso"
+                            class="btn btn-warning hidden-input"
+                            onclick="verProcesoBaja()">
+                        Ver Proceso
+                    </button>
+
+                    <button id="btn-SolicitaBaja"
+                            class="btn btn-dark btn-sm hidden-input"
+                            onclick="verSolicitudBaja()">
+                        Solicitar Baja
+                    </button>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="modalSolicitudBaja" tabindex="-1" aria-labelledby="modalSolicitudBajaLabel" aria-hidden="true">
@@ -425,87 +414,98 @@
     </div>
 </div>
 <!-- Modal Seguimiento de Proceso -->
-<div class="modal fade" id="modalTrackingProceso" tabindex="-1" aria-labelledby="modalTrackingLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+<div class="modal fade" id="modalTrackingProceso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
 
             <!-- Header -->
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalTrackingLabel">
+                <h5 class="modal-title">
                     <i class="bi bi-arrow-repeat me-2"></i> Seguimiento del Proceso de Baja
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar" onclick="cerrarModalTrackinDeBaja()"></button>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        onclick="cerrarModalTrackinDeBaja()">
+                </button>
             </div>
 
             <!-- Body -->
-            <div class="modal-body">
+            <div class="modal-body px-5">
                 <div class="timeline">
 
                     <!-- Estado 0 -->
-                    <div class="timeline-item completed">
-                        <div class="timeline-icon"><i class="bi bi-check-circle-fill"></i></div>
+                    <div id="TrackingPendienteColor" class="timeline-item completed">
+                        <div class="timeline-icon"><i id="TrackingPendienteIcono" class="bi bi-check-circle-fill"></i></div>
                         <div class="timeline-content">Pendiente</div>
                     </div>
 
                     <!-- Estado 1 -->
-                    <div class="timeline-item completed">
-                        <div class="timeline-icon"><i class="bi bi-check-circle-fill"></i></div>
+                    <div id="TrackingAutorizadoGTHColor" class="timeline-item completed">
+                        <div class="timeline-icon"><i id="TrackingAutorizadoGTHIcono" class="bi bi-check-circle-fill"></i></div>
                         <div class="timeline-content">Autorizado por GTH</div>
                     </div>
 
-                    <!-- Estado 2 -->
-                    <div class="timeline-item completed">
-                        <div class="timeline-icon"><i class="bi bi-check-circle-fill"></i></div>
-                        <div class="timeline-content">Tablero de Obligaciones</div>
-                    </div>
+                    <!-- Estado 2 - CARTA -->
+                    <div id="TrackingCartaColor" class="timeline-item completed">
+                        <div class="timeline-icon">
+                            <i id="TrackingCartaIcono" class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div class="timeline-content ">
+                            Carta de despido | Renuncia
 
-                    <!-- Estado 3 -->
-                    <div class="timeline-item active">
-                        <div class="timeline-icon"><i class="bi bi-hourglass-split"></i></div>
-                        <div class="timeline-content fw-semibold">Emisión de solvencia administrativa</div>
+                            <div id="btnCargarCarta" class="mt-3">
+                                <button class="btn btn-outline-primary btn-sm"
+                                        onclick="emitirCartaDespido()">
+                                    <i class="bi bi-file-earmark-plus"></i> Cargar carta
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
                     <!-- Estado 4 -->
-                    <div class="timeline-item">
-                        <div class="timeline-icon"><i class="bi bi-circle"></i></div>
-                        <div class="timeline-content">Carta de despido - Emisión</div>
+                    <div id="TrackingSolvenciaColor" class="timeline-item">
+                        <div class="timeline-icon"><i id="TrackingSolvenciaIcono" class="bi bi-circle"></i></div>
+                        <div class="timeline-content">Emisión de solvencia administrativa</div>
                     </div>
 
                     <!-- Estado 5 -->
-                    <div class="timeline-item">
-                        <div class="timeline-icon"><i class="bi bi-circle"></i></div>
+                    <div id="TrackingUsuariosOperativosColor" class="timeline-item">
+                        <div class="timeline-icon"><i id="TrackingUsuariosOperativosIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Bloqueo de usuarios operativos</div>
                     </div>
 
                     <!-- Estado 6 -->
-                    <div class="timeline-item">
-                        <div class="timeline-icon"><i class="bi bi-circle"></i></div>
+                    <div id="TrackingConfirmacionPagoColor" class="timeline-item">
+                        <div class="timeline-icon"><i id="TrackingConfirmacionPagoIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Confirmación de emisión de pago</div>
                     </div>
 
                     <!-- Estado 7 -->
-                    <div class="timeline-item">
-                        <div class="timeline-icon"><i class="bi bi-circle"></i></div>
+                    <div id="TrackingCargaLiquidacionColor" class="timeline-item">
+                        <div class="timeline-icon"><i id="TrackingCargaLiquidacionIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Carga de liquidación autorizada</div>
                     </div>
 
                     <!-- Estado 8 -->
-                    <div class="timeline-item">
-                        <div class="timeline-icon"><i class="bi bi-circle"></i></div>
+                    <div id="TrackingUsuariosContablesColor" class="timeline-item">
+                        <div class="timeline-icon"><i id="TrackingUsuariosContablesIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Bloqueo de usuarios contables</div>
                     </div>
+
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="cerrarModalTrackinDeBaja()">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cerrar
                 </button>
             </div>
+
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="modalPerfilPuesto" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -597,44 +597,49 @@
     </div>
 </div>
 <!-- Modal Seguimiento Solicitudes -->
-<div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-labelledby="modalSeguimientoLabel" aria-hidden="true">
+<div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content modal-seguimiento-modern">
 
             <!-- Header -->
-            <div class="modal-header text-white" style="background-color: steelblue; ">
-                <h5 class="modal-title" id="modalSeguimientoLabel">
+            <div class="modal-header modal-seguimiento-header">
+                <h5 class="modal-title">
                     <i class="bi bi-clock-history me-2"></i> Seguimiento de solicitudes
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <!-- Body -->
             <div class="modal-body">
+
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
-                        <thead class="table-light">
+                    <table class="table align-middle tabla-seguimiento">
+                        <thead>
                             <tr>
-                                <th style="width: 160px;">Fecha de solicitud</th>
+                                <th style="width:170px;">Fecha de solicitud</th>
                                 <th>Posición</th>
-                                <th style="width: 150px; text-align:center;">Estado</th>
+                                <th style="width:150px; text-align:center;">Estado</th>
                             </tr>
                         </thead>
                         <tbody id="tablaSeguimiento">
+                            <!-- dinámico -->
                         </tbody>
                     </table>
                 </div>
+
             </div>
 
             <!-- Footer -->
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
+            <div class="modal-footer modal-seguimiento-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">
                     Cerrar
                 </button>
             </div>
+
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -756,6 +761,7 @@
             document.getElementById("perfilCorreo").innerText = button.getAttribute("data-correo");
             document.getElementById("perfilSexo").innerText = button.getAttribute("data-sexo");
             document.getElementById("perfilCreadoSAP").innerText = button.getAttribute("data-creadoSAP");
+            document.getElementById("perfilEmpId").value = button.getAttribute("data-empId");
 
             const verifacion = await VerSolicitudPendiente(button.getAttribute("data-id"));
 
@@ -966,9 +972,110 @@
 
         }
 
-        function verProcesoBaja() {
+        async function verProcesoBaja() {
+            const empId = document.getElementById("perfilEmpId").value;
+
+            const response = await fetch(`/GestionDePersonal/ObtenerTrackingDeBaja?empId=${empId}`)
+            const result = await response.json();
+
+            if (result.success) {
+
+                if (result.data.Pendiente) {
+                    document.getElementById("TrackingPendienteColor").classList.add("completed");
+                    document.getElementById("TrackingPendienteIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingPendienteIcono").classList.remove("bi-circle");
+                }
+                else {
+                    document.getElementById("TrackingPendienteColor").classList.remove("completed");
+                    document.getElementById("TrackingPendienteIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingPendienteIcono").classList.add("bi-circle");
+                }
+
+                if (result.data.AutorizadoGTH) {
+                    document.getElementById("TrackingAutorizadoGTHColor").classList.add("completed");
+                    document.getElementById("TrackingAutorizadoGTHIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingAutorizadoGTHIcono").classList.remove("bi-circle");
+                    document.getElementById("btnCargarCarta").classList.remove("d-none");
+                }
+                else {
+                    document.getElementById("TrackingAutorizadoGTHColor").classList.remove("completed");
+                    document.getElementById("TrackingAutorizadoGTHIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingAutorizadoGTHIcono").classList.add("bi-circle");
+                    document.getElementById("btnCargarCarta").classList.add("d-none");
+
+                }
+
+                if (result.data.Carta) {
+                    document.getElementById("TrackingCartaColor").classList.add("completed");
+                    document.getElementById("TrackingCartaIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingCartaIcono").classList.remove("bi-circle");
+                }
+                else {
+                    document.getElementById("TrackingCartaColor").classList.remove("completed");
+                    document.getElementById("TrackingCartaIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingCartaIcono").classList.add("bi-circle");
+                }
+
+                if (result.data.Solvencia) {
+                    document.getElementById("TrackingSolvenciaColor").classList.add("completed");
+                    document.getElementById("TrackingSolvenciaIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingSolvenciaIcono").classList.remove("bi-circle");
+                }
+                else {
+                    document.getElementById("TrackingSolvenciaColor").classList.remove("completed");
+                    document.getElementById("TrackingSolvenciaIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingSolvenciaIcono").classList.add("bi-circle");
+                }
+
+                if (result.data.UsuariosOperativos) {
+                    document.getElementById("TrackingUsuariosOperativosColor").classList.add("completed");
+                    document.getElementById("TrackingUsuariosOperativosIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingUsuariosOperativosIcono").classList.remove("bi-circle");
+                }
+                else {
+                    document.getElementById("TrackingUsuariosOperativosColor").classList.remove("completed");
+                    document.getElementById("TrackingUsuariosOperativosIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingUsuariosOperativosIcono").classList.add("bi-circle");
+                }
+                if (result.data.ConfirmacionPago) {
+                    document.getElementById("TrackingConfirmacionPagoColor").classList.add("completed");
+                    document.getElementById("TrackingConfirmacionPagoIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingConfirmacionPagoIcono").classList.remove("bi-circle");
+                }
+                else {
+                    document.getElementById("TrackingConfirmacionPagoColor").classList.remove("completed");
+                    document.getElementById("TrackingConfirmacionPagoIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingConfirmacionPagoIcono").classList.add("bi-circle");
+                }
+
+                if (result.data.CargaLiquidacion) {
+                    document.getElementById("TrackingCargaLiquidacionColor").classList.add("completed");
+                    document.getElementById("TrackingCargaLiquidacionIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingConfirmacionPagoIcono").classList.remove("bi-circle");
+                }
+                else {
+                    document.getElementById("TrackingCargaLiquidacionColor").classList.remove("completed");
+                    document.getElementById("TrackingCargaLiquidacionIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingCargaLiquidacionIcono").classList.add("bi-circle");
+                }
+
+                if (result.data.UsuariosContables) {
+                    document.getElementById("TrackingUsuariosContablesColor").classList.add("completed");
+                    document.getElementById("TrackingUsuariosContablesIcono").classList.add("bi-check-circle-fill");
+                    document.getElementById("TrackingUsuariosContablesIcono").classList.remove("bi-circle");
+                }
+                else {
+                    document.getElementById("TrackingUsuariosContablesColor").classList.remove("completed");
+                    document.getElementById("TrackingUsuariosContablesIcono").classList.remove("bi-check-circle-fill");
+                    document.getElementById("TrackingUsuariosContablesIcono").classList.add("bi-circle");
+                }
+
+            }
+
+            console.log(result);
             modalTrackingProceso.show();
         }
+
 
         function cerrarModalTrackinDeBaja() {
             modalTrackingProceso.hide();
@@ -1148,12 +1255,12 @@
                     }
 
                     body += ` <tr>
-                                     <td>${convertirFechaDotNet(item.FechaDeSolicitud)}</td>
-                                     <td>${item.Posicion}</td>
-                                     <td class="text-center">
-                                         <span class="${color}">${estado}</span>
-                                     </td>
-                                 </tr>`
+                                                             <td>${convertirFechaDotNet(item.FechaDeSolicitud)}</td>
+                                                             <td>${item.Posicion}</td>
+                                                             <td class="text-center">
+                                                                 <span class="${color}">${estado}</span>
+                                                             </td>
+                                                         </tr>`
                 });
 
                 container.innerHTML = body;
