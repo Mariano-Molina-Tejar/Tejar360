@@ -314,7 +314,16 @@ namespace DAL
                     new { EmpId = empId }
                     );
             }
+        }
 
+        public async Task<bool> TieneRequisicion(int code)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var sql = @"SELECT CASE WHEN [Name] IS NULL THEN 0 ELSE 1 END AS Requisicion FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_B] WHERE code = @Code";
+
+                return await conn.ExecuteScalarAsync<bool>(sql, new { Code = code});
+            }
         }
     }
 }

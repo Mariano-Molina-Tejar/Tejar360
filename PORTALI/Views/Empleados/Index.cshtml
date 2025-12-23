@@ -10,85 +10,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/Css/Empleados/style.css" rel="stylesheet">
     <style>
-        .lista-equipos {
-            border: 2px dashed #ccc;
-            min-height: 300px;
-            padding: 10px;
-            border-radius: 8px;
-            background: #fafafa;
-        }
-
-        .equipo-item {
-            padding: 8px 12px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            cursor: grab;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-            .equipo-item i {
-                font-size: 18px;
-                color: #0d6efd;
-            }
-
-            .equipo-item.dragging {
-                opacity: 0.4;
-            }
-
-        .icon-option {
-            border: 2px solid #ccc;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-            .icon-option:hover {
-                border-color: #0d6efd;
-                background: #eaf2ff;
-            }
-
-            .icon-option.selected {
-                border-color: #0d6efd;
-                background: #e0ecff;
-            }
-
-        .equipo-item-added {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 8px 10px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-            .equipo-item-added i {
-                font-size: 22px;
-                color: #0d6efd;
-            }
-
-        .equipo-delete {
-            margin-left: auto;
-            cursor: pointer;
-            color: #dc3545;
-        }
-
-            .equipo-delete:hover {
-                color: #a71d2a;
-            }
-
-        .btn-equipos {
-            width: 42px; /* ajusta según tu gusto */
-            height: 32px; /* igual al btn-sm */
-            padding: 0;
-        }
+        
     </style>
 </head>
 <!-- Bootstrap 5.3.3 -->
@@ -96,99 +20,157 @@
 <body>
     <div class="container mt-4">
         <div class="card shadow-sm border-0">
-            <div class="card mb-3">
-
-                <div class="card-body">
+            <div class="card card-filtros mb-3">
+                <div class="card-body"> 
 
                     <div class="row g-3 align-items-end">
 
                         <!-- Filtro por Nombre -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Nombre</label>
-                            <input type="text" id="filtroNombre" class="form-control" placeholder="Buscar por nombre...">
+                            <label class="form-label filtro-label">Nombre</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text"
+                                       id="filtroNombre"
+                                       class="form-control"
+                                       placeholder="Buscar por nombre...">
+                            </div>
                         </div>
 
                         <!-- Filtro por Estado -->
                         <div class="col-md-3">
-                            <label class="form-label fw-bold">Estado</label>
+                            <label class="form-label filtro-label">Estado</label>
                             <select id="filtroEstado" class="form-select">
                                 <option value="">Todos</option>
                                 <option value="Y">Activo</option>
                                 <option value="N">Inactivo</option>
                             </select>
                         </div>
+
                     </div>
                 </div>
-                <div class="text-end px-3 pb-2">
-                    <span class="badge bg-primary fs-6" id="lblResultados">
-                        <span id="resultadosEncontrados">@Model.Empleados.Count()</span> resultados encontrados
-                    </span>
+
+                <div class="card-footer filtros-footer d-flex justify-content-between align-items-center">
+
+                    <!-- IZQUIERDA -->
+                    <div class="d-flex gap-2">
+                        <span class="badge badge-resultados" id="lblResultados">
+                            <span id="resultadosEncontrados">@Model.Empleados.Count()</span>
+                            Resultados encontrados
+                        </span>
+                    </div>
+
+                    <!-- DERECHA -->
+                    <div>
+                       
+                        <span class="badge badge-nuevo">
+                            <span>@Model.Empleados.Where(x => x.Nuevo).Count()</span>
+                            Nuevos
+                        </span>
+
+                        <span class="badge badge-activos">
+                            <span>@Model.Empleados.Where(x => x.Activo == "Y").Count()</span>
+                            Activos
+                        </span>
+
+                        <span class="badge badge-inactivos">
+                            <span>@Model.Empleados.Where(x => x.Activo == "N").Count()</span>
+                            Inactivos
+                        </span>
+                    </div>
+
                 </div>
+
             </div>
 
-            <div class="card-header text-white d-flex justify-content-between align-items-center"
-                 style="background-color: steelblue;">
 
-                <h5 class="mb-0">
-                    <i class="bi bi-file-earmark-person-fill me-2"></i> Datos maestros de empleados
+            <div class="card-header header-empleados d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-file-earmark-person-fill me-2"></i>
+                    Datos maestros de empleados
                 </h5>
 
-                <div style="text-align:end">
-                    <button class="btn btn-light btn-sm" id="btnEquipos">
-                        <i class="bi bi-laptop"></i> Equipos
-                    </button>
-                    <button class="btn btn-light btn-sm" id="btnPuestos">
-                        <i class="bi bi-briefcase"></i> Posiciones
+                <div class="d-flex gap-2">
+
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-3"
+                            id="btnEquipos">
+                        <i class="bi bi-laptop me-1"></i> Equipos
                     </button>
 
-                    <button class="btn btn-light btn-sm" id="btnDepartamentos">
-                        <i class="bi bi-building"></i> Departamentos
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-3"
+                            id="btnPuestos">
+                        <i class="bi bi-briefcase me-1"></i> Posiciones
                     </button>
+
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-3"
+                            id="btnDepartamentos">
+                        <i class="bi bi-building me-1"></i> Departamentos
+                    </button>
+
                 </div>
             </div>
+
             <div class="card-body bg-light">
-                <table class="table table-hover align-middle text-center">
-                    <thead class="table-success">
+                <table class="table align-middle text-center tabla-dashboard tabla-empleados">
+                    <thead>
                         <tr>
-                            <th>Id</th>
-                            <th>Nombress</th>
-                            <th>Posicion</th>
+                            <th>#</th>
+                            <th class="text-start">Nombre</th>
+                            <th>Posición</th>
                             <th>Departamento</th>
                             <th>Estado</th>
                             <th>Jefe Inmediato</th>
-                            <th>Accion</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="bodyEmpleados">
-                        @if (Model != null)
-                        {
-                            foreach (var empleado in Model.Empleados.OrderByDescending(x => x.Nuevo == true).ThenBy(x => x.EmpId))
-                            {
-                                <tr>
-                                    <td>@empleado.EmpId</td>
-                                    <td>@empleado.Nombre</td>
-                                    <td>@empleado.Puesto</td>
-                                    <td>@empleado.Departamento</td>
-                                    <td>
-                                        @if (empleado.Activo == "Y")
-                                        {
-                                            <span class="badge bg-success me-1">Activo</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger me-1">Inactivo</span>
-                                        }
 
-                                        @if (empleado.Nuevo)
-                                        {
-                                            <span class="badge bg-primary">Nuevo</span>
-                                        }
+                    <tbody id="bodyEmpleados">
+                        @if (Model != null && Model.Empleados.Any())
+                        {
+                            foreach (var empleado in Model.Empleados
+                                     .OrderByDescending(x => x.Nuevo)
+                                     .ThenBy(x => x.EmpId))
+                            {
+                                <tr class="@(empleado.Nuevo ? "fila-nuevo" : "")">
+
+                                    <td class="fw-semibold text-primary">
+                                        @empleado.EmpId
+                                    </td>
+
+                                    <!-- Nombre + badge -->
+                                    <td class="text-start">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">@empleado.Nombre</span>
+
+                                            @if (empleado.Nuevo)
+                                            {
+                                                <span class="badge bg-primary rounded-pill px-3">
+                                                    Nuevo
+                                                </span>
+                                            }
+                                        </div>
+                                    </td>
+
+                                    <td>@empleado.Puesto</td>
+
+                                    <td>@empleado.Departamento</td>
+
+                                    <td>
+                                        <span class="badge rounded-pill @(empleado.Activo == "Y" ? "bg-success" : "bg-danger")">
+                                            @(empleado.Activo == "Y" ? "Activo" : "Inactivo")
+                                        </span>
                                     </td>
 
                                     <td>@empleado.JefeInmediato</td>
+
                                     <td>
-                                        <button class="btn btn-sm btn-primary" title="Ver perfil" onclick="abrirModalEmpleado(@(empleado.EmpId))">
-                                            <i class="bi bi-person-vcard"></i>
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                                title="Ver perfil"
+                                                onclick="abrirModalEmpleado(@empleado.EmpId)">
+                                            <i class="bi bi-person-vcard me-1"></i> Perfil
                                         </button>
                                     </td>
                                 </tr>
@@ -197,25 +179,27 @@
                         else
                         {
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
-                                    <i class="bi bi-info-circle"></i> No se encontraron solicitudes
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="bi bi-info-circle"></i> No se encontraron empleados
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+
+
             </div>
         </div>
     </div>
 
     <div class="modal fade" id="modalPosiciones" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content modal-posiciones">
 
                 <!-- HEADER -->
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header modal-posiciones-header">
                     <h5 class="modal-title">
-                        <i class="bi bi-list-task"></i> Posicion de empleado - definicion
+                        <i class="bi bi-briefcase-fill me-2"></i> Definición de posiciones
                     </h5>
                     <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -223,233 +207,320 @@
                 <!-- BODY -->
                 <div class="modal-body">
 
-                    <!-- FORMULARIO -->
-                    <form id="formPosicion">
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Nombre posición</label>
-                                <input type="text" id="posNombre" class="form-control"
-                                       placeholder="Ej: Supervisor" maxlength="20"
-                                       required
-                                       oninput="actualizarContador()">
-                                <small id="contadorPosNombre" class="text-muted">20 caracteres restantes</small>
-                            </div>
-
-                            <div class="col-md-8">
-                                <label class="form-label fw-bold">Descripción</label>
-                                <input type="text" id="posDescripcion" class="form-control" placeholder="Descripción breve..." required>
-                            </div>
+                    <!-- FORM CARD -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light fw-semibold">
+                            <i class="bi bi-plus-circle me-1 text-success"></i> Nueva posición
                         </div>
 
-                        <!-- BOTÓN AGREGAR -->
-                        <div class="text-end mb-3">
-                            <button class="btn btn-success btn-sm" id="btnAgregarPosicion">
-                                <i class="bi bi-plus-circle"></i> Agregar
-                            </button>
-                        </div>
-                    </form>
-                    <!-- TABLA -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="tablaPosiciones">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Nombre Posición</th>
-                                    <th>Descripción</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="posicionesBody">
-                                @foreach (var posicion in Model.Posicion)
-                                {
-                                    <tr>
-                                        <th>@posicion.NoPosicion</th>
-                                        <th>@posicion.Nombre</th>
-                                        <th>@posicion.Descripcion</th>
-                                        <th style="text-align:center">
-                                            <button id="btnPerfil-@(posicion.NoPosicion)"
-                                                    class="btn btn-sm @(posicion.Perfil ? "btn-outline-success" : "btn-outline-danger")"
-                                                    data-bs-toggle="tooltip"
-                                                    title="@(posicion.Perfil ? "Ver perfil" : "Agregar perfil")"
-                                                    onclick="abrirModalPerfilPuesto('@posicion.Nombre',@posicion.NoPosicion, @posicion.Perfil.ToString().ToLower(), 'btnPerfil-@(posicion.NoPosicion)')">
+                        <div class="card-body">
+                            <form id="formPosicion">
 
-                                                <i id="ibtnPerfil-@(posicion.NoPosicion)" class="bi bi-file-earmark-text @(posicion.Perfil ? "text-success" : "text-danger")"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-primary btn-cuadrado"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Equipo asignado"
-                                                    onclick="verEquiposAsignados('@(posicion.NoPosicion)')">
-                                                <i class="bi bi-laptop text-primary"></i>
-                                            </button>
-                                        </th>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                                <div class="row g-3 align-items-end">
+
+                                    <!-- Nombre -->
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Nombre de la posición</label>
+                                        <input type="text"
+                                               id="posNombre"
+                                               class="form-control"
+                                               placeholder="Ej: Supervisor"
+                                               maxlength="20"
+                                               required
+                                               oninput="actualizarContador()">
+                                        <small id="contadorPosNombre" class="text-muted">
+                                            20 caracteres restantes
+                                        </small>
+                                    </div>
+
+                                    <!-- Descripción -->
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Descripción</label>
+                                        <input type="text"
+                                               id="posDescripcion"
+                                               class="form-control"
+                                               placeholder="Descripción breve..."
+                                               required>
+                                    </div>
+
+                                    <!-- Botón -->
+                                    <div class="col-md-2 text-end">
+                                        <button class="btn btn-success w-100" id="btnAgregarPosicion">
+                                            <i class="bi bi-plus-circle"></i> Agregar
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- TABLA CARD -->
+                    <div class="card shadow-sm border-0">
+
+                        <div class="card-header bg-light fw-semibold d-flex justify-content-between">
+                            <span>
+                                <i class="bi bi-list-task me-1 text-primary"></i> Posiciones registradas
+                            </span>
+                            <span class="badge bg-primary">
+                                @Model.Posicion.Count()
+                            </span>
+                        </div>
+
+                        <div class="card-body p-0">
+
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0" id="tablaPosiciones">
+
+                                    <thead class="table-primary text-center">
+                                        <tr>
+                                            <th style="width:80px;">#</th>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th style="width:160px;">Acciones</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="posicionesBody">
+                                        @foreach (var posicion in Model.Posicion)
+                                        {
+                                            <tr>
+                                                <td class="text-center fw-semibold">
+                                                    @posicion.NoPosicion
+                                                </td>
+
+                                                <td>@posicion.Nombre</td>
+                                                <td class="text-muted">@posicion.Descripcion</td>
+
+                                                <td class="text-center">
+                                                    <div class="btn-group">
+
+                                                        <button id="btnPerfil-@(posicion.NoPosicion)"
+                                                                class="btn btn-sm @(posicion.Perfil ? "btn-outline-success" : "btn-outline-danger")"
+                                                                data-bs-toggle="tooltip"
+                                                                title="@(posicion.Perfil ? "Ver perfil" : "Agregar perfil")"
+                                                                onclick="abrirModalPerfilPuesto('@posicion.Nombre',
+                                                                @posicion.NoPosicion,
+                                                                @posicion.Perfil.ToString().ToLower(),
+                                                                'btnPerfil-@(posicion.NoPosicion)')">
+                                                            <i id="ibtnPerfil-@(posicion.NoPosicion)"
+                                                               class="bi bi-file-earmark-text"></i>
+                                                        </button>
+
+                                                        <button class="btn btn-sm btn-outline-primary"
+                                                                data-bs-toggle="tooltip"
+                                                                title="Equipo asignado"
+                                                                onclick="verEquiposAsignados('@(posicion.NoPosicion)')">
+                                                            <i class="bi bi-laptop"></i>
+                                                        </button>
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+
+                                </table>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
                 <!-- FOOTER -->
-                <div class="modal-footer">
+                <div class="modal-footer bg-light">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
+                        <i class="bi bi-x-circle me-1"></i> Cerrar
                     </button>
                 </div>
+
             </div>
         </div>
     </div>
+
+
     <div class="modal fade" id="modalEmpleado" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content modal-empleado-modern">
 
-                <!-- Header -->
-                <div class="modal-header bg-primary text-white">
+                <!-- HEADER -->
+                <div class="modal-header modal-empleado-header">
                     <h5 class="modal-title">
-                        <i class="bi bi-person-fill"></i> Datos Maestros de Empleado
+                        <i class="bi bi-person-fill me-2"></i> Datos Maestros de Empleado
                     </h5>
                     <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
-                <!-- Body -->
+                <!-- BODY -->
                 <div class="modal-body">
-
                     <form id="formEmpleado">
-                        <div class="row g-3">
 
-                            <!-- Columna izquierda -->
-                            <div class="col-md-6">
+                        <div class="row g-4">
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Nombre</label>
-                                    <input type="text" class="form-control" id="firstName">
-                                </div>
-                                <div class="form-check mb-3 d-" style="visibility: hidden">
-                                    <input class="form-check-input" type="checkbox" id="Active" checked>
-                                    <label class="form-check-label fw-bold" for="Active">
-                                        Empleado activo
-                                    </label>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Segundo nombre</label>
-                                    <input type="text" class="form-control" id="middleName">
+                            <!-- COLUMNA FOTO -->
+                            <div class="col-md-3">
+
+                                <div class="empleado-foto-card text-center">
+                                    <img id="imgEmpleado"
+                                         src="/Img/PerfilMale.png"
+                                         class="img-fluid rounded-circle mb-3"
+                                         alt="Foto empleado">
+
+                                    @*<h6 class="fw-semibold mb-1">Foto del empleado</h6>
+                                    <small class="text-muted">
+                                        Se usará en perfiles y credenciales
+                                    </small>*@
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Apellido</label>
-                                    <input type="text" class="form-control" id="lastName">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Denominación de función</label>
-                                    <input type="text" class="form-control" id="jobTitle">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Posición</label>
-                                    <select id="position" class="form-select">
-                                        @foreach (var posiciones in Model.Posicion)
-                                        {
-                                            <option value="@(posiciones.NoPosicion)">@posiciones.Descripcion</option>
-                                        }
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Departamento</label>
-                                    <select id="dept" class="form-select">
-                                        @foreach (var departamentos in Model.Departamentos)
-                                        {
-                                            <option value="@(departamentos.Code)">@departamentos.Remarks</option>
-                                        }
-                                    </select>
-                                </div>
                             </div>
 
-                            <!-- Columna derecha -->
-                            <div class="col-md-6">
+                            <!-- COLUMNA FORMULARIO -->
+                            <div class="col-md-9">
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Código de empleado</label>
-                                    <input type="text" class="form-control" id="empID" disabled>
-                                </div>
-
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="Active" checked>
-                                    <label class="form-check-label fw-bold" for="Active">
-                                        Empleado activo
-                                    </label>
-                                </div>
                                 <div class="row g-3">
 
+                                    <!-- Columna izquierda -->
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold">Teléfono móvil</label>
-                                        <input type="text" class="form-control" id="mobile">
+
+                                        <div class="form-group-modern">
+                                            <label>Nombre</label>
+                                            <input type="text" class="form-control" id="firstName">
+                                        </div>
+
+                                        <div class="form-group-modern d-none">
+                                            <input class="form-check-input" type="checkbox" id="Active" checked>
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Segundo nombre</label>
+                                            <input type="text" class="form-control" id="middleName">
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Apellido</label>
+                                            <input type="text" class="form-control" id="lastName">
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Denominación de función</label>
+                                            <input type="text" class="form-control" id="jobTitle">
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Posición</label>
+                                            <select id="position" class="form-select">
+                                                @foreach (var posiciones in Model.Posicion)
+                                                {
+                                                    <option value="@(posiciones.NoPosicion)">
+                                                        @posiciones.Descripcion
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Departamento</label>
+                                            <select id="dept" class="form-select">
+                                                @foreach (var departamentos in Model.Departamentos)
+                                                {
+                                                    <option value="@(departamentos.Code)">
+                                                        @departamentos.Remarks
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+
                                     </div>
 
+                                    <!-- Columna derecha -->
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold">Teléfono de casa</label>
-                                        <input type="text" class="form-control" id="hometel">
+
+                                        <div class="form-group-modern">
+                                            <label>Código de empleado</label>
+                                            <input type="text" class="form-control" id="empID" disabled>
+                                        </div>
+
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="Active" checked>
+                                            <label class="form-check-label fw-semibold">
+                                                Empleado activo
+                                            </label>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Teléfono móvil</label>
+                                                <input type="text" class="form-control" id="mobile">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Teléfono de casa</label>
+                                                <input type="text" class="form-control" id="hometel">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Correo electrónico</label>
+                                            <input type="email" class="form-control" id="email">
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Jefe Inmediato</label>
+                                            <select id="U_JefeInmediato" class="form-select">
+                                                @foreach (var empleados in Model.Empleados)
+                                                {
+                                                    <option value="@(empleados.EmpId)">
+                                                        @empleados.Nombre
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Tienda Asignada</label>
+                                            <select id="U_tienda" class="form-select">
+                                                @foreach (var tiendas in Model.Tiendas)
+                                                {
+                                                    <option value="@(tiendas.WhsCode)">
+                                                        @tiendas.WhsName
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group-modern">
+                                            <label>Área</label>
+                                            <select id="U_tienda" class="form-select">
+                                                @foreach (var areas in Model.Areas)
+                                                {
+                                                    <option value="@(areas.FldValue)">
+                                                        @areas.Descr
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Correo electrónico</label>
-                                    <input type="email" class="form-control" id="email">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Jefe Inmediato</label>
-                                    <select id="U_JefeInmediato" class="form-select">
-                                        @foreach (var empleados in Model.Empleados)
-                                        {
-                                            <option value="@(empleados.EmpId)">@empleados.Nombre</option>
-                                        }
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Tienda Asignada</label>
-                                    <select id="U_tienda" class="form-select">
-                                        @foreach (var tiendas in Model.Tiendas)
-                                        {
-                                            <option value="@(tiendas.WhsCode)">@tiendas.WhsName</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Area</label>
-                                    <select id="U_tienda" class="form-select">
-                                        @foreach (var areas in Model.Areas)
-                                        {
-                                            <option value="@(areas.FldValue)">@areas.Descr</option>
-                                        }
-                                    </select>
-                                </div>
                             </div>
                         </div>
                     </form>
                 </div>
 
-                <!-- Footer -->
-                <div class="modal-footer">
-                    <div style="display:flex; align-content:space-between">
-                        @*<div>
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">
-                                <i class="bi bi-x-circle"></i> Cerrar
-                            </button>
-                        </div>*@
-                        <div>
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">
-                                <i class="bi bi-x-circle"></i> Cerrar
-                            </button>
-                            <button class="btn btn-primary" id="btnGuardarEmpleado">
-                                <i class="bi bi-save"></i> Guardar
-                            </button>
-                        </div>
-                    </div>
+                <!-- FOOTER -->
+                <div class="modal-footer modal-empleado-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cerrar
+                    </button>
+                    <button class="btn btn-primary rounded-pill px-4" id="btnGuardarEmpleado">
+                        <i class="bi bi-save me-1"></i> Guardar
+                    </button>
                 </div>
+
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="modalPerfilPuesto" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow">
@@ -551,63 +622,103 @@
             </div>
         </div>
     </div>
-    <!-- Modal Departamentos -->
     <div class="modal fade" id="modalDepartamentos" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content modal-departamentos">
 
-                <!-- Header -->
-                <div class="modal-header bg-primary text-white">
+                <!-- HEADER -->
+                <div class="modal-header modal-departamentos-header">
                     <h5 class="modal-title">
-                        <i class="bi bi-building"></i> Departamentos
+                        <i class="bi bi-building me-2"></i> Departamentos
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
                 </div>
 
-                <!-- Body -->
+                <!-- BODY -->
                 <div class="modal-body">
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 60px;">#</th>
-                                    <th>Nombre del Departamento</th>
-                                    <th>Descripción</th>
-                                    <th style="width: 200px;">Gerente / Jefe</th>
-                                </tr>
-                            </thead>
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-light fw-semibold d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="bi bi-diagram-3-fill text-primary me-1"></i>
+                                Listado de departamentos
+                            </span>
+                            <span class="badge bg-primary">
+                                @Model.Departamentos.Count()
+                            </span>
+                        </div>
 
-                            <tbody>
-                                @foreach (var departamentos in Model.Departamentos)
-                                {
-                                    <tr>
-                                        <td>@departamentos.Code</td>
-                                        <td>@departamentos.Name</td>
-                                        <td>@departamentos.Remarks</td>
-                                        <td>
-                                            <select id="selectGerenteDepartamento@(departamentos.Code)" class="form-select form-select-sm" value="@departamentos.empID" onchange="cambio(this,@departamentos.Code)">
-                                                <option value="">Seleccione...</option>
-                                                @foreach (var empleados in Model.Empleados)
-                                                {
-                                                    <option value="@empleados.EmpId" @(empleados.EmpId == departamentos.empID ? "selected" : "")>@empleados.Nombre</option>
-                                                }
-                                            </select>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <div class="card-body p-0">
+
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+
+                                    <thead class="table-primary text-center">
+                                        <tr>
+                                            <th style="width:70px;">#</th>
+                                            <th>Departamento</th>
+                                            <th>Descripción</th>
+                                            <th style="width:220px;">Gerente / Jefe</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach (var departamentos in Model.Departamentos)
+                                        {
+                                            <tr>
+                                                <td class="text-center fw-semibold">
+                                                    @departamentos.Code
+                                                </td>
+
+                                                <td>
+                                                    <i class="bi bi-building text-secondary me-1"></i>
+                                                    @departamentos.Name
+                                                </td>
+
+                                                <td class="text-muted">
+                                                    @departamentos.Remarks
+                                                </td>
+
+                                                <td>
+                                                    <select id="selectGerenteDepartamento@(departamentos.Code)"
+                                                            class="form-select form-select-sm select-gerente"
+                                                            value="@departamentos.empID"
+                                                            onchange="cambio(this,@departamentos.Code)">
+                                                        <option value="">Seleccione...</option>
+                                                        @foreach (var empleados in Model.Empleados)
+                                                        {
+                                                            <option value="@empleados.EmpId"
+                                                                    @(empleados.EmpId == departamentos.empID ? "selected" : "")>
+                                                                @empleados.Nombre
+                                                            </option>
+                                                        }
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+
+                                </table>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
-                <!-- Footer -->
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <!-- FOOTER -->
+                <div class="modal-footer bg-light">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cerrar
+                    </button>
                 </div>
+
             </div>
         </div>
     </div>
+
     <!-- Modal: Gestión de equipo -->
     <div class="modal fade" id="modalEquipos" tabindex="-1">
         <div class="modal-dialog modal-xl">
@@ -942,7 +1053,7 @@
 
                                 ${
                                     empleado.Nuevo
-                                        ? '<span class="badge bg-primary">Nuevo</span>'                    
+                                        ? '<span class="badge bg-primary">Nuevo</span>'
                                         :''
                                 }
                             </td>

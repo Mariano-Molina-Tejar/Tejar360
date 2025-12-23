@@ -438,6 +438,7 @@
     <Compile Include="Controllers\VentasCdController.cs" />
     <Compile Include="Controllers\VentasController.cs" />
     <Compile Include="Controllers\VentasEmpresaController.cs" />
+    <Content Include="Css\Empleados\style.css" />
     <Content Include="Css\GestionDePersonal\styleProceso.css" />
     <Compile Include="Filter\VerifySession.cs" />
     <Compile Include="Global.asax.cs">
@@ -480,6 +481,7 @@
     <Content Include="Css\nucleo-svg.css" />
     <Content Include="Css\Profile.css" />
     <Content Include="Css\ProspeccionAgenda.css" />
+    <Content Include="Css\Reclutamiento\style.css" />
     <Content Include="Css\ResumenCarrito.css" />
     <Content Include="Css\SocioNegocioCarrito.css" />
     <Content Include="Css\style.css" />

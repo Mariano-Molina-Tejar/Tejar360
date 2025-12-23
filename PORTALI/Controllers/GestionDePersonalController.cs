@@ -84,7 +84,7 @@ namespace PORTALI.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena)
+        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena, bool solicitarRequisicion)
         {
             EnvioCorreoGestionEmpleados correo = new EnvioCorreoGestionEmpleados();
             Reply reply = new Reply();
@@ -118,6 +118,7 @@ namespace PORTALI.Controllers
                 solicitud.U_Motivo = motivo;
                 solicitud.U_Estado = 0;
                 solicitud.U_FechaSolicitud = DateTime.Now;
+                solicitud.Name = solicitarRequisicion ? Guid.NewGuid().ToString().Substring(0, 7) : null;
 
                 correo.Asunto = "Se a realizado una solicitud de baja de personal";
                 correo.Cuerpo = Templates.BodyMailSolicitud(nombre, sessions.DeptoName, motivoCadena, observaciones, nombreUsuario);
@@ -267,10 +268,13 @@ namespace PORTALI.Controllers
 
                 if (estado == 1)
                 {
-                    int respuestaCrearSolicitud = await CrearSolicitudDeAlta(id, solicitaId, puestoId, departamentoId);
+                    var requisicion = await _dal.TieneRequisicion(id);
+                    if (requisicion)
+                         await CrearSolicitudDeAlta(id, solicitaId, puestoId, departamentoId);
                 }
 
                 int respuestaObservaciones = guardarObservaciones(sessions.UserId, id, estado, comentariosGTH);
+
                 MailServices.EnviarCorreoElectronico(correo);
                 return Json(new { success = "error", message = "Solicitud realizada con exito" });
             }
@@ -406,7 +410,7 @@ namespace PORTALI.Controllers
 
         public int guardarObservaciones(int userId, int IdSolicitud, int IdEstado, string Observaciones)
         {
-            string url = "GestionDePersonal/guardarObservacionesSolicitud";
+            string url = "GestionDePersonal/GuardarProcesoGestion";
             var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
             if (sessions == null)
             {
@@ -416,11 +420,12 @@ namespace PORTALI.Controllers
             {
                 var ObjectSend = new
                 {
-                    Name = userId,
-                    U_IdSolicitud = IdSolicitud,
-                    U_IdEstado = IdEstado,
-                    U_FechaObservacion = DateTime.Now,
-                    U_Observaciones = Observaciones
+                    U_CodeBaja = IdSolicitud,
+                    U_FechaProceso = DateTime.Now,
+                    U_IdProceso = IdEstado,
+                    U_Comentarios = Observaciones,
+                    U_Usuario = sessions.UserId,
+                    U_Hora = DateTime.Now.ToString("HH:mm")
                 };
 
                 string response = DAL_API.NotasPpto(url, ObjectSend);

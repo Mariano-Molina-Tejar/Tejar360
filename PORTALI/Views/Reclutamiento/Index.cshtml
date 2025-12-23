@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/Css/Reclutamiento/style.css" rel="stylesheet">
 
     <style>
         .fila-verde th {
@@ -22,75 +23,93 @@
 <body>
     <div class="container mt-4">
         <!-- Nav Tabs -->
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <!-- NAV TABS -->
+        <ul class="nav nav-tabs nav-tabs-modern mb-3" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="solicitudes-tab" data-bs-toggle="tab" data-bs-target="#solicitudes" type="button" role="tab">
-                    Pendientes
+                <button class="nav-link active"
+                        id="solicitudes-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#solicitudes"
+                        type="button"
+                        role="tab">
+                    <i class="bi bi-hourglass-split me-1"></i> Pendientes
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="procesos-tab" data-bs-toggle="tab" data-bs-target="#procesos" type="button" role="tab">
-                    Finalizados
+                <button class="nav-link"
+                        id="procesos-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#procesos"
+                        type="button"
+                        role="tab">
+                    <i class="bi bi-check2-circle me-1"></i> Finalizados
                 </button>
             </li>
         </ul>
-        <div class="tab-content mt-3" id="myTabContent">
 
-            <!-- TAB Solicitudes -->
+        <div class="tab-content" id="myTabContent">
+
+            <!-- TAB PENDIENTES -->
             <div class="tab-pane fade show active" id="solicitudes" role="tabpanel">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header text-white d-flex justify-content-between align-items-center"
-                         style="background-color: steelblue;">
 
+                <div class="card card-dashboard">
+                    <div class="card-header card-dashboard-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="bi bi-file-earmark-person-fill me-2"></i> Solicitudes de Alta de personal - Pendientes
+                            <i class="bi bi-file-earmark-person-fill me-2"></i>
+                            Solicitudes de Alta de personal – Pendientes
                         </h5>
 
-                        <button class="btn btn-light btn-sm" id="btnAgregarSolicitud" onclick="agregarSolicitud()">
-                            <i class="bi bi-plus-circle"></i> Agregar solicitud
+                        <button class="btn btn-light btn-sm rounded-pill"
+                                id="btnAgregarSolicitud"
+                                onclick="agregarSolicitud()">
+                            <i class="bi bi-plus-circle me-1"></i> Agregar solicitud
                         </button>
                     </div>
+
                     <div class="card-body bg-light">
-                        <table class="table table-hover align-middle text-center">
-                            <thead class="table-success">
+                        <table class="table align-middle text-center tabla-dashboard">
+                            <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Fecha Solicitud</th>
-                                    <th>Puesto</th>
+                                    <th>Fecha</th>
+                                    <th class="text-start">Puesto</th>
                                     <th>Departamento</th>
                                     <th>Solicita</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
+
                             <tbody>
-                                @if (Model.Reclutamiento.Count() != 0)
+                                @if (Model.Reclutamiento.Any())
                                 {
                                     foreach (var puesto in Model.Reclutamiento)
                                     {
                                         <tr>
-                                            <td>
-                                                @puesto.SolicitudDeAlta
-                                            </td>
+                                            <td>@puesto.SolicitudDeAlta</td>
                                             <td>@puesto.FechaSolicitud.ToString("dd/MM/yyyy")</td>
-                                            <td>
+
+                                            <td class="text-start">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span>@puesto.Puesto</span>
 
                                                     <button id="btnPerfil-@(puesto.SolicitudDeAlta)"
-                                                            class="btn btn-sm @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
-                                                            data-bs-toggle="tooltip"
+                                                            class="btn btn-sm rounded-circle @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
                                                             title="@(puesto.Perfil ? "Ver perfil" : "Agregar perfil")"
                                                             onclick="abrirModalPerfilPuesto('@puesto.Puesto',@puesto.PuestoId,'btnPerfil-@(puesto.SolicitudDeAlta)')">
-
-                                                        <i id="ibtnPerfil-@(puesto.SolicitudDeAlta)" class="bi bi-file-earmark-text @(puesto.Perfil ? "text-success" : "text-danger")"></i>
+                                                        <i id="ibtnPerfil-@(puesto.SolicitudDeAlta)"
+                                                           class="bi bi-file-earmark-text"></i>
                                                     </button>
                                                 </div>
                                             </td>
+
                                             <td>@puesto.Departamento</td>
                                             <td>@puesto.Solicita</td>
+
                                             <td>
-                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDetalle"
+                                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalDetalle"
                                                         data-Puesto="@puesto.Puesto"
                                                         data-PuestoId="@puesto.PuestoId"
                                                         data-Departamento="@puesto.Departamento"
@@ -99,9 +118,9 @@
                                                         data-Solicita="@puesto.Solicita"
                                                         data-SolicitaId="@puesto.SolicitaId"
                                                         data-Solicitud="@puesto.SolicitudDeAlta"
-                                                        data-finalizada= "0"
+                                                        data-finalizada="0"
                                                         onclick="verDetalleSolicitud(this)">
-                                                    <i class="bi bi-eye-fill"></i> Detalle
+                                                    <i class="bi bi-eye-fill me-1"></i> Detalle
                                                 </button>
                                             </td>
                                         </tr>
@@ -110,7 +129,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
+                                        <td colspan="6" class="text-center text-muted py-4">
                                             <i class="bi bi-info-circle"></i> No se encontraron solicitudes
                                         </td>
                                     </tr>
@@ -122,58 +141,59 @@
 
             </div>
 
-            <!-- TAB Procesos -->
+            <!-- TAB FINALIZADOS -->
             <div class="tab-pane fade" id="procesos" role="tabpanel">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header text-white d-flex justify-content-between align-items-center"
-                         style="background-color: steelblue;">
 
+                <div class="card card-dashboard">
+                    <div class="card-header card-dashboard-header">
                         <h5 class="mb-0">
-                            <i class="bi bi-file-earmark-person-fill me-2"></i> Solicitudes de Alta de personal - Finalizados
+                            <i class="bi bi-file-earmark-person-fill me-2"></i>
+                            Solicitudes de Alta de personal – Finalizados
                         </h5>
-
-                        
                     </div>
+
                     <div class="card-body bg-light">
-                        <table class="table table-hover align-middle text-center">
-                            <thead class="table-success">
+                        <table class="table align-middle text-center tabla-dashboard">
+                            <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Fecha Solicitud</th>
-                                    <th>Puesto</th>
+                                    <th>Fecha</th>
+                                    <th class="text-start">Puesto</th>
                                     <th>Departamento</th>
                                     <th>Solicita</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
+
                             <tbody>
-                                @if (Model.ReclutamientoFinalizadas.Count() != 0)
+                                @if (Model.ReclutamientoFinalizadas.Any())
                                 {
                                     foreach (var puesto in Model.ReclutamientoFinalizadas)
                                     {
                                         <tr>
-                                            <td>
-                                                @puesto.SolicitudDeAlta
-                                            </td>
+                                            <td>@puesto.SolicitudDeAlta</td>
                                             <td>@puesto.FechaSolicitud.ToString("dd/MM/yyyy")</td>
-                                            <td>
+
+                                            <td class="text-start">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span>@puesto.Puesto</span>
 
                                                     <button id="btnPerfil-@(puesto.SolicitudDeAlta)"
-                                                            class="btn btn-sm @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
-                                                            data-bs-toggle="tooltip"
+                                                            class="btn btn-sm rounded-circle @(puesto.Perfil ? "btn-outline-success" : "btn-outline-danger")"
                                                             title="@(puesto.Perfil ? "Ver perfil" : "Agregar perfil")"
                                                             onclick="abrirModalPerfilPuesto('@puesto.Puesto',@puesto.PuestoId,'btnPerfil-@(puesto.SolicitudDeAlta)')">
-
-                                                        <i id="ibtnPerfil-@(puesto.SolicitudDeAlta)" class="bi bi-file-earmark-text @(puesto.Perfil ? "text-success" : "text-danger")"></i>
+                                                        <i class="bi bi-file-earmark-text"></i>
                                                     </button>
                                                 </div>
                                             </td>
+
                                             <td>@puesto.Departamento</td>
                                             <td>@puesto.Solicita</td>
+
                                             <td>
-                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDetalle"
+                                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalDetalle"
                                                         data-Puesto="@puesto.Puesto"
                                                         data-PuestoId="@puesto.PuestoId"
                                                         data-Departamento="@puesto.Departamento"
@@ -182,9 +202,9 @@
                                                         data-Solicita="@puesto.Solicita"
                                                         data-SolicitaId="@puesto.SolicitaId"
                                                         data-Solicitud="@puesto.SolicitudDeAlta"
-                                                        data-finalizada= "1"
+                                                        data-finalizada="1"
                                                         onclick="verDetalleSolicitud(this)">
-                                                    <i class="bi bi-eye-fill"></i> Detalle
+                                                    <i class="bi bi-eye-fill me-1"></i> Detalle
                                                 </button>
                                             </td>
                                         </tr>
@@ -193,7 +213,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted py-3" style="font-style: italic;">
+                                        <td colspan="6" class="text-center text-muted py-4">
                                             <i class="bi bi-info-circle"></i> No se encontraron solicitudes
                                         </td>
                                     </tr>
@@ -205,119 +225,175 @@
 
             </div>
         </div>
+
     </div>
 
     <!-- Modal Detalle -->
     <div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header text-white" style="background-color:steelblue;">
-                    <h5 class="modal-title"><i class="bi bi-info-circle-fill"></i> Detalle de Solicitud</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content modal-detalle-solicitud">
+
+                <!-- HEADER -->
+                <div class="modal-header modal-detalle-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-info-circle-fill me-2"></i> Detalle de Solicitud
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
                 </div>
 
+                <!-- BODY -->
                 <div class="modal-body bg-light">
-                    <div id="solicitud-InformacionGeneral" class="mb-3">
+
+                    <!-- INFO GENERAL -->
+                    <div id="solicitud-InformacionGeneral" class="info-general-card mb-4">
+                        <!-- contenido dinámico -->
                     </div>
 
-                    <hr>
-
+                    <!-- HEADER ASPIRANTES -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-secondary mb-0">Aspirantes al puesto</h6>
-                        <button id="btnCrearUsuarioClave" class="btn btn-warning btn-sm text-dark fw-semibold">
-                            <i class="bi bi-person-plus-fill"></i> Generar Usuario y Contraseña
+                        <h6 class="fw-semibold text-secondary mb-0">
+                            Aspirantes al puesto
+                        </h6>
+
+                        <button id="btnCrearUsuarioClave"
+                                class="btn btn-warning btn-sm rounded-pill fw-semibold">
+                            <i class="bi bi-person-plus-fill me-1"></i>
+                            Generar Usuario y Contraseña
                         </button>
                     </div>
 
-                    <table class="table table-striped table-bordered table-sm text-center">
-                        <thead class="table-warning">
-                            <tr>
-                                <th>#</th>
-                                <th>Usuario</th>
-                                <th>Nombre Aspirante</th>
-                                <th>Correo</th>
-                                <th>Creado</th>
-                                <th>Estado</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyAspirantes">
-                            <tr id="filaCarga">
-                                <td colspan="5" class="text-center py-4">
-                                    <div class="spinner-border text-warning" role="status"></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- TABLA ASPIRANTES -->
+                    <div class="table-responsive">
+                        <table class="table align-middle text-center tabla-aspirantes">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Usuario</th>
+                                    <th>Nombre Aspirante</th>
+                                    <th>Correo</th>
+                                    <th>Creado</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tbodyAspirantes">
+                                <tr id="filaCarga">
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-warning" role="status"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
 
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
+                <!-- FOOTER -->
+                <div class="modal-footer modal-detalle-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cerrar
                     </button>
                 </div>
+
             </div>
         </div>
     </div>
     <!-- Modal Ver Usuario -->
     <div class="modal fade" id="modalUsuario" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header text-white" style="background-color:steelblue;">
-                    <h5 class="modal-title"><i class="bi bi-person-circle me-2"></i> Información de Usuario</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content modal-usuario-modern">
+
+                <!-- HEADER -->
+                <div class="modal-header modal-usuario-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-circle me-2"></i> Información de Usuario
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
                 </div>
 
+                <!-- BODY -->
                 <div class="modal-body bg-light">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Usuario:</label>
+
+                    <!-- USUARIO -->
+                    <div class="form-group-modern mb-3">
+                        <label class="form-label">Usuario</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
-                            <input type="text" id="usuarioModal" class="form-control" readonly value="USUARIO123">
+                            <span class="input-group-text">
+                                <i class="bi bi-person-badge-fill"></i>
+                            </span>
+                            <input type="text"
+                                   id="usuarioModal"
+                                   class="form-control"
+                                   readonly>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Contraseña:</label>
+                    <!-- PASSWORD -->
+                    <div class="form-group-modern mb-3">
+                        <label class="form-label">Contraseña</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                            <input type="password" id="passwordModal" class="form-control" readonly value="MiClave123">
-                            <button class="btn btn-outline-secondary" type="button" id="btnVerPassword">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
+                            <input type="password"
+                                   id="passwordModal"
+                                   class="form-control"
+                                   readonly>
+
+                            <button class="btn btn-outline-secondary"
+                                    type="button"
+                                    id="btnVerPassword">
                                 <i id="iconoBtnVerUsuario" class="bi bi-eye-fill"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Correo:</label>
+                    <!-- CORREO -->
+                    <div class="form-group-modern mb-3">
+                        <label class="form-label">Correo</label>
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="bi bi-envelope-fill"></i>
                             </span>
-                            <input type="text" id="emailModal" class="form-control">
-                            <button class="btn btn-outline-secondary" type="button" id="btnEditarCorreo">
+                            <input type="text"
+                                   id="emailModal"
+                                   class="form-control">
+
+                            <button class="btn btn-outline-secondary"
+                                    type="button"
+                                    id="btnEditarCorreo">
                                 <i id="btnEditar" class="bi bi-pencil-fill"></i>
-                                <span id="loadingGuardar" class="spinner-border spinner-border-sm d-none"></span>
+                                <span id="loadingGuardar"
+                                      class="spinner-border spinner-border-sm d-none"></span>
                             </button>
                         </div>
                     </div>
+
                 </div>
 
-                <div class="modal-footer d-flex justify-content-between">
-
-                    <!-- Botón izquierda -->
-                    <button id="btnReenviarCorreo" class="btn btn-warning">
-                        <i class="bi bi-envelope-arrow-up"></i> Reenviar correo
+                <!-- FOOTER -->
+                <div class="modal-footer modal-usuario-footer d-flex justify-content-between">
+                    <button id="btnReenviarCorreo"
+                            class="btn btn-warning rounded-pill fw-semibold">
+                        <i class="bi bi-envelope-arrow-up me-1"></i> Reenviar correo
                     </button>
 
-                    <!-- Botón derecha -->
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cerrar
                     </button>
                 </div>
+
             </div>
         </div>
     </div>
+
 
     <!-- Modal Detalle Aspirante -->
     <div class="modal fade" id="modalDetalleAspirante" tabindex="-1" aria-hidden="true">
@@ -325,7 +401,7 @@
             <div class="modal-content border-0 shadow-lg">
 
                 <!-- Encabezado -->
-                <div class="modal-header text-white" style="background-color:steelblue;">
+                <div class="modal-header text-white card-dashboard-header " >
                     <h5 class="modal-title">
                         <i class="bi bi-person-lines-fill"></i> Detalle del Aspirante
                     </h5>
@@ -521,8 +597,8 @@
                                                 </div>
                                             }
                                             @*<div class="mb-3">
-                                    <input type="text" id="buscarDocumentos" class="form-control" placeholder="Buscar Documentos" />
-                            </div>*@
+                                                        <input type="text" id="buscarDocumentos" class="form-control" placeholder="Buscar Documentos" />
+                                                </div>*@
                                             <div id="listaDocumentos" class="list-group overflow-auto" style="max-height: 2000px;">
                                                 <!-- Ejemplo de items -->
                                                 @foreach (var Documentos in Model.Documentos)
@@ -585,17 +661,17 @@
 
                                                 <!-- Información del comentario -->
                                                 @*<div>
-                                    <i class="bi bi-chat-left-text"></i> Comentario 1
+                                                        <i class="bi bi-chat-left-text"></i> Comentario 1
 
-                                    <small class="text-muted">
-                                        05-05-2025 — <strong>por Juan Pérez</strong>
-                                    </small>
-                                </div>*@
+                                                        <small class="text-muted">
+                                                            05-05-2025 — <strong>por Juan Pérez</strong>
+                                                        </small>
+                                                    </div>*@
 
                                                 <!-- Botón eliminar -->
                                                 @*<button class="btn btn-sm btn-danger btnEliminarComentario">
-                                    <i class="bi bi-trash"></i>
-                                </button>*@
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>*@
                                             </div>
                                         </li>
                                     </ul>
@@ -811,8 +887,8 @@
                                                     <i class="bi bi-boxes text-warning me-1"></i> Usuario SAP
                                                 </div>
                                                 @*<span class="badge bg-secondary mt-2" id="badgeUsuarioSAP">
-                    No creado
-                </span>*@
+                                                        No creado
+                                                    </span>*@
                                                 <p class="mb-0 small text-muted mt-2">
                                                     Usuario: <strong id="lblUsuarioSAP">C-10025</strong>
                                                 </p>
@@ -826,8 +902,8 @@
                                                     <i class="bi bi-globe text-info me-1"></i> Tejar360
                                                 </div>
                                                 @*<span class="badge bg-success mt-2" id="badgeTejar360">
-                    Creado
-                </span>*@
+                                                        Creado
+                                                    </span>*@
                                                 <p class="mb-0 small text-muted mt-2">
                                                     Usuario: <strong id="lblUsuario360">C-10025</strong>
                                                 </p>
@@ -863,7 +939,7 @@
                                     <div class="row g-3">
 
                                         <!-- Meta -->
-                                        <div class="col-md-4" >
+                                        <div class="col-md-4">
                                             <div class="border rounded p-3 h-100">
                                                 <div class="fw-semibold">
                                                     <i class="bi bi-bullseye text-danger me-1"></i> Meta asignada
@@ -892,8 +968,8 @@
                                                     <i class="bi bi-graph-up-arrow text-success me-1"></i> Empleado de Ventas
                                                 </div>
                                                 @*<span class="badge bg-success mt-2" id="badgeUsuarioVentas">
-                                                    Creado
-                                                </span>*@
+                                                        Creado
+                                                    </span>*@
                                                 <p class="mb-0 small text-muted mt-2">
                                                     <strong id="lblEmpleadoVentas">C-10025</strong>
                                                 </p>
@@ -1052,64 +1128,78 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="modalAgregarSolicitud" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+    <!-- Modal Agregar Solicitud -->
+    <div class="modal fade" id="modalAgregarSolicitud" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content modal-solicitud-modern">
 
-                <!-- Encabezado -->
-                <div class="modal-header text-white" style="background-color: steelblue;">
-                    <h5 class="modal-title" id="modalAgregarLabel">Agregar solicitud de personal</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-
-                <!-- Cuerpo -->
-                <div class="modal-body">
-
-                    <!-- Puesto -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Puesto</label>
-                        <select id="puestoSelect" class="form-select">
-                            <option value="" selected disabled>Seleccione un puesto</option>
-                            <option value="1">Gerente</option>
-                            <option value="2">Supervisor</option>
-                            <option value="3">Asistente</option>
-                        </select>
-                    </div>
-
-                    <!-- Departamento -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Departamento</label>
-                        <select id="departamentoSelect" class="form-select">
-                            <option value="" selected disabled>Seleccione un departamento</option>
-                            <option value="1">Recursos Humanos</option>
-                            <option value="2">Finanzas</option>
-                            <option value="3">IT</option>
-                        </select>
-                    </div>
-
-                    <!-- Solicita -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Solicita</label>
-                        <select id="solicitaSelect" class="form-select">
-                            <option value="" selected disabled>Seleccione quién solicita</option>
-                            <option value="1">Empleado</option>
-                            <option value="2">Jefe Inmediato</option>
-                            <option value="3">Gerencia</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Pie -->
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-success" onclick="agregarSolicitudDePesonal()">
-                        Agregar solicitud
+                <!-- HEADER -->
+                <div class="modal-header modal-solicitud-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-plus-fill me-2"></i> Agregar solicitud de personal
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
                     </button>
                 </div>
+
+                <!-- BODY -->
+                <div class="modal-body">
+                    <form class="solicitud-form">
+
+                        <!-- Puesto -->
+                        <div class="form-group-modern">
+                            <label class="form-label">Puesto</label>
+                            <select id="puestoSelect" class="form-select">
+                                <option value="" selected disabled>Seleccione un puesto</option>
+                                <option value="1">Gerente</option>
+                                <option value="2">Supervisor</option>
+                                <option value="3">Asistente</option>
+                            </select>
+                        </div>
+
+                        <!-- Departamento -->
+                        <div class="form-group-modern">
+                            <label class="form-label">Departamento</label>
+                            <select id="departamentoSelect" class="form-select">
+                                <option value="" selected disabled>Seleccione un departamento</option>
+                                <option value="1">Recursos Humanos</option>
+                                <option value="2">Finanzas</option>
+                                <option value="3">IT</option>
+                            </select>
+                        </div>
+
+                        <!-- Solicita -->
+                        <div class="form-group-modern">
+                            <label class="form-label">Solicita</label>
+                            <select id="solicitaSelect" class="form-select">
+                                <option value="" selected disabled>Seleccione quién solicita</option>
+                                <option value="1">Empleado</option>
+                                <option value="2">Jefe Inmediato</option>
+                                <option value="3">Gerencia</option>
+                            </select>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="modal-footer modal-solicitud-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button class="btn btn-primary rounded-pill px-4"
+                            onclick="agregarSolicitudDePesonal()">
+                        <i class="bi bi-check-circle me-1"></i> Agregar solicitud
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
+
 
     <!-- Modal de proceso -->
     <div class="modal fade" id="modalProcesos" tabindex="-1" aria-hidden="true">
@@ -1306,7 +1396,7 @@
         }
 
         async function ObtenerDatosAspirantes(finalizada = 0) {
-            
+
             const idSolicitud = document.getElementById("idSolicitud").textContent
 
             const response = await fetch(`/Reclutamiento/ObtenerDetalleAspirantes?userName=${idSolicitud}`, {
@@ -1328,13 +1418,13 @@
                                                                                 <th id="e${item.Rw}">${item.Correo}</th>
                                                                                 <th>${convertirFechaDotNet(item.Created)}</th>
                                                                                 <th>${item.Estado}</th>
-                                                                                <th>${finalizada == 0 
+                                                                                <th>${finalizada == 0
                                                                                     ? `<button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Usuario" onclick ="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
                                                                                             <i class="bi bi-person-fill"></i> </i>
                                                                                         </button>`
                                                                                     : ``
                                                                                      }
-                                                                                    
+
                                                                                     <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="CV" onclick ="verDetalleAspirante('${item.UserName}','${item.EmpIdSAP}')">
                                                                                         <i class="bi bi-file-earmark-text"></i>
                                                                                     </button>
@@ -1346,7 +1436,7 @@
             }
             else {
                 tbody += `<tr>
-                                                                        <th colspan = "6">No se encontraron datos</th>
+                                                                        <th colspan = "7">No se encontraron datos</th>
                                                                      </tr>
                                                                                 `;
             }
@@ -2052,7 +2142,7 @@
             if (meta)
                 bodyLoading.insertAdjacentHTML("beforeend", addLoading("Asignación de meta", 7));
 
-             
+
             empleadoId = await creacionDeAspirante(dataAspiranteFinal, idPuesto, idDepartamento, idSolicita);
 
             if (empleadoId === "")

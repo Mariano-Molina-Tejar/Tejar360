@@ -1,0 +1,417 @@
+/* =========================
+   NAV TABS MODERNOS
+========================= */
+.nav-tabs-modern {
+    border-bottom: none;
+    gap: .5rem;
+}
+
+    .nav-tabs-modern .nav-link {
+        border: none;
+        border-radius: 999px;
+        padding: .45rem 1.3rem;
+        font-weight: 500;
+        background: #f1f3f5;
+        color: #495057;
+    }
+
+        .nav-tabs-modern .nav-link.active {
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: #fff;
+        }
+
+/* =========================
+   CARD DASHBOARD
+========================= */
+.card-dashboard {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 18px 35px rgba(0,0,0,.12);
+}
+
+.card-dashboard-header {
+    background: linear-gradient(135deg, #3a7bd5, #3a6073);
+    color: #fff;
+    border-bottom: none;
+    padding: 1.25rem 1.5rem;
+}
+
+/* =========================
+   TABLA DASHBOARD
+========================= */
+.tabla-dashboard {
+    border-collapse: separate;
+    border-spacing: 0 12px;
+}
+
+    .tabla-dashboard thead th {
+        background: transparent;
+        border: none;
+        color: #6c757d;
+        font-weight: 600;
+        padding-bottom: 8px;
+    }
+
+    .tabla-dashboard tbody tr {
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 8px 18px rgba(0,0,0,.06);
+        transition: all .15s ease;
+    }
+
+        .tabla-dashboard tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 26px rgba(0,0,0,.10);
+        }
+
+    .tabla-dashboard tbody td {
+        border: none;
+        padding: 12px;
+    }
+
+    .tabla-dashboard tbody tr td:first-child {
+        border-top-left-radius: 14px;
+        border-bottom-left-radius: 14px;
+    }
+
+    .tabla-dashboard tbody tr td:last-child {
+        border-top-right-radius: 14px;
+        border-bottom-right-radius: 14px;
+    }
+
+/* =========================
+   BOTONES ICONO
+========================= */
+.btn.rounded-circle {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================
+   MODAL SOLICITUD
+========================= */
+.modal-solicitud-modern {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 20px 45px rgba(0,0,0,.15);
+}
+
+/* HEADER */
+.modal-solicitud-header {
+    background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+    color: white;
+    border-bottom: none;
+    padding: 1.25rem 1.5rem;
+}
+
+/* FORM */
+.solicitud-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* FORM GROUP */
+.form-group-modern label {
+    font-size: .85rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: .35rem;
+}
+
+/* INPUTS */
+.form-group-modern .form-select {
+    border-radius: 10px;
+    padding: .6rem .75rem;
+    border: 1px solid #dee2e6;
+    transition: all .2s ease;
+}
+
+    .form-group-modern .form-select:focus {
+        border-color: #4f8cff;
+        box-shadow: 0 0 0 .2rem rgba(79,140,255,.15);
+    }
+
+/* FOOTER */
+.modal-solicitud-footer {
+    border-top: none;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+}
+
+/* =========================
+   MODAL CONTENEDOR
+========================= */
+.modal-detalle-solicitud {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 20px 45px rgba(0,0,0,.18);
+}
+
+/* =========================
+   HEADER
+========================= */
+.modal-detalle-header {
+    background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+    color: #fff;
+    border-bottom: none;
+    padding: 1.25rem 1.5rem;
+}
+
+/* =========================
+   INFO GENERAL
+========================= */
+.info-general-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 18px rgba(0,0,0,.08);
+}
+
+/* =========================
+   TABLA ASPIRANTES
+========================= */
+.tabla-aspirantes {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+    .tabla-aspirantes thead th {
+        background: transparent;
+        border: none;
+        color: #6c757d;
+        font-weight: 600;
+        padding-bottom: 8px;
+    }
+
+    .tabla-aspirantes tbody tr {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0,0,0,.06);
+        transition: all .15s ease;
+    }
+
+        .tabla-aspirantes tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(0,0,0,.10);
+        }
+
+    .tabla-aspirantes tbody td {
+        border: none;
+        padding: 12px;
+    }
+
+    /* Bordes redondeados por fila */
+    .tabla-aspirantes tbody tr td:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
+
+    .tabla-aspirantes tbody tr td:last-child {
+        border-top-right-radius: 12px;
+        /* =========================
+   MODAL USUARIO
+========================= */
+        .modal-usuario-modern {
+            border-radius: 18px;
+            border: none;
+            box-shadow: 0 20px 45px rgba(0,0,0,.18);
+        }
+        /* HEADER */
+        .modal-usuario-header {
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: white;
+            border-bottom: none;
+            padding: 1.25rem 1.5rem;
+        }
+        /* FORM GROUP */
+        .form-group-modern label {
+            font-size: .85rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: .35rem;
+        }
+        /* INPUT GROUP */
+        .input-group-text {
+            background: #f1f3f5;
+            border: none;
+            color: #6c757d;
+        }
+
+        .form-group-modern .form-control {
+            border-radius: 0;
+            border: 1px solid #dee2e6;
+        }
+
+            .form-group-modern .form-control:focus {
+                border-color: #4f8cff;
+                box-shadow: 0 0 0 .2rem rgba(79,140,255,.15);
+            }
+        /* FOOTER */
+        .modal-usuario-footer {
+            border-top: none;
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+        }
+        /* =========================
+   MODAL GENERAL
+========================= */
+        #modalDetalleAspirante .modal-content {
+            border: none;
+            background: #f4f6f9;
+        }
+
+        #modalDetalleAspirante .modal-header {
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            border-bottom: none;
+            padding: 1.25rem 2rem;
+        }
+
+        #modalDetalleAspirante .modal-title {
+            font-weight: 600;
+        }
+        /* =========================
+   NAV TABS
+========================= */
+        #detalleTabs {
+            border-bottom: none;
+            gap: .5rem;
+        }
+
+            #detalleTabs .nav-link {
+                border: none;
+                border-radius: 999px;
+                padding: .45rem 1.2rem;
+                background: #e9ecef;
+                color: #495057;
+                font-weight: 500;
+            }
+
+                #detalleTabs .nav-link.active {
+                    background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+                    color: white;
+                }
+        /* =========================
+   CARDS INTERNAS
+========================= */
+        #modalDetalleAspirante .card {
+            border-radius: 16px;
+        }
+
+        #modalDetalleAspirante .card-header {
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            font-weight: 600;
+        }
+        /* =========================
+   FOTO PERFIL
+========================= */
+        #imgPerfil {
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,.15);
+        }
+        /* =========================
+   INFO PERSONAL
+========================= */
+        #modalDetalleAspirante label {
+            font-size: .75rem;
+            text-transform: uppercase;
+            color: #6c757d;
+        }
+
+        #modalDetalleAspirante p {
+            font-weight: 500;
+        }
+        /* =========================
+   TABLAS (Académico / Aspirantes)
+========================= */
+        #modalDetalleAspirante table {
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        #modalDetalleAspirante thead th {
+            background: transparent !important;
+            border: none;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        #modalDetalleAspirante tbody tr {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,.06);
+            transition: all .15s ease;
+        }
+
+            #modalDetalleAspirante tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(0,0,0,.1);
+            }
+
+        #modalDetalleAspirante tbody td {
+            border: none;
+            padding: 12px;
+        }
+
+        #modalDetalleAspirante tbody tr td:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        #modalDetalleAspirante tbody tr td:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        /* =========================
+   LISTAS (LABORAL / COMENTARIOS)
+========================= */
+        #modalDetalleAspirante .list-group-item {
+            border-radius: 12px;
+            margin-bottom: .5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,.05);
+        }
+        /* =========================
+   DOCUMENTOS (CV)
+========================= */
+        #listaDocumentos .list-group-item {
+            border-radius: 10px;
+            margin-bottom: .4rem;
+            transition: background .15s ease;
+        }
+
+            #listaDocumentos .list-group-item:hover {
+                background: #eef3ff;
+            }
+        /* =========================
+   CONFIGURACIÓN DE ALTA
+========================= */
+        #info-config-alta .form-check {
+            padding: .75rem 1rem;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        #info-config-alta select {
+            border-radius: 10px;
+        }
+        /* =========================
+   INFO CREADA
+========================= */
+        #info-creada .border {
+            border-radius: 14px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,.06);
+        }
+        /* =========================
+   FOOTER
+========================= */
+        #modalDetalleAspirante .modal-footer {
+            border-top: none;
+            background: #f8f9fa;
+            padding: 1rem 2rem;
+        }

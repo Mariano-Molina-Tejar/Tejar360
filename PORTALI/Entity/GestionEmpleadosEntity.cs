@@ -79,6 +79,7 @@ namespace Entity
     public class AutorizacionDeBaja
     {
         public int Code { get; set; }
+        public string Requisicion { get; set; }
         public DateTime FechaSolicitud { get; set; }
         public int EmpleadoId { get; set; }
         public string Nombre { get; set; }
@@ -103,15 +104,19 @@ namespace Entity
     }
     public class TrackingDeBaja
     {
+        public int Code { get; set; }
         public bool Pendiente { get; set; }
         public bool AutorizadoGTH { get; set; }
+        public string ComentarioAutorizadoGTH { get; set; }
+        public string ComentaAutorizadoGTH { get; set; }
+        public string FechaYHoraAutorizadoGTH { get; set; }
+        //public string HoraAutorizadoGTH { get; set; }
         public bool Carta { get; set; }
         public bool Solvencia { get; set; }
         public bool UsuariosOperativos { get; set; }
         public bool ConfirmacionPago { get; set; }
         public bool CargaLiquidacion { get; set; }
         public bool UsuariosContables { get; set; }
+        public int Motivo { get; set; }
     }
-
-
 }
