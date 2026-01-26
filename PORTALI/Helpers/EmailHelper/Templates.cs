@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 
 namespace PORTALI.Helpers.EmailHelper
@@ -184,74 +185,79 @@ namespace PORTALI.Helpers.EmailHelper
         }
 
         public static string BodyMailSolicitudAutorizacion(
-    string nombreSolicitante,
-    string puesto,
-    string fechaSolicitud,
-    string observaciones,
-    string linkAutorizar,
-    string linkRechazar)
+                string nombreSolicitante,
+                string puesto,
+                string fechaSolicitud,
+                string observaciones,
+                string linkAutorizar,
+                string linkRechazar
+            )
         {
-            return $@"
-        <div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden;
-                    box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #eee;'>
+            string _nombre = WebUtility.HtmlEncode(nombreSolicitante);
+            string _puesto = WebUtility.HtmlEncode(puesto);
+            string _fecha = WebUtility.HtmlEncode(fechaSolicitud);
+            string _obs = WebUtility.HtmlEncode(observaciones);
+            string _autorizar = linkAutorizar;
+            string _rechazar = linkRechazar;
+            string refId = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-            <!-- Encabezado -->
-            <div style='background-color:#0066cc; color:white; padding:12px 20px;'>
-                <h2 style='margin:0; font-size:18px;'>Solicitud de Autorización</h2>
-            </div>
+            return $@"<!-- Ref: {refId} -->
+<div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #eee;'>
 
-            <!-- Contenido -->
-            <div style='background-color:#F4FAFF; padding:20px;'>
-                <p>Estimado(a),</p>
+    <div style='background-color:#0066cc; color:white; padding:12px 20px;'>
+        <h2 style='margin:0; font-size:18px;'>Solicitud de Autorización</h2>
+    </div>
 
-                <p>
-                    Se ha generado una <strong>nueva solicitud de autorización</strong> dentro del sistema.
-                    A continuación, encontrará los detalles:
-                </p>
+    <div style='background-color:#F4FAFF; padding:20px;'>
+        <p>Estimado(a),</p>
 
-                <ul style='list-style:none; padding-left:0;'>
-                    <li><strong>👤 Solicitante:</strong> {nombreSolicitante}</li>
-                    <li><strong>💼 Puesto:</strong> {puesto}</li>
-                    <li><strong>📅 Fecha de solicitud:</strong> {fechaSolicitud}</li>
-                    <li><strong>📝 Observaciones:</strong> {observaciones}</li>
-                </ul>
+        <p>
+            Se ha generado una <strong>nueva solicitud de autorización</strong> dentro del sistema.
+            A continuación, encontrará los detalles:
+        </p>
 
-                <p style='margin-top:20px;'>Seleccione una opción para continuar con el proceso:</p>
+        <ul style='list-style:none; padding-left:0;'>
+            <li><strong>Solicitante:</strong> {_nombre}</li>
+            <li><strong>Puesto:</strong> {_puesto}</li>
+            <li><strong>Fecha de solicitud:</strong> {_fecha}</li>
+            <li><strong>Observaciones:</strong> {_obs}</li>
+        </ul>
 
-                <!-- Botones -->
-                <div style='text-align:center; margin:25px 0;'>
+        <p style='margin-top:20px;'>Seleccione una opción para continuar con el proceso:</p>
 
-                    <a href='{linkAutorizar}' 
-                       style='background-color:#28a745; color:white; padding:10px 18px; 
-                              text-decoration:none; border-radius:5px; font-weight:bold; 
-                              display:inline-block; margin-right:10px;'>
-                        ✔ Autorizar
-                    </a>
+        <div style='text-align:center; margin:25px 0;'>
 
-                    <a href='{linkRechazar}' 
-                       style='background-color:#dc3545; color:white; padding:10px 18px; 
-                              text-decoration:none; border-radius:5px; font-weight:bold; 
-                              display:inline-block;'>
-                        ✖ Rechazar
-                    </a>
+            <a href='{_autorizar}'
+               style='background-color:#28a745; color:white; padding:10px 18px;
+                      text-decoration:none; border-radius:5px; font-weight:bold;
+                      display:inline-block; margin-right:10px;'>
+                Autorizar
+            </a>
 
-                </div>
+            <a href='{_rechazar}'
+               style='background-color:#dc3545; color:white; padding:10px 18px;
+                      text-decoration:none; border-radius:5px; font-weight:bold;
+                      display:inline-block;'>
+                Rechazar
+            </a>
 
-                <p>
-                    Al seleccionar alguna de las opciones, su decisión quedará registrada automáticamente en el sistema.
-                </p>
-
-                <p>Saludos cordiales,<br>
-                   <strong>Departamento de Recursos Humanos</strong>
-                </p>
-            </div>
-
-            <!-- Pie -->
-            <div style='background-color:#0066cc; text-align:center; padding:10px; font-weight:bold; color:white;'>
-                El Tejar
-            </div>
         </div>
-    ";
+
+        <p>
+            Al seleccionar alguna de las opciones, su decisión quedará registrada automáticamente en el sistema.
+        </p>
+
+        <p>Saludos cordiales,<br>
+           <strong>Departamento de Recursos Humanos</strong>
+        </p>
+    </div>
+
+    <div style='background-color:#0066cc; text-align:center; padding:10px; font-weight:bold; color:white;'>
+        El Tejar
+    </div>
+</div>";
+
         }
 
 

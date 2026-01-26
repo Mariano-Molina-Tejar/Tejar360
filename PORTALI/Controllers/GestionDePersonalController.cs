@@ -1,11 +1,15 @@
 ﻿using DAL;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Entity;
+using Microsoft.AspNet.SignalR.Hosting;
 using Newtonsoft.Json;
 using PORTALI.Helpers.EmailHelper;
 using PORTALI.Services;
+using PORTALI.Services;
 using System;
 using System.Collections.Generic;
+using System.EnterpriseServices;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +22,7 @@ namespace PORTALI.Controllers
     {
         // GET: GestionDePersonal
         private DALGestionDePersonal _dal = new DALGestionDePersonal();
+        private UserLockService _servicesLockUser = new UserLockService();
 
         [Authorize]
         public async Task<ActionResult> Index()
@@ -64,7 +69,8 @@ namespace PORTALI.Controllers
             {
                 return Json(new { success = false, message = "Ocurrio un error al obtener los puestos" }, JsonRequestBehavior.AllowGet);
             }
-        }
+        } 
+
 
         [Authorize]
         public async Task<JsonResult> ObtenerCausasDespido()
@@ -84,12 +90,13 @@ namespace PORTALI.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena, bool solicitarRequisicion)
+        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena, bool solicitarRequisicion, string observacionRequisicion)
         {
             EnvioCorreoGestionEmpleados correo = new EnvioCorreoGestionEmpleados();
             Reply reply = new Reply();
             Response replyEmail = new Response();
             Causa causa = new Causa();
+
             int[] listaCausas = JsonConvert.DeserializeObject<int[]>(causas);
             bool successSolicitud = false;
             bool successEmail = false;
@@ -119,6 +126,7 @@ namespace PORTALI.Controllers
                 solicitud.U_Estado = 0;
                 solicitud.U_FechaSolicitud = DateTime.Now;
                 solicitud.Name = solicitarRequisicion ? Guid.NewGuid().ToString().Substring(0, 7) : null;
+                solicitud.U_ObservecionesRequisicion = observacionRequisicion;
 
                 correo.Asunto = "Se a realizado una solicitud de baja de personal";
                 correo.Cuerpo = Templates.BodyMailSolicitud(nombre, sessions.DeptoName, motivoCadena, observaciones, nombreUsuario);
@@ -126,7 +134,7 @@ namespace PORTALI.Controllers
                 correo.Nombre = "Baja de personal";
                 correo.isHTML = true;
 
-                string response = DAL_API.NotasPpto(url, solicitud);
+                string response = DAL_API.enviarDatosSL(url, solicitud);
 
                 reply = JsonConvert.DeserializeObject<Reply>(response);
                 var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
@@ -146,7 +154,7 @@ namespace PORTALI.Controllers
                         foreach (var c in listaCausas)
                         {
                             causa.U_IdCausa = c;
-                            string responseCausa = DAL_API.NotasPpto(url, causa);
+                            string responseCausa = DAL_API.enviarDatosSL(url, causa);
                         }
                     }
 
@@ -167,10 +175,10 @@ namespace PORTALI.Controllers
             }
         }
 
-        public string SubirDocumento(HttpPostedFileBase archivo, int empleadoId, int solicitudId, string Extencion = "pdf")
+        public bool SubirDocumento(HttpPostedFileBase archivo, int empleadoId, int solicitudId, string Extencion = "pdf", string carta = "Carta")
         {
             if (archivo == null || archivo.ContentLength == 0)
-                return "Debes seleccionar un archivo";
+                return false;
 
             try
             {
@@ -179,14 +187,14 @@ namespace PORTALI.Controllers
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
 
-                string rutaCompleta = Path.Combine(path, $"Carta-{solicitudId}{empleadoId}.{Extencion}");
+                string rutaCompleta = Path.Combine(path, $"{carta}-{solicitudId}{empleadoId}.{Extencion}");
                 archivo.SaveAs(rutaCompleta);
 
-                return "Documento cargado correctamente";
+                return true;
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return false;
             }
         }
 
@@ -245,7 +253,8 @@ namespace PORTALI.Controllers
                                                     string comentariosGTH,
                                                     int departamentoId,
                                                     int puestoId,
-                                                    int solicitaId
+                                                    int solicitaId,
+                                                    string observacionesRequisicion
             )
         {
             try
@@ -261,22 +270,26 @@ namespace PORTALI.Controllers
                 {
                     Asunto = "Respuesta GTH sobre la baja de personal solicitada",
                     Cuerpo = Templates.BodyMailResponseGTH(nombreEmpleado, departamento, motivo, observaciones, nombreSolicitante, estado, comentariosGTH),
-                    Correos = correos.Trim(','),
+                    Correos = "programador@eltejar.com.gt",
                     Nombre = "Baja de personal",
                     isHTML = true
                 };
 
+                int respuestaObservaciones = _servicesLockUser.guardarProcesoDeBaja(sessions.UserId, id, estado, comentariosGTH);
+
                 if (estado == 1)
                 {
                     var requisicion = await _dal.TieneRequisicion(id);
+
                     if (requisicion)
-                         await CrearSolicitudDeAlta(id, solicitaId, puestoId, departamentoId);
+                        await CrearSolicitudDeAlta(id, solicitaId, puestoId, departamentoId, observacionesRequisicion);
+
+                    if (motivo == "Abandono" || motivo == "Renuncia")
+                        _servicesLockUser.guardarProcesoDeBaja(sessions.UserId, id, 3, "Bloqueo de usuarios operativos automaticamente por el sistema");
                 }
 
-                int respuestaObservaciones = guardarObservaciones(sessions.UserId, id, estado, comentariosGTH);
-
                 MailServices.EnviarCorreoElectronico(correo);
-                return Json(new { success = "error", message = "Solicitud realizada con exito" });
+                return Json(new { success = "success", message = "Solicitud realizada con exito" });
             }
             catch (Exception ex)
             {
@@ -288,7 +301,8 @@ namespace PORTALI.Controllers
             int IdSolicitudBaja,
             int IdSolicitante,
             int IdPosicion,
-            int departamento
+            int departamento,
+            string observacionesRequisicion
             )
         {
             string url = "GestionDePersonal/CrearSolicitudDeAlta";
@@ -308,10 +322,11 @@ namespace PORTALI.Controllers
                     U_IdPosicion = IdPosicion,
                     U_IdDepartamento = departamento,
                     U_IdPerfil = 0,
-                    U_NuevaPlaza = "N"
+                    U_NuevaPlaza = "N",
+                    U_Observaciones = observacionesRequisicion
                 };
 
-                string response = DAL_API.NotasPpto(url, ObjectSend);
+                string response = DAL_API.enviarDatosSL(url, ObjectSend);
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
 
@@ -355,7 +370,7 @@ namespace PORTALI.Controllers
 
             try
             {
-                string response = DAL_API.NotasPpto(url, new { idEmployees = sessions.CodeEmpleado, eMail = email });
+                string response = DAL_API.enviarDatosSL(url, new { idEmployees = sessions.CodeEmpleado, eMail = email });
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
 
@@ -393,10 +408,10 @@ namespace PORTALI.Controllers
             }
         }
 
-        public ActionResult VerDocumentos(int solicitud, int id)
+        public ActionResult VerDocumentos(int solicitud, int id, string carta = "Carta")
         {
             string carpeta = @"\\172.31.99.76\SAPDocs\GestionDePersonal\";
-            string nombreArchivo = $"Carta-{solicitud}{id}.pdf";
+            string nombreArchivo = $"{carta}-{solicitud}{id}.pdf";
 
             string ruta = Path.Combine(carpeta, nombreArchivo);
 
@@ -408,46 +423,11 @@ namespace PORTALI.Controllers
             return File(ruta, contentType);
         }
 
-        public int guardarObservaciones(int userId, int IdSolicitud, int IdEstado, string Observaciones)
-        {
-            string url = "GestionDePersonal/GuardarProcesoGestion";
-            var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
-            if (sessions == null)
-            {
-                return 0;
-            }
-            try
-            {
-                var ObjectSend = new
-                {
-                    U_CodeBaja = IdSolicitud,
-                    U_FechaProceso = DateTime.Now,
-                    U_IdProceso = IdEstado,
-                    U_Comentarios = Observaciones,
-                    U_Usuario = sessions.UserId,
-                    U_Hora = DateTime.Now.ToString("HH:mm")
-                };
-
-                string response = DAL_API.NotasPpto(url, ObjectSend);
-
-                var reply = JsonConvert.DeserializeObject<Reply>(response);
-
-                if (reply.result == 1)
-                    return 1;
-
-                return 0;
-            }
-            catch
-            {
-                return 0;
-            }
-        }
-
-        public async Task<JsonResult> EnviarSolicitudNuevoPuesto(string puesto, int puestoId, string observaciones, bool nuevo)
+        public async Task<JsonResult> EnviarSolicitudNuevoPuesto(string puesto, int puestoId, string observaciones, string observacionesReclu, bool nuevo)
         {
             try
             {
-                string host = "https://localhost:44325/api/AutorizacionGerencia/AutorizacionNuevoPuesto";
+                string host = "https://matthias-proadoption-vapouringly.ngrok-free.dev/api/AutorizacionGerencia/AutorizacionNuevoPuesto";
                 string url = "GestionDePersonal/CrearSolicitudDeAlta";
                 var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
 
@@ -464,10 +444,11 @@ namespace PORTALI.Controllers
                     U_IdSolicitante = sessions.CodeEmpleado,
                     U_IdPosicion = puestoId,
                     U_IdDepartamento = sessions.Depto,
-                    U_NuevaPlaza = "Y"
+                    U_NuevaPlaza = "Y",
+                    U_Observaciones = observacionesReclu
                 };
 
-                string response = DAL_API.NotasPpto(url, Solicitud);
+                string response = DAL_API.enviarDatosSL(url, Solicitud);
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
                 var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
@@ -483,8 +464,8 @@ namespace PORTALI.Controllers
                     puesto.ToUpper(),
                     DateTime.Now.ToString("dd/MM/yyyy"),
                     observaciones,
-                    $"{host}?code={code}&aut=1&puesto={puesto}&puestoId={puestoId}",
-                    $"{host}?code={code}&aut=-1&puesto={puesto}&puestoId={puestoId}"
+                     $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}",
+                     $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=-1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}"
                     );
 
                 var responseMail = MailServices.EnviarCorreoElectronico
@@ -545,6 +526,226 @@ namespace PORTALI.Controllers
             {
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        public async Task<JsonResult> CargarCartaDespido(HttpPostedFileBase carta, int idEpleado)
+        {
+            try
+            {
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+
+                var IdSolicitudPendiente = await _dal.ObtenerIdProcesoDeBaja(idEpleado);
+                var responseCargarArchivo = SubirDocumento(carta, idEpleado, IdSolicitudPendiente, "pdf", "CartaDespido");
+                if (responseCargarArchivo)
+                {
+                    _servicesLockUser.guardarProcesoDeBaja(sessions.UserId, 2, IdSolicitudPendiente, "Se cargo la carta de despido");
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false });
+
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+
+
+        }
+
+        public JsonResult VerExistenciaDeDocumento(int solicitud, int id, string carta = "Carta")
+        {
+
+            string carpeta = @"\\172.31.99.76\SAPDocs\GestionDePersonal\";
+            string nombreArchivo = $"{carta}-{solicitud}{id}.pdf";
+
+            string ruta = Path.Combine(carpeta, nombreArchivo);
+
+            if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
+                return Json(new { success = false, carta = false }, JsonRequestBehavior.AllowGet);
+
+            return Json(new { success = true, carta = false }, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<JsonResult> VerificarSiExistePerfil(int idPuesto)
+        {
+            try
+            {
+                var existe = await _dal.ExistePerfil(idPuesto);
+                if (existe)
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public async Task<JsonResult> guardarVerificacionNuevaPlaza(
+            string U_Puesto,
+            int U_ExperienciaMinima,
+            string U_Sexo,
+            string U_NivelEstudio,
+            int U_RangoEdadMin,
+            int U_RangoEdadMax,
+            double U_SalarioMin,
+            double U_SalarioMax,
+            string U_Observaciones,
+            string U_JustificacionGerencia
+
+            )
+        {
+            try
+            {
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+                var url = "GestionDePersonal/AgregarPerfilPuesto";
+                var urlGuardarGTH = "GestionDePersonal/CrearSolicitudDeAlta";
+                var nuevoPerfil = new
+                {
+                    Name = U_Puesto.ToUpper(),
+                    U_IdPuesto = -500,
+                    U_ExperienciaMinima = U_ExperienciaMinima,
+                    U_RangoEdadMin = U_RangoEdadMin,
+                    U_RangoEdadMax = U_RangoEdadMax,
+                    U_Sexo = U_Sexo,
+                    U_NivelEstudio = U_NivelEstudio,
+                    U_SalarioMin = U_SalarioMin,
+                    U_SalarioMax = U_SalarioMax,
+                    U_Observaciones = U_Observaciones,
+                    U_FechaCreacion = DateTime.Now.ToString("yyyy-MM-dd"),
+                    U_UsuarioCreacion = sessions.CodeEmpleado
+                };
+
+                var response = DAL_API.enviarDatosSL(url, nuevoPerfil);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+                if (reply.result == 1)
+                {
+                    var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
+                    int code = (int)json.Code;
+
+                    var ObjectSend = new
+                    {
+                        U_IdSolicitudBaja = 0,
+                        U_FechaCreacion = DateTime.Now,
+                        U_IdSolicitante = sessions.CodeEmpleado,
+                        U_Estado = "P",
+                        U_IdPosicion = -500,
+                        U_IdDepartamento = sessions.Depto,
+                        U_IdPerfil = code,
+                        U_NuevaPlaza = "Y",
+                        U_Observaciones = U_Observaciones,
+                        U_JustificacionGerencia = U_JustificacionGerencia
+                    };
+
+                    response = DAL_API.enviarDatosSL(urlGuardarGTH, ObjectSend);
+                    reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                    if (reply.result == 1)
+                        return Json(new { success = true });
+                    return Json(new { success = false });
+                }
+
+                return Json(new { success = false });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public async Task<JsonResult> guardarCartaLlamadaAtencion(int tipoDeFalta, DateTime fechaDeIncidente, HttpPostedFileBase carta, string observaciones, int empId)
+        {
+            try
+            {
+                var url = "GestionDePersonal/LlamadaAtencion";
+                var correlativo = await _dal.ObtenerCorrelativoLlamadaAtencion(empId);
+                var subirCarta = subirCartaLlamadaAtencion(carta, $"Llamada_de_atencion_{empId}_{correlativo}.pdf");
+
+                if (subirCarta)
+                {
+                    var Datos = new
+                    {
+                        U_TipoDeFalta = tipoDeFalta,
+                        U_Fecha = fechaDeIncidente,
+                        U_NombreArchivo = $"Llamada_de_atencion_{empId}_{correlativo}.pdf",
+                        U_Observaciones = observaciones,
+                        U_EmpId = empId
+                    };
+
+                    var response = DAL_API.enviarDatosSL(url, Datos);
+
+                    var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                    if (reply.result == 1)
+                    {
+                        return Json(new { success = true });
+                    }
+
+                    return Json(new { success = false });
+
+                }
+
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public bool subirCartaLlamadaAtencion(HttpPostedFileBase archivo, string nombre)
+        {
+            if (archivo == null || archivo.ContentLength == 0)
+                return false;
+
+            try
+            {
+                string path = @"\\172.31.99.76\SAPDocs\GestionDePersonal\CartasDeAtencion\";
+
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                string rutaCompleta = Path.Combine(path, nombre);
+                archivo.SaveAs(rutaCompleta);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<JsonResult> ObtenerLlamadasDeAtencion(int empId)
+        {
+            try
+            {
+                var llamadasDeAtencion = await _dal.ObtenerLlamadasDeAtencionPorUsuario(empId);
+
+                if (llamadasDeAtencion.Any())
+                    return Json(new { success = true, data = llamadasDeAtencion }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult VerCartaLlamadaAtencion(string direccion)
+        {
+            string carpeta = @"\\172.31.99.76\SAPDocs\GestionDePersonal\CartasDeAtencion\";
+            string nombreArchivo = direccion;
+
+            string ruta = Path.Combine(carpeta, nombreArchivo);
+
+            if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
+                return Content("Error al mostrar el pdf");
+
+            string contentType = MimeMapping.GetMimeMapping(ruta);
+
+            return File(ruta, contentType);
         }
     }
 }

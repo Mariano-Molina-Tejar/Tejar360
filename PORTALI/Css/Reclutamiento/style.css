@@ -11,8 +11,8 @@
         border-radius: 999px;
         padding: .45rem 1.3rem;
         font-weight: 500;
-        background: #f1f3f5;
         color: #495057;
+        background: #f1f3f5;
     }
 
         .nav-tabs-modern .nav-link.active {
@@ -275,30 +275,7 @@
         #modalDetalleAspirante .modal-title {
             font-weight: 600;
         }
-        /* =========================
-   NAV TABS
-========================= */
-        #detalleTabs {
-            border-bottom: none;
-            gap: .5rem;
-        }
-
-            #detalleTabs .nav-link {
-                border: none;
-                border-radius: 999px;
-                padding: .45rem 1.2rem;
-                background: #e9ecef;
-                color: #495057;
-                font-weight: 500;
-            }
-
-                #detalleTabs .nav-link.active {
-                    background: linear-gradient(135deg, #4f8cff, #3f6ad8);
-                    color: white;
-                }
-        /* =========================
-   CARDS INTERNAS
-========================= */
+      
         #modalDetalleAspirante .card {
             border-radius: 16px;
         }

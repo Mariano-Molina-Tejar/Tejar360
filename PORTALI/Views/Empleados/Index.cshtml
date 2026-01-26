@@ -384,7 +384,7 @@
 
                                         <div class="form-group-modern">
                                             <label>Nombre</label>
-                                            <input type="text" class="form-control" id="firstName">
+                                            <input type="text" class="form-control" id="firstName" disabled>
                                         </div>
 
                                         <div class="form-group-modern d-none">
@@ -393,22 +393,22 @@
 
                                         <div class="form-group-modern">
                                             <label>Segundo nombre</label>
-                                            <input type="text" class="form-control" id="middleName">
+                                            <input type="text" class="form-control" id="middleName" disabled>
                                         </div>
 
                                         <div class="form-group-modern">
                                             <label>Apellido</label>
-                                            <input type="text" class="form-control" id="lastName">
+                                            <input type="text" class="form-control" id="lastName" disabled>
                                         </div>
 
                                         <div class="form-group-modern">
                                             <label>Denominación de función</label>
-                                            <input type="text" class="form-control" id="jobTitle">
+                                            <input type="text" class="form-control" id="jobTitle" disabled>
                                         </div>
 
                                         <div class="form-group-modern">
                                             <label>Posición</label>
-                                            <select id="position" class="form-select">
+                                            <select id="position" class="form-select" disabled>
                                                 @foreach (var posiciones in Model.Posicion)
                                                 {
                                                     <option value="@(posiciones.NoPosicion)">
@@ -420,7 +420,7 @@
 
                                         <div class="form-group-modern">
                                             <label>Departamento</label>
-                                            <select id="dept" class="form-select">
+                                            <select id="dept" class="form-select" disabled>
                                                 @foreach (var departamentos in Model.Departamentos)
                                                 {
                                                     <option value="@(departamentos.Code)">
@@ -441,7 +441,7 @@
                                         </div>
 
                                         <div class="form-check mb-3">
-                                            <input class="form-check-input" type="checkbox" id="Active" checked>
+                                            <input class="form-check-input" type="checkbox" id="Active" checked disabled>
                                             <label class="form-check-label fw-semibold">
                                                 Empleado activo
                                             </label>
@@ -465,7 +465,7 @@
 
                                         <div class="form-group-modern">
                                             <label>Jefe Inmediato</label>
-                                            <select id="U_JefeInmediato" class="form-select">
+                                            <select id="U_JefeInmediato" class="form-select" disabled>
                                                 @foreach (var empleados in Model.Empleados)
                                                 {
                                                     <option value="@(empleados.EmpId)">
@@ -477,7 +477,7 @@
 
                                         <div class="form-group-modern">
                                             <label>Tienda Asignada</label>
-                                            <select id="U_tienda" class="form-select">
+                                            <select id="U_tienda" class="form-select" disabled>
                                                 @foreach (var tiendas in Model.Tiendas)
                                                 {
                                                     <option value="@(tiendas.WhsCode)">
@@ -489,7 +489,7 @@
 
                                         <div class="form-group-modern">
                                             <label>Área</label>
-                                            <select id="U_tienda" class="form-select">
+                                            <select id="U_tienda" class="form-select" disabled>
                                                 @foreach (var areas in Model.Areas)
                                                 {
                                                     <option value="@(areas.FldValue)">
@@ -1183,19 +1183,10 @@
 
             try {
                 const datosEmpleado = {
-                    FirstName: document.getElementById('firstName').value,
-                    MiddleName: document.getElementById('middleName').value,
-                    LastName: document.getElementById('lastName').value,
-                    JobTitle: document.getElementById('jobTitle').value,
-                    Position: document.getElementById('position').value,
-                    Department: document.getElementById('dept').value,
                     EmpID: document.getElementById('empID').value,
-                    Active: document.getElementById('Active').checked ? 'Y' : 'N',
                     MobilePhone: document.getElementById('mobile').value,
                     HomePhone: document.getElementById('hometel').value,
-                    eMail: document.getElementById('email').value,
-                    U_JefeInmediato: document.getElementById('U_JefeInmediato').value,
-                    U_Tienda: document.getElementById('U_tienda').value
+                    eMail: document.getElementById('email').value
                 };
 
                 const response = await fetch('/Empleados/GuardarInformacionEmpleado',

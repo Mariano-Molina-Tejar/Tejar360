@@ -115,7 +115,8 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_CAUSAS]";
+                    string query = @"SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_CAUSAS]
+                                     where U_despido = 'Y'";
 
                     return await conn.QueryAsync<CausasDespido>
                         (
@@ -189,6 +190,18 @@ namespace DAL
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        public async Task<int> ObtenerIdProcesoDeBaja(int idEmpleado)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT TOP 1 Code FROM [ELTEJAR_PRUEBAS_R1_5.1].dbo.[@GESTION_EMP_B]
+                                WHERE U_EmpleadoId = @IdUsuario
+                                ORDER BY Code DESC";
+
+                return await conn.QuerySingleAsync<int>(query, new { IdUsuario  = idEmpleado});
             }
         }
         public async Task<int> VerificarExistenciaDeCorreo(int userId)
@@ -285,11 +298,17 @@ namespace DAL
             using (var conn = new SqlConnection(connectionString))
             {
                 var query = @"SELECT	T0.U_FechaCreacion AS FechaDeSolicitud,
-		                                ISNULL(T1.descriptio,'Posicion sin confirmar') AS Posicion,
-		                            ISNULL(T0.U_Estado,'P') AS Estado
-                            FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_A] T0
-                            LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHPS T1 ON T0.U_IdPosicion = T1.posID     
-                            WHERE U_IdSolicitante = @userId";
+		                        ISNULL(T1.descriptio,t2.Name) AS Posicion,
+		                        ISNULL(T0.U_Estado,'P') AS Estado,
+		                        CASE WHEN T0.U_Estado IS NULL THEN 'Pendiente - Gerencia'
+			                         WHEN T0.U_Estado = 'P' Then 'verificando perfil - GTH'
+			                         WHEN T0.U_Estado = 'R' THEN 'Rechazado gerencia'
+			                         ELSE 'Autorizado'
+		                        END AS Observaciones
+	                        FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_A] T0
+	                        LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHPS T1 ON T0.U_IdPosicion = T1.posID  
+	                        LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] T2 ON T0.U_IdPerfil = t2.Code
+	                        WHERE U_IdSolicitante = @userId";
 
                 return await conn.QueryAsync<Autorizaciones>
                     (
@@ -323,6 +342,44 @@ namespace DAL
                 var sql = @"SELECT CASE WHEN [Name] IS NULL THEN 0 ELSE 1 END AS Requisicion FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_B] WHERE code = @Code";
 
                 return await conn.ExecuteScalarAsync<bool>(sql, new { Code = code});
+            }
+        }
+
+        public async Task<bool> ExistePerfil(int idPuesto)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"IF(EXISTS(SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] WHERE U_IdPuesto = @IdPuesto))
+                                SELECT 1
+                                ELSE SELECT 0";
+
+                return await conn.ExecuteScalarAsync<bool>(query, new { IdPuesto  = idPuesto });
+            }
+        }
+
+        public async Task<int> ObtenerCorrelativoLlamadaAtencion(int empId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT COUNT(*) + 1 AS Correlativo FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_LLA_ATE]
+                                WHERE U_EmpId = @EmpId";
+                return await conn.ExecuteScalarAsync<int>(query, new { EmpId = empId });
+            }
+        }
+
+        public async Task<IEnumerable<LlamadaDeAtencion>> ObtenerLlamadasDeAtencionPorUsuario(int empId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT	T1.Name AS Falta,
+		                                CONVERT(DATE,T0.U_Fecha) AS Fecha,
+		                                T0.U_Observaciones AS Observaciones,
+		                                T0.U_NombreArchivo AS NombreArchivo
+                                FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_LLA_ATE] T0
+                                INNER JOIN [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_CAUSAS] T1 ON T0.U_TipoDeFalta = T1.Code
+                                WHERE U_EmpId = @EmpId";
+
+                return await conn.QueryAsync<LlamadaDeAtencion>(query, new { EmpId = empId });
             }
         }
     }

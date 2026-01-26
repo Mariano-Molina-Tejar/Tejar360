@@ -10,6 +10,59 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="~/Css/GestionDePersonal/styleProceso.css" rel="stylesheet">
     <style>
+        /* Paleta de colores y variables */
+        :root {
+            --primary-color: #0d6efd;
+            --success-soft: #e7f5ea;
+            --warning-soft: #fff9db;
+            --danger-soft: #fbe9e9;
+            --info-soft: #e7f1ff;
+            --text-main: #344767;
+            --text-muted: #67748e;
+        }
+
+        /* Contenedor y tipografía */
+        .container {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-main);
+        }
+
+        /* Estilo Moderno para Tabs */
+        .nav-tabs-modern {
+            border-bottom: 2px solid #ebeef2;
+            gap: 10px;
+        }
+
+            .nav-tabs-modern .nav-link {
+                border: none;
+                color: var(--text-muted);
+                font-weight: 600;
+                padding: 12px 20px;
+                border-radius: 8px 8px 0 0;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+                .nav-tabs-modern .nav-link:hover {
+                    background-color: #f8f9fa;
+                    color: var(--primary-color);
+                }
+
+                .nav-tabs-modern .nav-link.active {
+                    color: var(--primary-color);
+                    background: transparent;
+                }
+
+                    .nav-tabs-modern .nav-link.active::after {
+                        content: "";
+                        position: absolute;
+                        bottom: -2px;
+                        left: 0;
+                        width: 100%;
+                        height: 3px;
+                        background-color: var(--primary-color);
+                        border-radius: 3px;
+                    }
     </style>
 </head>
 <div class="container mt-4">
@@ -681,7 +734,7 @@
         if (observaciones) {
 
             const datosDetalle = datos.find(x => x.Code === id);
-            const response = await autorizarBaja(id, 1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones, datosDetalle.DepartamentoId, datosDetalle.PuestoId, datosDetalle.SolicitaId);
+            const response = await autorizarBaja(id, 1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones, datosDetalle.DepartamentoId, datosDetalle.PuestoId, datosDetalle.SolicitaId, datosDetalle.ObservacionesRequisicion);
             Swal.fire({
                 icon: response.success,
                 title: 'Solicitud autorizada',
@@ -716,7 +769,7 @@
         if (observaciones) {
 
             const datosDetalle = datos.find(x => x.Code === id)
-            const response = await autorizarBaja(id, -1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones, datosDetalle.DepartamentoId, datosDetalle.PuestoId, datosDetalle.SolicitaId);
+            const response = await autorizarBaja(id, -1, datosDetalle.Nombre, datosDetalle.Departamento, datosDetalle.Motivo, datosDetalle.Observaciones, datosDetalle.Solicita, observaciones, datosDetalle.DepartamentoId, datosDetalle.PuestoId, datosDetalle.SolicitaId, datosDetalle.ObservacionesRequisicion);
 
             Swal.fire({
                 icon: 'error',
@@ -729,7 +782,7 @@
         }
     }
 
-    async function autorizarBaja(id, estado, nombreEmpleado, departamento, motivo, observaciones, nombreSolicitante, comentariosGTH, departamentoId, puestoId, solicitaId)
+    async function autorizarBaja(id, estado, nombreEmpleado, departamento, motivo, observaciones, nombreSolicitante, comentariosGTH, departamentoId, puestoId, solicitaId,observacionesRequisicion)
     {
         try {
             isLoading(true);
@@ -747,6 +800,7 @@
             formData.append("departamentoId", departamentoId);
             formData.append("puestoId", puestoId);
             formData.append("solicitaId", solicitaId);
+            formData.append("observacionesRequisicion", observacionesRequisicion);
 
             const response = await fetch(`/GestionDePersonal/AutorizarBaja`, {
                 method: "POST",

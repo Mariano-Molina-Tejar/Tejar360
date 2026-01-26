@@ -825,8 +825,8 @@
         $('#modalFactura').modal('hide');
     }
 
-    function GuardarNotaPto(Codigo,CodeNote) {
-        const anio = @anio;
+        function GuardarNotaPto(Codigo, CodeNote) {
+        const anio = document.getElementById("costos-select").value;
         const mes = @mes;
         const id = "#" + Codigo;
         const nota = document.querySelector(id).value;

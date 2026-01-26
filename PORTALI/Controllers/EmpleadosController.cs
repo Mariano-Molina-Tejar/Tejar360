@@ -52,7 +52,7 @@ namespace PORTALI.Controllers
                 string url = "GestionDePersonal/AgregarPosicion";
                 var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
 
-                string response = DAL_API.NotasPpto(url, new { name = nombre, description = posicion });
+                string response = DAL_API.enviarDatosSL(url, new { name = nombre, description = posicion });
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
                 var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
@@ -93,7 +93,7 @@ namespace PORTALI.Controllers
                 string url = "GestionDePersonal/ActualizarInfoEmpleado";
                 var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
 
-                string response = DAL_API.NotasPpto(url, infoEmpleado);
+                string response = DAL_API.enviarDatosSL(url, infoEmpleado);
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
 
@@ -117,7 +117,7 @@ namespace PORTALI.Controllers
 
                 var existe = await _dal.ExisteDatoGerente(departamento);
 
-                string response = DAL_API.NotasPpto(url, new { Departamento = departamento, Gerente = gerente, Update = existe });
+                string response = DAL_API.enviarDatosSL(url, new { Departamento = departamento, Gerente = gerente, Update = existe });
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
 
@@ -139,7 +139,7 @@ namespace PORTALI.Controllers
             {
                 string url = "GestionDePersonal/GuardarTipoDeEquipo";
 
-                string response = DAL_API.NotasPpto(
+                string response = DAL_API.enviarDatosSL(
                     url,
                     new
                     {
@@ -192,7 +192,7 @@ namespace PORTALI.Controllers
 
                 string url = "GestionDePersonal/GuardarEquiposPorPefil";
 
-                string response = DAL_API.NotasPpto(
+                string response = DAL_API.enviarDatosSL(
                     url,
                     new
                     {

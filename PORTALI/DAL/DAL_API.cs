@@ -46,7 +46,7 @@ namespace DAL
             }
         }
 
-        public static string NotasPpto(string Url, Object objecto)
+        public static string enviarDatosSL(string Url, Object objecto)
         {
 
             try

@@ -134,6 +134,7 @@
     <Compile Include="ListaFiltroRegionesEntity.cs" />
     <Compile Include="ListaFiltroTiendasEntity.cs" />
     <Compile Include="ListasGeneralesEntity.cs" />
+    <Compile Include="LockUser.cs" />
     <Compile Include="LoginEntity.cs" />
     <Compile Include="MarcajeEntity.cs" />
     <Compile Include="MargenTiendasEntity.cs" />

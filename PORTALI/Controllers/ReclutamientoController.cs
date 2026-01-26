@@ -26,8 +26,10 @@ namespace PORTALI.Controllers
             try
             {
                 ReclutamientoViewModel reclutamiento = new ReclutamientoViewModel();
+
                 reclutamiento.Reclutamiento = await _dal.VerSolicitudesDePersonal();
                 reclutamiento.ReclutamientoFinalizadas = await _dal.VerSolicitudesDePersonalFinalizadas();
+                reclutamiento.ReclutamientoVerificacionNuevaPlaza = await _dal.VerVerificacionDeNuevosPuestos();
                 reclutamiento.Documentos = await _dal.VerDocumentosRequeridos();
                 reclutamiento.Tiendas = await _dal.ObtenerTiendas();
                 var gerentes = await _dal.ObtenerGerentes();
@@ -260,7 +262,7 @@ namespace PORTALI.Controllers
                 U_UsuarioComentario = sessions.UserId
             };
 
-            string response = DAL_API.NotasPpto(url, datosComentario);
+            string response = DAL_API.enviarDatosSL(url, datosComentario);
 
             var reply = JsonConvert.DeserializeObject<Reply>(response);
 
@@ -289,11 +291,12 @@ namespace PORTALI.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> ObtenerPerfilPuestoPorId(int idPuesto)
+        public async Task<JsonResult> ObtenerPerfilPuestoPorId(int idPuesto, string nombrePuesto = "")
         {
             try
             {
-                var perfil = await _dal.ObtenerPerfilDePuestoPorId(idPuesto);
+                string puesto = idPuesto == 0 ? nombrePuesto : idPuesto.ToString();
+                var perfil = await _dal.ObtenerPerfilDePuestoPorId(puesto);
 
                 if (perfil.U_IdPuesto == 0)
                     return Json(new { success = false }, JsonRequestBehavior.AllowGet);
@@ -309,23 +312,90 @@ namespace PORTALI.Controllers
         [HttpPost]
         public async Task<JsonResult> GuardarPerfilPuesto(PerfilPuestoModel perfil)
         {
-            bool existe = await _dal.VerificarExistenciaDePerfil(perfil.Code);
-            string url = !existe ? "GestionDePersonal/AgregarPerfilPuesto" : "GestionDePersonal/ActualizarPerfilPuesto";
-            var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
-            perfil.U_UsuarioCreacion = sessions.UserId;
-            perfil.U_FechaCreacion = DateTime.Now;
-
-            string response = DAL_API.NotasPpto(url, perfil);
-
-            var reply = JsonConvert.DeserializeObject<Reply>(response);
-
-            if (reply.result == 1)
+            try
             {
-                return Json(new { success = true });
+                bool existe = await _dal.VerificarExistenciaDePerfil(perfil.Code);
+
+                perfil.U_IdPuesto = perfil.U_IdPuesto == 0 ? -500 : perfil.U_IdPuesto;
+
+                string url = !existe ? "GestionDePersonal/AgregarPerfilPuesto" : "GestionDePersonal/ActualizarPerfilPuesto";
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+                perfil.U_UsuarioCreacion = sessions.UserId;
+                perfil.U_FechaCreacion = DateTime.Now;
+
+                string response = DAL_API.enviarDatosSL(url, perfil);
+
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                {
+                    var responseMail = EnviarSolicitudNuevoPuesto(perfil.descriptio, -500, perfil.Justificacion, true, perfil.Solicita, perfil.Code);
+
+                    if (responseMail)
+                    {
+                        var respuesta = await _dal.actualizarEstadoSolicitudDeAlta(int.Parse(perfil.IdSolicitudAlta));
+                        if(respuesta == 1)
+                            return Json(new { success = true });
+                        return Json(new { success = false });
+                    }
+
+                    return Json(new { success = false });
+                }
+                return Json(new { success = false });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false });
             }
 
-            return Json(new { success = false });
         }
+
+        public bool EnviarSolicitudNuevoPuesto(string puesto, int puestoId, string observaciones, bool nuevo, string solicita, int code)
+        {
+            try
+            {
+                string host = "https://matthias-proadoption-vapouringly.ngrok-free.dev/api/AutorizacionGerencia/AutorizarNuevaPlaza";
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+                if (sessions == null)
+                {
+                    return false;
+                }
+
+                observaciones = string.IsNullOrWhiteSpace(observaciones) ? "No se agregaron observaciones" : observaciones;
+
+                string TemplateCorreoAutorizacion = Templates.BodyMailSolicitudAutorizacion(
+                             solicita,
+                             puesto.ToUpper(),
+                             DateTime.Now.ToString("dd/MM/yyyy"),
+                             observaciones,
+                             $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}",
+                             $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=-1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}"
+
+                         );
+
+
+                var response = new Entity.Response();
+
+                response = MailServices.EnviarCorreoElectronico
+                (
+                new EnvioCorreoGestionEmpleados
+                {
+                    Asunto = "Solicitud de nuevo puesto",
+                    Cuerpo = TemplateCorreoAutorizacion,
+                    Correos = "programador@eltejar.com.gt",
+                    Nombre = "Solicitud de nuevo puesto",
+                    isHTML = true
+                }
+                );
+
+                return response.result;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
 
         public async Task<JsonResult> ActualizarCorreo(string usuario, string correo)
         {
@@ -388,7 +458,7 @@ namespace PORTALI.Controllers
                     U_NuevaPlaza = "N"
                 };
 
-                string response = DAL_API.NotasPpto(url, solicitudAlta);
+                string response = DAL_API.enviarDatosSL(url, solicitudAlta);
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
 
@@ -425,7 +495,7 @@ namespace PORTALI.Controllers
                     SolicitaId = solicitaId
                 };
 
-                string response = DAL_API.NotasPpto(url, datosEmpleado);
+                string response = DAL_API.enviarDatosSL(url, datosEmpleado);
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
                 var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
                 string employeeID = (string)json.EmployeeID;
@@ -455,7 +525,7 @@ namespace PORTALI.Controllers
                     EmpId = empId
                 };
 
-                var response = DAL_API.NotasPpto(url, datosSN);
+                var response = DAL_API.enviarDatosSL(url, datosSN);
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
                 var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
                 string cardCode = (string)json.CardCode;
@@ -499,7 +569,7 @@ namespace PORTALI.Controllers
                     departamento = departamentoId
                 };
 
-                var response = DAL_API.NotasPpto(url, user);
+                var response = DAL_API.enviarDatosSL(url, user);
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
                 var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
                 string UserCode = (string)json.UserCode;
@@ -529,7 +599,7 @@ namespace PORTALI.Controllers
                     EmpId = empId
                 };
 
-                var response = DAL_API.NotasPpto(url, EmpleadoDeVentas);
+                var response = DAL_API.enviarDatosSL(url, EmpleadoDeVentas);
 
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
                 if (reply.result == 1)
@@ -581,7 +651,7 @@ namespace PORTALI.Controllers
                     empId = empId
                 };
 
-                var response = DAL_API.NotasPpto(url, user);
+                var response = DAL_API.enviarDatosSL(url, user);
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
                 var json = JsonConvert.DeserializeObject<dynamic>(reply.data.ToString());
                 string UserCode = (string)json.UserCode;
@@ -607,7 +677,7 @@ namespace PORTALI.Controllers
                     whsCode = tienda
                 };
 
-                var response = DAL_API.NotasPpto(url, data);
+                var response = DAL_API.enviarDatosSL(url, data);
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
 
                 if (reply.result == 1)
@@ -628,7 +698,7 @@ namespace PORTALI.Controllers
             {
                 var url = "Reclutamiento/CerrarSolicitudDeAlta";
 
-                var response = DAL_API.NotasPpto(url, new { idSolicitud = idSolicitud });
+                var response = DAL_API.enviarDatosSL(url, new { idSolicitud = idSolicitud });
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
 
                 if (reply.result == 1)
@@ -688,7 +758,7 @@ namespace PORTALI.Controllers
                 if (datos != null)
                     return Json(new { success = true, data = datos }, JsonRequestBehavior.AllowGet);
 
-                return Json(new {success = false }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
             }
             catch

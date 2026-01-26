@@ -16,7 +16,7 @@ namespace DAL
         private readonly string connectionString;
         private CommandType texto = CommandType.Text;
         private CommandType sp = CommandType.StoredProcedure;
-
+        
         public DALReclutamiento()
         {
             ConnectionEntity pConnection = Conexion.ConexionDB();
@@ -47,6 +47,23 @@ namespace DAL
                 using (var conn = new SqlConnection(connectionString))
                 {
                     var sp = "sp_ver_puestos_solicitados_finalizados";
+
+                    return await conn.QueryAsync<ReclutemientoEntity>(sp, commandType: CommandType.Text, commandTimeout: 60);
+                }
+                ;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<ReclutemientoEntity>> VerVerificacionDeNuevosPuestos()
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    var sp = "sp_ver_verificarcion_de_puestos_nuevos";
 
                     return await conn.QueryAsync<ReclutemientoEntity>(sp, commandType: CommandType.Text, commandTimeout: 60);
                 }
@@ -293,14 +310,21 @@ namespace DAL
             }
         }
 
-        public async Task<PerfilPuestoModel> ObtenerPerfilDePuestoPorId(int idPuesto)
+        public async Task<PerfilPuestoModel> ObtenerPerfilDePuestoPorId(string idPuesto)
         {
             try
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    var query = @"SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL]
-                                  WHERE U_IdPuesto = @IdPuesto";
+                    var query = @"IF TRY_CAST(@IdPuesto AS INT) IS NOT NULL
+                                    SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] T0
+                                    INNER JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHPS T1 ON T0.U_IdPuesto = t1.posID
+                                    WHERE U_IdPuesto = @IdPuesto
+                                    ELSE
+                                    SELECT TOP 1 * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] T0
+                                    LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHPS T1 ON T0.U_IdPuesto = t1.posID
+                                    WHERE T0.Name = @IdPuesto
+                                    ORDER BY T0.Code DESC";
 
                     return await conn.QueryFirstAsync<PerfilPuestoModel>
                         (
@@ -338,6 +362,17 @@ namespace DAL
             }
         }
 
+        public async Task<int> actualizarEstadoSolicitudDeAlta(int idSolicitud)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"UPDATE [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_A]
+                              SET U_Estado = NULL
+                              WHERE Code = @IdSolicitud";
+
+                return await conn.ExecuteAsync(query, new { IdSolicitud  = idSolicitud});
+            }
+        }
         public async Task<int> ActualizarCorreo(string usuario, string correo)
         {
             try
@@ -439,6 +474,25 @@ namespace DAL
                     {
                         EmpId = empId
                     }
+                    );
+            }
+        }
+
+        public async Task<string> ObtenerNombreCompleto(int userId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT	CASE 
+		                        WHEN CONCAT(OHEM.firstName, ' ' ,OHEM.LastName) = '' THEN OUSR.U_NAME
+		                        ELSE CONCAT(OHEM.firstName, ' ' ,OHEM.LastName) END Nombre
+	                        FROM OUSR
+	                        LEFT JOIN OHEM ON OUSR.USERID = OHEM.userId
+	                        WHERE OHEM.empID = @UserId";
+
+                return await conn.ExecuteScalarAsync<string>
+                    (
+                    query,
+                    new { UserId = userId }
                     );
             }
         }

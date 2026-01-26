@@ -107,7 +107,7 @@ namespace PORTALI.Controllers
                     return Json(new { success = false, message = "Sesión expirada" });
                 }
 
-                string contenido = DAL_API.NotasPpto(url, nota);
+                string contenido = DAL_API.enviarDatosSL(url, nota);
                 Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
 
                 return Json(new { success = true, data = datos.message });
@@ -130,7 +130,7 @@ namespace PORTALI.Controllers
                     return Json(new { success = false, message = "Sesión expirada" });
                 }
                 object Codigo = new { Code = Code };
-                string contenido = DAL_API.NotasPpto(url, Codigo);
+                string contenido = DAL_API.enviarDatosSL(url, Codigo);
                 Reply datos = JsonConvert.DeserializeObject<Reply>(contenido);
 
                 return Json(new { success = true, data = datos.message });

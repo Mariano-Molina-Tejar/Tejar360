@@ -12,17 +12,21 @@ namespace Entity
         public DateTime FechaSolicitud { get; set; }
         public int PuestoId { get; set; }
         public string Puesto { get; set; }
+        public int IdPerfil { get; set; }
         public string Departamento { get; set; }
         public string DepartamentoId { get; set; }
         public string Solicita { get; set; }
         public int SolicitaId { get; set; }
         public bool Perfil { get; set; }
+        public string Observaciones { get; set; }
+        public string Justificacion { get; set; }
     }
 
     public class ReclutamientoViewModel
     {
         public IEnumerable<ReclutemientoEntity> Reclutamiento { get; set; }
         public IEnumerable<ReclutemientoEntity> ReclutamientoFinalizadas { get; set; }
+        public IEnumerable<ReclutemientoEntity> ReclutamientoVerificacionNuevaPlaza { get; set; }
         public List<CVDOCREQ> Documentos { get; set; }
 
         public IEnumerable<Tiendas> Tiendas { get; set; }
@@ -117,6 +121,7 @@ namespace Entity
     public class PerfilPuestoModel
     {
         public int Code { get; set; }
+        public string Name { get; set; }
         public int U_IdPuesto { get; set; }
         public int U_ExperienciaMinima { get; set; }
         public int U_RangoEdadMin { get; set; }
@@ -128,6 +133,10 @@ namespace Entity
         public string U_Observaciones { get; set; } = string.Empty;
         public DateTime U_FechaCreacion { get; set; }
         public int U_UsuarioCreacion { get; set; }
+        public string descriptio { get; set; }
+        public string Solicita { get; set; }
+        public string IdSolicitudAlta { get; set; }
+        public string Justificacion { get; set; }
     }
 
     public class DatosCreadosEmpleado

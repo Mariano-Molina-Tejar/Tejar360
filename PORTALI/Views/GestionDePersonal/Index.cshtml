@@ -6,6 +6,206 @@
 
 <head>
     <style>
+
+        /* Contenedor de opciones */
+        .selection-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #f0f2f5;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: #fff;
+        }
+
+            /* Efecto Hover */
+            .selection-card:hover {
+                border-color: #4682b4;
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            }
+
+                .selection-card:hover .icon-box {
+                    background-color: #4682b4;
+                    color: #fff;
+                }
+
+        /* Caja de icono */
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background-color: #f8f9fa;
+            color: #4682b4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .selection-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .selection-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        <style >
+        .modal-plaza-modern {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .modal-plaza-header {
+            background-color: #ffffff; /* Fondo blanco para limpieza */
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1.5rem;
+            border-radius: 16px 16px 0 0;
+        }
+
+            .modal-plaza-header .modal-title {
+                color: #333;
+                font-weight: 700;
+                font-size: 1.25rem;
+            }
+
+            /* Icono sutil al lado del título */
+            .modal-plaza-header .bi-person-fill-add {
+                color: #4682b4; /* El SteelBlue que te gustó */
+            }
+
+        .form-group-modern {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group-modern .form-label {
+                font-weight: 600;
+                color: #555;
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+        /* Mejora del Select y Textarea */
+        .plaza-form .form-select,
+        .plaza-form .form-control {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+            .plaza-form .form-select:focus,
+            .plaza-form .form-control:focus {
+                background-color: #fff;
+                border-color: #4682b4;
+                box-shadow: 0 0 0 4px rgba(70, 130, 180, 0.1);
+                outline: none;
+            }
+
+        .modal-plaza-footer {
+            border-top: none;
+            padding: 1.5rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Botones con estilo */
+        .btn-save-plaza {
+            background: #4682b4;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            flex: 1; /* Hace que el botón crezca */
+        }
+
+        .btn-cancel-plaza {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        /* Estilo para los pies de página de los inputs (small) */
+        .form-group-modern small {
+            display: block;
+            margin-top: 5px;
+            color: #888 !important;
+            font-style: italic;
+        }
+
+        /* Asegura que el modal-header no tenga bordes feos */
+        .modal-plaza-header {
+            border-bottom: none;
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        /* Efecto suave al pasar el mouse por los textareas */
+        .plaza-form .form-control:hover {
+            border-color: #adb5bd;
+        }
+        /* Header elegante */
+        .header-perfil {
+            background: linear-gradient(45deg, #4682b4, #5a9bd5);
+            padding: 1.5rem;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .perfil-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+            /* Estilo para que el botón de gestión no rompa la estética moderna */
+            .perfil-row .btn-outline-danger:hover {
+                background-color: #fff5f5;
+                color: #dc3545;
+            }
+
+        .bg-danger-subtle {
+            background-color: #f8d7da; /* Un rojo muy clarito para el fondo del número */
+        }
+
+        .perfil-row {
+            min-height: 40px; /* Asegura que la fila tenga espacio suficiente */
+        }
+
+        #listaCartas .list-group-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+
+            #listaCartas .list-group-item:hover {
+                background-color: #fcfcfc;
+                border-left: 4px solid #dc3545; /* Rojo para denotar advertencia */
+            }
+
+        #listaCartas::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #listaCartas::-webkit-scrollbar-thumb {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -31,7 +231,8 @@
                 </button>
 
                 <button class="btn btn-light btn-sm" id="btnNuevaPlaza"
-                        data-bs-toggle="modal" data-bs-target="#modalNuevaPlaza">
+                        @*data-bs-toggle="modal" data-bs-target="#modalTipoSolicitud">*@
+                        onclick="modalTipoSolicitud.show()">
                     <i class="bi bi-person-plus-fill me-1"></i> Nueva plaza
                 </button>
             </div>
@@ -39,7 +240,6 @@
 
         <!-- BODY -->
         <div class="card-body bg-light">
-
             @if (ViewData["Error"] != null)
             {
                 <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError">
@@ -108,6 +308,7 @@
                                             data-correo="@empleados.Correo"
                                             data-sexo="@empleados.Sexo"
                                             data-empId="@empleados.EmpID"
+                                            data-llamadas="@empleados.LlamadasAtencion"
                                             data-creadoSAP="@empleados.CreadoSAP.ToString("dd/MM/yyyy")">
                                         <i class="bi bi-person-vcard me-1"></i> Perfil
                                     </button>
@@ -131,60 +332,79 @@
 
 </div>
 
-<<div class="modal fade" id="modalNuevaPlaza" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalNuevaPlaza" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-plaza-modern">
 
-            <!-- HEADER -->
-            <div class="modal-header modal-plaza-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-person-fill-add me-2"></i> Registrar nueva plaza
+            <div class="modal-header modal-plaza-header" style="background-color: #4682b4;">
+                <h5 class="modal-title d-flex align-items-center" style="color:white">
+                    <i class="bi bi-person-plus-fill me-2 fs-4"></i>
+                    Registrar Nueva Plaza
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="modalNuevaPlaza.hide()"></button>
             </div>
 
-            <!-- BODY -->
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <form id="formNuevaPlaza" class="plaza-form">
 
-                    <!-- Puesto -->
-                    <div class="form-group-modern">
-                        <label class="form-label">Puesto</label>
-                        <select class="form-select" id="selectNuevaPlaza">
-                        </select>
+                    @*<div class="form-group-modern mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-briefcase-fill me-1 text-primary"></i> Seleccione el Puesto
+                            </label>
+                            <select class="form-select shadow-sm" id="selectNuevaPlaza">
+                            </select>
+                        </div>*@
+                    <div class="form-group-modern mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-briefcase me-1"></i> Seleccione el Puesto
+                        </label>
+                        <div class="input-group">
+                            <select class="form-select shadow-sm" id="selectNuevaPlaza">
+                                <option value="">Seleccione un puesto...</option>
+                            </select>
+                            <button class="btn btn-outline-primary btn-ver-perfil" type="button" id="btnVerPerfilSeleccionado" title="Ver detalles del perfil">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted mt-1 d-block" style="font-size: 0.75rem;">
+                            Haga clic en el icono para ver los requisitos de este puesto.
+                        </small>
                     </div>
 
-                    <!-- Nuevo puesto -->
-                    <div class="form-group-modern d-none" id="divNuevoPuesto">
-                        <label class="form-label">Nuevo puesto</label>
-                        <input type="text"
-                               id="inputNuevoPuesto"
-                               class="form-control"
-                               placeholder="Ingrese el nuevo puesto">
-                    </div>
-
-                    <!-- Observaciones -->
-                    <div class="form-group-modern">
-                        <label class="form-label">Observaciones</label>
-                        <textarea id="PerfilObservaciones"
-                                  class="form-control"
-                                  rows="4"
-                                  placeholder="Agregue observaciones relevantes..."
+                    <div class="form-group-modern mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-search me-1 text-primary"></i> Notas para Reclutamiento *
+                        </label>
+                        <textarea id="ObsReclutamiento"
+                                  class="form-control shadow-sm"
+                                  rows="3"
+                                  placeholder="Ej: Urge cubrir, competencias deseadas, fuentes de reclutamiento..."
                                   required></textarea>
+                        <small class="text-muted" style="font-size: 0.75rem;">Estas notas ayudan al equipo de selección.</small>
+                    </div>
+
+                    <div class="form-group-modern mb-0">
+                        <label class="form-label">
+                            <i class="bi bi-shield-check me-1 text-primary"></i> Justificación para Autorización *
+                        </label>
+                        <textarea id="PerfilObservaciones"
+                                  class="form-control shadow-sm"
+                                  rows="3"
+                                  placeholder="Indique el motivo de la vacante (sustitución, crecimiento, etc.)"
+                                  required></textarea>
+                        <small class="text-muted" style="font-size: 0.75rem;">Este texto será revisado por la gerencia.</small>
                     </div>
 
                 </form>
             </div>
 
-            <!-- FOOTER -->
-            <div class="modal-footer modal-plaza-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                    Cancelar
+            <div class="modal-footer modal-plaza-footer bg-light-subtle border-0">
+                <button type="button" class="btn btn-cancel-plaza" data-bs-dismiss="modal" onclick="modalNuevaPlaza.hide()">
+                    Descartar
                 </button>
-
-                <button type="button" class="btn btn-primary" id="btnGuardar">
-                    <i class="bi bi-send me-1"></i>
-                    Enviar solicitud
+                <button type="button" class="btn btn-primary btn-save-plaza" id="btnGuardar">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Enviar Solicitud
                 </button>
             </div>
 
@@ -248,6 +468,19 @@
                             <div class="perfil-row">
                                 <span>Teléfono</span>
                                 <strong id="perfilTelefono"></strong>
+                            </div>
+
+                            <div class="perfil-row border-top mt-2 pt-2 d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Llamadas de Atención</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span id="perfilConteoCartas" class="badge rounded-pill bg-danger-subtle text-danger px-2">0</span>
+                                    <button type="button"
+                                            class="btn btn-sm btn-link text-danger p-0 text-decoration-none fw-bold"
+                                            onclick="gestionarCartas()"
+                                            style="font-size: 0.85rem;">
+                                        <i class="bi bi-pencil-square"></i> Gestionar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -354,6 +587,19 @@
                                 </div>
                             </label>
                         </div>
+                        <!-- Observaciones -->
+                        <div class="mb-2">
+                            <label for="txtObservacionesPlaza" class="form-label fw-semibold">
+                                Observaciones adicionales para la plaza
+                            </label>
+                            <textarea id="txtObservacionesPlaza"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Ej. Perfil deseado, conocimientos específicos, urgencia de la plaza, reemplazo temporal, etc."></textarea>
+                            <div class="form-text">
+                                Esta información se incluirá en la requisición generada.
+                            </div>
+                        </div>
                     </div>
 
 
@@ -430,7 +676,7 @@
 </div>
 <!-- Modal Seguimiento de Proceso -->
 <div class="modal fade" id="modalTrackingProceso" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl  modal-dialog-centered">
+    <div class="modal-dialog modal-fullscreen  modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
 
             <!-- Header -->
@@ -482,6 +728,9 @@
                         </div>
                     </div>
 
+                    @*CARTA DE DESPIDO*@
+
+                    @*CARGAR*@
                     <!-- Estado 2 - CARTA -->
                     <div id="TrackingCartaColor" class="timeline-item completed">
 
@@ -509,16 +758,6 @@
                                            accept=".pdf">
                                 </div>
 
-                                <div class="mb-2">
-                                    <label class="form-label small fw-semibold">
-                                        <i class="bi bi-chat-left-text me-1"></i> Comentario
-                                    </label>
-                                    <textarea id="txtComentarioCarta"
-                                              class="form-control form-control-sm"
-                                              rows="2"
-                                              placeholder="Ingrese un comentario sobre la carta..."></textarea>
-                                </div>
-
                                 <!-- BOTONES -->
                                 <div class="d-flex justify-content-end gap-2">
 
@@ -532,6 +771,39 @@
 
                         </div>
                     </div>
+
+                    @*MOSTRAR*@
+                    <div id="TrackingCartaMostrarColor" class="timeline-item completed d-none">
+
+                        <div class="timeline-icon">
+                            <i id="TrackingCartaRenunciaIcono" class="bi bi-file-earmark-text-fill"></i>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <div class="fw-semibold mb-2">
+                                Carta de despido
+                            </div>
+
+                            <!-- CONTENEDOR SOLO LECTURA -->
+                            <div id="btnVerCartaRenuncia" class="mt-3 border rounded p-3 bg-light">
+
+                                <!-- Info -->
+                                <div class="small text-muted mb-2">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    La carta de despido ya fue cargada.
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button id="btnCargarCarta" class="btn btn-outline-primary btn-sm mt-2"
+                                        onclick="verCartaPdf(2)">
+                                    <i class="bi bi-upload me-1"></i> Ver carta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*CARTA DE RENUNCIA*@
                     <!-- Estado 2 - RENUNCIA -->
                     <div id="TrackingCartaRenunciaColor" class="timeline-item completed">
 
@@ -553,66 +825,61 @@
                                     <i class="bi bi-info-circle me-1"></i>
                                     La carta de renuncia fue cargada al iniciar el proceso de baja.
                                 </div>
-
-                                <!-- Comentario -->
-                                <!--<div class="mb-3 p-2 rounded bg-white border small">
-                                    <i class="bi bi-chat-left-text me-1 text-primary"></i>
-                                    <span id="txtComentarioRenuncia">
-                                        Renuncia voluntaria presentada conforme a lo indicado.
-                                    </span>
-                                </div>-->
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button id="btnCargarCarta" class="btn btn-outline-primary btn-sm"
-                                            onclick="verCartaPdf()">
-                                        <i class="bi bi-upload me-1"></i> Ver carta
-                                    </button>
-
-                                </div>
-                                <!-- Acciones -->
-                                @*<div class="d-flex justify-content-end">*@
-                                <!--<button class="btn btn-outline-success btn-sm"
-                                        onclick="verCartaRenuncia()">
-                                    <i class="bi bi-eye me-1"></i> Ver carta
-                                </button>-->
-                                @*</div>*@
-
                             </div>
-
+                            <div class="d-flex justify-content-end gap-2">
+                                <button id="btnCargarCarta" class="btn btn-outline-primary btn-sm mt-2"
+                                        onclick="verCartaPdf(1)">
+                                    <i class="bi bi-upload me-1"></i> Ver carta
+                                </button>
+                            </div>
                         </div>
                     </div>
-
                     <!-- Estado 5 -->
                     <div id="TrackingUsuariosOperativosColor" class="timeline-item">
                         <div class="timeline-icon"><i id="TrackingUsuariosOperativosIcono" class="bi bi-circle"></i></div>
-                        <div class="timeline-content">Bloqueo de usuarios operativos</div>
+                        <div class="timeline-content">
+                            <div class="fw-semibold mb-2">
+                                Bloqueo de usuarios operativos
+                            </div>
+                            <!-- CONTENEDOR SOLO LECTURA -->
+                            <div id="btnVerCartaRenuncia" class="mt-3 border rounded p-3 bg-light">
+
+                                <!-- Info -->
+                                <div id="TrackingUsuariosOperativosComentario" class="small text-muted mb-2">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    El usuario fue bloqueo automaticamente por el sistema.
+                                </div>
+                            </div>
+                            <!-- Meta info -->
+                            <div class="mt-2 small text-secondary">
+                                <i class="bi bi-person-check me-1"></i><span id="TrackingUsuariosOperativosAutoriza">RRHH</span>
+                                &nbsp;•&nbsp;
+                                <i class="bi bi-clock me-1"></i> <span id="TrackingUsuariosOperativosFechaYHora">12/09/2025 10:45</span>
+                            </div>
+                        </div>
                     </div>
                     <!-- Estado 4 -->
                     <div id="TrackingSolvenciaColor" class="timeline-item">
                         <div class="timeline-icon"><i id="TrackingSolvenciaIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Emisión de solvencia administrativa</div>
                     </div>
-
                     <!-- Estado 6 -->
                     <div id="TrackingConfirmacionPagoColor" class="timeline-item">
                         <div class="timeline-icon"><i id="TrackingConfirmacionPagoIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Confirmación de emisión de pago</div>
                     </div>
-
                     <!-- Estado 7 -->
                     <div id="TrackingCargaLiquidacionColor" class="timeline-item">
                         <div class="timeline-icon"><i id="TrackingCargaLiquidacionIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Carga de liquidación autorizada</div>
                     </div>
-
                     <!-- Estado 8 -->
                     <div id="TrackingUsuariosContablesColor" class="timeline-item">
                         <div class="timeline-icon"><i id="TrackingUsuariosContablesIcono" class="bi bi-circle"></i></div>
                         <div class="timeline-content">Bloqueo de usuarios contables</div>
                     </div>
-
                 </div>
             </div>
-
             <!-- Footer -->
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">
@@ -626,89 +893,89 @@
 
 <div class="modal fade" id="modalPerfilPuesto" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-
-            <!-- Header -->
-            <div class="modal-header text-white" style="background-color: steelblue; ">
-                <h5 class="modal-title">
-                    <i class="bi bi-person-badge"></i>
-                    Perfil del Puesto: <span id="tituloPuesto"></span>
+        <div class="modal-content shadow-lg">
+            <div class="modal-header header-perfil text-white">
+                <h5 class="modal-title d-flex align-items-center">
+                    <i class="bi bi-person-badge-fill fs-3 me-2"></i>
+                    <div>
+                        <span class="d-block">Perfil del Puesto</span>
+                        <small id="tituloPuesto" class="opacity-75 fw-normal fs-6 text-uppercase letter-spacing-1"></small>
+                    </div>
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="cerrarModalPerfilPuesto()"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="modalPerfilPuesto.hide()"></button>
             </div>
 
-            <!-- Body -->
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <form id="formPerfilPuesto">
+                    <div class="row g-4">
 
-                    <div class="row g-3">
-                        <!-- Experiencia -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Experiencia mínima (años)</label>
-                            <input type="number" class="form-control" id="U_ExperienciaMinima" required>
-                            <input type="number" id="U_IdPuesto" class="d-none" />
-                            <input type="text" id="U_IdButton" class="d-none" />
-                        </div>
-
-                        <!-- Rango edad -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Edad mínima</label>
-                            <input type="number" class="form-control" id="U_RangoEdadMin" required>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Edad máxima</label>
-                            <input type="number" class="form-control" id="U_RangoEdadMax" required>
-                        </div>
-
-                        <!-- Sexo -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Sexo</label>
-                            <select class="form-select" id="U_Sexo" required>
-                                <option value="I">Indistinto</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
-                            </select>
-                        </div>
-
-                        <!-- Nivel Estudio -->
-                        <div class="col-md-8">
-                            <label class="form-label fw-bold">Nivel de estudio</label>
-                            <select class="form-select" id="U_NivelEstudio" required>
-                                <option value="Basico">Básico</option>
-                                <option value="Diversificado">Diversificado</option>
-                                <option value="Universitario">Universitario</option>
-                                <option value="Otro">Otro (Especificar en observaciones)</option>
-                            </select>
-                        </div>
-
-                        <!-- Salario -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Salario mínimo (Q) <span class="text-muted">(Opcional)</span></label>
-                            <input type="number" class="form-control" id="U_SalarioMin" step="0.01">
+                            <div class="mb-3">
+                                <label class="form-label-custom"><i class="bi bi-briefcase"></i> Experiencia mínima (años)</label>
+                                <input type="number" class="form-control form-control-custom" id="U_ExperienciaMinima" required placeholder="Ej. 2">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label-custom"><i class="bi bi-gender-ambiguous"></i> Sexo</label>
+                                <select class="form-select form-control-custom" id="U_Sexo" required>
+                                    <option value="I">Indistinto</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label-custom"><i class="bi bi-mortarboard"></i> Nivel de estudio</label>
+                                <select class="form-select form-control-custom" id="U_NivelEstudio" required>
+                                    <option value="Basico">Básico</option>
+                                    <option value="Diversificado">Diversificado</option>
+                                    <option value="Universitario">Universitario</option>
+                                    <option value="Otro">Otro (Especificar en observaciones)</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Salario máximo (Q) <span class="text-muted">(Opcional)</span></label>
-                            <input type="number" class="form-control" id="U_SalarioMax" step="0.01">
+                            <div class="range-group mb-3">
+                                <label class="form-label-custom mb-2"><i class="bi bi-calendar-event"></i> Rango de Edad</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control form-control-custom" id="U_RangoEdadMin" placeholder="Mín" required>
+                                    <span class="input-group-text bg-white border-0">-</span>
+                                    <input type="number" class="form-control form-control-custom" id="U_RangoEdadMax" placeholder="Máx" required>
+                                </div>
+                            </div>
+
+                            <div class="range-group">
+                                <label class="form-label-custom mb-2"><i class="bi bi-cash-stack"></i> Rango Salarial (Q)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control form-control-custom" id="U_SalarioMin" step="0.01" placeholder="Mínimo">
+                                    <span class="input-group-text bg-white border-0">-</span>
+                                    <input type="number" class="form-control form-control-custom" id="U_SalarioMax" step="0.01" placeholder="Máximo">
+                                </div>
+                                <small class="text-muted mt-1 d-block" style="font-size: 0.75rem;">Dejar vacío si es confidencial</small>
+                            </div>
                         </div>
 
-                        <!-- Observaciones -->
                         <div class="col-12">
-                            <label class="form-label fw-bold">Observaciones</label>
-                            <textarea class="form-control" rows="3" id="U_Observaciones" required></textarea>
+                            <label class="form-label-custom"><i class="bi bi-chat-left-text"></i> Observaciones adicionales</label>
+                            <textarea class="form-control form-control-custom" rows="3" id="U_Observaciones" required placeholder="Describe habilidades específicas o certificaciones necesarias..."></textarea>
+                        </div>
+
+                        <div class="d-none">
+                            <input type="number" id="U_IdPuesto" />
+                            <input type="text" id="U_IdButton" />
+                            <input type="number" id="Code" />
                         </div>
                     </div>
                 </form>
             </div>
 
-            <!-- Footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cerrarModalPerfilPuesto()">
-                    <i class="bi bi-x-circle"></i> Cancelar
+            <div class="modal-footer modal-footer-custom bg-light">
+                <button type="button" class="btn btn-light fw-semibold px-4 border" data-bs-dismiss="modal" onclick="modalPerfilPuesto.hide()">
+                    Cancelar
                 </button>
-                <button type="button" class="btn btn-primary" id="btnGuardarPerfil">
-                    <i class="bi bi-save"></i> Guardar Perfil
+                <button type="button" class="btn btn-primary btn-save-custom shadow-sm" id="btnGuardarPerfil">
+                    <i class="bi bi-check2-circle me-1"></i> Finalizar Perfil
                 </button>
             </div>
         </div>
@@ -758,6 +1025,248 @@
     </div>
 </div>
 
+
+
+<div class="modal fade" id="modalTipoSolicitud" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="modalTipoSolicitud.hide()"></button>
+            </div>
+
+            <div class="modal-body p-4 pt-0">
+                <div class="text-center mb-4">
+                    <h4 class="fw-bold">Nueva Solicitud</h4>
+                    <p class="text-muted">Seleccione el tipo de puesto que desea procesar</p>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="selection-card" onclick="seleccionarTipo('headcount')">
+                            <div class="icon-box">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <h5 class="selection-title">Headcount</h5>
+                            <p class="selection-desc">Puesto existente que requiere cubrir una vacante actual.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="selection-card" onclick="seleccionarTipo('nuevo')">
+                            <div class="icon-box">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+                            <h5 class="selection-title">Nuevo Puesto</h5>
+                            <p class="selection-desc">Creación de una posición que no existe en la estructura actual.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-dismiss="modal" onclick="modalTipoSolicitud.hide()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGestionPuesto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header header-perfil text-white">
+                <h5 class="modal-title d-flex align-items-center">
+                    <i class="bi bi-plus-circle-dotted fs-3 me-2"></i>
+                    <div>
+                        <span class="d-block">Configuración de Puesto</span>
+                        <small class="opacity-75 fw-normal fs-6">Defina el perfil y requisitos generales</small>
+                    </div>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="modalGestionPuesto.hide()"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <form id="formGestionPuesto">
+                    <div class="row g-4">
+
+                        <div class="col-12">
+                            <div class="p-3 rounded-3" style="background-color: #f0f7ff; border: 1px solid #d0e3ff;">
+                                <label class="form-label-custom text-primary"><i class="bi bi-type"></i> Nombre del Puesto</label>
+                                <input type="text" class="form-control form-control-custom fs-5 fw-bold" id="U_NombrePuestoNuevoPuesto" required placeholder="Ej: Gerente de Ventas Regional">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label-custom"><i class="bi bi-briefcase"></i> Experiencia mínima (años)</label>
+                                <input type="number" class="form-control form-control-custom" id="U_ExperienciaMinimaNuevoPuesto" required placeholder="Ej. 2">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label-custom"><i class="bi bi-gender-ambiguous"></i> Sexo preferente</label>
+                                <select class="form-select form-control-custom" id="U_SexoNuevoPuesto" required>
+                                    <option value="I">Indistinto</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label-custom"><i class="bi bi-mortarboard"></i> Nivel de estudio</label>
+                                <select class="form-select form-control-custom" id="U_NivelEstudioNuevoPuesto" required>
+                                    <option value="Basico">Básico</option>
+                                    <option value="Diversificado">Diversificado</option>
+                                    <option value="Universitario">Universitario</option>
+                                    <option value="Otro">Otro (Especificar en observaciones)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="range-group mb-3">
+                                <label class="form-label-custom mb-2"><i class="bi bi-calendar-event"></i> Rango de Edad Sugerido</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control form-control-custom text-center" id="U_RangoEdadMinNuevoPuesto" placeholder="Mín">
+                                    <span class="input-group-text bg-white border-0">a</span>
+                                    <input type="number" class="form-control form-control-custom text-center" id="U_RangoEdadMaxNuevoPuesto" placeholder="Máx">
+                                </div>
+                            </div>
+
+                            <div class="range-group">
+                                <label class="form-label-custom mb-2"><i class="bi bi-cash-stack"></i> Rango Salarial Ofrecido (Q)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control form-control-custom" id="U_SalarioMinNuevoPuesto" step="0.01" placeholder="Mínimo">
+                                    <span class="input-group-text bg-white border-0">-</span>
+                                    <input type="number" class="form-control form-control-custom" id="U_SalarioMaxNuevoPuesto" step="0.01" placeholder="Máximo">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label-custom"><i class="bi bi-chat-left-text"></i> Responsabilidades y Detalles</label>
+                            <textarea class="form-control form-control-custom" rows="3" id="U_ObservacionesNuevoPuesto" required placeholder="Escriba aquí las funciones principales..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label-custom text-warning">
+                                <i class="bi bi-exclamation-circle"></i> Justificación de Solicitud para Gerencia
+                            </label>
+                            <textarea class="form-control form-control-custom"
+                                      rows="3"
+                                      id="JustificacionGerenciaNuevoPuesto"
+                                      placeholder="Explique la necesidad del puesto, impacto en el área y justificación para aprobación gerencial..." required></textarea>
+                        </div>
+
+                        <div class="d-none">
+                            <input type="number" id="U_IdPuesto" />
+                            <input type="number" id="Code" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer modal-footer-custom bg-light">
+                <button type="button" class="btn btn-light fw-semibold px-4 border" data-bs-dismiss="modal" onclick="modalGestionPuesto.hide()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary btn-save-custom shadow-sm" id="btnGuardarPerfilNuevoPuesto">
+                    <i class="bi bi-check2-circle me-1"></i> Enviar Solicitud
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGestionCartas" tabindex="-1" aria-hidden="true" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h6 class="modal-title fw-bold">
+                    <i class="bi bi-file-earmark-text me-2 text-danger"></i> Historial de Llamadas de Atención
+                </h6>
+                <button type="button" class="btn-close" onclick="modalGestionCartas.hide()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-grid mb-3">
+                    <button class="btn btn-danger btn-sm" onclick="modalNuevaCarta.show()">
+                        <i class="bi bi-plus-lg me-1"></i> Registrar Nueva Carta
+                    </button>
+                </div>
+
+                <div id="listaCartas" class="list-group list-group-flush shadow-sm rounded border" style="max-height: 300px; overflow-y: auto;">
+                    <div class="list-group-item list-group-item-action p-3">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1 fw-bold text-dark">Falta Injustificada</h6>
+                            <small class="text-muted">15/01/2026</small>
+                        </div>
+                        <p class="mb-2 small text-secondary text-truncate" style="max-width: 250px;">
+                            El empleado no se presentó a laborar sin previo aviso...
+                        </p>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-primary py-0" onclick="verPDF(1)">
+                                <i class="bi bi-file-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="modalGestionCartas.hide()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNuevaCarta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-upload me-2"></i>Cargar Llamada de Atención</h5>
+                <button type="button" class="btn-close btn-close-white" onclick="modalNuevaCarta.hide()"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNuevaCarta" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tipo de Falta</label>
+                        <select class="form-select form-select-sm" id="cartaTipo" name="TipoId" required>
+                            <option value="">Seleccione una opción...</option>
+                            <option value="1">Falta Injustificada</option>
+                            <option value="2">Incumplimiento de Deberes</option>
+                            <option value="3">Conducta Inapropiada</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Fecha del Incidente</label>
+                        <input type="date" class="form-control form-control-sm" id="cartaFecha" name="Fecha" required value="@(DateTime.Now.ToString("yyyy-MM-dd"))">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Documento (PDF/Imagen)</label>
+                        <div class="input-group input-group-sm">
+                            <input type="file" class="form-control" id="inputCartaFile" accept="application/pdf" required>
+                            <label class="input-group-text" for="inputCartaFile"><i class="bi bi-file-earmark-arrow-up"></i></label>
+                        </div>
+                        <div id="fileHelp" class="form-text small">Suba la carta firmada en formato PDF o imagen.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Observaciones</label>
+                        <textarea class="form-control form-control-sm" id="cartaDescripcion" name="Descripcion" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light btn-sm" onclick="modalNuevaCarta.hide()">Cancelar</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="subirCarta()">
+                    <i class="bi bi-cloud-arrow-up me-1"></i> Guardar y Subir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalPDF" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-pdf-dialog">
         <div class="modal-content modal-pdf-modern">
@@ -770,7 +1279,7 @@
 
                 <button type="button"
                         class="btn-close"
-                        data-bs-dismiss="modal"
+                        onclick="modalVerPdf.hide()"
                         aria-label="Cerrar">
                 </button>
             </div>
@@ -801,8 +1310,12 @@
         const modalTrackingProceso = new bootstrap.Modal(document.getElementById('modalTrackingProceso'));
         const modalPerfilPuesto = new bootstrap.Modal(document.getElementById('modalPerfilPuesto'));
         const modalSeguimiento = new bootstrap.Modal(document.getElementById('modalSeguimiento'));
+        const modalGestionPuesto = new bootstrap.Modal(document.getElementById('modalGestionPuesto'));
         const modalNuevaPlaza = new bootstrap.Modal(document.getElementById('modalNuevaPlaza'));
         const modalVerPdf = new bootstrap.Modal(document.getElementById('modalPDF'));
+        const modalTipoSolicitud = new bootstrap.Modal(document.getElementById('modalTipoSolicitud'));
+        const modalGestionCartas = new bootstrap.Modal(document.getElementById('modalGestionCartas'));
+        const modalNuevaCarta = new bootstrap.Modal(document.getElementById('modalNuevaCarta'));
         let codigoProcesoBaja = 0;
 
 
@@ -833,9 +1346,17 @@
             return `${dia}/${mes}/${anio}`;
         }
 
+        function convertirFechaNetSeguro(fechaNet) {
+            const partes = fechaNet.split(' ')[0].split('/');
+            const mes = partes[0];
+            const dia = partes[1];
+            const anio = partes[2];
+
+            return `${dia}/${mes}/${anio}`;
+        }
+
         async function obtenerPuestos() {
 
-            Toast.fire({ icon: 'warning', title: 'La creación de una plaza nueva debe ser autorizada por gerencia.' });
             const select = document.getElementById("selectNuevaPlaza");
             try {
                 const response = await fetch('/GestionDePersonal/ObtenerPuestos', {
@@ -844,7 +1365,7 @@
 
                 const reply = await response.json();
 
-                let option = '<option value="-1" disabled selected>--Seleccionar--</option> <option value="-500"> ➕ Agregar nuevo puesto</option>';
+                let option = '<option value="-1" disabled selected>--Seleccionar--</option>';
 
                 reply.data.forEach(puesto => {
                     option += `<option value = '${puesto.Id}'>${puesto.Nombre}</option>`;
@@ -913,6 +1434,7 @@
             document.getElementById("perfilSexo").innerText = button.getAttribute("data-sexo");
             document.getElementById("perfilCreadoSAP").innerText = button.getAttribute("data-creadoSAP");
             document.getElementById("perfilEmpId").value = button.getAttribute("data-empId");
+            document.getElementById("perfilConteoCartas").innerText = button.getAttribute("data-llamadas");
 
             const verifacion = await VerSolicitudPendiente(button.getAttribute("data-id"));
 
@@ -996,6 +1518,15 @@
 
             const resplyEmail = await verificarCorreo()
             const form = document.getElementById('formSolicitudBaja');
+            const observacionesRequisicion = document.getElementById("txtObservacionesPlaza").value
+            const checked = document.getElementById("chkRequisicionPersonal").checked;
+            if (checked) {
+                if (observacionesRequisicion == "") {
+                    Toast.fire({ icon: 'warning', title: "Debes llenar el campo de observaciones para la plaza" });
+                    return
+                }
+            }
+
 
             if (form.checkValidity()) {
 
@@ -1021,6 +1552,7 @@
                     formData.append("nombre", document.getElementById("nombreEmpleadoSolicitud").value);
                     formData.append("motivoCadena", document.getElementById("motivo").options[document.getElementById("motivo").selectedIndex].text);
                     formData.append("solicitarRequisicion", document.getElementById("chkRequisicionPersonal").checked);
+                    formData.append("observacionRequisicion", document.getElementById("txtObservacionesPlaza").value);
 
                     console.log(document.getElementById("chkRequisicionPersonal").checked)
 
@@ -1133,26 +1665,41 @@
             const response = await fetch(`/GestionDePersonal/ObtenerTrackingDeBaja?empId=${empId}`)
             const result = await response.json();
 
+            const responseCarta = await fetch(`/GestionDePersonal/VerExistenciaDeDocumento?solicitud=${codigoProcesoBaja}&id=${empId}&carta=CartaDespido`)
+            const resultCarta = await responseCarta.json();
+
             if (result.success) {
                 codigoProcesoBaja = result.data.Code;
 
                 console.log(result.data.Motivo);
                 if (result.data.Motivo == 1) {
+                    document.getElementById("TrackingCartaMostrarColor").classList.add("d-none");
                     document.getElementById("TrackingCartaColor").classList.add("d-none")
                     document.getElementById("TrackingCartaRenunciaColor").classList.remove("d-none")
                 }
                 else if (result.data.Motivo == 2) {
-                    document.getElementById("TrackingCartaColor").classList.remove("d-none")
+
+                    if (resultCarta.success) {
+                        document.getElementById("TrackingCartaMostrarColor").classList.remove("d-none");
+                        document.getElementById("TrackingCartaColor").classList.add("d-none")
+                    }
+                    else {
+                        document.getElementById("TrackingCartaMostrarColor").classList.add("d-none");
+                        document.getElementById("TrackingCartaColor").classList.remove("d-none")
+                    }
                     document.getElementById("TrackingCartaRenunciaColor").classList.add("d-none")
                 }
                 else {
                     document.getElementById("TrackingCartaColor").classList.add("d-none")
                     document.getElementById("TrackingCartaRenunciaColor").classList.add("d-none")
+                    document.getElementById("TrackingCartaMostrarColor").classList.add("d-none");
+
                 }
                 //Agregar comentarios
-                document.getElementById("TrackingAutorizadoGTHComentario").textContent = result.data.ComentarioAutorizadoGTH ?? "..."
+                document.getElementById("TrackingAutorizadoGTHComentario").textContent = result.data.ComentarioAutorizadoGTH ?? "Pendiente de autorizacion..."
                 document.getElementById("TrackingAutorizadoGTHAutoriza").textContent = result.data.ComentaAutorizadoGTH ?? ""
                 document.getElementById("TrackingAutorizadoGTHFechaYHora").textContent = result.data.FechaYHoraAutorizadoGTH ?? ""
+
 
 
                 if (result.data.Pendiente) {
@@ -1252,20 +1799,23 @@
             }
         }
 
-        async function verCartaPdf() {
-            $("globalLoading").show();
+        async function verCartaPdf(tipo = 1) {
+            $("#globalLoading").show();
             const empId = document.getElementById("perfilEmpId").value;
-            const response = await fetch(`/GestionDePersonal/VerDocumentos?solicitud=${codigoProcesoBaja}&id=${empId}`, {
+
+            let url = tipo == 1 ? `/GestionDePersonal/VerDocumentos?solicitud=${codigoProcesoBaja}&id=${empId}&carta=Carta` : `/GestionDePersonal/VerDocumentos?solicitud=${codigoProcesoBaja}&id=${empId}&carta=CartaDespido`
+
+            const response = await fetch(url, {
                 method: "GET"
             })
 
             if (response.ok) {
-                document.getElementById('visorPDF').setAttribute('src', `/GestionDePersonal/VerDocumentos?solicitud=${codigoProcesoBaja}&id=${empId}`);
+                document.getElementById('visorPDF').setAttribute('src', url);
                 modalVerPdf.show();
-                $("globalLoading").hide();
+                $("#globalLoading").hide();
             }
             else {
-                $("globalLoading").hide();
+                $("#globalLoading").hide();
                 Toast.fire({ icon: 'error', title: "Ocurrio un error al mostrar la carta en pdf" });
             }
         }
@@ -1274,7 +1824,7 @@
             modalTrackingProceso.hide();
         }
 
-        async function abrirModalPerfilPuesto(puesto, puestoId, perfil, idButton) {
+        async function abrirModalPerfilPuesto(puesto = "", puestoId = 0, perfil = "", idButton = "") {
 
             document.getElementById('tituloPuesto').innerText = puesto;
             document.getElementById('formPerfilPuesto').reset();
@@ -1294,7 +1844,7 @@
 
                 document.getElementById('U_ExperienciaMinima').value = result.data.U_ExperienciaMinima
                 document.getElementById('U_NivelEstudio').value = result.data.U_NivelEstudio
-                document.getElementById('U_Observaciones').value = result.data.U_Observaciones
+                document.getElementById('U_Observaciones').value = result.data.U_Observaciones ?? "No hay Observaciones"
                 document.getElementById('U_RangoEdadMax').value = result.data.U_RangoEdadMax
                 document.getElementById('U_RangoEdadMin').value = result.data.U_RangoEdadMin
                 document.getElementById('U_SalarioMax').value = result.data.U_SalarioMax
@@ -1375,10 +1925,27 @@
 
         async function solicitarNuevaPlaza() {
 
-            $("#globalLoading").show();
             const selectPuesto = document.getElementById("selectNuevaPlaza");
-            const inputNuevoPuesto = document.getElementById("inputNuevoPuesto");
+            const inputNuevoPuesto = document.getElementById("selectNuevaPlaza");
             const observaciones = document.getElementById("PerfilObservaciones").value;
+            const observacionesReclutamiento = document.getElementById("ObsReclutamiento").value;
+            console.log(inputNuevoPuesto.value);
+
+
+            if (observaciones == "" || observacionesReclutamiento == "") {
+                Toast.fire({ icon: 'warning', title: "Debes llenar todos los campos" });
+                return
+            }
+
+            const responseExistePerfil = await fetch(`/GestionDePersonal/VerificarSiExistePerfil?idPuesto=${inputNuevoPuesto.value}`);
+            const resultExistePerfil = await responseExistePerfil.json();
+
+            if (!resultExistePerfil.success) {
+                Toast.fire({ icon: 'warning', title: "No existe perfil para dicho puesto, por favor comunicarse con GTH" });
+                return
+            }
+
+            $("#globalLoading").show();
             const data = new FormData();
 
             try {
@@ -1388,6 +1955,7 @@
                 data.append("puesto", plaza);
                 data.append("puestoId", selectPuesto.value);
                 data.append("observaciones", observaciones);
+                data.append("observacionesReclu", observacionesReclutamiento);
                 data.append("nuevo", nuevo);
 
                 const response = await fetch('/GestionDePersonal/EnviarSolicitudNuevoPuesto',
@@ -1402,10 +1970,10 @@
                 if (result.success) {
                     Toast.fire({ icon: 'success', title: "Se envio la solicitud de nueva plaza con éxito" });
 
-                    //setTimeout(() => { location.reload() }, 5000)
                     inputNuevoPuesto.value = "";
                     selectPuesto.value = "-1";
                     observaciones.value = ""
+                    observacionesReclutamiento.value = ""
                     modalNuevaPlaza.hide();
                 }
                 else {
@@ -1432,6 +2000,9 @@
 
                 result.data.forEach((item) => {
 
+                    let color = "";
+                    let estado = "";
+
                     switch (item.Estado) {
                         case "A":
                             color = "badge bg-success";
@@ -1442,19 +2013,28 @@
                             estado = "Rechazado";
                             break;
                         case "P":
-                            color = "badge bg-warning";
+                            color = "badge bg-warning text-dark";
                             estado = "Pendiente";
+                            break;
+                        default:
+                            color = "badge bg-secondary";
+                            estado = "Desconocido";
                             break;
                     }
 
-                    body += ` <tr>
-                                                                 <td>${convertirFechaDotNet(item.FechaDeSolicitud)}</td>
-                                                                 <td>${item.Posicion}</td>
-                                                                 <td class="text-center">
-                                                                     <span class="${color}">${estado}</span>
-                                                                 </td>
-                                                             </tr>`
-                });
+                    body += `
+                                <tr>
+                                    <td>${convertirFechaDotNet(item.FechaDeSolicitud)}</td>
+                                    <td>${item.Posicion}</td>
+                                    <td class="text-center">
+                                        <span class="${color}">${estado}</span>
+                                    </td>
+                                    <td class="text-truncate" style="max-width: 250px;">
+                                        ${item.Observaciones}
+                                    </td>
+                                </tr>`;
+                                        });
+
 
                 container.innerHTML = body;
             }
@@ -1463,18 +2043,275 @@
             }
         }
 
-        document.getElementById("selectNuevaPlaza").addEventListener("change", function () {
-            const esNuevo = this.value === "-500";
-            document.getElementById("divNuevoPuesto").classList.toggle("d-none", !esNuevo);
-        });
+        async function cargarCartaDespido() {
 
-        document.getElementById("btnNuevaPlaza").addEventListener("click", () => obtenerPuestos());
+            $("#globalLoading").show();
+            try {
+                var cartaDespido = document.getElementById("inputCartaDespido").files[0];
+                var empId = document.getElementById("perfilEmpId").value;
+
+                if (cartaDespido === undefined) {
+                    Toast.fire({ icon: 'warning', title: "Debe seleccionar un archivo" });
+
+                    return
+                }
+
+                var formData = new FormData();
+                formData.append("carta", cartaDespido);
+                formData.append("idEpleado", empId);
+
+                const response = await fetch('/GestionDePersonal/CargarCartaDespido', {
+                    method: "POST",
+                    body: formData
+                })
+
+                const result = await response.json();
+
+                if (result.success) {
+
+                    document.getElementById("TrackingCartaMostrarColor").classList.remove("d-none");
+                    document.getElementById("TrackingCartaColor").classList.add("d-none");
+                    Toast.fire({ icon: 'success', title: "Carta cargada con exito" });
+                }
+                else {
+                    Toast.fire({ icon: 'error', title: "Ocurrio un error al cargar la pagina" });
+                }
+            } catch {
+                Toast.fire({ icon: 'error', title: "Ocurrio un error al cargar la pagina" });
+            }
+            finally {
+                $("#globalLoading").hide();
+            }
+        }
+
+        async function abrirModalPerfilPuestoNuevaPlaza() {
+            var puestoSeleccionadoId = document.getElementById("selectNuevaPlaza").value
+            var select = document.getElementById("selectNuevaPlaza");
+            var textoSeleccionado = select.options[select.selectedIndex].text;
+
+            if (puestoSeleccionadoId == -1) {
+                Toast.fire({ icon: 'warning', title: 'Debes seleccionar algun puesto' });
+                return
+            }
+
+            const response = await fetch(`/Reclutamiento/ObtenerPerfilPuestoPorId?idPuesto=${puestoSeleccionadoId}`);
+            const result = await response.json();
+
+            document.getElementById('formPerfilPuesto').reset();
+            bloquearFormulario('formPerfilPuesto', true);
+            document.getElementById('btnGuardarPerfil').classList.remove("d-none")
+            document.getElementById('U_IdPuesto').value = puestoSeleccionadoId;
+            //console.log(idButton);
+            //document.getElementById('U_IdButton').value = idButton;
+
+            if (result.success) {
+
+                document.getElementById('tituloPuesto').innerText = result.data.descriptio;
+                bloquearFormulario('formPerfilPuesto', true);
+                document.getElementById('btnGuardarPerfil').classList.add("d-none")
+
+                document.getElementById('U_ExperienciaMinima').value = result.data.U_ExperienciaMinima
+                document.getElementById('U_NivelEstudio').value = result.data.U_NivelEstudio
+                document.getElementById('U_Observaciones').value = result.data.U_Observaciones ?? "No hay Observaciones"
+                document.getElementById('U_RangoEdadMax').value = result.data.U_RangoEdadMax
+                document.getElementById('U_RangoEdadMin').value = result.data.U_RangoEdadMin
+                document.getElementById('U_SalarioMax').value = result.data.U_SalarioMax
+                document.getElementById('U_SalarioMin').value = result.data.U_SalarioMin
+                document.getElementById('U_Sexo').value = result.data.U_Sexo
+            }
+            modalPerfilPuesto.show();
+        }
+
+        function seleccionarTipo(tipo) {
+            Toast.fire({ icon: 'warning', title: 'La creación de una plaza nueva debe ser autorizada por gerencia.' });
+            if (tipo === "headcount") {
+                obtenerPuestos()
+
+                modalTipoSolicitud.hide()
+                modalNuevaPlaza.show()
+            }
+            else {
+                modalTipoSolicitud.hide()
+                modalGestionPuesto.show()
+            }
+        }
+
+        async function guardarPerfilNuevoPuesto() {
+            $("#globalLoading").show()
+            try {
+                var formulario = document.getElementById("formGestionPuesto");
+                if (!formulario.checkValidity()) {
+                    Toast.fire({ icon: "warning", title: "Debes llenar todos los campos" })
+                }
+
+                var formData = new FormData();
+                formData.append("U_Puesto", document.getElementById("U_NombrePuestoNuevoPuesto").value);
+                formData.append("U_ExperienciaMinima", document.getElementById("U_ExperienciaMinimaNuevoPuesto").value);
+                formData.append("U_Sexo", document.getElementById("U_SexoNuevoPuesto").value);
+                formData.append("U_NivelEstudio", document.getElementById("U_NivelEstudioNuevoPuesto").value);
+                formData.append("U_RangoEdadMin", document.getElementById("U_RangoEdadMinNuevoPuesto").value);
+                formData.append("U_RangoEdadMax", document.getElementById("U_RangoEdadMaxNuevoPuesto").value);
+                formData.append("U_SalarioMin", document.getElementById("U_SalarioMinNuevoPuesto").value);
+                formData.append("U_SalarioMax", document.getElementById("U_SalarioMaxNuevoPuesto").value);
+                formData.append("U_Observaciones", document.getElementById("U_ObservacionesNuevoPuesto").value);
+                formData.append("U_JustificacionGerencia", document.getElementById("JustificacionGerenciaNuevoPuesto").value);
+
+
+                const response = await fetch('/GestionDePersonal/guardarVerificacionNuevaPlaza',
+                    {
+                        method: "POST",
+                        body: formData
+                    });
+
+                const result = await response.json();
+
+                console.log(result)
+
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: 'Se envio la solicitur de nuevo puesto para revisión' });
+                    modalGestionPuesto.hide();
+                }
+                else {
+                    Toast.fire({ icon: 'warning', title: 'Ocurrio un error al enviar la solicitud' });
+                }
+            }
+            catch {
+                Toast.fire({ icon: 'warning', title: 'Ocurrio un error al enviar la solicitud' });
+            }
+            finally {
+                $("#globalLoading").hide()
+            }
+        }
+
+        async function gestionarCartas() {
+
+            cargarDataCartas();
+            modalGestionCartas.show();
+        }
+
+        async function cargarDataCartas() {
+            const empId = document.getElementById("perfilEmpId").value;
+            let contenedor = document.getElementById("listaCartas");
+            let contenedorVacio = document.getElementById("sinCartas");
+
+            const response = await fetch(`/GestionDePersonal/ObtenerLlamadasDeAtencion?empId=${empId}`)
+            const result = await response.json();
+            let divCartas = "";
+
+            if (result.success) {
+                result.data.forEach((item) => {
+                    console.log(item);
+                    divCartas += `<div class="list-group-item list-group-item-action p-3">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1 fw-bold text-dark">${item.Falta}</h6>
+                                <small class="text-muted">${convertirFechaNetSeguro(item.Fecha)}</small>
+                            </div>
+                            <p class="mb-2 small text-secondary text-truncate" style="max-width: 250px;">
+                                ${item.Observaciones}                                        </p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary py-0" onclick="verPDFLlamada('${item.NombreArchivo}')">
+                                    <i class="bi bi-file-pdf"></i> PDF
+                                </button>
+                            </div>
+                        </div>
+        `;
+                });
+
+                contenedor.innerHTML = divCartas;
+            }
+            else {
+                divCartas = `<div id="sinCartas" class="text-center py-4">
+                    <i class="bi bi-info-circle text-muted d-block fs-4"></i>
+                    <span class="text-muted small">No hay registros disciplinarios</span>
+                </div>`;
+
+                contenedor.innerHTML = divCartas;
+            }
+        }
+
+        async function subirCarta() {
+            let tipoFalta = document.getElementById("cartaTipo").value
+            let fechaFalta = document.getElementById("cartaFecha").value
+            let documento = document.getElementById("inputCartaFile").files[0]
+            let observaciones = document.getElementById("cartaDescripcion").value
+            const empId = document.getElementById("perfilEmpId").value
+
+            if (tipoFalta == "" || documento == undefined || observaciones == "" || empId == 0 || fechaFalta == "") {
+                Toast.fire({ icon: "warning", title: "Debes llenar todos los campos" })
+                return
+            }
+
+            const formData = new FormData();
+            formData.append("tipoDeFalta", tipoFalta)
+            formData.append("fechaDeIncidente", fechaFalta)
+            formData.append("carta", documento)
+            formData.append("observaciones", observaciones)
+            formData.append("empId", empId)
+
+            const response = await fetch('/GestionDePersonal/guardarCartaLlamadaAtencion',
+                {
+                    method: "POST",
+                    body: formData
+                });
+
+            const result = await response.json();
+
+            if (result.success) {
+
+                document.getElementById("formNuevaCarta").reset();
+
+                document.getElementById("perfilConteoCartas").innerText = Number(document.getElementById("perfilConteoCartas").textContent) + 1;
+                cargarDataCartas();
+                Toast.fire({ icon: "success", title: "El archivo se cargo con éxito" })
+            }
+            else {
+                Toast.fire({ icon: "warning", title: "Ocurrio un error al cargar el archivo" })
+            }
+        }
+
+        async function verPDFLlamada(direccion) {
+            $("#globalLoading").show();
+            const empId = document.getElementById("perfilEmpId").value;
+
+            let url = `/GestionDePersonal/VerCartaLlamadaAtencion?direccion=${direccion}`;
+
+            const response = await fetch(url, {
+                method: "GET"
+            })
+
+            if (response.ok) {
+                document.getElementById('visorPDF').setAttribute('src', url);
+                modalVerPdf.show();
+                $("#globalLoading").hide();
+            }
+            else {
+                $("#globalLoading").hide();
+                Toast.fire({ icon: 'error', title: "Ocurrio un error al mostrar la carta en pdf" });
+            }
+        }
+        //document.getElementById("selectNuevaPlaza").addEventListener("change", function () {
+
+        //});
+        //document.getElementById("btnNuevaPlaza").addEventListener("click", () => /*obtenerPuestos()*/);
+        document.getElementById("btnGuardarPerfilNuevoPuesto").addEventListener("click", () => guardarPerfilNuevoPuesto())
         document.getElementById("motivo").addEventListener("change", () => cambiarInputs());
         document.getElementById("btnConfirmarBaja").addEventListener("click", () => confimacionDeBaja());
         document.getElementById("btnAgregarCorreo").addEventListener("click", () => guardarCorreo());
         document.getElementById('btnGuardarPerfil').addEventListener('click', () => guardarPerfilDeUsuario());
         document.getElementById('btnGuardar').addEventListener('click', () => solicitarNuevaPlaza());
         document.getElementById('btnProcesoAutorizacion').addEventListener('click', () => verProcesoDeAutorizacion());
-    </script>
+        document.getElementById('btnVerPerfilSeleccionado').addEventListener('click', () => abrirModalPerfilPuestoNuevaPlaza());
 
+
+        document.getElementById('chkRequisicionPersonal').addEventListener('change', () => {
+            var check = document.getElementById('chkRequisicionPersonal').checked;
+
+            if (check) {
+                document.getElementById('txtObservacionesPlaza').disabled = false
+            }
+            else {
+                document.getElementById('txtObservacionesPlaza').disabled = true
+            }
+        })
+    </script>
 }

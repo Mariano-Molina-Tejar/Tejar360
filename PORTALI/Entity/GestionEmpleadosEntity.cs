@@ -27,6 +27,7 @@ namespace Entity
         public string Sexo { get; set; }
         public DateTime CreadoSAP { get; set; }
         public bool Perfil { get; set; }
+        public int LlamadasAtencion { get; set; }
     }
 
     public class Puestos
@@ -67,6 +68,7 @@ namespace Entity
         public string U_AutorizadoGTH { get; set; }
         public int U_Estado { get; set; }
         public int U_Motivo { get; set; }
+        public string U_ObservecionesRequisicion { get; set; }
         public DateTime U_FechaSolicitud { get; set; }
     }
 
@@ -94,6 +96,7 @@ namespace Entity
         public int Causas { get; set; }
         public char AutorizadoGTH { get; set; }
         public int Estado { get; set; }
+        public string ObservacionesRequisicion { get; set; }
     }
 
     public class Autorizaciones
@@ -101,6 +104,7 @@ namespace Entity
         public DateTime FechaDeSolicitud { get; set; }
         public string Posicion { get; set; }
         public char Estado { get; set; }
+        public string Observaciones { get; set; }
     }
     public class TrackingDeBaja
     {
@@ -110,13 +114,23 @@ namespace Entity
         public string ComentarioAutorizadoGTH { get; set; }
         public string ComentaAutorizadoGTH { get; set; }
         public string FechaYHoraAutorizadoGTH { get; set; }
-        //public string HoraAutorizadoGTH { get; set; }
         public bool Carta { get; set; }
         public bool Solvencia { get; set; }
         public bool UsuariosOperativos { get; set; }
+        public string ComentarioUsuariosOperativos { get; set; }
+        public string ComentaUsuariosOperativos { get; set; }
+        public string FechaYHoraUsuariosOperativos { get; set; }
         public bool ConfirmacionPago { get; set; }
         public bool CargaLiquidacion { get; set; }
         public bool UsuariosContables { get; set; }
         public int Motivo { get; set; }
+    }
+
+    public class LlamadaDeAtencion
+    {
+        public string Falta { get; set; }
+        public string Fecha { get; set; }
+        public string Observaciones { get; set; }
+        public string NombreArchivo { get; set; }
     }
 }
