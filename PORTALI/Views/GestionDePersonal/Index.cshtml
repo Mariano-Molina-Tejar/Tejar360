@@ -206,6 +206,142 @@
             background: #e0e0e0;
             border-radius: 10px;
         }
+        /* CONTENEDOR */
+        .modal-solvencia {
+            border-radius: 20px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,.25);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* HEADER */
+        .modal-solvencia-header {
+            position: relative;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: #fff;
+        }
+
+            .modal-solvencia-header h5 {
+                margin: 0;
+                font-weight: 600;
+            }
+
+            .modal-solvencia-header span {
+                font-size: 13px;
+                opacity: .9;
+            }
+
+        .btn-close-solvencia {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            background: transparent;
+            border: none;
+            font-size: 26px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* BODY */
+        .modal-solvencia-body {
+            padding: 25px 30px;
+            background: #f8faff;
+        }
+
+        /* ITEM */
+        .solvencia-item {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.08);
+        }
+
+        .solvencia-label {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+
+        /* OPCIONES */
+        .solvencia-options {
+            display: flex;
+            gap: 12px;
+        }
+
+            .solvencia-options label {
+                cursor: pointer;
+            }
+
+            .solvencia-options input {
+                display: none;
+            }
+
+            .solvencia-options span {
+                padding: 8px 18px;
+                border-radius: 999px;
+                background: #eef2ff;
+                color: #3f6ad8;
+                font-weight: 500;
+                transition: all .25s ease;
+            }
+
+            .solvencia-options input:checked + span {
+                background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+                color: #fff;
+                box-shadow: 0 8px 18px rgba(79,140,255,.45);
+            }
+
+        /* TEXTAREA */
+        .solvencia-textarea {
+            width: 100%;
+            min-height: 90px;
+            border-radius: 14px;
+            border: 1px solid #dbe3ff;
+            padding: 12px;
+            resize: none;
+        }
+
+        /* FOOTER DATA */
+        .solvencia-footer-data {
+            display: flex;
+            gap: 15px;
+        }
+
+            .solvencia-footer-data input {
+                flex: 1;
+                border-radius: 14px;
+                border: 1px solid #dbe3ff;
+                padding: 10px 12px;
+            }
+
+        /* FOOTER */
+        .modal-solvencia-footer {
+            padding: 18px 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #fff;
+        }
+
+        .btn-cancel {
+            background: #e0e6f5;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: #fff;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -296,7 +432,16 @@
                                     <span class="badge bg-warning text-dark @(empleados.Activo == "-" ? "" : "d-none")">Pendiente</span>
                                 </td>
 
-                                <td>
+                                <td class="d-flex justify-content-end">
+
+                                    @if (empleados.EstadoSolicitudDeBaja == 1)
+                                    {
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 me-1"
+                                                onclick="verSolvenciaAdministrativa('@empleados.EmpID')">
+                                            <i class="bi bi-clipboard-check me-1"></i>
+                                            Solvencia
+                                        </button>
+                                    }
                                     <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                             onclick="verPerfil(this)"
                                             data-nombre="@empleados.Nombre"
@@ -312,6 +457,7 @@
                                             data-creadoSAP="@empleados.CreadoSAP.ToString("dd/MM/yyyy")">
                                         <i class="bi bi-person-vcard me-1"></i> Perfil
                                     </button>
+
                                 </td>
                             </tr>
                         }
@@ -557,7 +703,15 @@
                             <option value="3">Abandono</option>
                         </select>
                     </div>
-
+                    <div class="col-md-6">
+                        <label for="fechaRetiro" class="form-label">
+                            Fecha de retiro <span class="text-danger fw-bold">*</span>
+                        </label>
+                        <input type="date"
+                               id="fechaRetiro"
+                               class="form-control"
+                               required>
+                    </div>
                     <!-- Causas -->
                     <div class="col-md-6 mt-3 hidden-input" id="causasInput">
                         <label class="form-label">Causas</label>
@@ -1296,6 +1450,90 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="modalSolvenciaJefe" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-solvencia">
+
+            <!-- HEADER -->
+            <div class="modal-solvencia-header">
+                <h5>Solvencia Administrativa</h5>
+                <span>Validación por Jefe Inmediato</span>
+                <button type="button" class="btn-close-solvencia" onclick="modalSolvenciaJefe.hide()">×</button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-solvencia-body">
+
+                <!-- ITEM -->
+                <div class="solvencia-item">
+                    <div class="solvencia-label">
+                        Herramientas y/o documentos de trabajo confidencial
+                    </div>
+
+                    <div class="solvencia-options">
+                        <label>
+                            <input type="radio" name="confidencial" value="SI">
+                            <span>✔ Sí</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="confidencial" value="NO">
+                            <span>✖ No</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="confidencial" value="NA">
+                            <span>— N/A</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ITEM -->
+                <div class="solvencia-item">
+                    <div class="solvencia-label">
+                        Gafete de identificación y cinta
+                    </div>
+
+                    <div class="solvencia-options">
+                        <label>
+                            <input type="radio" name="gafete" value="SI">
+                            <span>✔ Sí</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="gafete" value="NO">
+                            <span>✖ No</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="gafete" value="NA">
+                            <span>— N/A</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- OBSERVACIONES -->
+                <div class="solvencia-item">
+                    <div class="solvencia-label">Observaciones</div>
+                    <textarea class="solvencia-textarea"
+                              placeholder="Ingrese observaciones del jefe inmediato..."></textarea>
+                </div>
+
+                <!-- RESPONSABLE -->
+                <div class="solvencia-footer-data">
+                    <input type="text" placeholder="Nombre del Jefe Inmediato">
+                    <input type="date">
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-solvencia-footer">
+                <button class="btn-cancel" onclick="modalSolvenciaJefe.hide()">Cancelar</button>
+                <button class="btn-save">Guardar Solvencia</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1316,8 +1554,8 @@
         const modalTipoSolicitud = new bootstrap.Modal(document.getElementById('modalTipoSolicitud'));
         const modalGestionCartas = new bootstrap.Modal(document.getElementById('modalGestionCartas'));
         const modalNuevaCarta = new bootstrap.Modal(document.getElementById('modalNuevaCarta'));
+        const modalSolvenciaJefe = new bootstrap.Modal(document.getElementById('modalSolvenciaJefe'));
         let codigoProcesoBaja = 0;
-
 
         const listaCausas = [];
 
@@ -1499,18 +1737,22 @@
             const causas = document.getElementById('causasInput');
             const carta = document.getElementById('cartaInput');
             const motivo = document.getElementById('motivo').value;
+            const fecha = document.getElementById('fechaRetiro');
 
             if (motivo == 1) {
                 carta.classList.remove("hidden-input");
                 causas.classList.add("hidden-input");
+                fecha.value = "";
             }
             else if (motivo == 2) {
                 carta.classList.add("hidden-input");
                 causas.classList.remove("hidden-input");
+                fecha.value = '@DateTime.Now.ToString("yyyy-MM-dd")';
             }
             else {
                 carta.classList.add("hidden-input");
                 causas.classList.add("hidden-input");
+                fecha.value = '@DateTime.Now.ToString("yyyy-MM-dd")';
             }
         };
 
@@ -1553,6 +1795,7 @@
                     formData.append("motivoCadena", document.getElementById("motivo").options[document.getElementById("motivo").selectedIndex].text);
                     formData.append("solicitarRequisicion", document.getElementById("chkRequisicionPersonal").checked);
                     formData.append("observacionRequisicion", document.getElementById("txtObservacionesPlaza").value);
+                    formData.append("FechaRetiro", document.getElementById("FechaRetiro").value);
 
                     console.log(document.getElementById("chkRequisicionPersonal").checked)
 
@@ -2023,17 +2266,17 @@
                     }
 
                     body += `
-                                <tr>
-                                    <td>${convertirFechaDotNet(item.FechaDeSolicitud)}</td>
-                                    <td>${item.Posicion}</td>
-                                    <td class="text-center">
-                                        <span class="${color}">${estado}</span>
-                                    </td>
-                                    <td class="text-truncate" style="max-width: 250px;">
-                                        ${item.Observaciones}
-                                    </td>
-                                </tr>`;
-                                        });
+                                    <tr>
+                                        <td>${convertirFechaDotNet(item.FechaDeSolicitud)}</td>
+                                        <td>${item.Posicion}</td>
+                                        <td class="text-center">
+                                            <span class="${color}">${estado}</span>
+                                        </td>
+                                        <td class="text-truncate" style="max-width: 250px;">
+                                            ${item.Observaciones}
+                                        </td>
+                                    </tr>`;
+                });
 
 
                 container.innerHTML = body;
@@ -2202,28 +2445,28 @@
                 result.data.forEach((item) => {
                     console.log(item);
                     divCartas += `<div class="list-group-item list-group-item-action p-3">
-                            <div class="d-flex w-100 justify-content-between align-items-center">
-                                <h6 class="mb-1 fw-bold text-dark">${item.Falta}</h6>
-                                <small class="text-muted">${convertirFechaNetSeguro(item.Fecha)}</small>
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <h6 class="mb-1 fw-bold text-dark">${item.Falta}</h6>
+                                    <small class="text-muted">${convertirFechaNetSeguro(item.Fecha)}</small>
+                                </div>
+                                <p class="mb-2 small text-secondary text-truncate" style="max-width: 250px;">
+                                    ${item.Observaciones}                                        </p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary py-0" onclick="verPDFLlamada('${item.NombreArchivo}')">
+                                        <i class="bi bi-file-pdf"></i> PDF
+                                    </button>
+                                </div>
                             </div>
-                            <p class="mb-2 small text-secondary text-truncate" style="max-width: 250px;">
-                                ${item.Observaciones}                                        </p>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-primary py-0" onclick="verPDFLlamada('${item.NombreArchivo}')">
-                                    <i class="bi bi-file-pdf"></i> PDF
-                                </button>
-                            </div>
-                        </div>
-        `;
+            `;
                 });
 
                 contenedor.innerHTML = divCartas;
             }
             else {
                 divCartas = `<div id="sinCartas" class="text-center py-4">
-                    <i class="bi bi-info-circle text-muted d-block fs-4"></i>
-                    <span class="text-muted small">No hay registros disciplinarios</span>
-                </div>`;
+                        <i class="bi bi-info-circle text-muted d-block fs-4"></i>
+                        <span class="text-muted small">No hay registros disciplinarios</span>
+                    </div>`;
 
                 contenedor.innerHTML = divCartas;
             }
@@ -2287,6 +2530,19 @@
             else {
                 $("#globalLoading").hide();
                 Toast.fire({ icon: 'error', title: "Ocurrio un error al mostrar la carta en pdf" });
+            }
+        }
+
+        async function verSolvenciaAdministrativa(empId)
+        {
+            const response = await fetch(`/GestionDePersonal/verSolvenciaAdministrativaJefe?empId=${empId}`)
+            const result = response.json();
+
+            if (result.success) {
+                modalSolvenciaJefe.show();
+            }
+            else {
+                modalSolvenciaJefe.show();                
             }
         }
         //document.getElementById("selectNuevaPlaza").addEventListener("change", function () {

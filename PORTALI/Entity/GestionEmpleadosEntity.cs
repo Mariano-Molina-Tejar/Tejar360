@@ -28,6 +28,7 @@ namespace Entity
         public DateTime CreadoSAP { get; set; }
         public bool Perfil { get; set; }
         public int LlamadasAtencion { get; set; }
+        public int EstadoSolicitudDeBaja { get; set; }
     }
 
     public class Puestos
@@ -70,6 +71,7 @@ namespace Entity
         public int U_Motivo { get; set; }
         public string U_ObservecionesRequisicion { get; set; }
         public DateTime U_FechaSolicitud { get; set; }
+        public DateTime U_FechaDeRetiro { get; set; }
     }
 
     public class Causa
@@ -133,4 +135,19 @@ namespace Entity
         public string Observaciones { get; set; }
         public string NombreArchivo { get; set; }
     }
+
+    public class SolvenciaAdministrativaJefe
+    {
+        public string Code { get; set; }              // T0.Code
+
+        public string JefeInmediato { get; set; }      // U_JefeInmediato
+
+        // Checks SAP: 'Y' / 'N'
+        public string Herramientas { get; set; }       // U_Herramientas
+        public string Gafete { get; set; }             // U_Gafete
+
+        public DateTime? FechaSolvenciaJefe { get; set; } // U_FechaSolvenciaJefe
+        public string HoraSolvenciaJefe { get; set; }     // U_HoraSolvenciaJefe
+    }
+
 }

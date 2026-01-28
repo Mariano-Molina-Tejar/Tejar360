@@ -12,7 +12,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="~/Css/Empleados/style.css" rel="stylesheet">
     <style>
-        
     </style>
 </head>
 <!-- Bootstrap 5.3.3 -->
@@ -21,7 +20,7 @@
     <div class="container mt-4">
         <div class="card shadow-sm border-0">
             <div class="card card-filtros mb-3">
-                <div class="card-body"> 
+                <div class="card-body">
 
                     <div class="row g-3 align-items-end">
 
@@ -64,7 +63,7 @@
 
                     <!-- DERECHA -->
                     <div>
-                       
+
                         <span class="badge badge-nuevo">
                             <span>@Model.Empleados.Where(x => x.Nuevo).Count()</span>
                             Nuevos
@@ -367,9 +366,9 @@
                                          alt="Foto empleado">
 
                                     @*<h6 class="fw-semibold mb-1">Foto del empleado</h6>
-                                    <small class="text-muted">
-                                        Se usará en perfiles y credenciales
-                                    </small>*@
+                                        <small class="text-muted">
+                                            Se usará en perfiles y credenciales
+                                        </small>*@
                                 </div>
 
                             </div>
@@ -1437,11 +1436,17 @@
             $("#globalLoading").show();
             try {
 
+                const equiposSinRepetidos = [
+                    ...new Map(equiposAsignados.map(e => [e.Code, e])).values()
+                ];
+
                 if (equiposAsignados.length === 0) {
                     Toast.fire({ icon: 'warning', title: "Debe tener al menos un quipo asignado" });
+                    $("#globalLoading").hide();
                     return;
                 }
-
+                //$("#globalLoading").hide();
+                //return;
                 const response = await fetch('/Empleados/GuardarEquipoPorPerfil',
                     {
                         method: "POST",
@@ -1449,24 +1454,24 @@
                             'Content-Type': 'application/json',
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({ perfil: idPerfil, equipos: equiposAsignados })
+                        body: JSON.stringify({ perfil: idPerfil, equipos: equiposSinRepetidos })
                     });
 
                 const result = await response.json();
 
-                if (result.success)
-                {
-                    Toast.fire({ icon: 'warning', title: "Equipo agregado con éxito" });
-                    $("#globalLoading").hide();
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: "Equipo agregado con éxito" });
                     modalEquipos.hide();
 
                 } else {
                     Toast.fire({ icon: 'warning', title: "Ocurrio un error al agregar el equipo" });
                 }
             }
-            catch (error)
-            {
-                console.log("Error : ",error);
+            catch (error) {
+                console.log("Error : ", error);
+            }
+            finally {
+                $("#globalLoading").hide();
             }
         }
 
@@ -1490,15 +1495,21 @@
             result = await response.json();
 
             if (result.success) {
-                equiposAsignadosGuardados = [];
-                equiposAsignadosGuardados = result.data;
+                //equiposAsignadosGuardados = [];
+                equiposAsignados = [];
+                equiposAsignados = result.data;
+
+                //equiposAsignadosGuardados = result.data;
+                renderListas();
+                modalEquipos.show()
             }
             else {
-                equiposAsignadosGuardados = [];
+                //equiposAsignadosGuardados = [];
+                equiposAsignados = [];
+                Toast.fire({ icon: 'warning', title: "No se encontraron equipos agregados al puesto" });
+                renderListas();
+                modalEquipos.show()
             }
-
-            renderListas();
-            modalEquipos.show()
         }
 
         async function abrirModalAgregarEquipos() {

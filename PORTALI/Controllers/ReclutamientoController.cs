@@ -166,26 +166,6 @@ namespace PORTALI.Controllers
             return PartialView($"_DetalleDocumento", documento);
         }
 
-        public ActionResult VerDocumetos(int Usuario, string Tipo, int VerExistencia = 0, string Extencion = "pdf")
-        {
-            string carpeta = @"\\172.31.99.76\SAPDocs\DocumentosAspirantes\";
-            string nombreArchivo = $"Documento_{Tipo}{Usuario}.{Extencion}";
-            string ruta = Path.Combine(carpeta, nombreArchivo);
-
-            if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
-                return Content("-1");
-
-            if (VerExistencia == 0)
-            {
-                string contentType = MimeMapping.GetMimeMapping(ruta);
-                return File(ruta, contentType);
-            }
-            else
-            {
-                return Content("1");
-            }
-        }
-
         public JsonResult ExistenciaDocumentos(List<CVDOCREQ> Documentos, int idUser)
         {
             Reply reply = new Reply();
@@ -329,7 +309,7 @@ namespace PORTALI.Controllers
 
                 if (reply.result == 1)
                 {
-                    var responseMail = EnviarSolicitudNuevoPuesto(perfil.descriptio, -500, perfil.Justificacion, true, perfil.Solicita, perfil.Code);
+                    var responseMail = EnviarSolicitudNuevoPuesto(perfil.descriptio, -500, perfil.Justificacion, true, perfil.Solicita, int.Parse(perfil.IdSolicitudAlta), perfil.Code);
 
                     if (responseMail)
                     {
@@ -350,7 +330,7 @@ namespace PORTALI.Controllers
 
         }
 
-        public bool EnviarSolicitudNuevoPuesto(string puesto, int puestoId, string observaciones, bool nuevo, string solicita, int code)
+        public bool EnviarSolicitudNuevoPuesto(string puesto, int puestoId, string observaciones, bool nuevo, string solicita, int code, int idPerfil)
         {
             try
             {
@@ -368,8 +348,8 @@ namespace PORTALI.Controllers
                              puesto.ToUpper(),
                              DateTime.Now.ToString("dd/MM/yyyy"),
                              observaciones,
-                             $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}",
-                             $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=-1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}"
+                             $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}&idPerfil={HttpUtility.UrlEncode(idPerfil.ToString())}",
+                             $"{host}?code={HttpUtility.UrlEncode(code.ToString())}&aut=-1&puesto={HttpUtility.UrlEncode(puesto)}&puestoId={HttpUtility.UrlEncode(puestoId.ToString())}&idPerfil={HttpUtility.UrlEncode(idPerfil.ToString())}"
 
                          );
 
@@ -766,5 +746,56 @@ namespace PORTALI.Controllers
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        public ActionResult VerDocumetos(int Usuario, string Tipo, int VerExistencia = 0, string Extencion = "pdf")
+        {
+            string carpeta = @"\\172.31.99.76\SAPDocs\DocumentosAspirantes\";
+            string nombreArchivo = $"Documento_{Tipo}{Usuario}.{Extencion}";
+            string ruta = Path.Combine(carpeta, nombreArchivo);
+
+            if (string.IsNullOrEmpty(ruta) || !System.IO.File.Exists(ruta))
+                return Content("-1");
+
+            if (VerExistencia == 0)
+            {
+                string contentType = MimeMapping.GetMimeMapping(ruta);
+                return File(ruta, contentType);
+            }
+            else
+            {
+                return Content("1");
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult SubirDocumentos(HttpPostedFileBase archivo, int Tipo, string Extencion, int usuario)
+        {
+            //var usuario = Session["Usuario"] as UsuarioEntity;
+
+            if (archivo == null || archivo.ContentLength == 0)
+                return Json(new { Message = "Debes seleccionar un archivo" });
+
+            if (usuario == null)
+                return Json(new { Message = "La sesión ha expirado. Por favor, recargue la página e inicie sesión nuevamente." });
+
+            try
+            {
+                string path = @"\\172.31.99.76\SAPDocs\DocumentosAspirantes\";
+
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                string rutaCompleta = Path.Combine(path, $"Documento_{Tipo}{usuario}.{Extencion}");
+                archivo.SaveAs(rutaCompleta);
+
+                return Json(new { Message = "Documento cargado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Message = ex.Message });
+            }
+        }
+
     }
 }

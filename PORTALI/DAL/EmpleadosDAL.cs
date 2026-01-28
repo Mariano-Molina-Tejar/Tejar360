@@ -210,10 +210,25 @@ namespace DAL
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                var query = @"SELECT T1.U_NombreEquipo, U_Icono
-                            FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_EQ_PERF] T0
-                            LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_EQUIPOS] T1 ON T0.U_EquipoId = T1.Code
-                            WHERE U_posicionID = @PerfilId";
+                var query = @"SELECT DISTINCT t1.Code,T1.U_NombreEquipo, U_Icono
+                                FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_EQ_PERF] T0
+                                LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_EQUIPOS] T1 ON T0.U_EquipoId = T1.Code
+                                WHERE U_posicionID = @PerfilId";
+
+                return await conn.QueryAsync<Equipos>(
+                    query,
+                    new { PerfilId = perfilId }
+                    );
+            }
+        }
+        public async Task<IEnumerable<Equipos>> ObtenerTodosEquiposPorPuesto(int perfilId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT T0.Code,T1.U_NombreEquipo, U_Icono
+                                FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_EQ_PERF] T0
+                                LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_EQUIPOS] T1 ON T0.U_EquipoId = T1.Code
+                                WHERE U_posicionID = @PerfilId	";
 
                 return await conn.QueryAsync<Equipos>(
                     query,

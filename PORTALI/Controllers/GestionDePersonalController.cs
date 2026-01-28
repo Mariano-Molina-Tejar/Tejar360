@@ -69,7 +69,7 @@ namespace PORTALI.Controllers
             {
                 return Json(new { success = false, message = "Ocurrio un error al obtener los puestos" }, JsonRequestBehavior.AllowGet);
             }
-        } 
+        }
 
 
         [Authorize]
@@ -90,7 +90,7 @@ namespace PORTALI.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena, bool solicitarRequisicion, string observacionRequisicion)
+        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena, bool solicitarRequisicion, string observacionRequisicion, DateTime FechaRetiro)
         {
             EnvioCorreoGestionEmpleados correo = new EnvioCorreoGestionEmpleados();
             Reply reply = new Reply();
@@ -127,6 +127,7 @@ namespace PORTALI.Controllers
                 solicitud.U_FechaSolicitud = DateTime.Now;
                 solicitud.Name = solicitarRequisicion ? Guid.NewGuid().ToString().Substring(0, 7) : null;
                 solicitud.U_ObservecionesRequisicion = observacionRequisicion;
+                solicitud.U_FechaDeRetiro = FechaRetiro;
 
                 correo.Asunto = "Se a realizado una solicitud de baja de personal";
                 correo.Cuerpo = Templates.BodyMailSolicitud(nombre, sessions.DeptoName, motivoCadena, observaciones, nombreUsuario);
@@ -746,6 +747,23 @@ namespace PORTALI.Controllers
             string contentType = MimeMapping.GetMimeMapping(ruta);
 
             return File(ruta, contentType);
+        }
+
+        public async Task<JsonResult> verSolvenciaAdministrativaJefe(int empId)
+        {
+            try
+            {
+                var solvencia = await _dal.ObtenerSolvenciaAdministrativaJefe(empId);
+
+                if (solvencia.FechaSolvenciaJefe != null)
+                    return Json(new { success = true, data = solvencia }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
         }
     }
 }

@@ -18,9 +18,9 @@
             <input type="file" class="form-control" id="archivo" name="archivo" accept=".@(Model.Extencion)" required />
         </div>
 
-        @*<button type="submit" class="btn btn-outline-success">
+        <button type="submit" class="btn btn-outline-success">
             <i class="bi bi-upload me-2"></i> Cargar Archivo
-        </button>*@
+        </button>
 
         <button id="btnVerDocumento" class="btn btn-outline-primary verBoton">
             <i class="@(Model.Extencion == "pdf" ? " bi bi-file-earmark-pdf me-2" : "bi bi-card-image")"></i> @(Model.Extencion == "pdf" ? "Ver Documento" : "Ver Imagen")
@@ -57,7 +57,17 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
+    //const Toast = Swal.mixin({
+    //    toast: true,
+    //    position: 'top-end',
+    //    showConfirmButton: false,
+    //    timer: 5000,
+    //    timerProgressBar: true
+    //});
     //if (window.modalVerPdf) {
     //    const modalVerPdf = new bootstrap.Modal(document.getElementById("modalPDF"));
     //}
@@ -80,23 +90,28 @@
         const tipoDocumento = @Model.TipoDocumento;
         const extencion = '@Model.Extencion';
         const formData = new FormData(this);
+        let userCode = document.getElementById("pCode").value;
+
         formData.append("Tipo", tipoDocumento);
         formData.append("Extencion", extencion);
-
+        formData.append("usuario", userCode);
+        $("#globalLoading").show();
         $.ajax({
-            url: '@Url.Action("SubirDocumentos", "CVDigital")',
+            url: '@Url.Action("SubirDocumentos", "Reclutamiento")',
             type: "POST",
             data: formData,
             processData: false,
             contentType: false,
             success: function (resp) {
-                toastr.success(resp.Message || "Documento cargado correctamente");
+                console.log(resp);
                 VerExistencia();
                 $(`#Icono-${tipoDocumento}`).removeClass();
                 $(`#Icono-${tipoDocumento}`).addClass("bi bi-check-lg text-success fs-5");
+                $("#globalLoading").hide();
             },
             error: function () {
-                toastr.error("Error al subir el documento");
+                alert("Ocurrio un error al cargar el archiuvo");
+                $("#globalLoading").hide();
             }
         });
     });

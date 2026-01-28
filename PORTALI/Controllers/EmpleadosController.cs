@@ -190,6 +190,17 @@ namespace PORTALI.Controllers
                     return Json(new { success = false });
                 }
 
+                var equiposAsignados = await _dal.ObtenerTodosEquiposPorPuesto(perfil);
+
+                if (equiposAsignados.Any())
+                {
+                    string urlBorrar = "GestionDePersonal/BorrarEquiposPorPefil";
+                    string responseBorrar = DAL_API.enviarDatosSL(urlBorrar, new
+                    {
+                        EquiposBorrar = equiposAsignados
+                    } );
+                }
+
                 string url = "GestionDePersonal/GuardarEquiposPorPefil";
 
                 string response = DAL_API.enviarDatosSL(

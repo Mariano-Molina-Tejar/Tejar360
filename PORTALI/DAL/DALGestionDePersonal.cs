@@ -382,5 +382,29 @@ namespace DAL
                 return await conn.QueryAsync<LlamadaDeAtencion>(query, new { EmpId = empId });
             }
         }
+
+        public async Task<SolvenciaAdministrativaJefe> ObtenerSolvenciaAdministrativaJefe(int empleadoId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    var query = @"SELECT TOP 1 T0.Code,
+		                    T0.U_JefeInmediato,
+		                    U_Herramientas,U_Gafete, 
+		                    U_FechaSolvenciaJefe,
+		                    U_HoraSolvenciaJefe 
+                    FROM [ELTEJAR_PRUEBAS_R1_5.1].DBO.[@GESTION_EMP_SOL_ADM] T0
+                    INNER JOIN [ELTEJAR_PRUEBAS_R1_5.1].DBO.[@GESTION_EMP_B] T1 ON t0.Code = t1.code
+                    WHERE T1.U_EmpleadoId = @EmpleadoId";
+
+                    return await conn.QuerySingleOrDefaultAsync<SolvenciaAdministrativaJefe>(query, new { EmpleadoId = empleadoId }) ?? new SolvenciaAdministrativaJefe();
+                }
+            }
+            catch(Exception ex)
+            {
+                throw;
+            } 
+        }
     }
 }
