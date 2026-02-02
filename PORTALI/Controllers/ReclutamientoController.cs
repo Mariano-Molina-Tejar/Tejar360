@@ -2,12 +2,16 @@
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.ExtendedProperties;
 using Entity;
+using Microsoft.AspNet.SignalR.Hosting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Ocsp;
 using PORTALI.Helpers.EmailHelper;
 using PORTALI.Services;
 using System;
 using System.Collections.Generic;
+using System.EnterpriseServices;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -314,7 +318,7 @@ namespace PORTALI.Controllers
                     if (responseMail)
                     {
                         var respuesta = await _dal.actualizarEstadoSolicitudDeAlta(int.Parse(perfil.IdSolicitudAlta));
-                        if(respuesta == 1)
+                        if (respuesta == 1)
                             return Json(new { success = true });
                         return Json(new { success = false });
                     }
@@ -797,5 +801,71 @@ namespace PORTALI.Controllers
             }
         }
 
+        public async Task<JsonResult> ObtenerAnalisisMixtral(int idSolicitud, int idPuesto)
+        {
+            try
+            {
+                var mixtralService = new MixtralService("Bearer M7jFFXCpKeecatV6ZSMI18mNQVLfkP2L");
+
+                string perfilJson = _dal.ObtenerPerfilJson(idSolicitud, idPuesto);
+                string aspiranteJson = _dal.ObtenerAspirantesJson(idSolicitud);
+
+                string apiResponse = await mixtralService.AnalizarPerfilAsync(perfilJson, aspiranteJson);
+
+                var root = JObject.Parse(apiResponse);
+                string contenidoJson = root["choices"][0]["message"]["content"].ToString().Trim();
+
+                // 4️⃣ Validar que sea JSON válido
+                ResultadoEvaluacionIA resultadoIA;
+
+                try
+                {
+                    resultadoIA = JsonConvert.DeserializeObject<ResultadoEvaluacionIA>(contenidoJson);
+                    GuardarDatosIAenDB(resultadoIA, idSolicitud);
+                    return Json(new { success = true });
+
+                }
+                catch (Exception ex)
+                {
+                    // fallback defensivo
+                    resultadoIA = new ResultadoEvaluacionIA
+                    {
+                        evaluacion = new List<EvaluacionAspirante>(),
+                        recomendacionFinal = "Error al procesar la evaluación de IA"
+                    };
+
+                    return Json(new { success = false });
+                    // aquí puedes loguear ex + contenidoJson
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        private bool GuardarDatosIAenDB(ResultadoEvaluacionIA resultado, int solicitudID)
+        {
+            var urlEvalucion = "Reclutamiento/evaluacionIA";
+
+            var response = DAL_API.enviarDatosSL(urlEvalucion, new { resultado = resultado, SolicitudId = solicitudID });
+            return true;
+        }
+
+        public async Task<JsonResult> obtenerAnalisisIA(int userId)
+        {
+            try
+            {
+                var response = await _dal.ObtenerAnalisisAspirantesIA(userId);
+                if (response.Any())
+                    return Json(new { success = true, data = response }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

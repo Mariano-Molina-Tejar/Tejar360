@@ -433,6 +433,7 @@
     <Compile Include="Controllers\RankingV2Controller.cs" />
     <Compile Include="Controllers\ReclutamientoController.cs" />
     <Compile Include="Controllers\ReporteBodegasController.cs" />
+    <Compile Include="Controllers\ReporteDaniadoTablaController.cs" />
     <Compile Include="Controllers\ReporteDañadoController.cs" />
     <Compile Include="Controllers\ReporteEstadoCuentaGastosController.cs" />
     <Compile Include="Controllers\ReporteEstadoCuentaImportacionController.cs" />
@@ -450,8 +451,10 @@
     <Compile Include="Controllers\VentasCdController.cs" />
     <Compile Include="Controllers\VentasController.cs" />
     <Compile Include="Controllers\VentasEmpresaController.cs" />
+    <Compile Include="Services\MixtralService.cs" />
     <Compile Include="Services\UserLockService.cs" />
     <Content Include="Css\Empleados\style.css" />
+    <Content Include="Css\EstiloCorporativo.css" />
     <Content Include="Css\GestionDePersonal\styleProceso.css" />
     <Compile Include="Filter\VerifySession.cs" />
     <Compile Include="Global.asax.cs">
@@ -1305,6 +1308,7 @@
     <Content Include="Views\Reclutamiento\Index.cshtml" />
     <Content Include="Views\Reclutamiento\_DetalleDocumento.cshtml" />
     <Content Include="Views\Empleados\Index.cshtml" />
+    <Content Include="Views\ReporteDaniadoTabla\TablaDaniado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

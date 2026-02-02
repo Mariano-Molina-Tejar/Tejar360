@@ -34,6 +34,8 @@ namespace Entity
     public class DetalleAspirantes
     {
         public int Rw { get; set; }
+        public int UserId { get; set; }
+        public int SolicitudBaja { get; set; }
         public string UserName { get; set; }
         public string PassWord { get; set; }
         public string NombreAspirante { get; set; }
@@ -41,6 +43,8 @@ namespace Entity
         public string Estado { get; set; }
         public DateTime Created { get; set; }
         public int EmpIdSAP { get; set; }
+        public int NotaIA { get; set; }
+        public bool Cumple { get; set; }
     }
 
     public class DatosPersonales
@@ -149,5 +153,11 @@ namespace Entity
         public string EmpleadoVentas { get; set; }
         public decimal TotalMeta { get; set; }
         public string TiendaAsignada { get; set; }
+    }
+    public class FortalezasDebilidades
+    {
+        public string Observaciones { get; set; }
+        public int Tipo { get; set; }
+        public string ObservacionesGenerales { get; set; }
     }
 }

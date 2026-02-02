@@ -1,0 +1,147 @@
+﻿@model Entity.ViewModels.ReporteDaniadoTablaViewModel
+
+<link href="~/Css/EstiloCorporativo.css" rel="stylesheet" />
+
+<!-- HEADER -->
+<header class="page-header d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 text-danger fw-bold">
+        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+        Tabla Reporte Dañado
+    </h2>
+</header>
+
+<div class="container-fluid px-4 mb-5">
+
+    <!-- FILTROS -->
+    <form method="get">
+        <div class="filter-card card shadow-sm mb-4">
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-filter text-primary me-2"></i>
+                    <h6 class="mb-0 fw-bold text-primary text-uppercase">
+                        Filtros de búsqueda
+                    </h6>
+                </div>
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">Fecha Inicio</label>
+                        <input type="date"
+                               name="fechaInicio"
+                               class="form-control form-control-sm"
+                               value="@Model.FechaInicio.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">Fecha Fin</label>
+                        <input type="date"
+                               name="fechaFin"
+                               class="form-control form-control-sm"
+                               value="@Model.FechaFin.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <button type="submit"
+                                class="btn btn-primary btn-sm w-100 shadow-sm">
+                            <i class="fas fa-search me-1"></i> Aplicar filtro
+                        </button>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <a href="@Url.Action("ExportarExcel", new { fechaInicio = Model.FechaInicio, fechaFin = Model.FechaFin })"
+                           class="btn btn-success btn-sm w-100 shadow-sm">
+                            <i class="fas fa-file-excel me-1"></i> Descarga Archivo
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <!-- SECCIÓN TABLA -->
+    <h4 class="section-title">
+        <i class="fas fa-chart-bar me-2"></i> Tabla Dañado
+    </h4>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <div class="tabla-scroll">
+                <div >
+                    <table class="table table-bordered table-sm align-middle mb-0">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th>Tienda</th>
+                                <th>Venta</th>
+                                <th>Total Dañado</th>
+                                <th>% Dañado</th>
+                                <th>Salida CD</th>
+                                <th>NC</th>
+                                <th>Recuperado</th>
+                                <th>% NC</th>
+                                <th>% Almacén</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var region in Model.Regiones)
+                            {
+                                <!-- CABECERA REGIÓN -->
+                                <tr class="table-info fw-bold">
+                                    <td colspan="9">
+                                        <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                                        @region.NombreRegion
+                                    </td>
+                                </tr>
+
+                                <!-- FILAS -->
+                                foreach (var f in region.Filas)
+                                {
+                                    <tr class="@(f.EsBodegaCentral ? "table-warning fw-bold" : "")">
+                                        <td>@f.NombreTienda</td>
+                                        <td class="text-end">@f.Venta.ToString("C")</td>
+                                        <td class="text-end">@f.TotalDaniado.ToString("C")</td>
+                                        <td class="text-end">@f.PorcentajeDaniado.ToString("P2")</td>
+                                        <td class="text-end">@f.DanadoSalidaCD.ToString("C")</td>
+                                        <td class="text-end">@f.DanadoNotaCredito.ToString("C")</td>
+                                        <td class="text-end">@f.DanadoRecuperado.ToString("C")</td>
+                                        <td class="text-end">@f.PorcentajeNC.ToString("P2")</td>
+                                        <td class="text-end">@f.PorcentajeAlmacen.ToString("P2")</td>
+                                    </tr>
+                                }
+
+                                <!-- TOTAL REGIÓN -->
+                                <tr class="fila-total-region">
+                                    <td>Total Región @region.NombreRegion</td>
+                                    <td class="text-end">@region.Totales.Venta.ToString("N2")</td>
+                                    <td class="text-end">@region.Totales.TotalDaniado.ToString("C")</td>
+                                    <td class="text-end">@region.Totales.PorcentajeDaniado.ToString("P2")</td>
+                                    <td colspan="5"></td>
+                                </tr>
+                            }
+
+                            <!-- TOTAL GENERAL -->
+                            <tr class="fila-total-general">
+                                <td class="text-uppercase">TOTAL GENERAL</td>
+                                <td class="text-end">@Model.TotalesGlobales.Venta.ToString("N2")</td>
+                                <td class="text-end">@Model.TotalesGlobales.TotalDaniado.ToString("C")</td>
+                                <td class="text-end">@Model.TotalesGlobales.PorcentajeDaniado.ToString("P2")</td>
+                                <td colspan="5"></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @*<div class="card-body table-responsive tabla-scroll">
+
+           
+
+        </div>*@
+    </div>
+
+</div>

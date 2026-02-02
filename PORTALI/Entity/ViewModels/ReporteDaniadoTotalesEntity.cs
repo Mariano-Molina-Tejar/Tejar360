@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Entity.ViewModels
+{
+    public class ReporteDaniadoTotalesEntity
+    {
+        public decimal Venta { get; set; }
+        public decimal TotalDaniado { get; set; }
+        public decimal PorcentajeDaniado => Venta == 0 ? 0 : TotalDaniado / Venta;
+    }
+}

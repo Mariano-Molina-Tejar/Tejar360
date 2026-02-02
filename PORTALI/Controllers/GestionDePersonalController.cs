@@ -90,7 +90,7 @@ namespace PORTALI.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena, bool solicitarRequisicion, string observacionRequisicion, DateTime FechaRetiro)
+        public async Task<JsonResult> EnviarSolicitudDeBaja(int id, int motivo, string observaciones, string causas, HttpPostedFileBase carta, string nombre, string motivoCadena, bool solicitarRequisicion, string observacionRequisicion, DateTime fechaRetiro)
         {
             EnvioCorreoGestionEmpleados correo = new EnvioCorreoGestionEmpleados();
             Reply reply = new Reply();
@@ -127,7 +127,7 @@ namespace PORTALI.Controllers
                 solicitud.U_FechaSolicitud = DateTime.Now;
                 solicitud.Name = solicitarRequisicion ? Guid.NewGuid().ToString().Substring(0, 7) : null;
                 solicitud.U_ObservecionesRequisicion = observacionRequisicion;
-                solicitud.U_FechaDeRetiro = FechaRetiro;
+                solicitud.U_FechaDeRetiro = fechaRetiro;
 
                 correo.Asunto = "Se a realizado una solicitud de baja de personal";
                 correo.Cuerpo = Templates.BodyMailSolicitud(nombre, sessions.DeptoName, motivoCadena, observaciones, nombreUsuario);
@@ -263,7 +263,7 @@ namespace PORTALI.Controllers
                 var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
                 int response = await _dal.CambiarEstadoSolicitudBaja(id, estado);
                 if (response != 1)
-                    return Json(new { success = "success", message = "Ocurrio un error inesperado al realiazar la solicitud" });
+                    return Json(new { success = "error", message = "Ocurrio un error inesperado al realiazar la solicitud" });
 
                 string correos = await _dal.ObtenerCorreosSolicitud(id, estado);
 
@@ -277,6 +277,10 @@ namespace PORTALI.Controllers
                 };
 
                 int respuestaObservaciones = _servicesLockUser.guardarProcesoDeBaja(sessions.UserId, id, estado, comentariosGTH);
+
+                var responseSolvencia = CrearSolvenciaAdministrativa(id);
+                if (!responseSolvencia)
+                    return Json(new { success = "error", message = "Ocurrio un error inesperado al realiazar la solicitud" });
 
                 if (estado == 1)
                 {
@@ -298,6 +302,25 @@ namespace PORTALI.Controllers
             }
         }
 
+        private bool CrearSolvenciaAdministrativa(int idSolicitudBaja)
+        {
+            try
+            {
+                var url = "GestionDePersonal/CrearSolvenciaAdministrativa";
+
+                var response = DAL_API.enviarDatosSL(url, new { Code = idSolicitudBaja, Name = idSolicitudBaja });
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                    return true;
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public async Task<int> CrearSolicitudDeAlta(
             int IdSolicitudBaja,
             int IdSolicitante,
@@ -755,14 +778,49 @@ namespace PORTALI.Controllers
             {
                 var solvencia = await _dal.ObtenerSolvenciaAdministrativaJefe(empId);
 
-                if (solvencia.FechaSolvenciaJefe != null)
-                    return Json(new { success = true, data = solvencia }, JsonRequestBehavior.AllowGet);
+                if (solvencia.U_FechaSolvenciaJefe == null && solvencia.Code != null)
+                {
+                    return Json(new { status = false, success = true, data = solvencia }, JsonRequestBehavior.AllowGet);
+                }
+                else if (solvencia.U_FechaSolvenciaJefe != null)
+                {
+                    return Json(new { status = true, success = true, data = solvencia }, JsonRequestBehavior.AllowGet);
+                }
 
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = true, success = true, data = solvencia }, JsonRequestBehavior.AllowGet);
             }
             catch
             {
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult GuardarSolvenciaJefe(string herramientas, string gafete, string observaciones, int solvencia)
+        {
+            var url = "GestionDePersonal/GuardarSolvenciaJefe";
+
+            try
+            {
+                var solvenciaJefe = new
+                {
+                    Code = solvencia,
+                    U_Herramientas = herramientas,
+                    U_Gafete = gafete,
+                    U_ObsevacionesJefeInmediato = observaciones,
+                    U_FechaSolvenciaJefe = DateTime.Now,
+                    U_HoraSolvenciaJefe = DateTime.Now.ToString("HH:mm")
+                };
+
+                var response = DAL_API.enviarDatosSL(url, solvenciaJefe);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                    return Json(new { success = true });
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
             }
         }
     }

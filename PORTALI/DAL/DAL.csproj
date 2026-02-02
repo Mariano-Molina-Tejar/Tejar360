@@ -228,6 +228,7 @@
     <Compile Include="DALProspeccion.cs" />
     <Compile Include="DALReclutamiento.cs" />
     <Compile Include="DALReporteCheckList.cs" />
+    <Compile Include="DALReporteDaniadoTabla.cs" />
     <Compile Include="DALReporteDañado.cs" />
     <Compile Include="DALReporteEstadoCuentaGastos.cs" />
     <Compile Include="DALReporteEstadoCuentaLocal.cs" />

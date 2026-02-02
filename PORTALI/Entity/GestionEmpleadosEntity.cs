@@ -140,14 +140,16 @@ namespace Entity
     {
         public string Code { get; set; }              // T0.Code
 
-        public string JefeInmediato { get; set; }      // U_JefeInmediato
+        public string U_JefeInmediato { get; set; }      // U_JefeInmediato
 
         // Checks SAP: 'Y' / 'N'
-        public string Herramientas { get; set; }       // U_Herramientas
-        public string Gafete { get; set; }             // U_Gafete
+        public string U_Herramientas { get; set; }       // U_Herramientas
+        public string U_Gafete { get; set; }             // U_Gafete
 
-        public DateTime? FechaSolvenciaJefe { get; set; } // U_FechaSolvenciaJefe
-        public string HoraSolvenciaJefe { get; set; }     // U_HoraSolvenciaJefe
+        public DateTime? U_FechaSolvenciaJefe { get; set; } // U_FechaSolvenciaJefe
+        public string U_HoraSolvenciaJefe { get; set; }     // U_HoraSolvenciaJefe
+        public string U_ObsevacionesJefeInmediato { get; set; }     // U_HoraSolvenciaJefe
+
     }
 
 }

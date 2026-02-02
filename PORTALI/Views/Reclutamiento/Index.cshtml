@@ -81,7 +81,7 @@
             background: linear-gradient(135deg, #3a7bd5, #3a6073);
             color: #fff;
             border-bottom: none;
-            padding: 1.5rem;
+            padding: 0.5rem 1.5rem;
         }
 
             .modal-detalle-header .btn-close {
@@ -249,6 +249,111 @@
                 transform: translateY(-1px);
                 box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             }
+
+        /* CONTENEDOR PRINCIPAL */
+        .ia-modal {
+            background: linear-gradient(145deg, #0c1022, #141a3a);
+            border-radius: 20px;
+            box-shadow: 0 0 35px rgba(0, 153, 255, .25);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            border: none;
+        }
+
+        /* HEADER */
+        .ia-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+            .ia-header h4 {
+                margin: 0;
+                font-size: 1.2rem;
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+        .ia-close {
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+            .ia-close:hover {
+                color: #fff;
+            }
+
+        /* BODY */
+        .ia-body {
+            padding: 22px;
+        }
+
+        /* SECCIONES */
+        .ia-section {
+            margin-bottom: 22px;
+        }
+
+        .ia-title {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .ia-title.success {
+                color: #32d296;
+            }
+
+            .ia-title.danger {
+                color: #ff6b6b;
+            }
+
+            .ia-title.info {
+                color: #4da3ff;
+            }
+
+        /* LISTAS */
+        .ia-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .ia-list li {
+                padding: 10px 14px;
+                border-radius: 10px;
+                margin-bottom: 8px;
+                font-size: .95rem;
+            }
+
+            .ia-list.success li {
+                background: rgba(50,210,150,.15);
+                border-left: 4px solid #32d296;
+            }
+
+            .ia-list.danger li {
+                background: rgba(255,107,107,.15);
+                border-left: 4px solid #ff6b6b;
+            }
+
+        /* OBSERVACIÓN */
+        .ia-observacion {
+            background: rgba(77,163,255,.15);
+            border-left: 4px solid #4da3ff;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: .95rem;
+            line-height: 1.5;
+        }
+
+
     </style>
 </head>
 
@@ -601,9 +706,17 @@
                                 <p class="text-muted small mb-0">Lista de candidatos que aplican a esta vacante</p>
                             </div>
 
-                            <button id="btnCrearUsuarioClave" class="btn btn-generate fw-bold px-4 rounded-pill shadow-sm">
-                                <i class="bi bi-shield-lock-fill me-2"></i>Generar Credenciales
-                            </button>
+                            <div>
+                                <button id="btnCrearUsuarioClave" class="btn btn-generate fw-bold px-4 rounded-pill shadow-sm">
+                                    <i class="bi bi-shield-lock-fill me-2"></i>Generar Credenciales
+
+                                </button>
+                                <button id="btnAnalasisIA" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                    <i class="bi bi-robot me-2"></i>@*<i class="bi bi-cpu-fill me-2"></i>*@
+                                    Analisis con IA
+                                </button>
+                            </div>
+
                         </div>
 
                         <div class="table-responsive">
@@ -616,6 +729,8 @@
                                         <th>Correo Electrónico</th>
                                         <th>Fecha Registro</th>
                                         <th>Estado</th>
+                                        <th>Calificacion IA</th>
+                                        <th>Cumple</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -1599,6 +1714,57 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalIA" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content ia-modal">
+
+                <!-- HEADER -->
+                <div class="ia-header">
+                    <h4>
+                        <i class="bi bi-cpu-fill"></i>
+                        Análisis de Inteligencia Artificial
+                    </h4>
+                    <button type="button" class="ia-close" data-bs-dismiss="modal">×</button>
+                </div>
+
+                <!-- BODY -->
+                <div class="ia-body">
+
+                    <!-- FORTALEZAS -->
+                    <section class="ia-section">
+                        <h5 class="ia-title success">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            Fortalezas
+                        </h5>
+                        <ul id="iaFortalezas" class="ia-list success"></ul>
+                    </section>
+
+                    <!-- DEBILIDADES -->
+                    <section class="ia-section">
+                        <h5 class="ia-title danger">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Debilidades
+                        </h5>
+                        <ul id="iaDebilidades" class="ia-list danger"></ul>
+                    </section>
+
+                    <!-- OBSERVACIÓN -->
+                    <section class="ia-section">
+                        <h5 class="ia-title info">
+                            <i class="bi bi-eye-fill"></i>
+                            Observación IA
+                        </h5>
+                        <div id="iaObservacion" class="ia-observacion"></div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <div id="dataModel"
          data-model='@Html.Raw(Json.Encode(Model.Documentos))'>
     </div>
@@ -1621,6 +1787,7 @@
         const modalPerfilPuesto = new bootstrap.Modal(document.getElementById('modalPerfilPuesto'));
         const modalAgregarSolicitud = new bootstrap.Modal(document.getElementById('modalAgregarSolicitud'));
         const modalProcesos = new bootstrap.Modal(document.getElementById('modalProcesos'));
+        const modalIA = new bootstrap.Modal(document.getElementById('modalIA'));
         let dataAspiranteFinal = {};
         let idModal = "";
 
@@ -1778,35 +1945,72 @@
             if (reply.success) {
 
                 reply.data.forEach(item => {
-                    console.log("Empleado ID : ", item.EmpIdSAP)
-                    tbody += `<tr ${item.EmpIdSAP != 0 ? `class="fila-verde"` : ``}>
-                                                                                                            <th>${item.Rw}</th>
-                                                                                                            <th>${item.UserName}</th>
-                                                                                                            <th>${item.NombreAspirante}</th>
-                                                                                                            <th id="e${item.Rw}">${item.Correo}</th>
-                                                                                                            <th>${convertirFechaDotNet(item.Created)}</th>
-                                                                                                            <th>${item.Estado}</th>
-                                                                                                            <th>${finalizada == 0
-                            ? `<button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Usuario" onclick ="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
-                                                                                                                        <i class="bi bi-person-fill"></i> </i>
-                                                                                                                    </button>`
+                    tbody += `
+<tr ${item.EmpIdSAP != 0 ? `class="fila-verde"` : ``}>
+        <th>${item.Rw}</th>
+        <th>${item.UserName}</th>
+        <th>${item.NombreAspirante}</th>
+        <th id="e${item.Rw}">${item.Correo}</th>
+        <th>${convertirFechaDotNet(item.Created)}</th>
+        <th>${item.Estado}</th>
+
+        <!-- NOTA IA -->
+        <th>
+            <span class="badge
+                ${item.NotaIA >= 80 ? 'bg-success' : item.NotaIA >= 60 ? 'bg-warning text-dark' : 'bg-danger'}">
+                ${item.NotaIA}
+            </span>
+        </th>
+
+        <!-- CUMPLE -->
+        <th>
+            <span class="fw-semibold
+                ${item.Cumple ? 'text-success' : 'text-danger'}">
+                <i class="bi ${item.Cumple ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-1"></i>
+
+            </span>
+        </th>
+
+        <!-- ACCIONES -->
+        <th>
+            ${finalizada == 0
+                            ? `
+                <button class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="tooltip"
+                        title="Usuario"
+                        onclick="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
+                    <i class="bi bi-person-fill"></i>
+                </button>
+                `
                             : ``
                         }
 
-                                                                                                                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="CV" onclick ="verDetalleAspirante('${item.UserName}','${item.EmpIdSAP}')">
-                                                                                                                    <i class="bi bi-file-earmark-text"></i>
-                                                                                                                </button>
-                                                                                                            </th>
-                                                                                                          </tr>
-                                                                                                            `;
+            <button class="btn btn-outline-primary btn-sm"
+                    data-bs-toggle="tooltip"
+                    title="CV"
+                    onclick="verDetalleAspirante('${item.UserName}','${item.EmpIdSAP}')">
+                <i class="bi bi-file-earmark-text"></i>
+            </button>
+
+            <!-- BOTÓN IA -->
+            <button class="btn btn-outline-dark btn-sm"
+                    data-bs-toggle="tooltip"
+                    title="Análisis IA"
+                    onclick="verAnalisisIA('${item.UserId}', ${item.SolicitudBaja})">
+                <i class="bi bi-robot"></i>
+            </button>
+        </th>
+</tr>
+`;
+
                 });
 
             }
             else {
                 tbody += `<tr>
-                                                                                                    <th colspan = "7">No se encontraron datos</th>
-                                                                                                 </tr>
-                                                                                                            `;
+                                                                                                            <th colspan = "7">No se encontraron datos</th>
+                                                                                                         </tr>
+                                                                                                                    `;
             }
             document.getElementById("tbodyAspirantes").innerHTML = tbody;
         }
@@ -1961,59 +2165,59 @@
                 datosAspirante.DatosAcademicosVM.forEach(item => {
 
                     tbodyAcademico += `<tr>
-                                                                                <th>${contador}</th>
-                                                                                <th>${item.Nivel}</th>
-                                                                                <th>${item.UltimoGradoAprobado}</th>
-                                                                                <th>${item.Establecimiento}</th>
-                                                                                <th>${item.Anio}</th>
-                                                                           </tr> `;
+                                                                                        <th>${contador}</th>
+                                                                                        <th>${item.Nivel}</th>
+                                                                                        <th>${item.UltimoGradoAprobado}</th>
+                                                                                        <th>${item.Establecimiento}</th>
+                                                                                        <th>${item.Anio}</th>
+                                                                                   </tr> `;
 
                     contador++;
                 });
             }
             else {
                 tbodyAcademico += `<tr>
-                                                                  <th colspan ="5"><div class="text-center text-muted py-3">
-                                                                     <i class="bi bi-info-circle"></i> No se encontraron datos
-                                                                  </div></th>
-                                                               </tr> `;
+                                                                          <th colspan ="5"><div class="text-center text-muted py-3">
+                                                                             <i class="bi bi-info-circle"></i> No se encontraron datos
+                                                                          </div></th>
+                                                                       </tr> `;
             }
 
             if (datosAspirante.DatosLaboralesVM.length != 0) {
                 datosAspirante.DatosLaboralesVM.forEach(item => {
                     containerLaboral += `
-                                                                    <li class="list-group-item">
-                                                                                <div class="d-flex align-items-start justify-content-between">
-                                                                                    <div>
-                                                                                        <strong>${item.Empresa}</strong> — ${item.Puesto}
-                                                                                        <small class="text-muted">${convertirFechaDotNet(item.FechaInicio)} - ${convertirFechaDotNet(item.FechaFin)}</small>
-                                                                                    </div>
-                                                                                    <button class="btn btn-outline-primary btn-sm toggle-detalle" title="Ver detalles">
-                                                                                        <i class="bi bi-plus-lg"></i>
-                                                                                    </button>
-                                                                                </div>
+                                                                            <li class="list-group-item">
+                                                                                        <div class="d-flex align-items-start justify-content-between">
+                                                                                            <div>
+                                                                                                <strong>${item.Empresa}</strong> — ${item.Puesto}
+                                                                                                <small class="text-muted">${convertirFechaDotNet(item.FechaInicio)} - ${convertirFechaDotNet(item.FechaFin)}</small>
+                                                                                            </div>
+                                                                                            <button class="btn btn-outline-primary btn-sm toggle-detalle" title="Ver detalles">
+                                                                                                <i class="bi bi-plus-lg"></i>
+                                                                                            </button>
+                                                                                        </div>
 
-                                                                                <!-- Detalle oculto -->
-                                                                                <div class="detalle-laboral mt-3 p-3 bg-light border rounded" style="display: none;">
-                                                                                    <p class="mb-1"><strong>Actividades:</strong> ${item.Actividades ?? "Sin datos"}</p>
-                                                                                    <p class="mb-1"><strong>Correo de empresa:</strong> ${item.CorreoEmpresa ?? "Sin datos"}</p>
-                                                                                    <p class="mb-1"><strong>Teléfono empresa:</strong> ${item.TelefonoEmpresa ?? "Sin datos"}</p>
-                                                                                    <p class="mb-1"><strong>Nombre del jefe:</strong> ${item.NombreJefe ?? "Sin datos"}</p>
-                                                                                    <p class="mb-1"><strong>Teléfono del jefe:</strong> ${item.TelefonoJefe ?? "Sin datos"}</p>
-                                                                                </div>
-                                                                    </li>
-                                                                    `;
+                                                                                        <!-- Detalle oculto -->
+                                                                                        <div class="detalle-laboral mt-3 p-3 bg-light border rounded" style="display: none;">
+                                                                                            <p class="mb-1"><strong>Actividades:</strong> ${item.Actividades ?? "Sin datos"}</p>
+                                                                                            <p class="mb-1"><strong>Correo de empresa:</strong> ${item.CorreoEmpresa ?? "Sin datos"}</p>
+                                                                                            <p class="mb-1"><strong>Teléfono empresa:</strong> ${item.TelefonoEmpresa ?? "Sin datos"}</p>
+                                                                                            <p class="mb-1"><strong>Nombre del jefe:</strong> ${item.NombreJefe ?? "Sin datos"}</p>
+                                                                                            <p class="mb-1"><strong>Teléfono del jefe:</strong> ${item.TelefonoJefe ?? "Sin datos"}</p>
+                                                                                        </div>
+                                                                            </li>
+                                                                            `;
 
                 });
             }
             else {
                 containerLaboral += `
-                                                                           <li class="list-group-item">
-                                                                                <div class="text-center text-muted py-3">
-                                                                                  <i class="bi bi-info-circle"></i> No se encontraron datos
-                                                                                </div>
-                                                                           </li>
-                                                        `;
+                                                                                   <li class="list-group-item">
+                                                                                        <div class="text-center text-muted py-3">
+                                                                                          <i class="bi bi-info-circle"></i> No se encontraron datos
+                                                                                        </div>
+                                                                                   </li>
+                                                                `;
             }
             CambiarIconoDocumentos();
             mostrarComentarios();
@@ -2222,33 +2426,33 @@
             if (result.success) {
                 result.data.forEach(item => {
                     li += ` <li class="list-group-item">
-                                                            <div class="d-flex align-items-start justify-content-between">
+                                                                    <div class="d-flex align-items-start justify-content-between">
 
-                                                                <div>
-                                                                    <p class="mb-1">
-                                                                        <i class="bi bi-chat-left-quote text-primary"></i>
-                                                                        <strong>${item.ComentarioPor}</strong> comentó:
-                                                                    </p>
+                                                                        <div>
+                                                                            <p class="mb-1">
+                                                                                <i class="bi bi-chat-left-quote text-primary"></i>
+                                                                                <strong>${item.ComentarioPor}</strong> comentó:
+                                                                            </p>
 
-                                                                    <div class="ps-4 text-secondary">
-                                                                        ${item.Comentario}
+                                                                            <div class="ps-4 text-secondary">
+                                                                                ${item.Comentario}
+                                                                            </div>
+
+                                                                            <small class="text-muted ps-4">
+                                                                                <i class="bi bi-calendar"></i> ${convertirFechaDotNet(item.Fecha)}
+                                                                            </small>
+                                                                        </div>
                                                                     </div>
-
-                                                                    <small class="text-muted ps-4">
-                                                                        <i class="bi bi-calendar"></i> ${convertirFechaDotNet(item.Fecha)}
-                                                                    </small>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    `;
+                                                                </li>
+                                                            `;
 
                 });
 
             } else {
                 li += `<li class="list-group-item text-center text-muted">
-                                                        <i class="bi bi-inbox"></i> No hay comentarios registrados
-                                                    </li>
-                                                   `;
+                                                                <i class="bi bi-inbox"></i> No hay comentarios registrados
+                                                            </li>
+                                                           `;
             }
             contenedorComentarios.innerHTML = li;
             $("#globalLoading").hide();
@@ -2730,9 +2934,9 @@
             }
             else {
                 document.getElementById("step5-icon").innerHTML = `
-                                                        <i class="bi bi-x-circle-fill text-danger fs-5 me-2"></i>
-                                                        <span class="text-danger fw-semibold">${result.message}</span>
-                                                    `;
+                                                                <i class="bi bi-x-circle-fill text-danger fs-5 me-2"></i>
+                                                                <span class="text-danger fw-semibold">${result.message}</span>
+                                                            `;
 
                 return "";
             }
@@ -2819,37 +3023,152 @@
 
         function addLoading(text, id) {
             return `<div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <span>${text}</span>
-                                                    <span id="step${id}-icon">
-                                                        <div class="spinner-border spinner-border-sm text-primary"></div>
-                                                    </span>
-                                                </div>`;
+                                                            <span>${text}</span>
+                                                            <span id="step${id}-icon">
+                                                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                                            </span>
+                                                        </div>`;
         };
 
         function addLoadingPrincipal() {
             return `<div class="d-flex justify-content-between align-items-center mb-3">
-                                                        <span>Creación de dato maestro de empleado</span>
-                                                        <span id="step1-icon">
-                                                            <div class="spinner-border spinner-border-sm text-primary"></div>
-                                                        </span>
-                                                    </div>
+                                                                <span>Creación de dato maestro de empleado</span>
+                                                                <span id="step1-icon">
+                                                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                                                </span>
+                                                            </div>
 
-                                                    <!-- Paso 2 -->
-                                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                                        <span>Creación de cliente</span>
-                                                        <span id="step2-icon">
-                                                            <div class="spinner-border spinner-border-sm text-primary"></div>
-                                                        </span>
-                                                    </div>
+                                                            <!-- Paso 2 -->
+                                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                <span>Creación de cliente</span>
+                                                                <span id="step2-icon">
+                                                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                                                </span>
+                                                            </div>
 
-                                                    <!-- Paso 3 -->
-                                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                                        <span>Creación de proveedor</span>
-                                                        <span id="step3-icon">
-                                                            <div class="spinner-border spinner-border-sm text-primary"></div>
-                                                        </span>
-                                                    </div>`;
+                                                            <!-- Paso 3 -->
+                                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                <span>Creación de proveedor</span>
+                                                                <span id="step3-icon">
+                                                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                                                </span>
+                                                            </div>`;
         };
+
+        async function GenerarAnalisisConIA() {
+
+            try {
+
+                Swal.fire({
+                    title: 'Análisis inteligente en progreso',
+                    text: 'La inteligencia artificial está evaluando la información...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                const data = new FormData();
+                data.append("idSolicitud", document.getElementById("idSolicitud").textContent)
+                data.append("idPuesto", document.getElementById("idPuesto").textContent)
+
+                const response = await fetch('/Reclutamiento/ObtenerAnalisisMixtral',
+                    {
+                        method: "POST",
+                        body: data
+                    });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: "Data generada con éxito" });
+
+                }
+                else {
+                    Toast.fire({ icon: 'error', title: "Ocurrio un error al crear la solicitud" });
+                }
+
+            }
+            catch {
+                Toast.fire({ icon: "error", title: "Ha ocurrio un error al consultar la IA" })
+            }
+            finally {
+                Swal.close();
+            }
+        }
+        async function verAnalisisIA(userId, SolicitudId) {
+
+            console.log(userId, SolicitudId);
+
+            const response = await fetch(`/Reclutamiento/obtenerAnalisisIA?userId=${userId}`);
+            const result = await response.json();
+
+            console.log(result);
+
+            if (!result.success || !Array.isArray(result.data)) {
+                console.error("Respuesta IA inválida");
+                return;
+            }
+
+            const fortalezasSet = new Set();
+            const debilidadesSet = new Set();
+            let observacionGeneral = "";
+
+            console.log(result);
+            result.data.forEach((item, index) => {
+
+                
+                if (item.Tipo === 1 && item.Observaciones) {
+                    fortalezasSet.add(item.Observaciones);
+                }
+
+                // Debilidades
+                if (item.Tipo === 0 && item.Observaciones) {
+                    debilidadesSet.add(item.Observaciones);
+                }
+
+                // Observación general (solo una vez)
+                if (index === 0 && item.ObservacionesGenerales) {
+                    observacionGeneral = item.ObservacionesGenerales;
+                }
+            });
+
+            // Fallback si no viene observación general
+            if (!observacionGeneral) {
+                observacionGeneral = "El análisis fue generado por IA en base al perfil del aspirante y el puesto evaluado.";
+            }
+
+            // Referencias DOM
+            const f = document.getElementById("iaFortalezas");
+            const d = document.getElementById("iaDebilidades");
+            const o = document.getElementById("iaObservacion");
+
+            f.innerHTML = "";
+            d.innerHTML = "";
+
+            // Pintar fortalezas
+            if (fortalezasSet.size === 0) {
+                f.innerHTML = `<li>No se identificaron fortalezas relevantes.</li>`;
+            } else {
+                fortalezasSet.forEach(x => f.innerHTML += `<li>${x}</li>`);
+            }
+
+            // Pintar debilidades
+            if (debilidadesSet.size === 0) {
+                d.innerHTML = `<li>No se identificaron debilidades relevantes.</li>`;
+            } else {
+                debilidadesSet.forEach(x => d.innerHTML += `<li>${x}</li>`);
+            }
+
+            // Observación
+            o.innerText = observacionGeneral;
+
+            // Mostrar modal (Bootstrap)
+            const modal = new bootstrap.Modal(document.getElementById("modalIA"));
+            modal.show();
+        }
+
 
         document.getElementById("chkTejar360").addEventListener("change", () => {
             const checkVentas = document.getElementById("chkAsesorDeVEntas").checked;
@@ -2857,7 +3176,6 @@
             if (checkVentas) {
                 document.getElementById("chkTejar360").checked = true;
                 Toast.fire({ icon: 'warning', title: "Cuando es empleado de ventas el usuario de Tejar360 es obligatorio" });
-
             }
         });
 
@@ -2880,7 +3198,9 @@
                 tienda.value = "";
             }
         });
+
         document.getElementById('tab-cv').addEventListener('click', () => CambiarIconoDocumentos());
+        document.getElementById('btnAnalasisIA').addEventListener('click', () => GenerarAnalisisConIA());
         document.getElementById('btnCrearUsuarioClave').addEventListener('click', () => abrirModalCrarUsuario());
         document.getElementById('btnCrearEnviar').addEventListener('click', () => crearUsuarioClave());
         document.getElementById('btnReenviarCorreo').addEventListener('click', () => reenviaCorreo());

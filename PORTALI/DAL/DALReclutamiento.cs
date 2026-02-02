@@ -496,5 +496,63 @@ namespace DAL
                     );
             }
         }
+
+        public string ObtenerPerfilJson(int idSolicitud, int puestoId)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var sp = "sp_ver_perfil_json";
+                var parametros = new DynamicParameters();
+                parametros.Add("@IdPuesto", puestoId, DbType.Int32);
+                parametros.Add("@IdSolicitud", idSolicitud, DbType.Int32);
+
+                string json = connection.QueryFirstOrDefault<string>(
+                    sp,
+                    parametros,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return string.IsNullOrEmpty(json) ? "[]" : json;
+            }
+        }
+
+        public string ObtenerAspirantesJson(int solicitudId)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var sp = "sp_ver_detalle_aspirantes_json";
+                var parametros = new DynamicParameters();
+                parametros.Add("@SolicitudId", solicitudId, DbType.Int32);
+
+                string json = connection.QueryFirstOrDefault<string>(
+                    sp,
+                    parametros,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return string.IsNullOrEmpty(json) ? "[]" : json;
+            }
+        }
+
+        public async Task<IEnumerable<FortalezasDebilidades>> ObtenerAnalisisAspirantesIA(int userId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = @"SELECT  Observaciones,Tipo, U_Observaciones AS ObservacionesGenerales FROM (
+                                SELECT	U_Observaciones AS Observaciones ,
+		                                1 AS Tipo
+                                FROM [ELTEJAR_PRUEBAS_R1_5.1].DBO.[@GESTION_EMP_FOR_IA] T0
+                                WHERE T0.U_UserId = @UserId 
+                                UNION ALL 
+                                SELECT	U_Observaciones AS Observaciones ,
+		                                0 AS Tipo
+                                FROM [ELTEJAR_PRUEBAS_R1_5.1].DBO.[@GESTION_EMP_DEB_IA] T0
+                                WHERE T0.U_UserId = @UserId 
+                                )TB
+                                LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].DBO.[@GESTION_EMP_EV_IA] T0 ON T0.Code = @UserId";
+
+                return await conn.QueryAsync<FortalezasDebilidades>(query, new { UserId = userId });
+            }
+        }
     }
 }

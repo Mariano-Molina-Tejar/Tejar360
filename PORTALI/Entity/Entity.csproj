@@ -139,6 +139,7 @@
     <Compile Include="MarcajeEntity.cs" />
     <Compile Include="MargenTiendasEntity.cs" />
     <Compile Include="MesesEntity.cs" />
+    <Compile Include="MixtralRequest.cs" />
     <Compile Include="OcEncabezadoEntity.cs" />
     <Compile Include="OcPrintEntity.cs" />
     <Compile Include="OrdenCompraFiltroEntity.cs" />
@@ -210,6 +211,10 @@
     <Compile Include="VentasDetalleEntity.cs" />
     <Compile Include="VentasEmpresaEntity.cs" />
     <Compile Include="ViewModels\DetalleRutaViewModel.cs" />
+    <Compile Include="ViewModels\ReporteDaniadoFilaEntity.cs" />
+    <Compile Include="ViewModels\ReporteDaniadoRegionEntity.cs" />
+    <Compile Include="ViewModels\ReporteDaniadoTablaViewModel.cs" />
+    <Compile Include="ViewModels\ReporteDaniadoTotalesEntity.cs" />
     <Compile Include="ViewModels\ReporteDañadoViewModel.cs" />
     <Compile Include="VisitasContactosEntity.cs" />
   </ItemGroup>

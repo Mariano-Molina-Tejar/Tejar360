@@ -1460,7 +1460,7 @@
                 <span>Validación por Jefe Inmediato</span>
                 <button type="button" class="btn-close-solvencia" onclick="modalSolvenciaJefe.hide()">×</button>
             </div>
-
+            <input class="d-none" id="idSolvenciaJefe" type="number" value="" />
             <!-- BODY -->
             <div class="modal-solvencia-body">
 
@@ -1472,15 +1472,15 @@
 
                     <div class="solvencia-options">
                         <label>
-                            <input type="radio" name="confidencial" value="SI">
+                            <input type="radio" name="confidencial" value="Y">
                             <span>✔ Sí</span>
                         </label>
                         <label>
-                            <input type="radio" name="confidencial" value="NO">
+                            <input type="radio" name="confidencial" value="N">
                             <span>✖ No</span>
                         </label>
                         <label>
-                            <input type="radio" name="confidencial" value="NA">
+                            <input type="radio" name="confidencial" value="N/A">
                             <span>— N/A</span>
                         </label>
                     </div>
@@ -1494,15 +1494,15 @@
 
                     <div class="solvencia-options">
                         <label>
-                            <input type="radio" name="gafete" value="SI">
+                            <input type="radio" name="gafete" value="Y">
                             <span>✔ Sí</span>
                         </label>
                         <label>
-                            <input type="radio" name="gafete" value="NO">
+                            <input type="radio" name="gafete" value="N">
                             <span>✖ No</span>
                         </label>
                         <label>
-                            <input type="radio" name="gafete" value="NA">
+                            <input type="radio" name="gafete" value="N/A">
                             <span>— N/A</span>
                         </label>
                     </div>
@@ -1511,22 +1511,22 @@
                 <!-- OBSERVACIONES -->
                 <div class="solvencia-item">
                     <div class="solvencia-label">Observaciones</div>
-                    <textarea class="solvencia-textarea"
-                              placeholder="Ingrese observaciones del jefe inmediato..."></textarea>
+                    <textarea class="solvencia-options solvencia-textarea" id="observacionesSolvenciaJefe"
+                              placeholder="Observaciones..."></textarea>
                 </div>
 
                 <!-- RESPONSABLE -->
-                <div class="solvencia-footer-data">
+                <!--<div class="solvencia-footer-data">
                     <input type="text" placeholder="Nombre del Jefe Inmediato">
                     <input type="date">
-                </div>
+                </div>-->
 
             </div>
 
             <!-- FOOTER -->
             <div class="modal-solvencia-footer">
                 <button class="btn-cancel" onclick="modalSolvenciaJefe.hide()">Cancelar</button>
-                <button class="btn-save">Guardar Solvencia</button>
+                <button class="btn-save" id="btn-guardarSolvencia">Guardar Solvencia</button>
             </div>
 
         </div>
@@ -1785,6 +1785,8 @@
                         }
                     });
 
+                    console.log(document.getElementById("fechaRetiro").value)
+
                     const formData = new FormData();
                     formData.append("id", document.getElementById("idEmpleadoSolicitud").value);
                     formData.append("motivo", document.getElementById("motivo").value);
@@ -1795,9 +1797,8 @@
                     formData.append("motivoCadena", document.getElementById("motivo").options[document.getElementById("motivo").selectedIndex].text);
                     formData.append("solicitarRequisicion", document.getElementById("chkRequisicionPersonal").checked);
                     formData.append("observacionRequisicion", document.getElementById("txtObservacionesPlaza").value);
-                    formData.append("FechaRetiro", document.getElementById("FechaRetiro").value);
+                    formData.append("fechaRetiro", document.getElementById("fechaRetiro").value);
 
-                    console.log(document.getElementById("chkRequisicionPersonal").checked)
 
                     const response = await fetch('/GestionDePersonal/EnviarSolicitudDeBaja',
                         {
@@ -2154,7 +2155,6 @@
             }
             catch (error) {
                 Toast.fire({ icon: 'error', title: "Ocurrio un error al guardar el perfil" });
-                console.log(error);
             }
             finally {
                 $("#globalLoading").hide();
@@ -2535,16 +2535,115 @@
 
         async function verSolvenciaAdministrativa(empId)
         {
-            const response = await fetch(`/GestionDePersonal/verSolvenciaAdministrativaJefe?empId=${empId}`)
-            const result = response.json();
+            try {
 
-            if (result.success) {
-                modalSolvenciaJefe.show();
+                const response = await fetch(`/GestionDePersonal/verSolvenciaAdministrativaJefe?empId=${empId}`)
+                const result = await  response.json();
+                const opciones = document.querySelectorAll(".solvencia-options");
+
+
+                console.log(result);
+                if (result.success) {
+
+                    if (result.status) {
+                        opciones.forEach(opcion => {
+                            opcion.classList.add("opacity-50", "pe-none");
+                        });
+
+                        
+                        setRadioValue("confidencial", result.data.U_Herramientas);
+                        setRadioValue("gafete", result.data.U_Gafete);
+                        document.getElementById("observacionesSolvenciaJefe").value = result.data.U_ObsevacionesJefeInmediato || "No se agregaron observaciones"
+                        document.getElementById("btn-guardarSolvencia").classList.add("d-none")
+                    }
+                    else {
+                        opciones.forEach(opcion => {
+                            opcion.classList.remove("opacity-50", "pe-none");
+                            document.getElementById("idSolvenciaJefe").value = result.data.Code;
+                            document.getElementById("observacionesSolvenciaJefe").value = "";
+                            document.getElementById("btn-guardarSolvencia").classList.remove("d-none")
+                            setRadioValue("confidencial", "");
+                            setRadioValue("gafete", "");
+                        });
+                    }
+
+                    modalSolvenciaJefe.show();
+                }
+                else {
+                    //modalSolvenciaJefe.show();
+                    Toast.fire({ icon : "error" , title : "Ha ocurriodo un error al abrir la solvencia"})
+                    //opciones.forEach(opcion => {
+                    //    opcion.classList.add("opacity-50", "pe-none");
+                    //});
+                }
             }
-            else {
-                modalSolvenciaJefe.show();                
+            catch (error) {
+                Toast.fire({ icon: "error", title: "Ha ocurriodo un error al abrir la solvencia" })
             }
         }
+
+        async function guardarSolvenciaJefe() {
+            try {
+                $("#globalLoading").show();
+                const herramienta = document.querySelector('input[name="confidencial"]:checked')?.value || null;
+                const gafete = document.querySelector('input[name="gafete"]:checked')?.value || null;
+                const observaciones = document.getElementById('observacionesSolvenciaJefe').value;
+                const solvencia = document.getElementById("idSolvenciaJefe").value;
+
+                if (herramienta == null || gafete == null) {
+                    Toast.fire({ icon: "warning", title: "Debe marcar al menos una opción de cada apartado" })
+                    return;
+                }
+
+                const data = new FormData();
+                data.append("herramientas", herramienta)
+                data.append("gafete", gafete)
+                data.append("observaciones", observaciones)
+                data.append("solvencia", solvencia)
+
+                const response = await fetch('/GestionDePersonal/GuardarSolvenciaJefe',
+                    {
+                        method: "POST",
+                        body: data
+                    });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Toast.fire({ icon: "success", title: "Se guardo la información con éxito" })
+                    setTimeout(() => { modalSolvenciaJefe.hide() }, 300);
+                }
+                else {
+                    Toast.fire({ icon: "success", title: "Ha ocurrido al procesar la solicitud" })
+                }
+            }
+            catch {
+                Toast.fire({ icon: "error", title: "Ha ocurrido al procesar la solicitud" })
+            }
+            finally {
+                $("#globalLoading").hide();
+            }
+        }
+
+        function setRadioValue(name, value) {
+                if (!value) return;
+
+                const radio = document.querySelector(
+                    `input[name="${name}"][value="${value}"]`
+                );
+
+                if (radio) radio.checked = true;
+            }
+
+        function bloquearFormulario(formId, bloquearlo) {
+            const form = document.getElementById(formId);
+            const elementos = form.querySelectorAll("input, select, textarea, button");
+
+            elementos.forEach(el => {
+                el.disabled = bloquearlo;
+            });
+        }
+
         //document.getElementById("selectNuevaPlaza").addEventListener("change", function () {
 
         //});
@@ -2557,8 +2656,7 @@
         document.getElementById('btnGuardar').addEventListener('click', () => solicitarNuevaPlaza());
         document.getElementById('btnProcesoAutorizacion').addEventListener('click', () => verProcesoDeAutorizacion());
         document.getElementById('btnVerPerfilSeleccionado').addEventListener('click', () => abrirModalPerfilPuestoNuevaPlaza());
-
-
+        document.getElementById('btn-guardarSolvencia').addEventListener('click', () => guardarSolvenciaJefe());
         document.getElementById('chkRequisicionPersonal').addEventListener('change', () => {
             var check = document.getElementById('chkRequisicionPersonal').checked;
 
