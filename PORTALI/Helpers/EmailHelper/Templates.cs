@@ -259,7 +259,59 @@ namespace PORTALI.Helpers.EmailHelper
 </div>";
 
         }
+        public static string BodyMailRechazoAspirante(
+    string nombreAspirante,
+    string nombrePuesto)
+        {
+            return $@"
+    <div style='max-width:600px; margin:auto; font-family:Arial, sans-serif; border-radius:10px; overflow:hidden;
+                box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #eee;'>
 
+        <!-- Encabezado -->
+        <div style='background-color:#dc3545; color:white; padding:12px 20px;'>
+            <h2 style='margin:0; font-size:18px;'>Resultado del proceso de selección</h2>
+        </div>
+
+        <!-- Contenido principal -->
+        <div style='background-color:#FFF5F5; padding:20px;'>
+            <p>Estimado(a) <strong>{nombreAspirante}</strong>,</p>
+
+            <p>
+                Agradecemos sinceramente su interés en formar parte de 
+                <strong>El Tejar</strong> y el tiempo dedicado a participar en el proceso de selección
+                para el puesto de <strong>{nombrePuesto}</strong>.
+            </p>
+
+            <p>
+                Luego de una evaluación detallada, le informamos que en esta ocasión
+                <strong>no se continuará con su postulación</strong> para el puesto mencionado.
+            </p>
+
+            <p>
+                Queremos expresarle nuestro agradecimiento por haber aplicado y compartir su perfil con nosotros.
+                Le deseamos mucho éxito en sus futuros proyectos profesionales.
+            </p>
+
+            <p>
+                Le invitamos a estar atento(a) a futuras oportunidades que puedan ajustarse a su experiencia
+                y perfil profesional.
+            </p>
+
+            <p>Saludos cordiales,</p>
+
+            <p>
+                <strong>Departamento de Gestion de Talento Humano</strong><br>
+                El Tejar
+            </p>
+        </div>
+
+        <!-- Pie -->
+        <div style='background-color:#dc3545; text-align:center; padding:10px; font-weight:bold; color:white;'>
+            El Tejar
+        </div>
+    </div>
+    ";
+        }
 
     }
 }

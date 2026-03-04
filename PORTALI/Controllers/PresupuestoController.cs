@@ -31,7 +31,7 @@ namespace PORTALI.Controllers
                 List<AreasPresupuesto> areas = await presupuestoServices.ObtenerAreasPresupuesto(sessions.CodeEmpleado);
                 if (areas == null || areas.Count == 0)
                 {
-                    return RedirectToAction("Cotizacion", "CotizacionVentas"); // puedes mandar a otra vista, o devolver la misma pero vacía
+                    return RedirectToAction("Cotizacion", "CotizacionVentas"); 
                 }
 
                 int? AreaSeleccionada = acctCode ?? areas[0].AcctCode;

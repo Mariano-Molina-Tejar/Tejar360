@@ -361,9 +361,15 @@
             </h5>
 
             <div class="d-flex gap-2">
+                <button class="btn btn-light btn-sm" id="btnRequisiciones"
+                        data-bs-toggle="modal">
+                    <i class="bi bi-person-plus-fill"></i> Requisiciones de personal
+                </button>
+
+
                 <button class="btn btn-light btn-sm" id="btnProcesoAutorizacion"
                         data-bs-toggle="modal" data-bs-target="#modalSeguimiento">
-                    <i class="bi bi-clipboard-check me-1"></i> Proceso
+                    <i class="bi bi-clipboard-check me-1"></i> Solicitudes pendientes
                 </button>
 
                 <button class="btn btn-light btn-sm" id="btnNuevaPlaza"
@@ -732,14 +738,14 @@
                     </div>
                     <div class="border rounded bg-light p-3">
                         <div class="form-check d-flex align-items-start ps-0">
-                            <input class="form-check-input ms-0 me-3 mt-1" type="checkbox" id="chkRequisicionPersonal" checked>
-                            <label class="form-check-label fw-semibold ml-4" for="chkRequisicionPersonal">
-                                Desea crear la requisición de personal con GTH al ser autorizada la baja
+                            @*<input class="form-check-input ms-0 me-3 mt-1" type="checkbox" id="chkRequisicionPersonal" checked>*@
+                            @*<label class="form-check-label fw-semibold ml-4" for="chkRequisicionPersonal">*@
+                                @*Desea crear la requisición de personal con GTH al ser autorizada la baja*@
                                 <div class="small text-muted mt-1 fw-normal">
                                     <i class="bi bi-info-circle me-1"></i>
                                     Al autorizarse la baja, se generará automáticamente la requisición de personal.
                                 </div>
-                            </label>
+                            @*</label>*@
                         </div>
                         <!-- Observaciones -->
                         <div class="mb-2">
@@ -1015,7 +1021,24 @@
                     <!-- Estado 4 -->
                     <div id="TrackingSolvenciaColor" class="timeline-item">
                         <div class="timeline-icon"><i id="TrackingSolvenciaIcono" class="bi bi-circle"></i></div>
-                        <div class="timeline-content">Emisión de solvencia administrativa</div>
+                        <div class="timeline-content">
+                            Emisión de solvencia administrativa
+                            <!-- CONTENEDOR SOLO LECTURA -->
+                            <div id="btnVerCartaRenuncia" class="mt-3 border rounded p-3 bg-light">
+                                <!-- Info -->
+                                <div id="TrackingUsuariosOperativosComentario" class="small text-muted mb-2">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    <span id="TrackingSolvenciaTexto">Se agrego la solvencia administrativa.</span>
+                                </div>
+                            </div>
+                            <div id="TrackingSolvenciaBoton" class="d-flex justify-content-end gap-2">
+                                <button id="btnVerSolvencia" class="btn btn-outline-primary btn-sm mt-2"
+                                        onclick="DescargarSolvencia()">
+                                    <i class="bi bi-download me-1"></i>
+                                    Descargar solvencia
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <!-- Estado 6 -->
                     <div id="TrackingConfirmacionPagoColor" class="timeline-item">
@@ -1178,8 +1201,6 @@
         </div>
     </div>
 </div>
-
-
 
 <div class="modal fade" id="modalTipoSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -1532,6 +1553,52 @@
         </div>
     </div>
 </div>
+<!-- Modal tracking de requisisiones -->
+<div class="modal fade" id="modalRequisiciones" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-seguimiento-modern">
+
+            <!-- Header -->
+            <div class="modal-header modal-seguimiento-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus-fill"></i> Requisiciones de personal
+                </h5>
+                <button type="button" class="btn-close" onclick="modalRequisiciones.hide()"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table align-middle tabla-seguimiento">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th style="width:170px;">Fecha de Solicitud</th>
+                                <th>Posición</th>
+                                <th>Estado</th>
+                                <th style="width:170px;">Ultima Modificación</th>
+                                <th>Modificado por</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaRequisicion">
+                            <!-- dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer modal-seguimiento-footer">
+                <button class="btn btn-light" onclick="modalRequisiciones.hide()">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1555,6 +1622,7 @@
         const modalGestionCartas = new bootstrap.Modal(document.getElementById('modalGestionCartas'));
         const modalNuevaCarta = new bootstrap.Modal(document.getElementById('modalNuevaCarta'));
         const modalSolvenciaJefe = new bootstrap.Modal(document.getElementById('modalSolvenciaJefe'));
+        const modalRequisiciones = new bootstrap.Modal(document.getElementById('modalRequisiciones'));
         let codigoProcesoBaja = 0;
 
         const listaCausas = [];
@@ -1761,13 +1829,13 @@
             const resplyEmail = await verificarCorreo()
             const form = document.getElementById('formSolicitudBaja');
             const observacionesRequisicion = document.getElementById("txtObservacionesPlaza").value
-            const checked = document.getElementById("chkRequisicionPersonal").checked;
-            if (checked) {
-                if (observacionesRequisicion == "") {
-                    Toast.fire({ icon: 'warning', title: "Debes llenar el campo de observaciones para la plaza" });
-                    return
-                }
-            }
+            //const checked = document.getElementById("chkRequisicionPersonal").checked;
+            //if (checked) {
+            //    if (observacionesRequisicion == "") {
+            //        Toast.fire({ icon: 'warning', title: "Debes llenar el campo de observaciones para la plaza" });
+            //        return
+            //    }
+            //}
 
 
             if (form.checkValidity()) {
@@ -1795,10 +1863,9 @@
                     formData.append("causas", JSON.stringify(listaCausas));
                     formData.append("nombre", document.getElementById("nombreEmpleadoSolicitud").value);
                     formData.append("motivoCadena", document.getElementById("motivo").options[document.getElementById("motivo").selectedIndex].text);
-                    formData.append("solicitarRequisicion", document.getElementById("chkRequisicionPersonal").checked);
+                    formData.append("solicitarRequisicion", true);
                     formData.append("observacionRequisicion", document.getElementById("txtObservacionesPlaza").value);
                     formData.append("fechaRetiro", document.getElementById("fechaRetiro").value);
-
 
                     const response = await fetch('/GestionDePersonal/EnviarSolicitudDeBaja',
                         {
@@ -1986,11 +2053,16 @@
                     document.getElementById("TrackingSolvenciaColor").classList.add("completed");
                     document.getElementById("TrackingSolvenciaIcono").classList.add("bi-check-circle-fill");
                     document.getElementById("TrackingSolvenciaIcono").classList.remove("bi-circle");
+                    document.getElementById("TrackingSolvenciaTexto").innerText = "Se completo la solvencia administrativa";
+                    document.getElementById("TrackingSolvenciaBoton").classList.remove("d-none");
+
                 }
                 else {
                     document.getElementById("TrackingSolvenciaColor").classList.remove("completed");
                     document.getElementById("TrackingSolvenciaIcono").classList.remove("bi-check-circle-fill");
                     document.getElementById("TrackingSolvenciaIcono").classList.add("bi-circle");
+                    document.getElementById("TrackingSolvenciaTexto").innerText = "No se ha completado la solvencia administrativa";
+                    document.getElementById("TrackingSolvenciaBoton").classList.add("d-none");
                 }
 
                 if (result.data.UsuariosOperativos) {
@@ -2277,13 +2349,16 @@
                                         </td>
                                     </tr>`;
                 });
-
-
-                container.innerHTML = body;
             }
             else {
-
+                body += `<tr>
+              <th colspan="6" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        <span>No se encontraron datos</span>
+                    </th>
+             </tr>`;
             }
+            container.innerHTML = body;
         }
 
         async function cargarCartaDespido() {
@@ -2473,42 +2548,53 @@
         }
 
         async function subirCarta() {
-            let tipoFalta = document.getElementById("cartaTipo").value
-            let fechaFalta = document.getElementById("cartaFecha").value
-            let documento = document.getElementById("inputCartaFile").files[0]
-            let observaciones = document.getElementById("cartaDescripcion").value
-            const empId = document.getElementById("perfilEmpId").value
+            $("#globalLoading").show();
+            try {
+                let tipoFalta = document.getElementById("cartaTipo").value
+                let fechaFalta = document.getElementById("cartaFecha").value
+                let documento = document.getElementById("inputCartaFile").files[0]
+                let observaciones = document.getElementById("cartaDescripcion").value
+                const empId = document.getElementById("perfilEmpId").value
 
-            if (tipoFalta == "" || documento == undefined || observaciones == "" || empId == 0 || fechaFalta == "") {
-                Toast.fire({ icon: "warning", title: "Debes llenar todos los campos" })
-                return
+                if (tipoFalta == "" || documento == undefined || observaciones == "" || empId == 0 || fechaFalta == "") {
+                    Toast.fire({ icon: "warning", title: "Debes llenar todos los campos" })
+                    return
+                }
+
+                const formData = new FormData();
+                formData.append("tipoDeFalta", tipoFalta)
+                formData.append("fechaDeIncidente", fechaFalta)
+                formData.append("carta", documento)
+                formData.append("observaciones", observaciones)
+                formData.append("empId", empId)
+
+                const response = await fetch('/GestionDePersonal/guardarCartaLlamadaAtencion',
+                    {
+                        method: "POST",
+                        body: formData
+                    });
+
+                const result = await response.json();
+
+                if (result.success) {
+
+                    document.getElementById("formNuevaCarta").reset();
+
+                    document.getElementById("perfilConteoCartas").innerText = Number(document.getElementById("perfilConteoCartas").textContent) + 1;
+                    cargarDataCartas();
+                    modalGestionCartas.hide();
+
+                    Toast.fire({ icon: "success", title: "El archivo se cargo con éxito" })
+                }
+                else {
+                    Toast.fire({ icon: "warning", title: "Ocurrio un error al cargar el archivo" })
+                }
             }
-
-            const formData = new FormData();
-            formData.append("tipoDeFalta", tipoFalta)
-            formData.append("fechaDeIncidente", fechaFalta)
-            formData.append("carta", documento)
-            formData.append("observaciones", observaciones)
-            formData.append("empId", empId)
-
-            const response = await fetch('/GestionDePersonal/guardarCartaLlamadaAtencion',
-                {
-                    method: "POST",
-                    body: formData
-                });
-
-            const result = await response.json();
-
-            if (result.success) {
-
-                document.getElementById("formNuevaCarta").reset();
-
-                document.getElementById("perfilConteoCartas").innerText = Number(document.getElementById("perfilConteoCartas").textContent) + 1;
-                cargarDataCartas();
-                Toast.fire({ icon: "success", title: "El archivo se cargo con éxito" })
-            }
-            else {
+            catch {
                 Toast.fire({ icon: "warning", title: "Ocurrio un error al cargar el archivo" })
+            }
+            finally {
+                $("#globalLoading").hide();
             }
         }
 
@@ -2540,9 +2626,9 @@
                 const response = await fetch(`/GestionDePersonal/verSolvenciaAdministrativaJefe?empId=${empId}`)
                 const result = await  response.json();
                 const opciones = document.querySelectorAll(".solvencia-options");
+                document.querySelectorAll('input[name="confidencial"]').forEach(r => r.checked = false);
+                document.querySelectorAll('input[name="gafete"]').forEach(r => r.checked = false);
 
-
-                console.log(result);
                 if (result.success) {
 
                     if (result.status) {
@@ -2550,7 +2636,7 @@
                             opcion.classList.add("opacity-50", "pe-none");
                         });
 
-                        
+
                         setRadioValue("confidencial", result.data.U_Herramientas);
                         setRadioValue("gafete", result.data.U_Gafete);
                         document.getElementById("observacionesSolvenciaJefe").value = result.data.U_ObsevacionesJefeInmediato || "No se agregaron observaciones"
@@ -2614,7 +2700,7 @@
                     setTimeout(() => { modalSolvenciaJefe.hide() }, 300);
                 }
                 else {
-                    Toast.fire({ icon: "success", title: "Ha ocurrido al procesar la solicitud" })
+                    Toast.fire({ icon: "error", title: "Ha ocurrido un error al procesar la solicitud" })
                 }
             }
             catch {
@@ -2644,6 +2730,58 @@
             });
         }
 
+        async function verRequisiciones() {
+            $("#globalLoading").show();
+            try {
+                const response = await fetch(`/GestionDePersonal/ObtenerRequisiciones`)
+                const result = await response.json();
+                let filas = '';
+
+                if (result.success) {
+                    const tablaRequisicion = document.getElementById('tablaRequisicion');
+                    result.data.forEach(item => {
+                        filas += `
+                        <tr>
+                            <td>${item.SolicitudBaja}</td>
+                            <td>${convertirFechaDotNet(item.FechaCreacion)}</td>
+                            <td>${item.Posicion}</td>
+                            <td>${item.Estado}</td>
+                            <td>${convertirFechaDotNet(item.UltimaModificacion)}</td>
+                            <td>${item.ModificadoPor}</td>
+                        </tr>`;
+                    });
+
+                }
+                else {
+                    filas += `<tr>
+                                  <th colspan="6" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                        <span>No se encontraron datos</span>
+                                    </th>
+                             </tr>`;
+                }
+                tablaRequisicion.innerHTML = filas;
+                modalRequisiciones.show();
+            }
+            catch {
+                Toast.fire({ icon: "error<", title: "Ocurrio un error inesperado" })
+            }
+            finally {
+                $("#globalLoading").hide();
+            }
+        }
+
+        async function cargarDataRequisision(data) {
+            
+        }
+        //function DescargarSolvencia() {
+        //    const empId = document.getElementById("perfilEmpId").value;
+
+        //    const response = await fetch(`/GestionDePersonal/DescargarSolvencia?empId=${empId}`)
+        //    const result = await response.jsonn();
+
+        //}
+
         //document.getElementById("selectNuevaPlaza").addEventListener("change", function () {
 
         //});
@@ -2657,15 +2795,17 @@
         document.getElementById('btnProcesoAutorizacion').addEventListener('click', () => verProcesoDeAutorizacion());
         document.getElementById('btnVerPerfilSeleccionado').addEventListener('click', () => abrirModalPerfilPuestoNuevaPlaza());
         document.getElementById('btn-guardarSolvencia').addEventListener('click', () => guardarSolvenciaJefe());
+        document.getElementById('btnRequisiciones').addEventListener('click', ()=> verRequisiciones())
+
         document.getElementById('chkRequisicionPersonal').addEventListener('change', () => {
             var check = document.getElementById('chkRequisicionPersonal').checked;
 
-            if (check) {
-                document.getElementById('txtObservacionesPlaza').disabled = false
+            if (!check) {
+                document.getElementById('chkRequisicionPersonal').checked = true
             }
-            else {
-                document.getElementById('txtObservacionesPlaza').disabled = true
-            }
+            //else {
+            //    document.getElementById('txtObservacionesPlaza').disabled = true
+            //}
         })
     </script>
 }

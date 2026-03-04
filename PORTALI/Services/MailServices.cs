@@ -6,9 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web;
-//using MailKit.Net.Smtp;
-//using MimeKit;
-//using MailKit.Security;
 
 namespace PORTALI.Services
 {
@@ -19,7 +16,7 @@ namespace PORTALI.Services
         public static Response EnviarCorreoElectronico(EnvioCorreoGestionEmpleados correo)
         {
             Response reply = new Response();
-
+            correo.Correos = "programador.sr@eltejar.com.gt";
             using (MailMessage msg = new MailMessage())
             {
                 msg.Subject = correo.Asunto;
@@ -30,7 +27,7 @@ namespace PORTALI.Services
                 msg.SubjectEncoding = Encoding.UTF8;
                 msg.ReplyToList.Add("eltejarferreteria@gmail.com");
 
-                msg.From = new MailAddress("eltejarferreteria@gmail.com", "Gestion de empleados", System.Text.Encoding.UTF8);
+                msg.From = new MailAddress("eltejarferreteria@gmail.com", "Gestion de empleados - EL TEJAR", System.Text.Encoding.UTF8);
                 msg.SubjectEncoding = System.Text.Encoding.UTF8;
                 msg.BodyEncoding = System.Text.Encoding.UTF8;
 

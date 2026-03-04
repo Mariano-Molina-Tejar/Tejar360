@@ -1,0 +1,614 @@
+﻿@using Entity;
+@model IEnumerable<EmpleadosSolvencia>
+@{
+    ViewData["Title"] = "Solvencia Administrativa - Contabilidad";
+}
+
+<head>
+    <style>
+
+        /* Contenedor de opciones */
+        .selection-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #f0f2f5;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: #fff;
+        }
+
+            /* Efecto Hover */
+            .selection-card:hover {
+                border-color: #4682b4;
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            }
+
+                .selection-card:hover .icon-box {
+                    background-color: #4682b4;
+                    color: #fff;
+                }
+
+        /* Caja de icono */
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background-color: #f8f9fa;
+            color: #4682b4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .selection-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .selection-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        <style >
+        .modal-plaza-modern {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .modal-plaza-header {
+            background-color: #ffffff; /* Fondo blanco para limpieza */
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1.5rem;
+            border-radius: 16px 16px 0 0;
+        }
+
+            .modal-plaza-header .modal-title {
+                color: #333;
+                font-weight: 700;
+                font-size: 1.25rem;
+            }
+
+            /* Icono sutil al lado del título */
+            .modal-plaza-header .bi-person-fill-add {
+                color: #4682b4; /* El SteelBlue que te gustó */
+            }
+
+        .form-group-modern {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group-modern .form-label {
+                font-weight: 600;
+                color: #555;
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+        /* Mejora del Select y Textarea */
+        .plaza-form .form-select,
+        .plaza-form .form-control {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+            .plaza-form .form-select:focus,
+            .plaza-form .form-control:focus {
+                background-color: #fff;
+                border-color: #4682b4;
+                box-shadow: 0 0 0 4px rgba(70, 130, 180, 0.1);
+                outline: none;
+            }
+
+        .modal-plaza-footer {
+            border-top: none;
+            padding: 1.5rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Botones con estilo */
+        .btn-save-plaza {
+            background: #4682b4;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            flex: 1; /* Hace que el botón crezca */
+        }
+
+        .btn-cancel-plaza {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        /* Estilo para los pies de página de los inputs (small) */
+        .form-group-modern small {
+            display: block;
+            margin-top: 5px;
+            color: #888 !important;
+            font-style: italic;
+        }
+
+        /* Asegura que el modal-header no tenga bordes feos */
+        .modal-plaza-header {
+            border-bottom: none;
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        /* Efecto suave al pasar el mouse por los textareas */
+        .plaza-form .form-control:hover {
+            border-color: #adb5bd;
+        }
+        /* Header elegante */
+        .header-perfil {
+            background: linear-gradient(45deg, #4682b4, #5a9bd5);
+            padding: 1.5rem;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .perfil-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+            /* Estilo para que el botón de gestión no rompa la estética moderna */
+            .perfil-row .btn-outline-danger:hover {
+                background-color: #fff5f5;
+                color: #dc3545;
+            }
+
+        .bg-danger-subtle {
+            background-color: #f8d7da; /* Un rojo muy clarito para el fondo del número */
+        }
+
+        .perfil-row {
+            min-height: 40px; /* Asegura que la fila tenga espacio suficiente */
+        }
+
+        #listaCartas .list-group-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+
+            #listaCartas .list-group-item:hover {
+                background-color: #fcfcfc;
+                border-left: 4px solid #dc3545; /* Rojo para denotar advertencia */
+            }
+
+        #listaCartas::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #listaCartas::-webkit-scrollbar-thumb {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+        /* CONTENEDOR */
+        .modal-solvencia {
+            border-radius: 20px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,.25);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* HEADER */
+        .modal-solvencia-header {
+            position: relative;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: #fff;
+        }
+
+            .modal-solvencia-header h5 {
+                margin: 0;
+                font-weight: 600;
+            }
+
+            .modal-solvencia-header span {
+                font-size: 13px;
+                opacity: .9;
+            }
+
+        .btn-close-solvencia {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            background: transparent;
+            border: none;
+            font-size: 26px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* BODY */
+        .modal-solvencia-body {
+            padding: 25px 30px;
+            background: #f8faff;
+        }
+
+        /* ITEM */
+        .solvencia-item {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.08);
+        }
+
+        .solvencia-label {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+
+        /* OPCIONES */
+        .solvencia-options {
+            display: flex;
+            gap: 12px;
+        }
+
+            .solvencia-options label {
+                cursor: pointer;
+            }
+
+            .solvencia-options input {
+                display: none;
+            }
+
+            .solvencia-options span {
+                padding: 8px 18px;
+                border-radius: 999px;
+                background: #eef2ff;
+                color: #3f6ad8;
+                font-weight: 500;
+                transition: all .25s ease;
+            }
+
+            .solvencia-options input:checked + span {
+                background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+                color: #fff;
+                box-shadow: 0 8px 18px rgba(79,140,255,.45);
+            }
+
+        /* TEXTAREA */
+        .solvencia-textarea {
+            width: 100%;
+            min-height: 90px;
+            border-radius: 14px;
+            border: 1px solid #dbe3ff;
+            padding: 12px;
+            resize: none;
+        }
+
+        /* FOOTER DATA */
+        .solvencia-footer-data {
+            display: flex;
+            gap: 15px;
+        }
+
+            .solvencia-footer-data input {
+                flex: 1;
+                border-radius: 14px;
+                border: 1px solid #dbe3ff;
+                padding: 10px 12px;
+            }
+
+        /* FOOTER */
+        .modal-solvencia-footer {
+            padding: 18px 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #fff;
+        }
+
+        .btn-cancel {
+            background: #e0e6f5;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: #fff;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .solvencia-header {
+            color: #fff;
+        }
+
+        .solvencia-header-jefe {
+            background: linear-gradient(135deg, #198754, #146c43);
+        }
+
+        .solvencia-header-it {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/Css/GestionDePersonal/styleProceso.css">
+    <link rel="stylesheet" href="~/Css/GestionDePersonal/style.css">
+
+</head>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <!-- HEADER -->
+        <div class="card-header d-flex justify-content-between align-items-center px-4"
+             style="background: linear-gradient(135deg, #3a7bd5, #3a6073); color:white;">
+            <h5 class="mb-0 fw-semibold">
+                <i class="bi bi-people-fill me-2"></i> Solvencia administrativa - Contabilidad
+            </h5>
+
+            <div class="d-flex gap-2">
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body bg-light">
+            @if (ViewData["Error"] != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="msgError">@ViewData["Error"]</span>
+                </div>
+            }
+
+            <table class="table align-middle text-center tabla-personal">
+
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th class="text-start">Nombres</th>
+                        <th>Departamento</th>
+                        <th>Puesto</th>
+                        <th>Solvecia</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var empleados in Model)
+                        {
+                            <tr>
+                                <td>@empleados.EmpId</td>
+
+                                <td class="text-start fw-medium">
+                                    @empleados.Nombre
+                                </td>
+                                <td>@empleados.Departamento</td>
+                                <td>@empleados.Puesto</td>
+                                <td class="text-center">
+                                    @if (empleados.EmisioDeSolvencia)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success" title="Sí"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle-fill text-danger" title="No"></i>
+                                    }
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 me-1"
+                                            onclick="verSolvenciaAdministrativa('@empleados.EmpId')">
+                                        <i class="bi bi-clipboard-check me-1"></i>
+                                        Solvencia
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-info-circle"></i> No se encontraron datos
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Solvencia IT -->
+<div class="modal fade" id="modalSolvenciaContabilidad" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-solvencia">
+
+            <!-- HEADER -->
+            <div class="modal-solvencia-header">
+                <h5>
+                    Solvencia Administrativa - Contabilidad
+                </h5>
+                <span>Validación por el area de Contabilidad</span>
+                <button type="button" class="btn-close-solvencia" data-bs-dismiss="modal">x</button>
+            </div>
+            <input class="d-none" id="idSolvenciaConta" type="number" value="" />
+
+            <!-- BODY -->
+            <div class="modal-body">
+
+                <!-- CUENTA ESPECIAL -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Cuenta Especial
+                    </label>
+                    <input type="number"
+                           class="form-control"
+                           id="cuentaEspecial"
+                           placeholder="Q 0.00"
+                           step="0.01"
+                           min="0">
+                </div>
+
+                <!-- LIQUIDACIÓN DE VIÁTICOS -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Liquidación de Viáticos
+                    </label>
+                    <input type="number"
+                           class="form-control"
+                           id="viaticos"
+                           placeholder="Q 0.00"
+                           step="0.01"
+                           min="0">
+                </div>
+
+                <!-- OBSERVACIONES -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Observaciones</label>
+                    <textarea class="form-control" rows="3" id="observacionesContabilidad"></textarea>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <button class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                <button id="btn-guardarSolvencia" class="btn-save">Guardar solvencia</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true
+    })
+
+    const modalSolvenciaContabilidad = new bootstrap.Modal(document.getElementById('modalSolvenciaContabilidad'));
+
+    async function verSolvenciaAdministrativa(empId) {
+
+        try {
+            document.getElementById('cuentaEspecial').value = "";
+            document.getElementById('viaticos').value = "";
+            document.getElementById('observacionesContabilidad').value = "";
+
+            const response = await fetch(`/Solvencia/ObtenerSolvenciaContabilidad?empId=${empId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                if (result.status) {
+
+                    document.getElementById('cuentaEspecial').classList.add("opacity-50", "pe-none");
+                    document.getElementById('viaticos').classList.add("opacity-50", "pe-none");
+                    document.getElementById('observacionesContabilidad').classList.add("opacity-50", "pe-none");
+
+                    document.getElementById("cuentaEspecial").value = result.data.U_CuentaEspecial;
+                    document.getElementById("viaticos").value = result.data.U_LiquidacionDeViaticos;
+                    document.getElementById("observacionesContabilidad").value = result.data.U_ObeservacionesFinanzas || "No se agregaron observaciones"
+                    document.getElementById("btn-guardarSolvencia").classList.add("d-none")
+                }
+                else {
+                    document.getElementById("idSolvenciaConta").value = result.data.Code;
+
+                    document.getElementById('cuentaEspecial').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('viaticos').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('observacionesContabilidad').classList.remove("opacity-50", "pe-none");
+
+                    document.getElementById("observacionesContabilidad").value = "";
+                    document.getElementById("btn-guardarSolvencia").classList.remove("d-none")
+
+                }
+                modalSolvenciaContabilidad.show();
+            }
+            else {
+                Toast.fire({ icon: "error", title: "Ha ocurriodo un error al abrir la solvencia" });
+            }
+        }
+        catch (error) {
+            Toast.fire({ icon: "error", title: "Ha ocurriodo un error al abrir la solvencia" })
+        }
+    }
+
+    async function GuardarSolvenciaContabilidad() {
+        try {
+            $("#globalLoading").show();
+            const cuentaEspecial = document.getElementById('cuentaEspecial').value == "" ? 0.00 : document.getElementById('cuentaEspecial').value
+            const LiquidacionDeViaticos = document.getElementById('viaticos').value == "" ? 0.00 : document.getElementById('viaticos').value
+            const observaciones = document.getElementById('observacionesContabilidad').value
+            const solvencia = document.getElementById("idSolvenciaConta").value
+
+            if (observaciones == "") {
+                Toast.fire({ icon: "warning", title: "El campo observacion no puede ir vacio" })
+                return;
+            }
+
+            const data = new FormData();
+            data.append("cuentaEspecial", cuentaEspecial)
+            data.append("viaticos", LiquidacionDeViaticos)
+            data.append("observaciones", observaciones)
+            data.append("solvencia", solvencia)
+
+            const response = await fetch('/Solvencia/GuardarSolvenciaContabilidad',
+                {
+                    method: "POST",
+                    body: data
+                });
+
+            const result = await response.json();
+
+            if (result.success) {
+                Toast.fire({ icon: "success", title: "Se guardo la información con éxito" })
+                setTimeout(() => { modalSolvenciaContabilidad.hide() }, 300);
+            }
+            else {
+                Toast.fire({ icon: "error", title: "Ha ocurrido un error al procesar la solicitud" })
+            }
+        }
+        catch (error) {
+            Toast.fire({ icon: "error", title: error })
+        }
+        finally {
+            $("#globalLoading").hide();
+        }
+    }
+
+    document.getElementById("btn-guardarSolvencia").addEventListener('click', () => { GuardarSolvenciaContabilidad() });
+
+</script>

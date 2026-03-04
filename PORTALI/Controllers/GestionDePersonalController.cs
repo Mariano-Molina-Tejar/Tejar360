@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using PORTALI.Helpers.EmailHelper;
 using PORTALI.Services;
 using PORTALI.Services;
+using SelectPdf;
 using System;
 using System.Collections.Generic;
 using System.EnterpriseServices;
@@ -59,7 +60,6 @@ namespace PORTALI.Controllers
             try
             {
                 var puestos = await _dal.ObtenerPuestos();
-
                 if (!puestos.Any() || puestos == null)
                     return Json(new { success = false, message = "No se encontraron datos" }, JsonRequestBehavior.AllowGet);
 
@@ -821,6 +821,52 @@ namespace PORTALI.Controllers
             catch
             {
                 return Json(new { success = false });
+            }
+        }
+
+        public async Task<ActionResult> DescargarSolvencia(int empId)
+        {
+            var htmlFilePaath = Server.MapPath("");
+            var htmlContent = System.IO.File.ReadAllText(htmlFilePaath);
+
+            //var solvencia
+            var htmlContentTotal = htmlContent;
+            HtmlToPdf converter = new HtmlToPdf();
+
+            converter.Options.PdfPageSize = PdfPageSize.Letter;
+            converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+            converter.Options.MarginTop = 20;
+            converter.Options.MarginRight = 20;
+            converter.Options.MarginLeft = 20;
+            converter.Options.MarginBottom = 20;
+            converter.Options.DisplayFooter = true;
+            converter.Footer.Height = 70;
+            converter.Footer.DisplayOnEvenPages = false;
+            using (var memoryStream = new MemoryStream())
+            {
+                PdfDocument pdfDocument = converter.ConvertHtmlString(htmlContentTotal);
+                pdfDocument.Save(memoryStream);
+                pdfDocument.Close();
+
+                return File(memoryStream.ToArray(), "application/pdf", "Permiso.pdf");
+            }
+        }
+
+        public async Task<JsonResult> ObtenerRequisiciones()
+        {
+            try
+            {
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+
+                var data = await _dal.ObtenerRequisiciones(sessions.CodeEmpleado);
+
+                if (data.Any())
+                    return Json(new { success = true , data = data}, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
     }

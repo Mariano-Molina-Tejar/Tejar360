@@ -446,6 +446,7 @@
     <Compile Include="Controllers\SAPAutorizaSuperiorController.cs" />
     <Compile Include="Controllers\SAPOcController.cs" />
     <Compile Include="Controllers\SAP_SC_Controller.cs" />
+    <Compile Include="Controllers\SolvenciaController.cs" />
     <Compile Include="Controllers\TejarObrasController.cs" />
     <Compile Include="Controllers\TicketTejarController.cs" />
     <Compile Include="Controllers\VentasCdController.cs" />
@@ -1309,6 +1310,10 @@
     <Content Include="Views\Reclutamiento\_DetalleDocumento.cshtml" />
     <Content Include="Views\Empleados\Index.cshtml" />
     <Content Include="Views\ReporteDaniadoTabla\TablaDaniado.cshtml" />
+    <Content Include="Views\Solvencia\SolvenciaIT.cshtml" />
+    <Content Include="Views\Solvencia\SolvenciaAuditoria.cshtml" />
+    <Content Include="Views\Solvencia\SolvenciaContabilidad.cshtml" />
+    <Content Include="Views\Solvencia\SolvenciaNomina.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

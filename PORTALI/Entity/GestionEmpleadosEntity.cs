@@ -151,5 +151,13 @@ namespace Entity
         public string U_ObsevacionesJefeInmediato { get; set; }     // U_HoraSolvenciaJefe
 
     }
-
+    public class SeguimientoRequisicion
+    {
+        public int SolicitudBaja { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public string Posicion { get; set; }
+        public string Estado { get; set; }
+        public DateTime? UltimaModificacion { get; set; }
+        public string ModificadoPor { get; set; }
+    }
 }

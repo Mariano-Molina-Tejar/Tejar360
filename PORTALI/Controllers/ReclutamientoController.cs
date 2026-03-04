@@ -1,6 +1,8 @@
 ﻿using DAL;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.ExtendedProperties;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Entity;
 using Microsoft.AspNet.SignalR.Hosting;
 using Newtonsoft.Json;
@@ -17,6 +19,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using static ClosedXML.Excel.XLPredefinedFormat;
+using DateTime = System.DateTime;
 
 namespace PORTALI.Controllers
 {
@@ -116,8 +120,39 @@ namespace PORTALI.Controllers
                 return Json(new { success = false, message = "No se encontraron datos" }, JsonRequestBehavior.AllowGet);
             }
         }
+        public async Task<JsonResult> ObtenerDetalleEnProceso(string userName)
+        {
+            try
+            {
+                var detalleAspirantes = await _dal.ObtenerDetalleEnProceso(userName);
 
-        [Authorize]
+                if (detalleAspirantes.Any())
+                    return Json(new { success = true, message = "", data = detalleAspirantes }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = false, message = "No se encontraron datos" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "No se encontraron datos" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public async Task<JsonResult> AceptarProceso(int userId)
+        {
+            try
+            {
+                var respuesta = await _dal.AgregarAspiranteAProceso(userId);
+                if (respuesta == 1)
+                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
         public async Task<JsonResult> VerClaveUsuario(string userName)
         {
             try
@@ -507,7 +542,7 @@ namespace PORTALI.Controllers
                 {
                     DatosPersonales = datosPersonales,
                     EmpId = empId
-                };
+                }; 
 
                 var response = DAL_API.enviarDatosSL(url, datosSN);
                 var reply = JsonConvert.DeserializeObject<Reply>(response);
@@ -805,42 +840,50 @@ namespace PORTALI.Controllers
         {
             try
             {
-                var mixtralService = new MixtralService("Bearer M7jFFXCpKeecatV6ZSMI18mNQVLfkP2L");
+                var realizarAnalsis = await _dal.VerificarAnalisisIA(idSolicitud);
 
-                string perfilJson = _dal.ObtenerPerfilJson(idSolicitud, idPuesto);
-                string aspiranteJson = _dal.ObtenerAspirantesJson(idSolicitud);
-
-                string apiResponse = await mixtralService.AnalizarPerfilAsync(perfilJson, aspiranteJson);
-
-                var root = JObject.Parse(apiResponse);
-                string contenidoJson = root["choices"][0]["message"]["content"].ToString().Trim();
-
-                // 4️⃣ Validar que sea JSON válido
-                ResultadoEvaluacionIA resultadoIA;
-
-                try
+                if (realizarAnalsis)
                 {
-                    resultadoIA = JsonConvert.DeserializeObject<ResultadoEvaluacionIA>(contenidoJson);
-                    GuardarDatosIAenDB(resultadoIA, idSolicitud);
-                    return Json(new { success = true });
+                    var mixtralService = new MixtralService("Bearer M7jFFXCpKeecatV6ZSMI18mNQVLfkP2L");
+                    string perfilJson = _dal.ObtenerPerfilJson(idSolicitud, idPuesto);
+                    string aspiranteJson = _dal.ObtenerAspirantesJson(idSolicitud);
 
-                }
-                catch (Exception ex)
-                {
-                    // fallback defensivo
-                    resultadoIA = new ResultadoEvaluacionIA
+                    string apiResponse = await mixtralService.AnalizarPerfilAsync(perfilJson, aspiranteJson);
+
+                    var root = JObject.Parse(apiResponse);
+                    string contenidoJson = root["choices"][0]["message"]["content"].ToString().Trim();
+
+                    // 4️⃣ Validar que sea JSON válido
+                    ResultadoEvaluacionIA resultadoIA;
+
+                    try
                     {
-                        evaluacion = new List<EvaluacionAspirante>(),
-                        recomendacionFinal = "Error al procesar la evaluación de IA"
-                    };
+                        resultadoIA = JsonConvert.DeserializeObject<ResultadoEvaluacionIA>(contenidoJson);
+                        GuardarDatosIAenDB(resultadoIA, idSolicitud);
+                        return Json(new { success = true, message = "El analisis se ha realizado con exito", icon = "success" });
 
-                    return Json(new { success = false });
-                    // aquí puedes loguear ex + contenidoJson
+                    }
+                    catch (Exception ex)
+                    {
+                        // fallback defensivo
+                        resultadoIA = new ResultadoEvaluacionIA
+                        {
+                            evaluacion = new List<EvaluacionAspirante>(),
+                            recomendacionFinal = "Error al procesar el analisis con IA"
+                        };
+
+                        return Json(new { success = false, message = ex.Message, icon = "error" });
+                    }
                 }
+                else
+                {
+                    return Json(new { success = false, message = "No existen nuevos registros para analizar con IA", icon = "warning" });
+                }
+
             }
             catch (Exception ex)
             {
-                return Json(new { success = false });
+                return Json(new { success = false, message = ex.Message, icon = "error" });
             }
         }
 
@@ -865,6 +908,128 @@ namespace PORTALI.Controllers
             catch
             {
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public async Task<JsonResult> ObtenerObservacionesIA(int idSolicitud)
+        {
+            try
+            {
+                var observacionIA = await _dal.ObtenerObservacionIA(idSolicitud);
+
+                if (string.IsNullOrEmpty(observacionIA))
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { success = true, observacion = observacionIA }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public async Task<JsonResult> RechazarProcesoAspitante(int userId, string nombre, string correo, string puesto, int estado = -1)
+        {
+            try
+            {
+                var respuesta = await _dal.RechazarAspirante(userId, estado);
+                var messageResponse = string.Empty;
+
+                switch (estado)
+                {
+                    case (-1):
+                        messageResponse = "Aspirante rechazado";
+                        break;
+                    case (-2):
+                        messageResponse = "Aspirante enviado a la lista negra";
+                        break;
+                    case (-3):
+                        messageResponse = "Aspirante enviado al bólson 2";
+                        break;
+                }
+                ;
+
+                if (respuesta == 1)
+                {
+                    var dataMail = new EnvioCorreoGestionEmpleados
+                    {
+                        Asunto = "Proceso finalizado",
+                        Correos = "programador.sr@eltejar.com.gt",
+                        Nombre = "Departamento GTH El Tejar",
+                        Cuerpo = Templates.BodyMailRechazoAspirante(nombre, puesto),
+                        isHTML = true
+
+                    };
+
+                    var result = MailServices.EnviarCorreoElectronico(dataMail);
+
+                    if (result.result)
+                    {
+                        return Json(new { success = true, message = $"{messageResponse} y notificado con éxito" });
+                    }
+                    else
+                    {
+                        return Json(new { success = true, message = $"{messageResponse} pero ocurrio un error al enviar el correo" });
+                    }
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Ocurrio un erro inesperado" });
+                }
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Ocurrio un erro inesperado" });
+            }
+        }
+
+        public async Task<JsonResult> GuardarSeguimientoProceso(int aspirante, int idProceso)
+        {
+            try
+            {
+                var sessions = (SessionLoginEntity)Session["PropertiesEntity"];
+                if (sessions == null)
+                {
+                    return Json(new { success = false, message = "Sesión expirada" });
+                }
+
+                var url = "GestionDePersonal/GuardarProcesoAspitante";
+                var data = new
+                {
+                    U_AspiranteId = aspirante,
+                    U_EstadoId = idProceso,
+                    U_EmpId = sessions.CodeEmpleado,
+                    U_Fecha = DateTime.Now,
+                    U_Hora = DateTime.Now.ToString("HHmm")
+                };
+
+                var response = DAL_API.enviarDatosSL(url, data);
+                var reply = JsonConvert.DeserializeObject<Reply>(response);
+
+                if (reply.result == 1)
+                {
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        } 
+
+        public async Task<JsonResult> OptenerTranckingAspirante(int aspirante)
+        {
+            try
+            {
+                var tracking = await _dal.ObtenerTranckingAspirante(aspirante);
+
+                return Json(new { success = true,data = tracking }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false}, JsonRequestBehavior.AllowGet);
+
             }
         }
     }

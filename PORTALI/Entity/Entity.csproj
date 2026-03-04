@@ -200,6 +200,7 @@
     <Compile Include="SimpleEntity.cs" />
     <Compile Include="SocioNegocioEntity.cs" />
     <Compile Include="SolicitudCompraEncabezadoEntity.cs" />
+    <Compile Include="Solvencias.cs" />
     <Compile Include="SystemDateTimeEntity.cs" />
     <Compile Include="TicketEntity.cs" />
     <Compile Include="TransaccionesEntity.cs" />

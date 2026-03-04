@@ -1,0 +1,728 @@
+﻿@using Entity;
+@model IEnumerable<EmpleadosSolvencia>
+@{
+    ViewData["Title"] = "Solvencia Administrativa - Nomina";
+}
+
+<head>
+    <style>
+
+        /* Contenedor de opciones */
+        .selection-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #f0f2f5;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: #fff;
+        }
+
+            /* Efecto Hover */
+            .selection-card:hover {
+                border-color: #4682b4;
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            }
+
+                .selection-card:hover .icon-box {
+                    background-color: #4682b4;
+                    color: #fff;
+                }
+
+        /* Caja de icono */
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background-color: #f8f9fa;
+            color: #4682b4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .selection-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .selection-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        <style >
+        .modal-plaza-modern {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .modal-plaza-header {
+            background-color: #ffffff; /* Fondo blanco para limpieza */
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1.5rem;
+            border-radius: 16px 16px 0 0;
+        }
+
+            .modal-plaza-header .modal-title {
+                color: #333;
+                font-weight: 700;
+                font-size: 1.25rem;
+            }
+
+            /* Icono sutil al lado del título */
+            .modal-plaza-header .bi-person-fill-add {
+                color: #4682b4; /* El SteelBlue que te gustó */
+            }
+
+        .form-group-modern {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group-modern .form-label {
+                font-weight: 600;
+                color: #555;
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+        /* Mejora del Select y Textarea */
+        .plaza-form .form-select,
+        .plaza-form .form-control {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+            .plaza-form .form-select:focus,
+            .plaza-form .form-control:focus {
+                background-color: #fff;
+                border-color: #4682b4;
+                box-shadow: 0 0 0 4px rgba(70, 130, 180, 0.1);
+                outline: none;
+            }
+
+        .modal-plaza-footer {
+            border-top: none;
+            padding: 1.5rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Botones con estilo */
+        .btn-save-plaza {
+            background: #4682b4;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            flex: 1; /* Hace que el botón crezca */
+        }
+
+        .btn-cancel-plaza {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        /* Estilo para los pies de página de los inputs (small) */
+        .form-group-modern small {
+            display: block;
+            margin-top: 5px;
+            color: #888 !important;
+            font-style: italic;
+        }
+
+        /* Asegura que el modal-header no tenga bordes feos */
+        .modal-plaza-header {
+            border-bottom: none;
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        /* Efecto suave al pasar el mouse por los textareas */
+        .plaza-form .form-control:hover {
+            border-color: #adb5bd;
+        }
+        /* Header elegante */
+        .header-perfil {
+            background: linear-gradient(45deg, #4682b4, #5a9bd5);
+            padding: 1.5rem;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .perfil-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+            /* Estilo para que el botón de gestión no rompa la estética moderna */
+            .perfil-row .btn-outline-danger:hover {
+                background-color: #fff5f5;
+                color: #dc3545;
+            }
+
+        .bg-danger-subtle {
+            background-color: #f8d7da; /* Un rojo muy clarito para el fondo del número */
+        }
+
+        .perfil-row {
+            min-height: 40px; /* Asegura que la fila tenga espacio suficiente */
+        }
+
+        #listaCartas .list-group-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+
+            #listaCartas .list-group-item:hover {
+                background-color: #fcfcfc;
+                border-left: 4px solid #dc3545; /* Rojo para denotar advertencia */
+            }
+
+        #listaCartas::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #listaCartas::-webkit-scrollbar-thumb {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+        /* CONTENEDOR */
+        .modal-solvencia {
+            border-radius: 20px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,.25);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* HEADER */
+        .modal-solvencia-header {
+            position: relative;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: #fff;
+        }
+
+            .modal-solvencia-header h5 {
+                margin: 0;
+                font-weight: 600;
+            }
+
+            .modal-solvencia-header span {
+                font-size: 13px;
+                opacity: .9;
+            }
+
+        .btn-close-solvencia {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            background: transparent;
+            border: none;
+            font-size: 26px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* BODY */
+        .modal-solvencia-body {
+            padding: 25px 30px;
+            background: #f8faff;
+        }
+
+        /* ITEM */
+        .solvencia-item {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.08);
+        }
+
+        .solvencia-label {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+
+        /* OPCIONES */
+        .solvencia-options {
+            display: flex;
+            gap: 12px;
+        }
+
+            .solvencia-options label {
+                cursor: pointer;
+            }
+
+            .solvencia-options input {
+                display: none;
+            }
+
+            .solvencia-options span {
+                padding: 8px 18px;
+                border-radius: 999px;
+                background: #eef2ff;
+                color: #3f6ad8;
+                font-weight: 500;
+                transition: all .25s ease;
+            }
+
+            .solvencia-options input:checked + span {
+                background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+                color: #fff;
+                box-shadow: 0 8px 18px rgba(79,140,255,.45);
+            }
+
+        /* TEXTAREA */
+        .solvencia-textarea {
+            width: 100%;
+            min-height: 90px;
+            border-radius: 14px;
+            border: 1px solid #dbe3ff;
+            padding: 12px;
+            resize: none;
+        }
+
+        /* FOOTER DATA */
+        .solvencia-footer-data {
+            display: flex;
+            gap: 15px;
+        }
+
+            .solvencia-footer-data input {
+                flex: 1;
+                border-radius: 14px;
+                border: 1px solid #dbe3ff;
+                padding: 10px 12px;
+            }
+
+        /* FOOTER */
+        .modal-solvencia-footer {
+            padding: 18px 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #fff;
+        }
+
+        .btn-cancel {
+            background: #e0e6f5;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #4f8cff, #3f6ad8);
+            color: #fff;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .solvencia-header {
+            color: #fff;
+        }
+
+        .solvencia-header-jefe {
+            background: linear-gradient(135deg, #198754, #146c43);
+        }
+
+        .solvencia-header-it {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/Css/GestionDePersonal/styleProceso.css">
+    <link rel="stylesheet" href="~/Css/GestionDePersonal/style.css">
+
+</head>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <!-- HEADER -->
+        <div class="card-header d-flex justify-content-between align-items-center px-4"
+             style="background: linear-gradient(135deg, #3a7bd5, #3a6073); color:white;">
+            <h5 class="mb-0 fw-semibold">
+                <i class="bi bi-people-fill me-2"></i> Solvencia administrativa - Nómina
+            </h5>
+
+            <div class="d-flex gap-2">
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body bg-light">
+            @if (ViewData["Error"] != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center" role="alert" id="divError">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="msgError">@ViewData["Error"]</span>
+                </div>
+            }
+
+            <table class="table align-middle text-center tabla-personal">
+
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th class="text-start">Nombres</th>
+                        <th>Departamento</th>
+                        <th>Puesto</th>
+                        <th>Solvecia</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var empleados in Model)
+                        {
+                            <tr>
+                                <td>@empleados.EmpId</td>
+
+                                <td class="text-start fw-medium">
+                                    @empleados.Nombre
+                                </td>
+                                <td>@empleados.Departamento</td>
+                                <td>@empleados.Puesto</td>
+                                <td class="text-center">
+                                    @if (empleados.EmisioDeSolvencia)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success" title="Sí"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle-fill text-danger" title="No"></i>
+                                    }
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 me-1"
+                                            onclick="verSolvenciaAdministrativa('@empleados.EmpId')">
+                                        <i class="bi bi-clipboard-check me-1"></i>
+                                        Solvencia
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-info-circle"></i> No se encontraron datos
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalSolvencia" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-solvencia">
+
+            <!-- HEADER -->
+            <div class="modal-solvencia-header">
+                <h5>
+                    Solvencia Administrativa - Nómina
+                </h5>
+                <span>Validación por el area de Nómina</span>
+                <button type="button" class="btn-close-solvencia" data-bs-dismiss="modal">x</button>
+            </div>
+            <input class="d-none" id="idSolvencia" type="number" value="" />
+
+            <div class="modal-body">
+
+                <!-- FILA 1 -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            Anticipo de Salarios
+                        </label>
+                        <input type="number"
+                               class="form-control"
+                               id="anticipoSalarios"
+                               placeholder="Q 0.00"
+                               step="0.01"
+                               min="0">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            Prestamo Bancario
+                        </label>
+                        <input type="number"
+                               class="form-control"
+                               id="prestamoBancario"
+                               placeholder="Q 0.00"
+                               step="0.01"
+                               min="0">
+                    </div>
+                </div>
+
+                <!-- FILA 2 -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            Embargos
+                        </label>
+                        <input type="number"
+                               class="form-control"
+                               id="embargos"
+                               placeholder="Q 0.00"
+                               step="0.01"
+                               min="0">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            Descuento de Uniforme
+                        </label>
+                        <input type="number"
+                               class="form-control"
+                               id="descuentoUniforme"
+                               placeholder="Q 0.00"
+                               step="0.01"
+                               min="0">
+                    </div>
+                </div>
+
+                <!-- FILA 3 -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            Devolución de ISR
+                        </label>
+                        <input type="number"
+                               class="form-control"
+                               id="devolucionISR"
+                               placeholder="Q 0.00"
+                               step="0.01"
+                               min="0">
+                    </div>
+
+                    <div class="col-md-6 mb-3 d-flex flex-column justify-content-end">
+                        <div class="solvencia-item">
+                            <div class="solvencia-label">
+                                Uniformes
+                            </div>
+                            <div class="solvencia-options">
+                                <label><input type="radio" name="uniformes" value="Y"> <span>✔ Sí</span></label>
+                                <label><input type="radio" name="uniformes" value="N"> <span>✖ No</span></label>
+                                <label><input type="radio" name="uniformes" value="N/A"> <span>N/A</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- NOTIFICACION A AREAS INTERESADAS -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Notificación a Areas Interesadas</label>
+                    <textarea class="form-control" rows="3" id="notificacionAreas"></textarea>
+                </div>
+
+                <!-- OBSERVACIONES -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Observaciones</label>
+                    <textarea class="form-control" rows="3" id="observaciones"></textarea>
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <button class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                <button id="btn-guardarSolvencia" class="btn-save">Guardar solvencia</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true
+    })
+
+    const modalSolvencia = new bootstrap.Modal(document.getElementById('modalSolvencia'));
+
+    async function verSolvenciaAdministrativa(empId) {
+
+        try {
+            document.getElementById('anticipoSalarios').value = "";
+            document.getElementById('prestamoBancario').value = "";
+            document.getElementById('embargos').value = "";
+            document.getElementById('descuentoUniforme').value = "";
+            document.getElementById('devolucionISR').value = "";
+            document.querySelectorAll('input[name="uniformes"]').forEach(r => r.checked = false);
+            document.getElementById('notificacionAreas').value = "";
+            document.getElementById('observaciones').value = "";
+
+            const opciones = document.querySelectorAll(".solvencia-options");
+
+            const response = await fetch(`/Solvencia/ObtenerSolvenciaNomina?empId=${empId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                if (result.status) {
+                    opciones.forEach(opcion => {
+                        opcion.classList.add("opacity-50", "pe-none");
+                    });
+
+                    document.getElementById('anticipoSalarios').classList.add("opacity-50", "pe-none");
+                    document.getElementById('prestamoBancario').classList.add("opacity-50", "pe-none");
+                    document.getElementById('embargos').classList.add("opacity-50", "pe-none");
+                    document.getElementById('descuentoUniforme').classList.add("opacity-50", "pe-none");
+                    document.getElementById('devolucionISR').classList.add("opacity-50", "pe-none");
+                    document.getElementById('notificacionAreas').classList.add("opacity-50", "pe-none");
+                    document.getElementById('observaciones').classList.add("opacity-50", "pe-none");
+
+                    setRadioValue("uniformes", result.data.U_Uniformes);
+
+
+                    document.getElementById("anticipoSalarios").value = result.data.U_AnticiposSalarios
+                    document.getElementById("prestamoBancario").value = result.data.U_PrestamoBancario
+                    document.getElementById("embargos").value = result.data.U_Embargos
+                    document.getElementById("descuentoUniforme").value = result.data.U_DescuentoUniforme
+                    document.getElementById("devolucionISR").value = result.data.U_DevolucionISR
+                    document.getElementById("notificacionAreas").value = result.data.U_NotificacionAreasInteresadas
+
+                    document.getElementById("observaciones").value = result.data.U_ObservacionesNomina || "No se agregaron observaciones";
+                    document.getElementById("btn-guardarSolvencia").classList.add("d-none")
+                }
+                else {
+                    opciones.forEach(opcion => {
+                        opcion.classList.remove("opacity-50", "pe-none");
+                    });
+                    document.getElementById("idSolvencia").value = result.data.Code;
+
+                    document.getElementById('anticipoSalarios').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('prestamoBancario').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('embargos').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('descuentoUniforme').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('devolucionISR').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('notificacionAreas').classList.remove("opacity-50", "pe-none");
+                    document.getElementById('observaciones').classList.remove("opacity-50", "pe-none");
+
+
+
+                    document.getElementById("observaciones").value = "";
+                    document.getElementById("btn-guardarSolvencia").classList.remove("d-none")
+
+                }
+                modalSolvencia.show();
+            }
+            else {
+                Toast.fire({ icon: "error", title: "Ha ocurriodo un error al abrir la solvencia" });
+            }
+        }
+        catch (error) {
+            Toast.fire({ icon: "error", title: "Ha ocurriodo un error al abrir la solvencia" })
+        }
+    }
+
+    async function GuardarSolvenciaContabilidad() {
+        try {
+            $("#globalLoading").show();
+            const anticipoSalarios = document.getElementById('anticipoSalarios').value == "" ? 0.00 : document.getElementById('anticipoSalarios').value
+            const prestamoBancario = document.getElementById('prestamoBancario').value == "" ? 0.00 : document.getElementById('prestamoBancario').value
+            const embargos = document.getElementById('embargos').value == "" ? 0.00 : document.getElementById('embargos').value
+            const descuentoUniforme = document.getElementById('descuentoUniforme').value == "" ? 0.00 : document.getElementById('descuentoUniforme').value
+            const devolucionISR = document.getElementById('devolucionISR').value == "" ? 0.00 : document.getElementById('devolucionISR').value
+            const uniformes = document.querySelector('input[name="uniformes"]:checked')?.value || null;
+
+            const observaciones = document.getElementById('observaciones').value
+            const notificacionAreas = document.getElementById('notificacionAreas').value
+            const solvencia = document.getElementById("idSolvencia").value
+
+            if (observaciones == "" || notificacionAreas == "") {
+                Toast.fire({ icon: "warning", title: 'El campo "Observaciones" y el campo "Notificación a Areas Interesadas" no puede ir vacio' })
+                return;
+            }
+
+            const data = new FormData();
+            data.append("anticipoSalarios", anticipoSalarios)
+            data.append("prestamoBancario", prestamoBancario)
+            data.append("embargos", embargos)
+            data.append("descuentoUniforme", descuentoUniforme)
+            data.append("devolucionISR", devolucionISR)
+            data.append("uniformes", uniformes)
+
+            data.append("observaciones", observaciones)
+            data.append("notificacionAreas", notificacionAreas)
+            data.append("solvencia", solvencia)
+
+            const response = await fetch('/Solvencia/GuardarSolvenciaNomina',
+                {
+                    method: "POST",
+                    body: data
+                });
+
+            const result = await response.json();
+
+            if (result.success) {
+                Toast.fire({ icon: "success", title: "Se guardo la información con éxito" })
+                setTimeout(() => { modalSolvencia.hide() }, 300);
+            }
+            else {
+                Toast.fire({ icon: "error", title: "Ha ocurrido un error al procesar la solicitud" })
+            }
+        }
+        catch (error) {
+            Toast.fire({ icon: "error", title: error })
+        }
+        finally {
+            $("#globalLoading").hide();
+        }
+    }
+
+
+    function setRadioValue(name, value) {
+        if (!value) return;
+
+        const radio = document.querySelector(
+            `input[name="${name}"][value="${value}"]`
+        );
+
+        if (radio) radio.checked = true;
+    }
+    document.getElementById("btn-guardarSolvencia").addEventListener('click', () => { GuardarSolvenciaContabilidad() });
+
+</script>

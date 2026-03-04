@@ -176,6 +176,34 @@
                                 </a>
                             </li>
                         </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("SolvenciaIT", "Solvencia")">
+                                    <i class="nav-icon fas fa-users-gear"></i> Solvencia - IT
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("SolvenciaContabilidad", "Solvencia")">
+                                    <i class="nav-icon fas fa-users-gear"></i> Solvencia - Contablilidad
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("SolvenciaAuditoria", "Solvencia")">
+                                    <i class="nav-icon fas fa-users-gear"></i> Solvencia - Auditoria
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("SolvenciaNomina", "Solvencia")">
+                                    <i class="nav-icon fas fa-users-gear"></i> Solvencia - Nómina
+                                </a>
+                            </li>
+                        </ul>
 
                         <ul class="nav-dropdown-items">
                             <li class="nav-item">
@@ -225,7 +253,6 @@
                             </ul>
                         </li>
                     }
-
 
 
                     @if (UserLogin.SuperUser == "Y" || UserLogin.UserCode == "manager" || UserLogin.Depto == 6 || UserLogin.UserCode == "toperac1")

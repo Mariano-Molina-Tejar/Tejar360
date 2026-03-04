@@ -353,6 +353,96 @@
             line-height: 1.5;
         }
 
+        <style >
+        /* MODAL */
+        .tracking-modal {
+            border-radius: 14px;
+            overflow: hidden;
+            border: none;
+        }
+
+        /* HEADER */
+        .tracking-header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: #fff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .tracking-header h5 {
+                margin: 0;
+                font-weight: 600;
+            }
+
+        .tracking-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        /* BODY */
+        .tracking-body {
+            padding: 20px;
+        }
+
+        /* STEPS */
+        .tracking-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tracking-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-left: 3px solid #e5e7eb;
+            padding-left: 15px;
+            position: relative;
+        }
+
+            .tracking-step::before {
+                content: '';
+                position: absolute;
+                left: -7px;
+                width: 12px;
+                height: 12px;
+                background: #e5e7eb;
+                border-radius: 50%;
+            }
+
+            /* CHECK */
+            .tracking-step input {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+
+                /* COMPLETADO */
+                .tracking-step input:checked + span {
+                    color: #198754;
+                    font-weight: 600;
+                }
+
+                .tracking-step input:checked ~ ::before {
+                    background: #198754;
+                }
+
+        /* FOOTER */
+        .tracking-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+
 
     </style>
 </head>
@@ -698,7 +788,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-end mb-3">
+                        @*<div class="d-flex justify-content-between align-items-end mb-3">
                             <div>
                                 <h6 class="fw-bold text-dark mb-1">
                                     <i class="bi bi-people-fill me-2 text-secondary"></i>Aspirantes Postulados
@@ -712,37 +802,127 @@
 
                                 </button>
                                 <button id="btnAnalasisIA" class="btn btn-primary px-4 rounded-pill shadow-sm">
-                                    <i class="bi bi-robot me-2"></i>@*<i class="bi bi-cpu-fill me-2"></i>*@
-                                    Analisis con IA
+                                    <i class="bi bi-robot me-2"></i><i class="bi bi-cpu-fill me-2"></i>
+                                    Analisar con IA
+                                </button>
+                                <button id="btnComentarioIA" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                    ...
+                                    <i class="bi bi-chat-dots-fill me-2"></i>
                                 </button>
                             </div>
-
-                        </div>
+                        </div>*@
 
                         <div class="table-responsive">
-                            <table class="table align-middle text-center tabla-aspirantes">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Usuario</th>
-                                        <th>Nombre Completo</th>
-                                        <th>Correo Electrónico</th>
-                                        <th>Fecha Registro</th>
-                                        <th>Estado</th>
-                                        <th>Calificacion IA</th>
-                                        <th>Cumple</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbodyAspirantes">
-                                    <tr id="filaCarga">
-                                        <td colspan="7" class="py-5">
-                                            <div class="spinner-border text-warning" role="status"></div>
-                                            <p class="mt-2 text-muted">Cargando base de datos...</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <ul class="nav nav-tabs nav-tabs-modern mb-3" id="myTab" role="tablist">
+
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active"
+                                            id="aspirantes-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#aspirantes"
+                                            type="button"
+                                            role="tab">
+                                        <i class="bi bi-people-fill me-1"></i> Aspirantes
+                                    </button>
+                                </li>
+
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link"
+                                            id="enProcesos-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#procesoss"
+                                            type="button"
+                                            role="tab">
+                                        <i class="bi bi-arrow-repeat me-1"></i> En proceso
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="aspirantes" role="tabpanel">
+                                    <div class="d-flex justify-content-between align-items-end mb-3">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1">
+                                                <i class="bi bi-people-fill me-2 text-secondary"></i>Aspirantes Postulados
+                                            </h6>
+                                            <p class="text-muted small mb-0">Lista de candidatos que aplican a esta vacante</p>
+                                        </div>
+
+                                        <div>
+                                            <button id="btnCrearUsuarioClave" class="btn btn-generate fw-bold px-4 rounded-pill shadow-sm">
+                                                <i class="bi bi-shield-lock-fill me-2"></i>Generar Credenciales
+
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <table class="table align-middle text- center tabla-aspirantes">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Usuario</th>
+                                                <th>Nombre Completo</th>
+                                                <th>Correo Electrónico</th>
+                                                <th>Fecha Registro</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyAspirantes">
+                                            <tr id="filaCarga">
+                                                <td colspan="7" class="py-5">
+                                                    <div class="spinner-border text-warning" role="status"></div>
+                                                    <p class="mt-2 text-muted">Cargando base de datos...</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade" id="procesoss" role="tabpanel">
+                                    <div class="d-flex justify-content-between align-items-end mb-3">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1">
+                                                <i class="bi bi-people-fill me-2 text-secondary"></i>Aspirantes en Proceso
+                                            </h6>
+                                            <p class="text-muted small mb-0">Lista de candidatos que se encuentran en proceso de contratación para esta vacante</p>
+                                        </div>
+                                        <div>
+                                            <button id="verBolson2" class="btn btn-warning px-4 rounded-pill shadow-sm">
+                                                <i class="bi bi-archive-fill"></i>
+                                                Ver bolsón 2
+                                            </button>
+                                            <button id="btnAnalasisIA" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                                <i class="bi bi-robot me-2"></i>@*<i class="bi bi-cpu-fill me-2">*@</i>
+                                                Analizar con IA
+                                            </button>
+                                            <button id="btnComentarioIA" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                                ...
+                                                <i class="bi bi-chat-dots-fill me-2"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <table class="table align-middle text- center tabla-aspirantes">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Usuario</th>
+                                                <th>Nombre Completo</th>
+                                                <th>Correo Electrónico</th>
+                                                <th>Fecha Registro</th>
+                                                <th>Estado</th>
+                                                <th>Calificacion IA</th>
+                                                <th>Cumple</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyProceso">
+                                            <tr id="filaCarga">
+                                                <td colspan="7" class="py-5">
+                                                    <div class="spinner-border text-warning" role="status"></div>
+                                                    <p class="mt-2 text-muted">Cargando base de datos...</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1695,7 +1875,7 @@
                             <div class="spinner-border spinner-border-sm text-primary"></div>
                         </span>
                     </div>
-
+                    
                     <!-- Paso 3 -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span>Creación de proveedor</span>
@@ -1763,8 +1943,101 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalComentarioGeneral" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content ia-modal">
 
+                <!-- HEADER -->
+                <div class="ia-header">
+                    <h4>
+                        <i class="bi bi-chat-left-text-fill me-2"></i>
+                        Comentario General de la Evaluación
+                    </h4>
+                    <button type="button" class="ia-close" data-bs-dismiss="modal">×</button>
+                </div>
 
+                <!-- BODY -->
+                <div class="ia-body">
+
+                    <section class="ia-section">
+                        <!--<h5 class="ia-title info">-->
+                        @*<i class="bi bi-clipboard-check-fill me-2"></i>*@
+                        <!--Evaluación Global
+                        </h5>-->
+
+                        <div id="comentarioGeneralEvaluacion" class="ia-observacion">
+                            <!-- Comentario dinámico -->
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TRACKING -->
+    <div class="modal fade" id="modalTrackingProceso" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content tracking-modal">
+
+                <!-- HEADER -->
+                <div class="tracking-header">
+                    <h5>
+                        <i class="bi bi-diagram-3-fill me-2"></i>
+                        Seguimiento del proceso
+                    </h5>
+                    <button type="button" class="tracking-close" data-bs-dismiss="modal">×</button>
+                </div>
+
+                <!-- BODY -->
+                <div class="modal-body tracking-body">
+
+                    <ul class="tracking-steps">
+
+                        <li class="tracking-step">
+                            <input id="P-EntrivistaAT" type="checkbox" />
+                            <span>Entrevista AT</span>
+                        </li>
+
+                        <li class="tracking-step">
+                            <input id="P-PruebasPsicometricas" type="checkbox" />
+                            <span>Pruebas psicométricas</span>
+                        </li>
+
+                        <li class="tracking-step">
+                            <input id="P-PruebasEspecificas" type="checkbox" />
+                            <span>Pruebas específicas</span>
+                        </li>
+
+                        <li class="tracking-step">
+                            <input id="P-EntrevistaJI" type="checkbox" />
+                            <span>Entrevista JI</span>
+                        </li>
+
+                        <li class="tracking-step">
+                            <input id="P-Documentos&Poligrafo" type="checkbox" />
+                            <span>Documentos y Polígrafo</span>
+                        </li>
+
+                        <li class="tracking-step">
+                            <input id="P-Contratacion" type="checkbox" />
+                            <span>Contratación</span>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="tracking-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <div id="dataModel"
          data-model='@Html.Raw(Json.Encode(Model.Documentos))'>
     </div>
@@ -1788,8 +2061,11 @@
         const modalAgregarSolicitud = new bootstrap.Modal(document.getElementById('modalAgregarSolicitud'));
         const modalProcesos = new bootstrap.Modal(document.getElementById('modalProcesos'));
         const modalIA = new bootstrap.Modal(document.getElementById('modalIA'));
+        const modalComentarioGeneral = new bootstrap.Modal(document.getElementById('modalComentarioGeneral'));
+        const modalTrackingProceso = new bootstrap.Modal(document.getElementById('modalTrackingProceso'));
         let dataAspiranteFinal = {};
         let idModal = "";
+        let aspirante = 0;
 
         const Toast = Swal.mixin({
             toast: true,
@@ -1938,81 +2214,342 @@
                 method: "GET"
             })
 
+            const responseProceso = await fetch(`/Reclutamiento/ObtenerDetalleEnProceso?userName=${idSolicitud}`, {
+                method: "GET"
+            })
+
             const reply = await response.json();
-            console.log(reply);
+            const replyProceso = await responseProceso.json();
+
             let tbody = '';
+            let tbodyProceso = '';
 
             if (reply.success) {
 
                 reply.data.forEach(item => {
                     tbody += `
-<tr ${item.EmpIdSAP != 0 ? `class="fila-verde"` : ``}>
-        <th>${item.Rw}</th>
-        <th>${item.UserName}</th>
-        <th>${item.NombreAspirante}</th>
-        <th id="e${item.Rw}">${item.Correo}</th>
-        <th>${convertirFechaDotNet(item.Created)}</th>
-        <th>${item.Estado}</th>
+                            <tr ${item.EmpIdSAP != 0 ? `class="fila-verde"` : ``}>
+                                <th>${item.Rw}</th>
+                                <th>${item.UserName}</th>
+                                <th>${item.NombreAspirante}</th>
+                                <th id="e${item.Rw}">${item.Correo}</th>
+                                <th>${convertirFechaDotNet(item.Created)}</th>
+                                <!-- ACCIONES -->
+                                <th class="text-start"">
+                                    ${finalizada == 0
+                                                        ? `
+                                            <button class="btn btn-outline-primary btn-sm"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Usuario"
+                                                    onclick="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
+                                                <i class="bi bi-person-fill"></i>
+                                            </button>
+                                            `
+                                                        : ``
+                                                    }
 
-        <!-- NOTA IA -->
-        <th>
-            <span class="badge
-                ${item.NotaIA >= 80 ? 'bg-success' : item.NotaIA >= 60 ? 'bg-warning text-dark' : 'bg-danger'}">
-                ${item.NotaIA}
-            </span>
-        </th>
+                                    <button class="btn btn-outline-primary btn-sm"
+                                            data-bs-toggle="tooltip"
+                                            title="CV"
+                                            onclick="verDetalleAspirante('${item.UserName}','${item.EmpIdSAP}')">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </button>
 
-        <!-- CUMPLE -->
-        <th>
-            <span class="fw-semibold
-                ${item.Cumple ? 'text-success' : 'text-danger'}">
-                <i class="bi ${item.Cumple ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-1"></i>
+                                    
+                                            <button class="btn btn-outline-success btn-sm"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Aceptar proceso"
+                                                    onclick="AceptarProceso('${item.UserId}','${item.NombreAspirante}')">
+                                                <i class="bi bi-person-check-fill me-1"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Rechazar y notificar"
+                                                    onclick="RechazarProceso('${item.UserId}','${item.NombreAspirante}','${item.Correo}')">
+                                                <i class="bi bi-person-x-fill me-1"></i> 
+                                            </button>
+                                </th>
+                            </tr>
+                            `;
+                });
+            }
+            else {
+                tbody += `<tr>
+                                                                                                            <th colspan="7" class="text-center text-muted py-4">
+    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+    <span>No se encontraron datos</span>
+</th>
+                                                                                                         </tr>
+                                                                                                    `;
+            }
+            if (replyProceso.success) {
 
-            </span>
-        </th>
+                replyProceso.data.forEach(item => {
+                    tbodyProceso += `
+                            <tr ${item.EmpIdSAP != 0 ? `class="fila-verde"` : ``}>
+                                <th>${item.Rw}</th>
+                                <th>${item.UserName}</th>
+                                <th>${item.NombreAspirante}</th>
+                                <th id="e${item.Rw}">${item.Correo}</th>
+                                <th>${convertirFechaDotNet(item.Created)}</th>
+                                <th>${item.Estado}</th>
 
-        <!-- ACCIONES -->
-        <th>
-            ${finalizada == 0
-                            ? `
-                <button class="btn btn-outline-primary btn-sm"
-                        data-bs-toggle="tooltip"
-                        title="Usuario"
-                        onclick="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
-                    <i class="bi bi-person-fill"></i>
-                </button>
-                `
-                            : ``
-                        }
+                                <!-- NOTA IA -->
+                                <th>
+                                    ${item.AnalisisIA
+                                                        ? `
+                                            <span class="badge
+                                                ${item.NotaIA >= 80 ? 'bg-success'
+                                                            : item.NotaIA >= 60 ? 'bg-warning text-dark'
+                                                                : 'bg-danger'}">
+                                                ${item.NotaIA}
+                                            </span>
+                                            `
+                                                        : `
+                                            <span class="badge bg-secondary">
+                                                -
+                                            </span>
+                                            `
+                                                    }
+                                </th>
 
-            <button class="btn btn-outline-primary btn-sm"
-                    data-bs-toggle="tooltip"
-                    title="CV"
-                    onclick="verDetalleAspirante('${item.UserName}','${item.EmpIdSAP}')">
-                <i class="bi bi-file-earmark-text"></i>
-            </button>
+                               <!-- CUMPLE -->
+                            <th>
+                                ${
+                                                    item.AnalisisIA
+                                                        ? `
+                                        <span class="fw-semibold ${item.Cumple ? 'text-success' : 'text-danger'}">
+                                            <i class="bi ${item.Cumple ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-1"></i>
+                                        </span>
+                                        `
+                                                        : `
+                                        <span class="text-muted fw-semibold">
+                                            -
+                                        </span>
+                                        `
+                                }
+                            </th>
 
-            <!-- BOTÓN IA -->
-            <button class="btn btn-outline-dark btn-sm"
-                    data-bs-toggle="tooltip"
-                    title="Análisis IA"
-                    onclick="verAnalisisIA('${item.UserId}', ${item.SolicitudBaja})">
-                <i class="bi bi-robot"></i>
-            </button>
-        </th>
-</tr>
-`;
+                                <!-- ACCIONES -->
+                                <th class="text-start"">
+                                    ${finalizada == 0
+                                                        ? `
+                                            <button class="btn btn-outline-primary btn-sm"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Usuario"
+                                                    onclick="verPerfilUsuario('${item.UserName}','${item.Correo}','e${item.Rw}')">
+                                                <i class="bi bi-person-fill"></i>
+                                            </button>
+                                            `
+                                                        : ``
+                                                    }
+
+                                    <button class="btn btn-outline-primary btn-sm"
+                                            data-bs-toggle="tooltip"
+                                            title="CV"
+                                            onclick="verDetalleAspirante('${item.UserName}','${item.EmpIdSAP}')">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm"
+                                            data-bs-toggle="tooltip"
+                                            title="CV"
+                                            onclick="verEstadoProcesoPorAspirante('${item.UserId}','${item.SolicitudBaja}')">
+                                        <i class="bi bi-list-check"></i>
+                                    </button>
+
+                                    <!-- BOTÓN IA -->
+                                    ${item.AnalisisIA
+                                                        ? `
+                                            <button class="btn btn-outline-dark btn-sm"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Análisis IA"
+                                                    onclick="verAnalisisIA('${item.UserId}', ${item.SolicitudBaja})">
+                                                <i class="bi bi-robot"></i>
+                                            </button>
+
+                                            `
+                                                        : ``
+                                                    }
+                                                    <button class="btn btn-outline-warning btn-sm"
+                                                            data-bs-toggle="tooltip"
+                                                            title="Rechazar o mandar a boson 2"
+                                                            onclick="BolsonDosOListaNegra('${item.UserId}','${item.NombreAspirante}','${item.Correo}')">
+                                                        <i class="bi bi-person-dash-fill"></i>
+                                                    </button>
+
+                                </th>
+                            </tr>
+                            `;
+
 
                 });
 
             }
             else {
-                tbody += `<tr>
-                                                                                                            <th colspan = "7">No se encontraron datos</th>
+                tbodyProceso += `<tr>
+                                                                                                            <th colspan="9" class="text-center text-muted py-4">
+    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+    <span>No se encontraron datos</span>
+</th>
                                                                                                          </tr>
-                                                                                                                    `;
+                                                                                                    `;
             }
+
             document.getElementById("tbodyAspirantes").innerHTML = tbody;
+            document.getElementById("tbodyProceso").innerHTML = tbodyProceso;
+        }
+
+        function AceptarProceso(userId, nombre)
+        {
+            Swal.fire({
+                title: '¿Pasar aspirante a proceso?',
+                text: `El aspirante ${nombre} saldrá del banco de datos y comenzará la etapa de proceso de contratación.`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-person-arrow-right me-1"></i> Sí, pasar a proceso',
+                cancelButtonText: '<i class="bi bi-x-circle me-1"></i> Cancelar',
+                confirmButtonColor: '#0d6efd', // azul Bootstrap
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed){
+                    PasarProceso(userId);
+                }
+            });
+        }
+
+        function RechazarProceso(userId, nombre, correo) {
+            Swal.fire({
+                title: '¿Rechazar aspirante y notificar?',
+                text: `El aspirante ${nombre} saldrá del banco de datos y se notificará que ya no seguirá en el proceso.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-person-x me-1"></i> Sí, rechazar',
+                cancelButtonText: '<i class="bi bi-x-circle me-1"></i> Cancelar',
+                confirmButtonColor: '#dc3545', // rojo Bootstrap (rechazo)
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    RechazarYNotificarProceso(userId,nombre,correo);
+                }
+            });
+        }
+
+        function BolsonDosOListaNegra(userId, nombre, correo) {
+            Swal.fire({
+                title: 'Decisión sobre el aspirante',
+                html: `
+            <p>
+                El aspirante <strong>${nombre}</strong> no continuará en el proceso actual.
+            </p>
+
+            <p>Seleccione la acción a realizar:</p>
+
+            <ul style="text-align:left">
+                <li><strong>Bolsón 2:</strong> Considerar para futuras vacantes</li>
+                <li><strong>No elegible:</strong> No considerar en futuros procesos</li>
+            </ul>
+
+            <div style="
+                margin-top:15px;
+                padding:10px 12px;
+                border-left:4px solid #0dcaf0;
+                background-color:#e7f5ff;
+                color:#055160;
+                font-size:0.9rem;
+                border-radius:4px;
+            ">
+                <i class="bi bi-info-circle-fill me-1"></i>
+                En ambos casos se notificará al aspirante que no continuará en el proceso de selección.
+            </div>
+        `,
+                icon: 'question',
+                showCancelButton: true,
+                showDenyButton: true,
+
+                confirmButtonText: '<i class="bi bi-archive-fill me-1"></i> Bolsón 2',
+                denyButtonText: '<i class="bi bi-person-x-fill me-1"></i> Lista negra',
+                cancelButtonText: '<i class="bi bi-x-circle me-1"></i> Cancelar',
+
+                confirmButtonColor: '#ffc107',
+                denyButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+
+                reverseButtons: true
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+                    RechazarYNotificarProceso(userId, nombre, correo,-3);
+                }
+                else if (result.isDenied) {
+                    RechazarYNotificarProceso(userId, nombre, correo,-2);
+                }
+            });
+        }
+
+        async function RechazarYNotificarProceso(userId, nombre, correo, estado = -1) {
+            $("#globalLoading").show();
+            try {
+                const puesto = document.getElementById('detallePuesto').textContent;
+
+                const data = new FormData();
+                data.append("userId", userId);
+                data.append("nombre", nombre);
+                data.append("correo", correo);
+                data.append("puesto", puesto);
+                data.append("estado", estado);
+
+
+                const response = await fetch('/Reclutamiento/RechazarProcesoAspitante',
+                    {
+                        method: "POST",
+                        body: data
+                    });
+
+                const result = await response.json();
+
+                console.log(result)
+                if (result.success) {
+                    Toast.fire({ icon: "success", title: result.message })
+                }
+                else {
+                    Toast.fire({ icon: "warning", title: result.message })
+                }
+            }
+            catch {
+                Toast.fire({ icon: "warning", title: "Ha ocurrido un error" })
+            }
+            finally {
+                $("#globalLoading").hide();
+            }
+        }
+
+        async function PasarProceso(userId) {
+            $("globalLoading").show()
+            const tabButton = document.querySelector('#enProcesos-tab');
+            const tab = new bootstrap.Tab(tabButton);
+            try {
+                const response = await fetch(`/Reclutamiento/AceptarProceso?userId=${userId}`);
+                const result = await response.json();
+
+                console.log(result.success);
+                if (result.success) {
+                    ObtenerDatosAspirantes()
+                    Toast.fire({ icon: "success", title: "El aspirante a sido agregado al proceso" })
+
+                    tab.show();
+                }
+                else {
+                    Toast.fire({ icon: "warning", title: "Ha ocurrido un error" })
+                }
+            }
+            catch {
+                Toast.fire({ icon: "warning", title: "Ha ocurrido un error" })
+            }
+            finally {
+                $("globalLoading").hide()
+            }
         }
 
         async function verPerfilUsuario(userName, correo, id) {
@@ -2024,7 +2561,7 @@
             icon.classList.remove("bi-floppy-fill");
             icon.classList.add("bi-pencil-fill");
             icon.classList.remove("d-none");
-
+            console.log(userName);
             const correoInput = document.getElementById("emailModal");
 
             correoInput.disabled = true;
@@ -2049,15 +2586,23 @@
             limpiarDatos();
             const response = await fetch(`/Reclutamiento/ObtenerDatosPersonales?userName=${userName}`);
             const result = await response.json();
-            $("#globalLoading").show();
-            if (result.success) {
-                await cargarDatosAspirante(result.data, userName, empId);
-                dataAspiranteFinal = result.data.DatosPersonalesVM;
-                modalDetalleUsuario.show();
+            try {
+                $("#globalLoading").show();
+                if (result.success) {
+                    await cargarDatosAspirante(result.data, userName, empId);
+                    dataAspiranteFinal = result.data.DatosPersonalesVM;
+
+                    modalDetalleUsuario.show();
+                }
+                else {
+                    Toast.fire({ icon: 'warning', title: "No se encontraron datos" });
+                    mostrarComentarios();
+                }
+            } catch {
+                Toast.fire({ icon: 'warning', title: "Ocurrio un error al mostrar los datos" });
             }
-            else {
-                Toast.fire({ icon: 'warning', title: "No se encontraron datos" });
-                mostrarComentarios();
+            finally {
+                $("#globalLoading").hide();
             }
         }
 
@@ -2144,7 +2689,7 @@
 
         async function cargarDatosAspirante(datosAspirante, usuario = "", empId = 0) {
             limpiarDatos();
-
+            activarTabPersonal();
             document.getElementById("pPrimerNombre").innerText = datosAspirante.DatosPersonalesVM.PrimerNombre;
             document.getElementById("pSegundoNombre").innerText = datosAspirante.DatosPersonalesVM.SegundoNombre;
             document.getElementById("pPrimerApellido").innerText = datosAspirante.DatosPersonalesVM.PrimerApellido;
@@ -2455,7 +3000,6 @@
                                                            `;
             }
             contenedorComentarios.innerHTML = li;
-            $("#globalLoading").hide();
         }
 
         function limpiarDatos() {
@@ -3083,20 +3627,25 @@
 
                 if (result.success) {
                     Toast.fire({ icon: 'success', title: "Data generada con éxito" });
+                    await ObtenerDatosAspirantes();
+                    Swal.close();
 
                 }
                 else {
-                    Toast.fire({ icon: 'error', title: "Ocurrio un error al crear la solicitud" });
+                    Swal.close();
+
+                    Toast.fire({ icon: result.icon, title: result.message });
                 }
 
             }
             catch {
+                Swal.close();
+
                 Toast.fire({ icon: "error", title: "Ha ocurrio un error al consultar la IA" })
             }
-            finally {
-                Swal.close();
-            }
+           
         }
+
         async function verAnalisisIA(userId, SolicitudId) {
 
             console.log(userId, SolicitudId);
@@ -3169,6 +3718,80 @@
             modal.show();
         }
 
+        async function verComentarioIA() {
+            const idSolicitud = document.getElementById("idSolicitud").textContent
+
+            const response = await fetch(`/Reclutamiento/ObtenerObservacionesIA?idSolicitud=${idSolicitud}`)
+            const result = await response.json();
+
+            if (result.success) {
+                document.getElementById("comentarioGeneralEvaluacion").innerText = result.observacion ?? "No se encontraron observaciones";
+                modalComentarioGeneral.show();
+            } else
+            {
+                Toast.fire({ icon: "warning", title: "No se encontraron observaciones, debes realizar de primero un analisis con IA para poder ver las observaciones generadas"});
+            }
+
+        }
+
+        async function verEstadoProcesoPorAspirante(userId, SolicitudId)
+        {
+            try {
+                aspirante = userId;
+                const response = await fetch(`/Reclutamiento/OptenerTranckingAspirante?aspirante=${aspirante}`);
+                const result = await response.json();
+
+                if (result.success) {
+
+                    document.getElementById('P-EntrivistaAT').checked = result.data.includes(1);
+                    document.getElementById('P-PruebasPsicometricas').checked = result.data.includes(2);
+                    document.getElementById('P-PruebasEspecificas').checked = result.data.includes(3);
+                    document.getElementById('P-EntrevistaJI').checked = result.data.includes(4);
+                    document.getElementById('P-Documentos&Poligrafo').checked = result.data.includes(5);
+                    document.getElementById('P-Contratacion').checked = result.data.includes(6);
+                     
+                    modalTrackingProceso.show();
+                }
+                else {
+                    Toast.fire({ icon: "warning", title: "Ocurrio un error al intentar abrir el tracking" });
+                }
+            }
+            catch {
+                Toast.fire({ icon: "warning", title: "Ocurrio un error al intentar abrir el tracking" });
+            }
+        }
+
+        async function guardarSeguimientoDeProceso(idProceso) {
+            try {
+                document.body.style.cursor = 'wait';
+
+                const data = new FormData();
+                data.append("aspirante", aspirante)
+                data.append("idProceso", idProceso)
+                const response = await fetch('/Reclutamiento/GuardarSeguimientoProceso',
+                    {
+                        method: "POST",
+                        body: data
+                    }
+                );
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Toast.fire({ icon: "success", title: "Proceso guardado con éxito" });
+                }
+                else {
+                    Toast.fire({ icon: "warning", title: "Ocurrio un error inesperado" });
+                }
+            }
+            catch {
+                Toast.fire({ icon: "warning", title: "Ocurrio un error inesperado" });
+            }
+            finally {
+                document.body.style.cursor = 'default';
+            }
+            
+        }
 
         document.getElementById("chkTejar360").addEventListener("change", () => {
             const checkVentas = document.getElementById("chkAsesorDeVEntas").checked;
@@ -3208,6 +3831,65 @@
         document.getElementById('tab-comentarios').addEventListener('click', () => mostrarComentarios());
         document.getElementById('btnGuardarPerfil').addEventListener('click', () => guardarPerfilDeUsuario());
         document.getElementById('btnDarDeAlta').addEventListener('click', () => darDeAlta());
+        document.getElementById('btnComentarioIA').addEventListener('click', () => verComentarioIA());
+        document.getElementById('verBolson2').addEventListener('click', () => verAspirantesBolson2());
+
+        //SEGUIMIENTO DEL PROCESO
+        document.getElementById('P-EntrivistaAT').addEventListener('change', () => {
+            const EntrevistaAT = document.getElementById('P-EntrivistaAT');
+
+            if (EntrevistaAT.checked) {
+                guardarSeguimientoDeProceso(1)
+            }
+            if (!EntrevistaAT.checked)
+                EntrevistaAT.checked = true
+        });
+        document.getElementById('P-PruebasPsicometricas').addEventListener('change', () => {
+            const EntrevistaAT = document.getElementById('P-PruebasPsicometricas');
+
+            if (EntrevistaAT.checked) {
+                guardarSeguimientoDeProceso(2)
+            }
+            if (!EntrevistaAT.checked)
+                EntrevistaAT.checked = true
+        });
+        document.getElementById('P-PruebasEspecificas').addEventListener('change', () => {
+            const EntrevistaAT = document.getElementById('P-PruebasEspecificas');
+
+            if (EntrevistaAT.checked) {
+                guardarSeguimientoDeProceso(3)
+            }
+            if (!EntrevistaAT.checked)
+                EntrevistaAT.checked = true
+        });
+        document.getElementById('P-EntrevistaJI').addEventListener('change', () => {
+            const EntrevistaAT = document.getElementById('P-EntrevistaJI');
+
+            if (EntrevistaAT.checked) {
+                guardarSeguimientoDeProceso(4)
+            }
+            if (!EntrevistaAT.checked)
+                EntrevistaAT.checked = true
+        });
+        document.getElementById('P-Documentos&Poligrafo').addEventListener('change', () => {
+            const EntrevistaAT = document.getElementById('P-Documentos&Poligrafo');
+
+            if (EntrevistaAT.checked) {
+                guardarSeguimientoDeProceso(5)
+            }
+            if (!EntrevistaAT.checked)
+                EntrevistaAT.checked = true
+        });
+        document.getElementById('P-Contratacion').addEventListener('change', () => {
+            const EntrevistaAT = document.getElementById('P-Contratacion');
+
+            if (EntrevistaAT.checked) {
+                guardarSeguimientoDeProceso(6)
+            }
+            if (!EntrevistaAT.checked)
+                EntrevistaAT.checked = true
+        });
+        
 
     </script>
 

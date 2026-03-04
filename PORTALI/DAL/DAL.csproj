@@ -240,6 +240,7 @@
     <Compile Include="EmpleadosDAL.cs" />
     <Compile Include="LockServiceDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolvenciaDAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Connection\Connection.csproj">

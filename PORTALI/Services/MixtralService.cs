@@ -12,7 +12,7 @@ namespace PORTALI.Services
     {
         private const string MIXTRAL_URL = "https://api.mistral.ai/v1/chat/completions";
         private readonly string _apiKey;
-
+        private string modelo = "mistral-small";//"mistral-medium";
         public MixtralService(string apiKey)
         {
             _apiKey = apiKey;
@@ -20,7 +20,7 @@ namespace PORTALI.Services
 
         public async Task<string> AnalizarPerfilAsync(string perfilJson,string aspiranteJson)
         {
-            var requestBody = ConstruirRequest(perfilJson, aspiranteJson);
+            var requestBody = ConstruirRequest(perfilJson, aspiranteJson,modelo);
 
             var jsonRequest = JsonConvert.SerializeObject(requestBody);
 
@@ -48,7 +48,7 @@ namespace PORTALI.Services
             }
         }
 
-        private object ConstruirRequest(string perfilJson, string aspiranteJson)
+        private object ConstruirRequest(string perfilJson, string aspiranteJson,string modelo)
         {
             const string SYSTEM_PROMPT = @"
 Eres un asistente experto en reclutamiento y análisis de perfiles profesionales.
@@ -63,10 +63,26 @@ REGLAS ESTRICTAS E INQUEBRANTABLES:
 - La respuesta DEBE comenzar EXACTAMENTE con { y terminar EXACTAMENTE con }
 - Si no puedes cumplir estrictamente el formato, devuelve {}
 
-OBJETIVO:
-Evaluar una lista de aspirantes comparándolos contra un perfil de puesto.
+REGLAS DE PROCESAMIENTO DE ASPIRANTES:
+- Cada aspirante incluye el campo AnalizadoConMixtral
+- Si AnalizadoConMixtral = 1:
+  - NO analices ese aspirante
+  - NO lo incluyas dentro del arreglo evaluacion
+- Si AnalizadoConMixtral = 0:
+  - Analízalo normalmente
+  - Inclúyelo en el arreglo evaluacion
 
-Estructura OBLIGATORIA de salida:
+OBJETIVO:
+Evaluar una lista de aspirantes comparándolos contra un perfil de puesto, evitando análisis duplicados.
+
+RECOMENDACIÓN FINAL:
+- La recomendacionFinal DEBE considerar:
+  - TODOS los aspirantes recibidos
+  - Tanto los ya analizados (AnalizadoConMixtral = 1)
+  - Como los analizados en esta ejecución (AnalizadoConMixtral = 0)
+- La recomendación debe ser global, estratégica y comparativa.
+
+ESTRUCTURA OBLIGATORIA de salida:
 {
   ""evaluacion"": [
     {
@@ -102,7 +118,7 @@ Instrucciones:
 
             return new
             {
-                model = "mistral-small",
+                model = $"{modelo}",
                 temperature = 0.2,
                 messages = new[]
                 {

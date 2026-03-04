@@ -50,7 +50,7 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT posID as Id, descriptio as Nombre FROM OHPS ORDER BY posID";
+                    string query = "SELECT posID as Id, descriptio as Nombre FROM [ELTEJAR_PRUEBAS_21022026].DBO.OHPS ORDER BY posID";
 
                     return await conn.QueryAsync<Puestos>
                         (
@@ -115,7 +115,7 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    string query = @"SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_CAUSAS]
+                    string query = @"SELECT * FROM [ELTEJAR_PRUEBAS_21022026].[dbo].[@GESTION_EMP_CAUSAS]
                                      where U_despido = 'Y'";
 
                     return await conn.QueryAsync<CausasDespido>
@@ -138,8 +138,8 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    string query = $@"SELECT U_IdSolicitud as Code, T1.Name FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_DET_CAU] T0
-                                      INNER JOIN [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_CAUSAS] T1 ON T0.U_IdCausa = T1.Code";
+                    string query = $@"SELECT U_IdSolicitud as Code, T1.Name FROM [ELTEJAR_PRUEBAS_21022026].[dbo].[@GESTION_EMP_DET_CAU] T0
+                                      INNER JOIN [ELTEJAR_PRUEBAS_21022026].[dbo].[@GESTION_EMP_CAUSAS] T1 ON T0.U_IdCausa = T1.Code";
 
                     return await conn.QueryAsync<CausasDespido>(query, commandType: CommandType.Text, commandTimeout: 120);
                 }
@@ -156,7 +156,7 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    string update = $@"UPDATE [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_B]
+                    string update = $@"UPDATE [ELTEJAR_PRUEBAS_21022026].[DBO].[@GESTION_EMP_B]
                                     SET U_Estado = {Estado}
                                     WHERE CODE = {Solicitud}";
                     return await conn.ExecuteAsync(update, commandType: CommandType.Text, commandTimeout: 60);
@@ -174,7 +174,7 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    string select = $@"IF(EXISTS (SELECT 1 FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_B] WHERE U_EmpleadoId = {userId} AND U_Estado >= 0))
+                    string select = $@"IF(EXISTS (SELECT 1 FROM [ELTEJAR_PRUEBAS_21022026].[DBO].[@GESTION_EMP_B] WHERE U_EmpleadoId = {userId} AND U_Estado >= 0))
                                         BEGIN
                                         SELECT 1
                                         END
@@ -197,11 +197,11 @@ namespace DAL
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                var query = @"SELECT TOP 1 Code FROM [ELTEJAR_PRUEBAS_R1_5.1].dbo.[@GESTION_EMP_B]
+                var query = @"SELECT TOP 1 Code FROM [ELTEJAR_PRUEBAS_21022026].dbo.[@GESTION_EMP_B]
                                 WHERE U_EmpleadoId = @IdUsuario
                                 ORDER BY Code DESC";
 
-                return await conn.QuerySingleAsync<int>(query, new { IdUsuario  = idEmpleado});
+                return await conn.QuerySingleAsync<int>(query, new { IdUsuario = idEmpleado });
             }
         }
         public async Task<int> VerificarExistenciaDeCorreo(int userId)
@@ -210,7 +210,7 @@ namespace DAL
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    string select = $@"IF((SELECT email FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHEM WHERE userId = {userId}) is not null)
+                    string select = $@"IF((SELECT email FROM [ELTEJAR_PRUEBAS_21022026].[DBO].OHEM WHERE userId = {userId}) is not null)
                                         BEGIN
                                         SELECT 1
                                         END 
@@ -305,9 +305,9 @@ namespace DAL
 			                         WHEN T0.U_Estado = 'R' THEN 'Rechazado gerencia'
 			                         ELSE 'Autorizado'
 		                        END AS Observaciones
-	                        FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_A] T0
-	                        LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].OHPS T1 ON T0.U_IdPosicion = T1.posID  
-	                        LEFT JOIN [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] T2 ON T0.U_IdPerfil = t2.Code
+	                        FROM [ELTEJAR_PRUEBAS_21022026].[DBO].[@GESTION_EMP_A] T0
+	                        LEFT JOIN [ELTEJAR_PRUEBAS_21022026].[DBO].OHPS T1 ON T0.U_IdPosicion = T1.posID  
+	                        LEFT JOIN [ELTEJAR_PRUEBAS_21022026].[DBO].[@GESTION_EMP_PERFIL] T2 ON T0.U_IdPerfil = t2.Code
 	                        WHERE U_IdSolicitante = @userId";
 
                 return await conn.QueryAsync<Autorizaciones>
@@ -339,9 +339,9 @@ namespace DAL
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                var sql = @"SELECT CASE WHEN [Name] IS NULL THEN 0 ELSE 1 END AS Requisicion FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_B] WHERE code = @Code";
+                var sql = @"SELECT CASE WHEN [Name] IS NULL THEN 0 ELSE 1 END AS Requisicion FROM [ELTEJAR_PRUEBAS_21022026].[DBO].[@GESTION_EMP_B] WHERE code = @Code";
 
-                return await conn.ExecuteScalarAsync<bool>(sql, new { Code = code});
+                return await conn.ExecuteScalarAsync<bool>(sql, new { Code = code });
             }
         }
 
@@ -349,11 +349,11 @@ namespace DAL
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                var query = @"IF(EXISTS(SELECT * FROM [ELTEJAR_PRUEBAS_R1_5.1].[DBO].[@GESTION_EMP_PERFIL] WHERE U_IdPuesto = @IdPuesto))
+                var query = @"IF(EXISTS(SELECT * FROM [ELTEJAR_PRUEBAS_21022026].[DBO].[@GESTION_EMP_PERFIL] WHERE U_IdPuesto = @IdPuesto))
                                 SELECT 1
                                 ELSE SELECT 0";
 
-                return await conn.ExecuteScalarAsync<bool>(query, new { IdPuesto  = idPuesto });
+                return await conn.ExecuteScalarAsync<bool>(query, new { IdPuesto = idPuesto });
             }
         }
 
@@ -361,7 +361,7 @@ namespace DAL
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                var query = @"SELECT COUNT(*) + 1 AS Correlativo FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_LLA_ATE]
+                var query = @"SELECT COUNT(*) + 1 AS Correlativo FROM [ELTEJAR_PRUEBAS_21022026].[dbo].[@GESTION_EMP_LLA_ATE]
                                 WHERE U_EmpId = @EmpId";
                 return await conn.ExecuteScalarAsync<int>(query, new { EmpId = empId });
             }
@@ -375,8 +375,8 @@ namespace DAL
 		                                CONVERT(DATE,T0.U_Fecha) AS Fecha,
 		                                T0.U_Observaciones AS Observaciones,
 		                                T0.U_NombreArchivo AS NombreArchivo
-                                FROM [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_LLA_ATE] T0
-                                INNER JOIN [ELTEJAR_PRUEBAS_R1_5.1].[dbo].[@GESTION_EMP_CAUSAS] T1 ON T0.U_TipoDeFalta = T1.Code
+                                FROM [ELTEJAR_PRUEBAS_21022026].[dbo].[@GESTION_EMP_LLA_ATE] T0
+                                LEFT JOIN [ELTEJAR_PRUEBAS_21022026].[dbo].[@GESTION_EMP_CAUSAS] T1 ON T0.U_TipoDeFalta = T1.Code
                                 WHERE U_EmpId = @EmpId";
 
                 return await conn.QueryAsync<LlamadaDeAtencion>(query, new { EmpId = empId });
@@ -396,17 +396,30 @@ namespace DAL
 			                        U_FechaSolvenciaJefe,
 			                        U_HoraSolvenciaJefe,
 			                        U_ObsevacionesJefeInmediato
-	                        FROM [ELTEJAR_PRUEBAS_R1_5.1].DBO.[@GESTION_EMP_SOL_ADM] T0
-	                        INNER JOIN [ELTEJAR_PRUEBAS_R1_5.1].DBO.[@GESTION_EMP_B] T1 ON t0.Code = t1.code
+	                        FROM [ELTEJAR_PRUEBAS_21022026].DBO.[@GESTION_EMP_SOL_ADM] T0
+	                        INNER JOIN [ELTEJAR_PRUEBAS_21022026].DBO.[@GESTION_EMP_B] T1 ON t0.Code = t1.code
 	                        WHERE T1.U_EmpleadoId = @EmpleadoId";
 
                     return await conn.QuerySingleOrDefaultAsync<SolvenciaAdministrativaJefe>(query, new { EmpleadoId = empleadoId }) ?? new SolvenciaAdministrativaJefe();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
-            } 
+            }
+        }
+
+        public async Task<IEnumerable<SeguimientoRequisicion>> ObtenerRequisiciones(int empId)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var sp = "sp_obtener_requisicion_gestion";
+
+                return await conn.QueryAsync<SeguimientoRequisicion>(
+                    sp,
+                    new { EmpId = empId },
+                    commandType: CommandType.StoredProcedure);
+            }
         }
     }
 }

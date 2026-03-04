@@ -45,6 +45,7 @@ namespace Entity
         public int EmpIdSAP { get; set; }
         public int NotaIA { get; set; }
         public bool Cumple { get; set; }
+        public bool AnalisisIA { get; set; }
     }
 
     public class DatosPersonales
